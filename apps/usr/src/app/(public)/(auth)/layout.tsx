@@ -6,7 +6,9 @@ import { AuthShell, type AuthCardStep } from '@/components/auth/auth-shell';
 
 function resolveCardStep(pathname: string): AuthCardStep {
   const last = pathname.split('/').filter(Boolean).at(-1);
-  if (last === 'otp' || last === 'totp' || last === 'reset') return 'otp';
+  if (last === 'otp' || last === 'totp' || last === 'reset' || last === 'sessions') {
+    return 'otp';
+  }
   return 'identifier';
 }
 

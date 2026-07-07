@@ -14,3 +14,5 @@ export const PURPOSE_TO_SEND_OPERATION: Record<AuthPurpose, AuthOperation> = {
 
 /** Referral codes are 6-digit per SRS */
 export const REFERRAL_CODE_LENGTH = 6;
+
+export const MAX_ACTIVE_SESSIONS = 5;

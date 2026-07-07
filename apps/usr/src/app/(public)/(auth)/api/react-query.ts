@@ -4,6 +4,7 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 
 import {
   deleteSession,
+  deleteSessionForLimitReached,
   getSessions,
   getSessionsForLimitReached,
   inactiveSessionThenGetToken,
@@ -14,6 +15,7 @@ import {
 } from './auth';
 import { authQueryKeys } from './query-keys';
 import type {
+  DeleteSessionForLimitReachedPayload,
   DeleteSessionPayload,
   GetSessionsPayload,
   InactiveSessionThenGetTokenPayload,
@@ -63,6 +65,10 @@ export function useGetSessionsForLimitReachedQuery(
   });
 }
 
+export function useDeleteSessionForLimitReachedMutation() {
+  return useMutation({ mutationFn: deleteSessionForLimitReached });
+}
+
 export function useDeleteSessionMutation() {
   return useMutation({ mutationFn: deleteSession });
 }
@@ -78,6 +84,7 @@ export const useSendOtpMutation = useSendVerifyCodeMutation;
 export const useVerifyOtpMutation = useVerifyCodeMutation;
 
 export type {
+  DeleteSessionForLimitReachedPayload,
   DeleteSessionPayload,
   GetSessionsPayload,
   InactiveSessionThenGetTokenPayload,

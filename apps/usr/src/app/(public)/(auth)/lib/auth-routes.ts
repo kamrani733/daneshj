@@ -3,15 +3,26 @@ import type { AuthFlowKind } from '@auth/lib/auth-flow';
 export const AUTH_ROUTES = {
   login: '/login',
   loginOtp: '/login/otp',
+  loginSessions: '/login/sessions',
   loginTotp: '/login/totp',
   register: '/register',
   registerOtp: '/register/otp',
+  registerSessions: '/register/sessions',
   forgot: '/forgot-password',
   forgotOtp: '/forgot-password/otp',
   forgotReset: '/forgot-password/reset',
   dashboard: '/dashboard',
   home: '/',
 } as const;
+
+export function authSessionsPath(kind: AuthFlowKind) {
+  switch (kind) {
+    case 'login':
+      return AUTH_ROUTES.loginSessions;
+    default:
+      return AUTH_ROUTES.registerSessions;
+  }
+}
 
 export function authOtpPath(kind: AuthFlowKind) {
   switch (kind) {

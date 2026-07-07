@@ -130,6 +130,11 @@ export interface GetSessionsPayload {
   sessionKey: string;
 }
 
+export interface DeleteSessionForLimitReachedPayload {
+  accessToken: string;
+  sessionIds: number[];
+}
+
 export interface DeleteSessionPayload {
   accessToken: string;
   sessionKey: string;

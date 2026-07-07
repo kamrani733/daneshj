@@ -21,6 +21,7 @@ import {
 } from './transformers';
 import type {
   ApiResponse,
+  DeleteSessionForLimitReachedPayload,
   DeleteSessionPayload,
   GetSessionsPayload,
   InactiveSessionThenGetTokenPayload,
@@ -223,6 +224,23 @@ export async function getSessionsForLimitReached(
     '/auth/display_active_sessions_for_limit_reached',
     { actor_type: USR_ACTOR_TYPE },
     accessToken
+  );
+}
+
+export async function deleteSessionForLimitReached(
+  payload: DeleteSessionForLimitReachedPayload
+): Promise<void> {
+  if (isAuthApiMocked()) return;
+
+  await patchAuth<null>(
+    '/auth/inactive_session_for_limit_reached',
+    {},
+    {
+      actor_type: USR_ACTOR_TYPE,
+      session_list: payload.sessionIds.join(','),
+    },
+    payload.accessToken,
+    false
   );
 }
 

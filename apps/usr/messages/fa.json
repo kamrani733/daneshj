@@ -74,11 +74,14 @@
     "backToLogin": "بازگشت به ورود"
   },
   "sessions": {
-    "limitTitle": "حداکثر نشست فعال",
-    "limitDescription": "شما به سقف ۵ نشست فعال رسیده‌اید. یکی از نشست‌های قبلی را حذف کنید تا ادامه دهید.",
+    "pageTitle": "مدیریت نشست‌های فعال",
+    "pageDescription": "به سقف {max} نشست فعال رسیده‌اید. برای ادامه، حداقل یکی از نشست‌های قبلی را حذف کنید.",
+    "activeCount": "{count} از {max} نشست فعال",
+    "deleteSession": "حذف نشست",
     "loading": "در حال بارگذاری نشست‌ها…",
-    "removeAndContinue": "حذف و ادامه",
+    "empty": "نشست فعالی یافت نشد.",
+    "continueToDashboard": "ادامه و ورود به داشبورد",
     "removeFailed": "حذف نشست با خطا مواجه شد",
-    "cancel": "انصراف"
+    "continueFailed": "ادامه ورود با خطا مواجه شد"
   }
 }

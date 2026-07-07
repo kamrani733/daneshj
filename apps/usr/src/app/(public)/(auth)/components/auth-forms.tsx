@@ -13,14 +13,13 @@ import {
   useVerifyCodeMutation,
   type AuthPurpose,
 } from '@auth/api';
-import { SessionLimitPanel } from '@auth/components/session-limit-panel';
-import { establishSession } from '@auth/lib/auth-actions';
-import type { Session } from '@daneshjoam/shared-types';
+import { finishAuthAndRedirect } from '@auth/lib/auth-redirect';
 import {
   AUTH_ROUTES,
   authFallback,
   authNextAfterOtp,
   authOtpPath,
+  authSessionsPath,
   authTotpPath,
 } from '@auth/lib/auth-routes';
 import {
@@ -58,17 +57,6 @@ function AuthHeading({ children }: { children: React.ReactNode }) {
 function FieldError({ message }: { message: string | null }) {
   if (!message) return null;
   return <p className="text-right text-sm text-error">{message}</p>;
-}
-
-async function finishAuthAndRedirect(
-  session: Session,
-  successPath: string,
-  clearFlow: () => void
-) {
-  await establishSession(session);
-  clearFlow();
-  // Full navigation so middleware/layout see the new httpOnly session cookie.
-  window.location.assign(successPath);
 }
 
 type IdentifierFormProps = {
@@ -207,7 +195,6 @@ export function OtpForm({
   const [code, setCode] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [resending, setResending] = useState(false);
-  const [showSessionLimit, setShowSessionLimit] = useState(false);
 
   // TODO: Remove auto-fill — OTP input should stay empty until user receives SMS/email.
   useEffect(() => {
@@ -245,7 +232,7 @@ export function OtpForm({
           loginType: result.loginType ?? 1,
           identityInfo: result.identityInfo,
         });
-        setShowSessionLimit(true);
+        router.push(authSessionsPath(purpose));
         return;
       }
 
@@ -304,8 +291,7 @@ export function OtpForm({
   }
 
   return (
-    <>
-      <form className="flex flex-col gap-8" onSubmit={onSubmit}>
+    <form className="flex flex-col gap-8" onSubmit={onSubmit}>
         <AuthHeading>{t('sentTo', { identifier })}</AuthHeading>
 
         <div className="space-y-2">
@@ -344,16 +330,8 @@ export function OtpForm({
           <p className="text-center text-[11px] font-medium leading-6 text-green-850 dark:text-muted-foreground">
             {t('countdown', { time: formatCountdown(secondsLeft) })}
           </p>
-        )}
-      </form>
-
-      {showSessionLimit && (
-        <SessionLimitPanel
-          successPath={successPath}
-          onClose={() => setShowSessionLimit(false)}
-        />
       )}
-    </>
+    </form>
   );
 }
 

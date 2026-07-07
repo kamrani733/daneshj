@@ -1,5 +1,6 @@
 export {
   deleteSession,
+  deleteSessionForLimitReached,
   getSessions,
   getSessionsForLimitReached,
   inactiveSessionThenGetToken,
@@ -10,8 +11,9 @@ export {
   verifyCode,
   verifyOtp,
 } from './auth';
-export { authQueryKeys } from './query-keys';
+export { USR_ACTOR_TYPE, USR_LOGIN_SOURCE, MAX_ACTIVE_SESSIONS } from './constants';
 export {
+  useDeleteSessionForLimitReachedMutation,
   useDeleteSessionMutation,
   useGetSessionsForLimitReachedQuery,
   useGetSessionsQuery,

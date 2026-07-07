@@ -167,3 +167,29 @@ export function useAuthFlowGuard(
     sendVerifyContext,
   };
 }
+
+export function useSessionLimitGuard(kind: AuthFlowKind, fallback: string) {
+  const router = useRouter();
+  const flowKind = useAuthFlowStore((s) => s.kind);
+  const identifier = useAuthFlowStore((s) => s.identifier);
+  const pendingSessionLimit = useAuthFlowStore((s) => s.pendingSessionLimit);
+  const [hydrated, setHydrated] = useState(false);
+
+  useEffect(() => setHydrated(true), []);
+
+  useEffect(() => {
+    if (!hydrated) return;
+    const invalid =
+      !identifier || flowKind !== kind || !pendingSessionLimit;
+    if (invalid) router.replace(fallback);
+  }, [hydrated, identifier, flowKind, pendingSessionLimit, kind, fallback, router]);
+
+  const ready =
+    hydrated && !!identifier && flowKind === kind && !!pendingSessionLimit;
+
+  return {
+    ready,
+    identifier: identifier ?? '',
+    pendingSessionLimit,
+  };
+}
