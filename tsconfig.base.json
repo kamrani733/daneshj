@@ -16,6 +16,12 @@
     "skipLibCheck": true,
     "strict": true,
     "target": "es2022",
-    "customConditions": ["@daneshjoam/source"]
+    "customConditions": ["@daneshjoam/source"],
+    "paths": {
+      "@daneshjoam/api-client": ["./libs/api-client/src/index.ts"],
+      "@daneshjoam/auth": ["./libs/auth/src/index.ts"],
+      "@daneshjoam/shared-types": ["./libs/shared-types/src/index.ts"],
+      "@daneshjoam/shared-ui": ["./libs/shared-ui/src/index.ts"]
+    }
   }
 }

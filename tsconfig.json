@@ -11,6 +11,18 @@
     },
     {
       "path": "./apps/bus"
+    },
+    {
+      "path": "./libs/shared-ui"
+    },
+    {
+      "path": "./libs/shared-types"
+    },
+    {
+      "path": "./libs/api-client"
+    },
+    {
+      "path": "./libs/auth"
     }
   ]
 }
