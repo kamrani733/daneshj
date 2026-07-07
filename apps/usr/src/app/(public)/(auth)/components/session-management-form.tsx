@@ -1,12 +1,14 @@
 'use client';
 
-import { Monitor, Smartphone, Trash2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 
-import { Button } from '@/components/ui/button';
+import { MAZE_LINES } from '@/components/auth/auth-scene-assets';
+
+const SESSION_BG = '/images/register/session-bg.png';
+const SESSION_TITLE = '/images/register/session-title.png';
 import {
-  MAX_ACTIVE_SESSIONS,
+  PREVIEW_ACCESS_TOKEN,
   useDeleteSessionForLimitReachedMutation,
   useGetSessionsForLimitReachedQuery,
   useInactiveSessionThenGetTokenMutation,
@@ -14,72 +16,131 @@ import {
   type SessionData,
 } from '@auth/api';
 import { finishAuthAndRedirect } from '@auth/lib/auth-redirect';
-import { useAuthFlowStore, useSessionLimitGuard } from '@auth/lib/auth-flow';
+import {
+  useAuthFlowStore,
+  useOtpCountdown,
+  useSessionLimitGuard,
+  type PendingSessionLimit,
+} from '@auth/lib/auth-flow';
 import { AUTH_ROUTES, authFallback } from '@auth/lib/auth-routes';
 
-const submitBtn =
-  'h-12 w-full rounded-full bg-primary-500 text-base font-medium text-white hover:bg-primary-600 disabled:bg-on-surface/10 disabled:text-on-surface/40 disabled:opacity-100 dark:bg-primary-200 dark:text-black';
+const SESSION_LIMIT_WINDOW_SECONDS = 5 * 60;
+
+/** RTL grid template shared by the table header and each session row. */
+const GRID_COLS =
+  'grid grid-cols-[minmax(0,1.2fr)_minmax(0,0.9fr)_minmax(0,1.1fr)_minmax(0,1.2fr)_minmax(0,1.4fr)_minmax(0,0.9fr)] items-center gap-4';
+
+const FA_DIGITS = '۰۱۲۳۴۵۶۷۸۹';
+function toFaDigits(value: string) {
+  return value.replace(/\d/g, (d) => FA_DIGITS[Number(d)]);
+}
+
+function formatCountdown(totalSeconds: number) {
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+  return toFaDigits(`${minutes}:${String(seconds).padStart(2, '0')}`);
+}
 
 function formatSessionDate(value: string) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return value;
   try {
-    return new Intl.DateTimeFormat('fa-IR', {
-      dateStyle: 'medium',
-      timeStyle: 'short',
-    }).format(new Date(value));
+    const day = new Intl.DateTimeFormat('fa-IR-u-ca-persian', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    }).format(date);
+    const time = new Intl.DateTimeFormat('fa-IR', {
+      hour: '2-digit',
+      minute: '2-digit',
+    }).format(date);
+    return `${day}  ${time}`;
   } catch {
     return value;
   }
 }
 
-function SessionDeviceIcon({ device }: { device: string }) {
-  const isMobile = /iphone|android|mobile|phone/i.test(device);
-  const Icon = isMobile ? Smartphone : Monitor;
+function ConfirmLogoutDialog({
+  open,
+  pending,
+  onConfirm,
+  onCancel,
+}: {
+  open: boolean;
+  pending: boolean;
+  onConfirm: () => void;
+  onCancel: () => void;
+}) {
+  const t = useTranslations('sessions');
+  if (!open) return null;
+
   return (
-    <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary-50 text-primary-600 dark:bg-primary-900/30 dark:text-primary-200">
-      <Icon className="size-5" aria-hidden />
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-4"
+      role="dialog"
+      aria-modal="true"
+      onClick={onCancel}
+    >
+      <div
+        dir="rtl"
+        onClick={(event) => event.stopPropagation()}
+        className="w-full max-w-sm rounded-2xl bg-[#E3E0DA] p-6 text-right shadow-xl dark:bg-primary-900"
+      >
+        <p className="text-sm font-medium text-green-850 dark:text-primary-50">
+          {t('confirmTitle')}
+        </p>
+        <div className="mt-6 flex items-center gap-3">
+         
+          <button
+            type="button"
+            disabled={pending}
+            onClick={onCancel}
+            className="px-4 py-2 text-sm font-medium text-green-700 transition-colors hover:text-green-850 disabled:opacity-60 dark:text-primary-100"
+          >
+            {t('cancel')}
+          </button>
+          <button
+            type="button"
+            disabled={pending}
+            onClick={onConfirm}
+            className="rounded-full bg-primary-500 px-7 py-2 text-sm font-medium text-white transition-colors hover:bg-primary-600 disabled:opacity-60"
+          >
+            {t('confirm')}
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
 
-function SessionRow({
+function SessionActionCell({
   session,
-  onDelete,
-  deleting,
+  disabled,
+  onLogout,
 }: {
   session: SessionData;
-  onDelete: (id: number) => void;
-  deleting: boolean;
+  disabled: boolean;
+  onLogout: (id: number) => void;
 }) {
   const t = useTranslations('sessions');
 
+  if (session.is_current_session) {
+    return (
+      <span className="inline-flex items-center justify-center rounded-full border border-neutral-300 px-4 py-1.5 text-xs font-medium text-neutral-600 dark:border-white/20 dark:text-muted-foreground">
+        {t('currentSession')}
+      </span>
+    );
+  }
+
   return (
-    <div className="flex items-center gap-3 rounded-2xl border border-green-100 bg-white/60 px-4 py-3 dark:border-white/10 dark:bg-white/5">
-      <SessionDeviceIcon device={session.device} />
-
-      <div className="min-w-0 flex-1 text-right">
-        <p className="truncate text-sm font-medium text-green-850 dark:text-foreground">
-          {session.browser} · {session.os}
-        </p>
-        <p className="truncate text-xs text-green-700/70 dark:text-muted-foreground">
-          {session.device} · {session.ip_address}
-        </p>
-        <p className="mt-0.5 text-[11px] text-green-700/60 dark:text-muted-foreground">
-          {formatSessionDate(session.create_time)}
-        </p>
-      </div>
-
-      <Button
-        type="button"
-        variant="ghost"
-        size="icon"
-        disabled={deleting}
-        onClick={() => onDelete(session.id)}
-        className="size-10 shrink-0 rounded-full text-error hover:bg-error/10 hover:text-error"
-        aria-label={t('deleteSession')}
-      >
-        <Trash2 className="size-5" />
-      </Button>
-    </div>
+    <button
+      type="button"
+      disabled={disabled}
+      onClick={() => onLogout(session.id)}
+      className="inline-flex items-center justify-center rounded-full bg-warning px-7 py-1.5 text-xs font-medium text-white transition-colors hover:bg-warning-500 disabled:opacity-60"
+    >
+      {t('logout')}
+    </button>
   );
 }
 
@@ -96,58 +157,75 @@ export function SessionManagementForm({
   const clearFlow = useAuthFlowStore((s) => s.clear);
   const setPendingSessionLimit = useAuthFlowStore((s) => s.setPendingSessionLimit);
 
-  const { ready, pendingSessionLimit } = useSessionLimitGuard(
+  const { ready, preview, pendingSessionLimit } = useSessionLimitGuard(
     purpose,
     authFallback(purpose)
   );
 
-  const [deletingId, setDeletingId] = useState<number | null>(null);
+  const previewPending: PendingSessionLimit = {
+    accessToken: PREVIEW_ACCESS_TOKEN,
+    loginType: 1,
+    identityInfo: {
+      identity_type: 'email',
+      mobile: null,
+      email: 'preview@local',
+      operation: 'LOGIN',
+      redirect_verify_password: false,
+      is_two_step_login: false,
+    },
+  };
+  const pending = pendingSessionLimit ?? (preview ? previewPending : null);
+
+  const [deadline] = useState(() => Date.now() + SESSION_LIMIT_WINDOW_SECONDS * 1000);
+  const { secondsLeft } = useOtpCountdown(deadline);
+
+  const [confirmId, setConfirmId] = useState<number | null>(null);
+  const [busyId, setBusyId] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const { data: sessions = [], isLoading, refetch } =
-    useGetSessionsForLimitReachedQuery(
-      pendingSessionLimit?.accessToken ?? null,
-      ready
-    );
+  const {
+    data: sessions = [],
+    isLoading,
+    isError,
+    refetch,
+  } = useGetSessionsForLimitReachedQuery(pending?.accessToken ?? null, ready);
 
   const deleteMutation = useDeleteSessionForLimitReachedMutation();
   const continueMutation = useInactiveSessionThenGetTokenMutation();
 
-  const canContinue = useMemo(
-    () => sessions.length < MAX_ACTIVE_SESSIONS,
-    [sessions.length]
-  );
-
-  if (!ready || !pendingSessionLimit) return null;
-
-  const pending = pendingSessionLimit;
-
-  async function onDeleteSession(sessionId: number) {
-    setError(null);
-    setDeletingId(sessionId);
-    try {
-      await deleteMutation.mutateAsync({
-        accessToken: pending.accessToken,
-        sessionIds: [sessionId],
-      });
-      await refetch();
-    } catch {
-      setError(t('removeFailed'));
-    } finally {
-      setDeletingId(null);
+  useEffect(() => {
+    if (ready && secondsLeft <= 0) {
+      setPendingSessionLimit(null);
     }
-  }
+  }, [ready, secondsLeft, setPendingSessionLimit]);
 
-  async function onContinue() {
-    if (!canContinue) return;
+  if (!ready || !pending) return null;
+
+  const activePending = pending;
+  const isPreview = activePending.accessToken === PREVIEW_ACCESS_TOKEN;
+
+  async function onConfirmLogout() {
+    if (confirmId === null) return;
+    const sessionId = confirmId;
 
     setError(null);
+    setBusyId(sessionId);
     try {
+      if (isPreview) {
+        await deleteMutation.mutateAsync({
+          accessToken: activePending.accessToken,
+          sessionIds: [sessionId],
+        });
+        await refetch();
+        setConfirmId(null);
+        return;
+      }
+
       const result = await continueMutation.mutateAsync({
-        accessToken: pending.accessToken,
-        sessionIds: [],
-        loginType: pending.loginType,
-        identityInfo: pending.identityInfo,
+        accessToken: activePending.accessToken,
+        sessionIds: [sessionId],
+        loginType: activePending.loginType,
+        identityInfo: activePending.identityInfo,
       });
 
       if (!result.session) {
@@ -155,54 +233,149 @@ export function SessionManagementForm({
         return;
       }
 
+      setConfirmId(null);
       setPendingSessionLimit(null);
       await finishAuthAndRedirect(result.session, successPath, clearFlow);
     } catch {
-      setError(t('continueFailed'));
+      setError(isPreview ? t('removeFailed') : t('continueFailed'));
+    } finally {
+      setBusyId(null);
     }
   }
 
+  const columns = [
+    t('colDevice'),
+    t('colBrowser'),
+    t('colIp'),
+    t('colOs'),
+    t('colLoginTime'),
+    t('colActions'),
+  ];
+
   return (
-    <div className="flex flex-col gap-6">
-      <div className="space-y-2 text-right">
-        <h1 className="text-base font-medium leading-7 text-green-850 dark:text-foreground">
-          {t('pageTitle')}
-        </h1>
-        <p className="text-sm leading-6 text-green-700/80 dark:text-muted-foreground">
-          {t('pageDescription', { max: MAX_ACTIVE_SESSIONS })}
-        </p>
-        <p className="text-xs text-green-700/60 dark:text-muted-foreground">
-          {t('activeCount', { count: sessions.length, max: MAX_ACTIVE_SESSIONS })}
-        </p>
-      </div>
+    <div dir="rtl" className="relative flex min-h-screen flex-col overflow-hidden bg-background">
+      <div
+        aria-hidden
+        className="auth-form-pattern pointer-events-none absolute inset-x-0 top-44 bottom-14 z-0"
+        style={{
+          backgroundImage: MAZE_LINES,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+        }}
+      />
 
-      <div className="space-y-3">
-        {isLoading && (
-          <p className="text-right text-sm text-muted-foreground">{t('loading')}</p>
-        )}
-        {!isLoading && sessions.length === 0 && (
-          <p className="text-right text-sm text-muted-foreground">{t('empty')}</p>
-        )}
-        {sessions.map((session) => (
-          <SessionRow
-            key={session.id}
-            session={session}
-            deleting={deletingId === session.id}
-            onDelete={onDeleteSession}
-          />
-        ))}
-      </div>
+      <img
+        src={SESSION_BG}
+        alt=""
+        aria-hidden
+        draggable={false}
+        className="h-28 w-full shrink-0 select-none object-cover object-top"
+      />
 
-      {error && <p className="text-right text-sm text-error">{error}</p>}
+      <main className="relative z-10 mx-auto w-full max-w-[900px] flex-1 px-6 py-10">
+        <header className="flex justify-start">
+          <div className="relative h-[89px] w-[384px] max-w-full">
+            <img
+              src={SESSION_TITLE}
+              alt=""
+              aria-hidden
+              draggable={false}
+              className="absolute inset-0 h-full w-full select-none object-contain object-right"
+            />
+            <h1 className="absolute right-[104px] top-0 flex h-16 items-center text-lg font-bold text-primary-500 dark:text-primary-100">
+              {t('pageTitle')}
+            </h1>
+          </div>
+        </header>
 
-      <Button
-        type="button"
-        disabled={!canContinue || continueMutation.isPending}
-        onClick={onContinue}
-        className={submitBtn}
-      >
-        {t('continueToDashboard')}
-      </Button>
+        <ul className="mt-6 space-y-2 text-sm text-green-700 dark:text-muted-foreground">
+          <li className="flex gap-2">
+            <span className="mt-2 size-1.5 shrink-0 rounded-full bg-green-500" aria-hidden />
+            <span className="leading-6">{t('bulletLimit')}</span>
+          </li>
+          <li className="flex gap-2">
+            <span className="mt-2 size-1.5 shrink-0 rounded-full bg-green-500" aria-hidden />
+            <span className="leading-6">
+              {t('bulletCountdown', { time: formatCountdown(secondsLeft) })}
+            </span>
+          </li>
+        </ul>
+
+        <section className="mt-8">
+          <div
+            className={`${GRID_COLS} rounded-xl bg-[#E3E0DA] px-6 py-3 text-xs font-medium text-green-700 dark:bg-white/5 dark:text-muted-foreground`}
+          >
+            {columns.map((label) => (
+              <span key={label} className="truncate text-start">
+                {label}
+              </span>
+            ))}
+          </div>
+
+          <div className="mt-3 space-y-3">
+            {isLoading && (
+              <p className="py-6 text-center text-sm text-muted-foreground">
+                {t('loading')}
+              </p>
+            )}
+
+            {isError && (
+              <p className="py-6 text-center text-sm text-error">{t('loadFailed')}</p>
+            )}
+
+            {!isLoading && !isError && sessions.length === 0 && (
+              <p className="py-6 text-center text-sm text-muted-foreground">
+                {t('empty')}
+              </p>
+            )}
+
+            {sessions.map((session) => (
+              <div
+                key={session.id}
+                className={`${GRID_COLS} rounded-xl border border-green-400 bg-surface px-6 py-4 text-sm text-green-850 dark:border-white/10 dark:bg-white/5 dark:text-foreground`}
+              >
+                <span className="truncate text-start" dir="ltr">
+                  {session.device}
+                </span>
+                <span className="truncate text-start" dir="ltr">
+                  {session.browser}
+                </span>
+                <span className="truncate text-start" dir="ltr">
+                  {session.ip_address}
+                </span>
+                <span className="truncate text-start">{session.os}</span>
+                <span className="truncate text-start">
+                  {formatSessionDate(session.create_time)}
+                </span>
+                <span className="text-start">
+                  <SessionActionCell
+                    session={session}
+                    disabled={busyId === session.id}
+                    onLogout={setConfirmId}
+                  />
+                </span>
+              </div>
+            ))}
+          </div>
+
+          {error && <p className="mt-4 text-center text-sm text-error">{error}</p>}
+        </section>
+      </main>
+
+      <img
+        src={SESSION_BG}
+        alt=""
+        aria-hidden
+        draggable={false}
+        className="h-14 w-full shrink-0 select-none object-cover object-bottom"
+      />
+
+      <ConfirmLogoutDialog
+        open={confirmId !== null}
+        pending={busyId !== null}
+        onConfirm={onConfirmLogout}
+        onCancel={() => setConfirmId(null)}
+      />
     </div>
   );
 }

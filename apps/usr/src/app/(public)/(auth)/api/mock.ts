@@ -7,8 +7,94 @@ import type {
   VerifyCodeResponse,
 } from './types';
 
+export const PREVIEW_ACCESS_TOKEN = 'preview-token';
+
 export function isAuthApiMocked() {
   return !process.env.NEXT_PUBLIC_API_URL;
+}
+
+export function isPreviewAccessToken(accessToken: string) {
+  return accessToken === PREVIEW_ACCESS_TOKEN;
+}
+
+export function isSessionPreviewMode(accessToken: string) {
+  return isAuthApiMocked() || isPreviewAccessToken(accessToken);
+}
+
+function createMockSessionsForLimitReached(): SessionData[] {
+  const now = Date.now();
+  return [
+    {
+      id: 1,
+      session_key: 'User_1-mock-session-1',
+      device: 'Desktop',
+      os: 'Windows 11',
+      browser: 'Chrome',
+      ip_address: '185.12.34.10',
+      app_version: '1.0.0',
+      create_time: new Date(now - 1000 * 60 * 60 * 24 * 2).toISOString(),
+      is_current_session: true,
+    },
+    {
+      id: 2,
+      session_key: 'User_1-mock-session-2',
+      device: 'iPhone',
+      os: 'iOS 17',
+      browser: 'Safari',
+      ip_address: '185.12.34.11',
+      app_version: '1.0.0',
+      create_time: new Date(now - 1000 * 60 * 60 * 24 * 5).toISOString(),
+      is_current_session: false,
+    },
+    {
+      id: 3,
+      session_key: 'User_1-mock-session-3',
+      device: 'Desktop',
+      os: 'macOS',
+      browser: 'Firefox',
+      ip_address: '192.168.1.12',
+      app_version: '1.0.0',
+      create_time: new Date(now - 1000 * 60 * 60 * 12).toISOString(),
+      is_current_session: false,
+    },
+    {
+      id: 4,
+      session_key: 'User_1-mock-session-4',
+      device: 'Android',
+      os: 'Android 14',
+      browser: 'Chrome Mobile',
+      ip_address: '10.0.0.8',
+      app_version: '1.0.0',
+      create_time: new Date(now - 1000 * 60 * 60 * 36).toISOString(),
+      is_current_session: false,
+    },
+    {
+      id: 5,
+      session_key: 'User_1-mock-session-5',
+      device: 'Desktop',
+      os: 'Ubuntu',
+      browser: 'Edge',
+      ip_address: '172.16.0.4',
+      app_version: '1.0.0',
+      create_time: new Date(now - 1000 * 60 * 60 * 72).toISOString(),
+      is_current_session: false,
+    },
+  ];
+}
+
+let previewSessions = createMockSessionsForLimitReached();
+
+export function getPreviewSessions(): SessionData[] {
+  return [...previewSessions];
+}
+
+export function deletePreviewSessions(sessionIds: number[]) {
+  const ids = new Set(sessionIds);
+  previewSessions = previewSessions.filter((session) => !ids.has(session.id));
+}
+
+export function resetPreviewSessions() {
+  previewSessions = createMockSessionsForLimitReached();
 }
 
 export function mockSendVerifyCode(
@@ -66,17 +152,5 @@ export function mockRefreshToken(): RefreshTokenResponse {
 }
 
 export function mockSessions(): SessionData[] {
-  return [
-    {
-      id: 1,
-      session_key: 'mock-session-1',
-      device: 'Desktop',
-      os: 'macOS',
-      browser: 'Chrome',
-      ip_address: '127.0.0.1',
-      app_version: '1.0.0',
-      create_time: new Date().toISOString(),
-      is_current_session: false,
-    },
-  ];
+  return createMockSessionsForLimitReached();
 }
