@@ -1,48 +1,206 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * Tailwind v4 theme. Palette scales are fixed; semantic tokens flip in .dark.
+ */
 @theme {
-  --color-background: hsl(0 0% 100%);
-  --color-foreground: hsl(222.2 84% 4.9%);
-  --color-card: hsl(0 0% 100%);
-  --color-card-foreground: hsl(222.2 84% 4.9%);
-  --color-popover: hsl(0 0% 100%);
-  --color-popover-foreground: hsl(222.2 84% 4.9%);
-  --color-primary: hsl(222.2 47.4% 11.2%);
-  --color-primary-foreground: hsl(210 40% 98%);
-  --color-secondary: hsl(210 40% 96.1%);
-  --color-secondary-foreground: hsl(222.2 47.4% 11.2%);
-  --color-muted: hsl(210 40% 96.1%);
-  --color-muted-foreground: hsl(215.4 16.3% 46.9%);
-  --color-accent: hsl(210 40% 96.1%);
-  --color-accent-foreground: hsl(222.2 47.4% 11.2%);
-  --color-destructive: hsl(0 84.2% 60.2%);
-  --color-destructive-foreground: hsl(210 40% 98%);
-  --color-border: hsl(214.3 31.8% 91.4%);
-  --color-input: hsl(214.3 31.8% 91.4%);
-  --color-ring: hsl(222.2 84% 4.9%);
+  --font-sans: var(--font-iran-sans), ui-sans-serif, system-ui, sans-serif;
+
+  /* ===== Green — brand (Primary/Green) ===== */
+  --color-green-50: #fbfdf9;
+  --color-green-100: #f5fbf5;
+  --color-green-200: #eff1ed;
+  --color-green-300: #dee4de;
+  --color-green-400: #bfc9c1;
+  --color-green-500: #8a938c;
+  --color-green-600: #57605b;
+  --color-green-700: #404943;
+  --color-green-800: #2c322e;
+  --color-green-850: #171d19;
+  --color-green-900: #0f1511;
+  --color-green-950: #0a0f0c;
+
+  /* ===== Primary — accent (Teal-Green) ===== */
+  --color-primary-10: #beffdd;
+  --color-primary-50: #d3f4e1;
+  --color-primary-100: #a9f2cd;
+  --color-primary-200: #8dd5b2;
+  --color-primary-300: #4fbf90;
+  --color-primary-400: #2ea377;
+  --color-primary-500: #008d63;
+  --color-primary-600: #006c4b;
+  --color-primary-700: #005138;
+  --color-primary-800: #003825;
+  --color-primary-900: #002114;
+
+  /* ===== Info — Blue ===== */
+  --color-info-10: #fafdff;
+  --color-info-50: #dff4ff;
+  --color-info-100: #c1e9fb;
+  --color-info-200: #a5ccde;
+  --color-info-300: #8ab1c2;
+  --color-info-400: #7096a7;
+  --color-info-500: #567c8d;
+  --color-info-600: #3d6373;
+  --color-info-700: #244c5b;
+  --color-info-800: #073543;
+  --color-info-900: #001f29;
+
+  /* ===== Error — Red ===== */
+  --color-error-50: #ffedea;
+  --color-error-100: #ffdad6;
+  --color-error-200: #ffb4ab;
+  --color-error-300: #ff897d;
+  --color-error-400: #ff5449;
+  --color-error-500: #de3730;
+  --color-error-600: #ba1a1a;
+  --color-error-700: #93000a;
+  --color-error-800: #690005;
+  --color-error-900: #410002;
+
+  /* ===== Warning — Orange ===== */
+  --color-warning-10: #ffede8;
+  --color-warning-50: #ffdbcf;
+  --color-warning-100: #ffb59b;
+  --color-warning-200: #ff8c61;
+  --color-warning-300: #ea6a3a;
+  --color-warning-400: #e06333;
+  --color-warning-500: #c85223;
+  --color-warning-600: #822800;
+  --color-warning-700: #72351f;
+  --color-warning-800: #55200b;
+  --color-warning-900: #380c00;
+
+  /* ===== Neutral / Surface ===== */
+  --color-neutral-white: #fffbff;
+  --color-neutral-50: #f5f5f5;
+  --color-neutral-100: #eff1ed;
+  --color-neutral-200: #e1e3df;
+  --color-neutral-300: #c5c7c3;
+  --color-neutral-400: #a9aca8;
+  --color-neutral-500: #8f918e;
+  --color-neutral-600: #707973;
+  --color-neutral-700: #404943;
+  --color-neutral-800: #252b28;
+  --color-neutral-900: #1b211d;
+  --color-neutral-black: #0a0f0c;
+
+  /* ===== Semantic — Primary ===== */
+  --color-primary: #008d63;
+  --color-primary-foreground: #fffbff;
+  --color-primary-hover: #006c4b;
+  --color-primary-subtle: #d3f4e1;
+  --color-on-primary: #fffbff;
+
+  /* ===== Semantic — Surface / Content ===== */
+  --color-background: #fafaf5;
+  --color-foreground: #171d19;
+  --color-surface: #fffbff;
+  --color-surface-secondary: #dee4de;
+  --color-surface-variant: #dee4de;
+  --color-surface-dark: #171d19;
+  --color-on-surface: #171d19;
+  --color-on-surface-muted: #8a938c;
+  --color-content: #171d19;
+  --color-content-muted: #8a938c;
+  --color-content-subtle: #bfc9c1;
+
+  --color-card: #fffbff;
+  --color-card-foreground: #171d19;
+  --color-popover: #fffbff;
+  --color-popover-foreground: #171d19;
+
+  --color-secondary: #dee4de;
+  --color-secondary-foreground: #171d19;
+  --color-muted: #eff1ed;
+  --color-muted-foreground: #8a938c;
+  --color-accent: #d3f4e1;
+  --color-accent-foreground: #005138;
+
+  /* ===== Semantic — Border ===== */
+  --color-border: #bfc9c1;
+  --color-border-strong: #57605b;
+  --color-input: #bfc9c1;
+  --color-ring: #008d63;
+
+  /* ===== Semantic — Error / Destructive ===== */
+  --color-error: #ba1a1a;
+  --color-error-subtle: #ffdad6;
+  --color-on-error: #fffbff;
+  --color-destructive: #ba1a1a;
+  --color-destructive-foreground: #fffbff;
+
+  /* ===== Semantic — Warning ===== */
+  --color-warning: #e06333;
+  --color-warning-subtle: #ffdbcf;
+
+  /* ===== Semantic — Info ===== */
+  --color-info: #244c5b;
+  --color-info-subtle: #c1e9fb;
+
+  /* Auth shell — Figma Login Box #956:5039 */
+  --color-auth-scene: #008d63;
+  --color-auth-panel: #fafaf7;
+  --color-auth-input-bg: #fffbff;
+  --color-auth-input-border: #707973;
+  --color-auth-panel-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+
   --radius: 0.5rem;
 }
 
+/* Dark mode: flip only semantic tokens onto the green scale. */
 .dark {
-  --color-background: hsl(222.2 84% 4.9%);
-  --color-foreground: hsl(210 40% 98%);
-  --color-card: hsl(222.2 84% 4.9%);
-  --color-card-foreground: hsl(210 40% 98%);
-  --color-popover: hsl(222.2 84% 4.9%);
-  --color-popover-foreground: hsl(210 40% 98%);
-  --color-primary: hsl(210 40% 98%);
-  --color-primary-foreground: hsl(222.2 47.4% 11.2%);
-  --color-secondary: hsl(217.2 32.6% 17.5%);
-  --color-secondary-foreground: hsl(210 40% 98%);
-  --color-muted: hsl(217.2 32.6% 17.5%);
-  --color-muted-foreground: hsl(215 20.2% 65.1%);
-  --color-accent: hsl(217.2 32.6% 17.5%);
-  --color-accent-foreground: hsl(210 40% 98%);
-  --color-destructive: hsl(0 62.8% 30.6%);
-  --color-destructive-foreground: hsl(210 40% 98%);
-  --color-border: hsl(217.2 32.6% 17.5%);
-  --color-input: hsl(217.2 32.6% 17.5%);
-  --color-ring: hsl(212.7 26.8% 83.9%);
+  --color-background: #0f1511;
+  --color-foreground: #eff1ed;
+  --color-surface: #171d19;
+  --color-surface-secondary: #2c322e;
+  --color-surface-variant: #2c322e;
+  --color-on-surface: #eff1ed;
+  --color-on-surface-muted: #8a938c;
+  --color-content: #eff1ed;
+  --color-content-muted: #8a938c;
+  --color-content-subtle: #57605b;
+
+  --color-card: #171d19;
+  --color-card-foreground: #eff1ed;
+  --color-popover: #171d19;
+  --color-popover-foreground: #eff1ed;
+
+  --color-primary: #008d63;
+  --color-primary-foreground: #fffbff;
+  --color-primary-hover: #2ea377;
+  --color-primary-subtle: #003825;
+
+  --color-secondary: #2c322e;
+  --color-secondary-foreground: #eff1ed;
+  --color-muted: #2c322e;
+  --color-muted-foreground: #8a938c;
+  --color-accent: #003825;
+  --color-accent-foreground: #a9f2cd;
+
+  --color-border: #404943;
+  --color-border-strong: #8a938c;
+  --color-input: #404943;
+  --color-ring: #008d63;
+
+  --color-error: #de3730;
+  --color-error-subtle: #93000a;
+  --color-destructive: #de3730;
+  --color-destructive-foreground: #fffbff;
+
+  --color-warning: #e06333;
+  --color-warning-subtle: #72351f;
+
+  --color-info: #567c8d;
+  --color-info-subtle: #073543;
+
+  --color-auth-scene: #0f1511;
+  --color-auth-panel: #171d19;
+  --color-auth-input-bg: #171d19;
+  --color-auth-input-border: #404943;
+  --color-auth-panel-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.45);
 }
 
 @layer base {
@@ -52,5 +210,149 @@
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
+  }
+}
+
+@layer utilities {
+  .bg-auth-scene {
+    background-color: var(--color-auth-scene);
+  }
+
+  .bg-auth-panel {
+    background-color: var(--color-auth-panel);
+  }
+
+  .shadow-auth-panel {
+    box-shadow: var(--color-auth-panel-shadow);
+  }
+
+  .auth-form-pattern {
+    opacity: 0.14;
+  }
+
+  .dark .auth-form-pattern {
+    opacity: 0.07;
+  }
+
+  .auth-cube-tile {
+    box-shadow: 0 3px 17px rgba(0, 0, 0, 0.1);
+  }
+
+  .dark .auth-cube-tile {
+    box-shadow: 0 3px 17px rgba(0, 0, 0, 0.4);
+  }
+
+  .auth-cube-lines {
+    opacity: 0.6;
+  }
+
+  .auth-cube-lines--green {
+    opacity: 0.6;
+  }
+
+  .auth-cube-lines--blue {
+    opacity: 0.6;
+  }
+
+  /* Dark maze — light strokes on dark tiles (Figma #632:2351). */
+  .dark .auth-cube-lines--green,
+  .dark .auth-cube-lines--blue {
+    opacity: 0.48;
+    filter: brightness(0) invert(1);
+  }
+
+  .dark .auth-cube-tile--logo .auth-cube-lines--green {
+    opacity: 0.24;
+  }
+
+  .dark .auth-cube-tile--peach .auth-cube-lines--green {
+    opacity: 0.52;
+  }
+
+  .auth-glass-stroke {
+    background-image: linear-gradient(
+      134deg,
+      rgba(255, 255, 255, 0.6) 0%,
+      rgba(255, 255, 255, 0.3) 98%
+    );
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+  }
+
+  .dark .auth-glass-stroke {
+    background-image: linear-gradient(
+      134deg,
+      rgba(64, 73, 67, 0.55) 0%,
+      rgba(44, 50, 46, 0.35) 98%
+    );
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.35);
+  }
+
+  .auth-glass-fill {
+    background-image: linear-gradient(
+      138deg,
+      rgba(255, 255, 255, 0.42) 0%,
+      rgba(255, 255, 255, 0.24) 100%
+    );
+  }
+
+  .dark .auth-glass-fill {
+    background-image: linear-gradient(
+      138deg,
+      rgba(44, 50, 46, 0.72) 0%,
+      rgba(23, 29, 25, 0.55) 100%
+    );
+  }
+
+  .auth-card-grid {
+    position: absolute;
+  }
+
+  .auth-card-slot {
+    position: absolute;
+    width: 224px;
+    height: 224px;
+    z-index: 1;
+    transition:
+      top 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+      left 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  @keyframes auth-card-text {
+    from {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .auth-card-text {
+    animation: auth-card-text 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  @keyframes auth-form-step {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .auth-form-step {
+    animation: auth-form-step 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .auth-card-slot,
+    .auth-card-text,
+    .auth-form-step {
+      animation: none;
+      transition: none;
+    }
   }
 }
