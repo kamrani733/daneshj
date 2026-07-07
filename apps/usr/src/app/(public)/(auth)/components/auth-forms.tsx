@@ -15,6 +15,7 @@ import {
 } from '@auth/api';
 import { SessionLimitPanel } from '@auth/components/session-limit-panel';
 import { establishSession } from '@auth/lib/auth-actions';
+import type { Session } from '@daneshjoam/shared-types';
 import {
   AUTH_ROUTES,
   authFallback,
@@ -57,6 +58,17 @@ function AuthHeading({ children }: { children: React.ReactNode }) {
 function FieldError({ message }: { message: string | null }) {
   if (!message) return null;
   return <p className="text-right text-sm text-error">{message}</p>;
+}
+
+async function finishAuthAndRedirect(
+  session: Session,
+  successPath: string,
+  clearFlow: () => void
+) {
+  await establishSession(session);
+  clearFlow();
+  // Full navigation so middleware/layout see the new httpOnly session cookie.
+  window.location.assign(successPath);
 }
 
 type IdentifierFormProps = {
@@ -253,9 +265,7 @@ export function OtpForm({
       }
 
       if (result.session) {
-        await establishSession(result.session);
-        clearFlow();
-        router.push(successPath);
+        await finishAuthAndRedirect(result.session, successPath, clearFlow);
         return;
       }
 
@@ -354,7 +364,6 @@ type TotpFormProps = {
 export function TotpForm({ successPath = AUTH_ROUTES.dashboard }: TotpFormProps) {
   const t = useTranslations('totp');
   const auth = useTranslations('auth');
-  const router = useRouter();
   const clearFlow = useAuthFlowStore((s) => s.clear);
   const { ready, identifier, sendVerifyContext } = useAuthFlowGuard(
     'login',
@@ -391,9 +400,7 @@ export function TotpForm({ successPath = AUTH_ROUTES.dashboard }: TotpFormProps)
         setError(t('verifyFailed'));
         return;
       }
-      await establishSession(result.session);
-      clearFlow();
-      router.push(successPath);
+      await finishAuthAndRedirect(result.session, successPath, clearFlow);
     } catch {
       setError(t('verifyFailed'));
     }
