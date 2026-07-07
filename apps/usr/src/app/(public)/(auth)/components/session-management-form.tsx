@@ -4,12 +4,26 @@ import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 
 import { MAZE_LINES } from '@/components/auth/auth-scene-assets';
-
-const SESSION_BG = '/images/register/session-bg.png';
-const SESSION_TITLE = '/images/register/session-title.png';
 import {
-  PREVIEW_ACCESS_TOKEN,
-  useDeleteSessionForLimitReachedMutation,
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import {
   useGetSessionsForLimitReachedQuery,
   useInactiveSessionThenGetTokenMutation,
   type AuthPurpose,
@@ -20,15 +34,12 @@ import {
   useAuthFlowStore,
   useOtpCountdown,
   useSessionLimitGuard,
-  type PendingSessionLimit,
 } from '@auth/lib/auth-flow';
 import { AUTH_ROUTES, authFallback } from '@auth/lib/auth-routes';
 
+const SESSION_BG = '/images/register/session-bg.png';
+const SESSION_TITLE = '/images/register/session-title.png';
 const SESSION_LIMIT_WINDOW_SECONDS = 5 * 60;
-
-/** RTL grid template shared by the table header and each session row. */
-const GRID_COLS =
-  'grid grid-cols-[minmax(0,1.2fr)_minmax(0,0.9fr)_minmax(0,1.1fr)_minmax(0,1.2fr)_minmax(0,1.4fr)_minmax(0,0.9fr)] items-center gap-4';
 
 const FA_DIGITS = '۰۱۲۳۴۵۶۷۸۹';
 function toFaDigits(value: string) {
@@ -60,59 +71,6 @@ function formatSessionDate(value: string) {
   }
 }
 
-function ConfirmLogoutDialog({
-  open,
-  pending,
-  onConfirm,
-  onCancel,
-}: {
-  open: boolean;
-  pending: boolean;
-  onConfirm: () => void;
-  onCancel: () => void;
-}) {
-  const t = useTranslations('sessions');
-  if (!open) return null;
-
-  return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-4"
-      role="dialog"
-      aria-modal="true"
-      onClick={onCancel}
-    >
-      <div
-        dir="rtl"
-        onClick={(event) => event.stopPropagation()}
-        className="w-full max-w-sm rounded-2xl bg-[#E3E0DA] p-6 text-right shadow-xl dark:bg-primary-900"
-      >
-        <p className="text-sm font-medium text-green-850 dark:text-primary-50">
-          {t('confirmTitle')}
-        </p>
-        <div className="mt-6 flex items-center gap-3">
-         
-          <button
-            type="button"
-            disabled={pending}
-            onClick={onCancel}
-            className="px-4 py-2 text-sm font-medium text-green-700 transition-colors hover:text-green-850 disabled:opacity-60 dark:text-primary-100"
-          >
-            {t('cancel')}
-          </button>
-          <button
-            type="button"
-            disabled={pending}
-            onClick={onConfirm}
-            className="rounded-full bg-primary-500 px-7 py-2 text-sm font-medium text-white transition-colors hover:bg-primary-600 disabled:opacity-60"
-          >
-            {t('confirm')}
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 function SessionActionCell({
   session,
   disabled,
@@ -126,21 +84,25 @@ function SessionActionCell({
 
   if (session.is_current_session) {
     return (
-      <span className="inline-flex items-center justify-center rounded-full border border-neutral-300 px-4 py-1.5 text-xs font-medium text-neutral-600 dark:border-white/20 dark:text-muted-foreground">
+      <Badge
+        variant="outline"
+        className="h-auto rounded-full border-neutral-300 px-4 py-1.5 text-xs font-medium text-neutral-600"
+      >
         {t('currentSession')}
-      </span>
+      </Badge>
     );
   }
 
   return (
-    <button
+    <Button
       type="button"
+      size="sm"
       disabled={disabled}
       onClick={() => onLogout(session.id)}
-      className="inline-flex items-center justify-center rounded-full bg-warning px-7 py-1.5 text-xs font-medium text-white transition-colors hover:bg-warning-500 disabled:opacity-60"
+      className="h-auto rounded-full bg-warning px-7 py-1.5 text-xs font-medium text-white hover:bg-warning-500"
     >
       {t('logout')}
-    </button>
+    </Button>
   );
 }
 
@@ -157,24 +119,10 @@ export function SessionManagementForm({
   const clearFlow = useAuthFlowStore((s) => s.clear);
   const setPendingSessionLimit = useAuthFlowStore((s) => s.setPendingSessionLimit);
 
-  const { ready, preview, pendingSessionLimit } = useSessionLimitGuard(
+  const { ready, pendingSessionLimit } = useSessionLimitGuard(
     purpose,
     authFallback(purpose)
   );
-
-  const previewPending: PendingSessionLimit = {
-    accessToken: PREVIEW_ACCESS_TOKEN,
-    loginType: 1,
-    identityInfo: {
-      identity_type: 'email',
-      mobile: null,
-      email: 'preview@local',
-      operation: 'LOGIN',
-      redirect_verify_password: false,
-      is_two_step_login: false,
-    },
-  };
-  const pending = pendingSessionLimit ?? (preview ? previewPending : null);
 
   const [deadline] = useState(() => Date.now() + SESSION_LIMIT_WINDOW_SECONDS * 1000);
   const { secondsLeft } = useOtpCountdown(deadline);
@@ -187,10 +135,11 @@ export function SessionManagementForm({
     data: sessions = [],
     isLoading,
     isError,
-    refetch,
-  } = useGetSessionsForLimitReachedQuery(pending?.accessToken ?? null, ready);
+  } = useGetSessionsForLimitReachedQuery(
+    pendingSessionLimit?.accessToken ?? null,
+    ready
+  );
 
-  const deleteMutation = useDeleteSessionForLimitReachedMutation();
   const continueMutation = useInactiveSessionThenGetTokenMutation();
 
   useEffect(() => {
@@ -199,10 +148,9 @@ export function SessionManagementForm({
     }
   }, [ready, secondsLeft, setPendingSessionLimit]);
 
-  if (!ready || !pending) return null;
+  if (!ready || !pendingSessionLimit) return null;
 
-  const activePending = pending;
-  const isPreview = activePending.accessToken === PREVIEW_ACCESS_TOKEN;
+  const pending = pendingSessionLimit;
 
   async function onConfirmLogout() {
     if (confirmId === null) return;
@@ -211,21 +159,11 @@ export function SessionManagementForm({
     setError(null);
     setBusyId(sessionId);
     try {
-      if (isPreview) {
-        await deleteMutation.mutateAsync({
-          accessToken: activePending.accessToken,
-          sessionIds: [sessionId],
-        });
-        await refetch();
-        setConfirmId(null);
-        return;
-      }
-
       const result = await continueMutation.mutateAsync({
-        accessToken: activePending.accessToken,
+        accessToken: pending.accessToken,
         sessionIds: [sessionId],
-        loginType: activePending.loginType,
-        identityInfo: activePending.identityInfo,
+        loginType: pending.loginType,
+        identityInfo: pending.identityInfo,
       });
 
       if (!result.session) {
@@ -237,7 +175,7 @@ export function SessionManagementForm({
       setPendingSessionLimit(null);
       await finishAuthAndRedirect(result.session, successPath, clearFlow);
     } catch {
-      setError(isPreview ? t('removeFailed') : t('continueFailed'));
+      setError(t('continueFailed'));
     } finally {
       setBusyId(null);
     }
@@ -302,61 +240,76 @@ export function SessionManagementForm({
         </ul>
 
         <section className="mt-8">
-          <div
-            className={`${GRID_COLS} rounded-xl bg-[#E3E0DA] px-6 py-3 text-xs font-medium text-green-700 dark:bg-white/5 dark:text-muted-foreground`}
-          >
-            {columns.map((label) => (
-              <span key={label} className="truncate text-start">
-                {label}
-              </span>
-            ))}
-          </div>
+          <Table className="border-separate border-spacing-y-3">
+            <TableHeader>
+              <TableRow className="border-0 bg-[#E3E0DA] hover:bg-[#E3E0DA] dark:bg-white/5">
+                {columns.map((label, index) => (
+                  <TableHead
+                    key={label}
+                    className={`h-auto px-6 py-3 text-start text-xs font-medium text-green-700 dark:text-muted-foreground ${
+                      index === 0 ? 'rounded-s-xl' : ''
+                    } ${index === columns.length - 1 ? 'rounded-e-xl' : ''}`}
+                  >
+                    {label}
+                  </TableHead>
+                ))}
+              </TableRow>
+            </TableHeader>
 
-          <div className="mt-3 space-y-3">
-            {isLoading && (
-              <p className="py-6 text-center text-sm text-muted-foreground">
-                {t('loading')}
-              </p>
-            )}
+            <TableBody>
+              {isLoading && (
+                <TableRow className="border-0 hover:bg-transparent">
+                  <TableCell colSpan={6} className="py-6 text-center text-sm text-muted-foreground">
+                    {t('loading')}
+                  </TableCell>
+                </TableRow>
+              )}
 
-            {isError && (
-              <p className="py-6 text-center text-sm text-error">{t('loadFailed')}</p>
-            )}
+              {isError && (
+                <TableRow className="border-0 hover:bg-transparent">
+                  <TableCell colSpan={6} className="py-6 text-center text-sm text-error">
+                    {t('loadFailed')}
+                  </TableCell>
+                </TableRow>
+              )}
 
-            {!isLoading && !isError && sessions.length === 0 && (
-              <p className="py-6 text-center text-sm text-muted-foreground">
-                {t('empty')}
-              </p>
-            )}
+              {!isLoading && !isError && sessions.length === 0 && (
+                <TableRow className="border-0 hover:bg-transparent">
+                  <TableCell colSpan={6} className="py-6 text-center text-sm text-muted-foreground">
+                    {t('empty')}
+                  </TableCell>
+                </TableRow>
+              )}
 
-            {sessions.map((session) => (
-              <div
-                key={session.id}
-                className={`${GRID_COLS} rounded-xl border border-green-400 bg-surface px-6 py-4 text-sm text-green-850 dark:border-white/10 dark:bg-white/5 dark:text-foreground`}
-              >
-                <span className="truncate text-start" dir="ltr">
-                  {session.device}
-                </span>
-                <span className="truncate text-start" dir="ltr">
-                  {session.browser}
-                </span>
-                <span className="truncate text-start" dir="ltr">
-                  {session.ip_address}
-                </span>
-                <span className="truncate text-start">{session.os}</span>
-                <span className="truncate text-start">
-                  {formatSessionDate(session.create_time)}
-                </span>
-                <span className="text-start">
-                  <SessionActionCell
-                    session={session}
-                    disabled={busyId === session.id}
-                    onLogout={setConfirmId}
-                  />
-                </span>
-              </div>
-            ))}
-          </div>
+              {sessions.map((session) => (
+                <TableRow
+                  key={session.id}
+                  className="border border-green-400 bg-surface hover:bg-surface dark:border-white/10 dark:bg-white/5"
+                >
+                  <TableCell className="rounded-s-xl px-6 py-4 text-start" dir="ltr">
+                    {session.device}
+                  </TableCell>
+                  <TableCell className="px-6 py-4 text-start" dir="ltr">
+                    {session.browser}
+                  </TableCell>
+                  <TableCell className="px-6 py-4 text-start" dir="ltr">
+                    {session.ip_address}
+                  </TableCell>
+                  <TableCell className="px-6 py-4 text-start">{session.os}</TableCell>
+                  <TableCell className="px-6 py-4 text-start">
+                    {formatSessionDate(session.create_time)}
+                  </TableCell>
+                  <TableCell className="rounded-e-xl px-6 py-4 text-start">
+                    <SessionActionCell
+                      session={session}
+                      disabled={busyId === session.id}
+                      onLogout={setConfirmId}
+                    />
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
 
           {error && <p className="mt-4 text-center text-sm text-error">{error}</p>}
         </section>
@@ -370,12 +323,41 @@ export function SessionManagementForm({
         className="h-14 w-full shrink-0 select-none object-cover object-bottom"
       />
 
-      <ConfirmLogoutDialog
+      <AlertDialog
         open={confirmId !== null}
-        pending={busyId !== null}
-        onConfirm={onConfirmLogout}
-        onCancel={() => setConfirmId(null)}
-      />
+        onOpenChange={(open) => {
+          if (!open) setConfirmId(null);
+        }}
+      >
+        <AlertDialogContent
+          dir="rtl"
+          className="max-w-sm rounded-2xl border-0 bg-[#E3E0DA] p-6 text-right shadow-xl ring-0 dark:bg-primary-900"
+        >
+          <AlertDialogHeader className="place-items-start text-right sm:text-right">
+            <AlertDialogTitle className="text-sm font-medium text-green-850 dark:text-primary-50">
+              {t('confirmTitle')}
+            </AlertDialogTitle>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="mt-2 flex-row justify-start gap-3 border-0 bg-transparent p-0 sm:justify-start">
+            <AlertDialogCancel
+              variant="ghost"
+              className="h-auto border-0 bg-transparent px-4 py-2 text-sm font-medium text-green-700 shadow-none hover:bg-transparent hover:text-green-850 dark:text-primary-100"
+            >
+              {t('cancel')}
+            </AlertDialogCancel>
+            <AlertDialogAction
+              disabled={busyId !== null}
+              className="h-auto rounded-full bg-primary-500 px-7 py-2 text-sm font-medium hover:bg-primary-600"
+              onClick={(event) => {
+                event.preventDefault();
+                void onConfirmLogout();
+              }}
+            >
+              {t('confirm')}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

@@ -174,29 +174,21 @@ export function useSessionLimitGuard(kind: AuthFlowKind, fallback: string) {
   const identifier = useAuthFlowStore((s) => s.identifier);
   const pendingSessionLimit = useAuthFlowStore((s) => s.pendingSessionLimit);
   const [hydrated, setHydrated] = useState(false);
-  // Dev-only design preview: /login/sessions?preview=1 skips the flow guard.
-  const [preview] = useState(
-    () =>
-      typeof window !== 'undefined' &&
-      new URLSearchParams(window.location.search).get('preview') === '1'
-  );
 
   useEffect(() => setHydrated(true), []);
 
   useEffect(() => {
-    if (!hydrated || preview) return;
+    if (!hydrated) return;
     const invalid =
       !identifier || flowKind !== kind || !pendingSessionLimit;
     if (invalid) router.replace(fallback);
-  }, [hydrated, preview, identifier, flowKind, pendingSessionLimit, kind, fallback, router]);
+  }, [hydrated, identifier, flowKind, pendingSessionLimit, kind, fallback, router]);
 
   const ready =
-    hydrated &&
-    (preview || (!!identifier && flowKind === kind && !!pendingSessionLimit));
+    hydrated && !!identifier && flowKind === kind && !!pendingSessionLimit;
 
   return {
     ready,
-    preview,
     identifier: identifier ?? '',
     pendingSessionLimit,
   };

@@ -3,11 +3,7 @@ import { withMockFallback } from '@daneshjoam/api-client';
 import { usrHttpClient } from '@/shared/api/usr-http';
 import { USR_ACTOR_TYPE } from './constants';
 import {
-  deletePreviewSessions,
-  getPreviewSessions,
   isAuthApiMocked,
-  isPreviewAccessToken,
-  isSessionPreviewMode,
   mockRefreshToken,
   mockSendVerifyCode,
   mockSessions,
@@ -212,10 +208,6 @@ export async function getSessions(
 export async function getSessionsForLimitReached(
   accessToken: string
 ): Promise<SessionData[]> {
-  if (isPreviewAccessToken(accessToken)) {
-    return getPreviewSessions();
-  }
-
   if (isAuthApiMocked()) {
     return withMockFallback(
       async () =>
@@ -238,11 +230,6 @@ export async function getSessionsForLimitReached(
 export async function deleteSessionForLimitReached(
   payload: DeleteSessionForLimitReachedPayload
 ): Promise<void> {
-  if (isPreviewAccessToken(payload.accessToken)) {
-    deletePreviewSessions(payload.sessionIds);
-    return;
-  }
-
   if (isAuthApiMocked()) return;
 
   await patchAuth<null>(
@@ -277,10 +264,10 @@ export async function deleteSession(
 export async function inactiveSessionThenGetToken(
   payload: InactiveSessionThenGetTokenPayload
 ): Promise<VerifyCodeResponse> {
-  if (isSessionPreviewMode(payload.accessToken)) {
+  if (isAuthApiMocked()) {
     return mockVerifyCode({
       identity:
-        payload.identityInfo.email ?? payload.identityInfo.mobile ?? 'preview@local',
+        payload.identityInfo.email ?? payload.identityInfo.mobile ?? 'mock@local',
       code: '',
       operation: payload.identityInfo.operation,
       codeType: 'OTP',

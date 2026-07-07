@@ -7,18 +7,8 @@ import type {
   VerifyCodeResponse,
 } from './types';
 
-export const PREVIEW_ACCESS_TOKEN = 'preview-token';
-
 export function isAuthApiMocked() {
   return !process.env.NEXT_PUBLIC_API_URL;
-}
-
-export function isPreviewAccessToken(accessToken: string) {
-  return accessToken === PREVIEW_ACCESS_TOKEN;
-}
-
-export function isSessionPreviewMode(accessToken: string) {
-  return isAuthApiMocked() || isPreviewAccessToken(accessToken);
 }
 
 function createMockSessionsForLimitReached(): SessionData[] {
@@ -80,21 +70,6 @@ function createMockSessionsForLimitReached(): SessionData[] {
       is_current_session: false,
     },
   ];
-}
-
-let previewSessions = createMockSessionsForLimitReached();
-
-export function getPreviewSessions(): SessionData[] {
-  return [...previewSessions];
-}
-
-export function deletePreviewSessions(sessionIds: number[]) {
-  const ids = new Set(sessionIds);
-  previewSessions = previewSessions.filter((session) => !ids.has(session.id));
-}
-
-export function resetPreviewSessions() {
-  previewSessions = createMockSessionsForLimitReached();
 }
 
 export function mockSendVerifyCode(

@@ -12,7 +12,6 @@ export {
   verifyOtp,
 } from './auth';
 export { USR_ACTOR_TYPE, USR_LOGIN_SOURCE, MAX_ACTIVE_SESSIONS } from './constants';
-export { PREVIEW_ACCESS_TOKEN, isPreviewAccessToken } from './mock';
 export {
   useDeleteSessionForLimitReachedMutation,
   useDeleteSessionMutation,
