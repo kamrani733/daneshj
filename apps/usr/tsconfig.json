@@ -6,11 +6,7 @@
     "emitDeclarationOnly": false,
     "esModuleInterop": true,
     "resolveJsonModule": true,
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
@@ -21,16 +17,15 @@
       }
     ],
     "paths": {
-      "@/*": [
-        "./src/*"
-      ]
+      "@/*": ["./src/*"],
+      "@auth/*": ["./src/app/(public)/(auth)/*"],
+      "@daneshjoam/api-client": ["../../libs/api-client/src/index.ts"],
+      "@daneshjoam/auth": ["../../libs/auth/src/index.ts"],
+      "@daneshjoam/shared-types": ["../../libs/shared-types/src/index.ts"],
+      "@daneshjoam/shared-ui": ["../../libs/shared-ui/src/index.ts"]
     },
-    "types": [
-      "jest",
-      "node"
-    ],
+    "types": ["jest", "node"],
     "outDir": "dist",
-    "rootDir": "src",
     "tsBuildInfoFile": "dist/tsconfig.tsbuildinfo"
   },
   "include": [
@@ -38,6 +33,7 @@
     "src/**/*.tsx",
     "src/**/*.js",
     "src/**/*.jsx",
+    "messages/**/*.json",
     "../../apps/usr/.next/types/**/*.ts",
     "../../dist/apps/usr/.next/types/**/*.ts",
     "next-env.d.ts"
@@ -54,5 +50,19 @@
     "eslint.config.js",
     "eslint.config.cjs",
     "eslint.config.mjs"
+  ],
+  "references": [
+    {
+      "path": "../../libs/shared-ui"
+    },
+    {
+      "path": "../../libs/shared-types"
+    },
+    {
+      "path": "../../libs/auth"
+    },
+    {
+      "path": "../../libs/api-client"
+    }
   ]
 }

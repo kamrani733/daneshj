@@ -1,24 +1,39 @@
-import type { Metadata } from "next";
-import "./globals.css";
-import { Geist } from "next/font/google";
-import { cn } from "@/lib/utils";
+import type { Metadata } from 'next';
+import localFont from 'next/font/local';
+import { NextIntlClientProvider } from 'next-intl';
+import { getMessages } from 'next-intl/server';
+import { QueryProvider } from '@daneshjoam/shared-ui';
+import { ThemeProvider } from '@/components/theme-provider';
+import { cn } from '@/lib/utils';
+import './globals.css';
 
-const geist = Geist({subsets:['latin'],variable:'--font-sans'});
+const iranSans = localFont({
+  src: '../../public/fonts/IRANSansXVF.ttf',
+  variable: '--font-iran-sans',
+  display: 'swap',
+  weight: '100 900',
+});
 
 export const metadata: Metadata = {
-  title: "Daneshjo",
-  description: "Daneshjo App",
+  title: 'Daneshjo',
+  description: 'Daneshjo App',
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const messages = await getMessages();
+
   return (
-    <html lang="fa" dir="rtl" className={cn("font-sans", geist.variable)}>
+    <html lang="fa" dir="rtl" className={cn('font-sans', iranSans.variable)} suppressHydrationWarning>
       <body className="antialiased">
-        {children}
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+          <NextIntlClientProvider messages={messages}>
+            <QueryProvider>{children}</QueryProvider>
+          </NextIntlClientProvider>
+        </ThemeProvider>
       </body>
     </html>
   );
