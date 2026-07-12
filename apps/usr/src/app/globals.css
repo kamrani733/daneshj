@@ -147,6 +147,17 @@
   --color-auth-input-border: #707973;
   --color-auth-panel-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
 
+  /* Home — Figma Private panel #1:8903 */
+  --color-home-scene: #fafaf7;
+  --color-home-header: #fafaf5;
+  --color-home-search-fill: #f8f8f0;
+  --color-home-search-category: #efede6;
+  --color-home-hero: #1a6d61;
+  --color-home-carousel-inactive: #e3e0da;
+  --shadow-home-elevation-1: 0 1px 3px 1px rgba(0, 0, 0, 0.15), 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+  --shadow-home-elevation-3: 0 1px 3px 0 rgba(0, 0, 0, 0.3), 0 4px 8px 3px rgba(0, 0, 0, 0.15);
+  --shadow-home-elevation-4: 0 2px 3px 0 rgba(0, 0, 0, 0.3), 0 6px 10px 4px rgba(0, 0, 0, 0.15);
+
   --radius: 0.5rem;
 }
 
@@ -201,6 +212,16 @@
   --color-auth-input-bg: #171d19;
   --color-auth-input-border: #404943;
   --color-auth-panel-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.45);
+
+  --color-home-scene: #0f1511;
+  --color-home-header: #353b37;
+  --color-home-search-fill: #171d19;
+  --color-home-search-category: #2c322e;
+  --color-home-hero: #003825;
+  --color-home-carousel-inactive: #404943;
+  --shadow-home-elevation-1: 0 1px 3px 1px rgba(0, 0, 0, 0.35), 0 1px 2px 0 rgba(0, 0, 0, 0.45);
+  --shadow-home-elevation-3: 0 1px 3px 0 rgba(0, 0, 0, 0.45), 0 4px 8px 3px rgba(0, 0, 0, 0.35);
+  --shadow-home-elevation-4: 0 2px 3px 0 rgba(0, 0, 0, 0.45), 0 6px 10px 4px rgba(0, 0, 0, 0.35);
 }
 
 @layer base {
@@ -354,5 +375,49 @@
       animation: none;
       transition: none;
     }
+  }
+
+  .bg-home-scene {
+    background-color: var(--color-home-scene);
+  }
+
+  .bg-home-header {
+    background-color: var(--color-home-header);
+  }
+
+  .bg-home-search-fill {
+    background-color: var(--color-home-search-fill);
+  }
+
+  .bg-home-search-category {
+    background-color: var(--color-home-search-category);
+  }
+
+  .bg-home-hero {
+    background-color: var(--color-home-hero);
+  }
+
+  .bg-home-carousel-inactive {
+    background-color: var(--color-home-carousel-inactive);
+  }
+
+  .shadow-home-elevation-1 {
+    box-shadow: var(--shadow-home-elevation-1);
+  }
+
+  .shadow-home-elevation-3 {
+    box-shadow: var(--shadow-home-elevation-3);
+  }
+
+  .shadow-home-elevation-4 {
+    box-shadow: var(--shadow-home-elevation-4);
+  }
+
+  .home-bg-pattern {
+    opacity: 0.4;
+  }
+
+  .dark .home-bg-pattern {
+    opacity: 0.16;
   }
 }
