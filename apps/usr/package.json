@@ -2,6 +2,9 @@
   "name": "@daneshjoam/usr",
   "version": "0.0.1",
   "private": true,
+  "scripts": {
+    "vercel-build": "next build"
+  },
   "dependencies": {
     "@daneshjoam/api-client": "workspace:*",
     "@daneshjoam/auth": "workspace:*",
