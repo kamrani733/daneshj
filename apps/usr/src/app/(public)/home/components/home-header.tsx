@@ -15,6 +15,7 @@ import {
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
+import { AUTH_ROUTES } from '@auth/lib/auth-routes';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -76,7 +77,7 @@ export function HomeHeader() {
 
           <div className="flex items-center gap-3">
             <NotificationButton count={3} label={t('notifications')} />
-            <IconButton label={t('profile')} icon={UserRound} />
+            <IconButton label={t('profile')} icon={UserRound} href={AUTH_ROUTES.login} />
             <ThemeToggle />
           </div>
         </div>
@@ -108,7 +109,7 @@ export function HomeHeader() {
         </Link>
 
         <div className="flex items-center gap-2">
-          <IconButton label={t('profile')} icon={UserRound} size="sm" />
+          <IconButton label={t('profile')} icon={UserRound} href={AUTH_ROUTES.login} size="sm" />
           <NotificationButton count={3} label={t('notifications')} size="sm" />
         </div>
       </div>
@@ -141,19 +142,26 @@ export function HomeHeader() {
 type IconButtonProps = {
   label: string;
   icon: typeof UserRound;
+  href?: string;
   size?: 'sm' | 'md';
 };
 
-function IconButton({ label, icon: Icon, size = 'md' }: IconButtonProps) {
+function IconButton({ label, icon: Icon, href, size = 'md' }: IconButtonProps) {
+  const className = cn(
+    'inline-flex items-center justify-center rounded-full text-content transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30',
+    size === 'sm' ? 'size-10' : 'size-14'
+  );
+
+  if (href) {
+    return (
+      <Link href={href} aria-label={label} className={className}>
+        <Icon className={size === 'sm' ? 'size-5' : 'size-8'} />
+      </Link>
+    );
+  }
+
   return (
-    <button
-      type="button"
-      aria-label={label}
-      className={cn(
-        'inline-flex items-center justify-center rounded-full text-content transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30',
-        size === 'sm' ? 'size-10' : 'size-14'
-      )}
-    >
+    <button type="button" aria-label={label} className={className}>
       <Icon className={size === 'sm' ? 'size-5' : 'size-8'} />
     </button>
   );
