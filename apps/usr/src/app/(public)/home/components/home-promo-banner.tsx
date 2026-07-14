@@ -127,7 +127,7 @@ export function HomePromoBanner() {
       <div className="relative min-[834px]:h-[342px]">
         <article
           className={cn(
-            'relative hidden h-[300px] rounded-3xl shadow-home-elevation-3 min-[834px]:block',
+            'relative hidden h-[300px] overflow-hidden rounded-3xl shadow-home-elevation-3 min-[834px]:block',
             styles.surface
           )}
         >

@@ -38,11 +38,11 @@ export async function HomeIntroduction() {
       >
         <IntroSidePattern
           side="left"
-          className="pointer-events-none absolute start-0 top-1/2 h-[505px] w-[390px] max-w-[30%] -translate-y-1/2 object-contain object-left"
+          className="pointer-events-none absolute left-0 top-1/2 h-[505px] w-[390px] max-w-[30%] -translate-y-1/2 object-contain object-left"
         />
         <IntroSidePattern
           side="right"
-          className="pointer-events-none absolute end-0 top-1/2 h-[505px] w-[390px] max-w-[30%] -translate-y-1/2 object-contain object-right"
+          className="pointer-events-none absolute right-0 top-1/2 h-[505px] w-[390px] max-w-[30%] -translate-y-1/2 object-contain object-right"
         />
 
         <div
@@ -66,11 +66,11 @@ export async function HomeIntroduction() {
       <div className="relative flex min-h-[255px] items-center justify-center min-[834px]:hidden" dir="ltr">
         <IntroSidePattern
           side="left"
-          className="pointer-events-none absolute start-0 top-1/2 h-[255px] w-[197px] -translate-y-1/2 object-contain object-left"
+          className="pointer-events-none absolute left-0 top-1/2 h-[255px] w-[197px] -translate-y-1/2 object-contain object-left"
         />
         <IntroSidePattern
           side="right"
-          className="pointer-events-none absolute end-0 top-1/2 h-[255px] w-[197px] -translate-y-1/2 object-contain object-right"
+          className="pointer-events-none absolute right-0 top-1/2 h-[255px] w-[197px] -translate-y-1/2 object-contain object-right"
         />
 
         <p

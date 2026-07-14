@@ -11,13 +11,16 @@ import { HOME_IMAGES } from '../home-assets';
 
 const SLIDE_COUNT = 3;
 
-/** Figma Main Banner — 1312×480 desktop / 393×242 mobile, radius 24/16px. */
+/** Figma Main Banner #5847:169282 — 1312×480, text at x=876 y=130 w=372, dots y=452. */
 export function HomeHeroBanner() {
   const t = useTranslations('home.hero');
   const [activeSlide, setActiveSlide] = useState(0);
 
   return (
-    <section className="relative w-full overflow-hidden rounded-2xl bg-home-hero shadow-home-elevation-4 min-[834px]:h-[480px] min-[834px]:rounded-3xl">
+    <section
+      dir="ltr"
+      className="relative w-full overflow-hidden rounded-2xl bg-home-hero shadow-home-elevation-4 min-[834px]:h-[480px] min-[834px]:rounded-3xl"
+    >
       <Image
         src={HOME_IMAGES.heroBg}
         alt=""
@@ -27,19 +30,17 @@ export function HomeHeroBanner() {
         className="object-cover object-center opacity-90"
       />
 
-      <div className="relative z-10 flex min-h-[242px] flex-col items-start justify-center gap-4 px-6 py-8 text-right min-[834px]:absolute min-[834px]:start-[64px] min-[834px]:top-1/2 min-[834px]:min-h-0 min-[834px]:w-[372px] min-[834px]:-translate-y-1/2 min-[834px]:gap-12 min-[834px]:px-0 min-[834px]:py-0">
-        <h1 className="text-2xl font-bold leading-10 text-neutral-white min-[834px]:text-[28px]">
+      <div
+        dir="rtl"
+        className="relative z-10 flex min-h-[242px] flex-col items-end justify-center gap-4 px-6 py-8 text-right min-[834px]:absolute min-[834px]:right-[64px] min-[834px]:top-[130px] min-[834px]:min-h-0 min-[834px]:w-[372px] min-[834px]:gap-12 min-[834px]:px-0 min-[834px]:py-0"
+      >
+        <h1 className="w-full text-[28px] font-bold leading-10 text-neutral-white">
           {t('brand')}
         </h1>
-        <p
-          className={cn(
-            lalezar.className,
-            'text-lg leading-7 text-neutral-white min-[834px]:text-[28px] min-[834px]:leading-7'
-          )}
-        >
+        <p className={cn(lalezar.className, 'w-full text-[28px] leading-7 text-neutral-white')}>
           {t('tagline')}
         </p>
-        <p className={cn(lalezar.className, 'text-base leading-7 text-neutral-white min-[834px]:text-xl')}>
+        <p className={cn(lalezar.className, 'w-full text-xl leading-7 text-neutral-white')}>
           {t('description')}
         </p>
       </div>
@@ -48,7 +49,7 @@ export function HomeHeroBanner() {
         count={SLIDE_COUNT}
         activeIndex={activeSlide}
         onSelect={setActiveSlide}
-        className="relative z-10 mx-auto mb-4 min-[834px]:absolute min-[834px]:bottom-7 min-[834px]:start-1/2 min-[834px]:mb-0 min-[834px]:-translate-x-1/2"
+        className="relative z-10 mx-auto mb-4 min-[834px]:absolute min-[834px]:left-1/2 min-[834px]:top-[452px] min-[834px]:mb-0 min-[834px]:-translate-x-1/2"
       />
     </section>
   );
