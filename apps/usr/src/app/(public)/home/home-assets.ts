@@ -11,4 +11,7 @@ export const HOME_IMAGES = {
   promoDecor: '/images/home/promo-decor.svg',
   footerDeco1: '/images/home/footer-deco-1.png',
   footerDeco2: '/images/home/footer-deco-2.png',
+  socialX: '/images/home/simple-icons_x.png',
+  socialLinkedIn: '/images/home/akar-icons_linkedin-fill.png',
+  socialInstagram: '/images/home/mdi_instagram.png',
 } as const;

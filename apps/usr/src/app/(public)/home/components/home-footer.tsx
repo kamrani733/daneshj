@@ -60,9 +60,9 @@ export async function HomeFooter() {
               {t('description')}
             </p>
             <div className="flex items-center gap-7 pt-2">
-              <SocialIcon label="X" />
-              <SocialIcon label="LinkedIn" />
-              <SocialIcon label="Instagram" />
+              <SocialIcon label="X" src={HOME_IMAGES.socialX} />
+              <SocialIcon label="LinkedIn" src={HOME_IMAGES.socialLinkedIn} />
+              <SocialIcon label="Instagram" src={HOME_IMAGES.socialInstagram} />
             </div>
           </div>
 
@@ -110,13 +110,14 @@ export async function HomeFooter() {
   );
 }
 
-function SocialIcon({ label }: { label: string }) {
+function SocialIcon({ label, src }: { label: string; src: string }) {
   return (
-    <span
+    <Link
+      href="#"
       aria-label={label}
-      className="inline-flex size-10 items-center justify-center rounded-full border border-border text-xs font-bold text-content-muted"
+      className="inline-flex size-11 items-center justify-center transition-opacity hover:opacity-80"
     >
-      {label[0]}
-    </span>
+      <Image src={src} alt="" width={43} height={43} aria-hidden className="size-11 object-contain" />
+    </Link>
   );
 }
