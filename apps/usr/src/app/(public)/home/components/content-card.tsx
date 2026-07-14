@@ -37,21 +37,25 @@ export function ContentCard({
     <article
       className={cn(
         'flex shrink-0 flex-col items-end overflow-hidden rounded-[12px] bg-home-header shadow-home-elevation-1',
-        isDiscount ? 'w-[260px] min-[834px]:w-[320px]' : 'w-[260px] min-[834px]:w-[344px]',
+        isDiscount ? 'w-[280px] shrink-0' : 'w-[260px] min-[834px]:w-[344px]',
         className
       )}
     >
       <div
         className={cn(
           'relative w-full overflow-hidden',
-          isDiscount ? 'h-[153px] min-[834px]:h-[188px]' : 'h-[153px]'
+          isDiscount ? 'h-[188px]' : 'h-[153px]'
         )}
       >
         <Image
           src={imageSrc}
           alt={imageAlt}
           fill
-          sizes={isDiscount ? '(max-width: 834px) 260px, 320px' : '(max-width: 834px) 260px, 344px'}
+          sizes={
+            isDiscount
+              ? '(max-width: 834px) 280px, (max-width: 1279px) 50vw, 320px'
+              : '(max-width: 834px) 260px, 344px'
+          }
           className="object-cover"
         />
         {badge ? (

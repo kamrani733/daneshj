@@ -46,7 +46,7 @@ export function ThemeToggle({ className }: ThemeToggleProps) {
       <span
         className={cn(
           'flex size-[18px] items-center justify-center rounded-full bg-[#3d4443] text-white shadow-sm transition-transform duration-200',
-          isDark ? 'translate-x-[-15px]' : 'translate-x-0'
+          isDark ? 'translate-x-[15px]' : 'translate-x-0'
         )}
       >
         {isDark ? (

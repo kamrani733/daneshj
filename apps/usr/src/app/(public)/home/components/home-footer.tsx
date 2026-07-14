@@ -23,8 +23,8 @@ export async function HomeFooter() {
 
       <div className="relative mx-auto w-full max-w-[1512px] px-4 py-10 min-[834px]:px-12 min-[1512px]:px-12">
         <div className="flex flex-col gap-10 min-[834px]:flex-row min-[834px]:items-start min-[834px]:justify-between">
-          {/* Logo group — start (right) */}
-          <div className="flex flex-col items-center gap-8 min-[834px]:w-[330px] min-[834px]:items-center">
+          {/* Logo group — inline-start (right) */}
+          <div className="flex flex-col items-center gap-8 text-center min-[834px]:w-[330px]">
             <Image
               src={HOME_IMAGES.logo}
               alt={t('logoAlt')}
@@ -66,8 +66,8 @@ export async function HomeFooter() {
             </div>
           </div>
 
-          {/* Quick access — end (left) */}
-          <div className="flex w-full flex-col items-center gap-4 min-[834px]:w-[240px] min-[834px]:items-center">
+          {/* Quick access — inline-end (left) */}
+          <div className="flex w-full flex-col items-center gap-4 text-center min-[834px]:w-[240px]">
             <h3 className="text-[28px] font-bold leading-10 text-content-muted">{t('quickAccess')}</h3>
             <span aria-hidden className="h-px w-full max-w-[208px] bg-border" />
             <div className="flex flex-col items-center gap-1">
@@ -87,10 +87,13 @@ export async function HomeFooter() {
 
       <div className="relative border-t border-border">
         <div className="mx-auto flex w-full max-w-[1512px] flex-col gap-4 px-4 py-4 min-[834px]:flex-row min-[834px]:items-center min-[834px]:justify-between min-[834px]:px-12 min-[1512px]:px-12">
-          <p className="text-base font-bold leading-6 tracking-[0.0094em] text-content-muted">
+          <p className="text-end text-base font-bold leading-6 tracking-[0.0094em] text-content-muted min-[834px]:text-start">
             {t('copyright')}
           </p>
-          <nav className="flex flex-wrap items-center justify-end gap-[18px]" aria-label={t('legalNav')}>
+          <nav
+            className="flex flex-wrap items-center justify-start gap-[18px] min-[834px]:justify-end"
+            aria-label={t('legalNav')}
+          >
             {FOOTER_LEGAL_LINKS.map((key) => (
               <Link
                 key={key}

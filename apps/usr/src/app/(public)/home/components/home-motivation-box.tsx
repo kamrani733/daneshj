@@ -23,7 +23,7 @@ export async function HomeMotivationBox() {
       <div className="absolute inset-0 bg-primary/20 dark:bg-primary/40" aria-hidden />
 
       <div className="relative z-10 mx-auto flex max-w-[360px] flex-col items-center gap-6 px-6 py-12 text-center min-[834px]:max-w-[560px] min-[834px]:py-12 min-[1512px]:max-w-[360px] min-[1512px]:px-0">
-        <p className="text-base font-bold leading-6 tracking-[0.0094em] text-background">
+        <p className="text-base font-bold leading-6 tracking-[0.0094em] text-neutral-white">
           {t('body')}
         </p>
         <Button

@@ -5,6 +5,8 @@ export const HOME_IMAGES = {
   logo: '/logo.svg',
   bgPattern: '/images/home/bg-pattern.svg',
   introPattern: '/images/home/intro-pattern.svg',
+  introPatternLeft: '/images/home/intro-pattern-left.svg',
+  introPatternRight: '/images/home/intro-pattern-right.svg',
   sectionTitleAccent: '/images/home/section-title-accent.svg',
   promoDecor: '/images/home/promo-decor.svg',
   footerDeco1: '/images/home/footer-deco-1.png',

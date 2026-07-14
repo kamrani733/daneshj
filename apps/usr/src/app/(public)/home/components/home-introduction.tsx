@@ -1,52 +1,84 @@
 import Image from 'next/image';
 import { getTranslations } from 'next-intl/server';
 
-import { cn } from '@/lib/utils';
-
 import { HOME_IMAGES } from '../home-assets';
 
-/** Figma main introduction box — 1312px, border 2px warning-subtle, radius 24px. */
+function IntroSidePattern({
+  side,
+  className,
+}: {
+  side: 'left' | 'right';
+  className?: string;
+}) {
+  const src =
+    side === 'left' ? HOME_IMAGES.introPatternLeft : HOME_IMAGES.introPatternRight;
+
+  return (
+    <Image
+      src={src}
+      alt=""
+      width={390}
+      height={505}
+      aria-hidden
+      className={className}
+    />
+  );
+}
+
+/** Figma main introduction box #1:8987 — 1312×auto desktop, patterns 390×505. */
 export async function HomeIntroduction() {
   const t = await getTranslations('home.intro');
 
   return (
-    <section className="w-full rounded-2xl border border-warning-subtle bg-surface min-[834px]:rounded-3xl min-[834px]:border-2">
-      <div className="relative flex items-center overflow-hidden px-2 py-6 min-[834px]:px-8 min-[834px]:py-10">
-        <Image
-          src={HOME_IMAGES.introPattern}
-          alt=""
-          width={195}
-          height={253}
-          aria-hidden
-          className="hidden h-auto w-[120px] shrink-0 object-contain min-[834px]:block min-[834px]:w-[195px]"
+    <section className="w-full overflow-hidden rounded-xl border border-warning-subtle bg-home-header min-[834px]:rounded-3xl min-[834px]:border-2 min-[834px]:bg-surface">
+      {/* Desktop / tablet — row, space-between, center column 1078px */}
+      <div
+        className="relative hidden min-h-[280px] items-center justify-center min-[834px]:flex"
+        dir="ltr"
+      >
+        <IntroSidePattern
+          side="left"
+          className="pointer-events-none absolute start-0 top-1/2 h-[505px] w-[390px] max-w-[30%] -translate-y-1/2 object-contain object-left"
+        />
+        <IntroSidePattern
+          side="right"
+          className="pointer-events-none absolute end-0 top-1/2 h-[505px] w-[390px] max-w-[30%] -translate-y-1/2 object-contain object-right"
         />
 
-        <div className="relative z-10 flex flex-1 flex-col items-center gap-2 px-4 min-[834px]:max-w-[982px] min-[834px]:gap-2">
+        <div
+          dir="rtl"
+          className="relative z-10 flex w-full max-w-[1078px] flex-col items-center gap-2 px-8 py-10"
+        >
           <Image
             src={HOME_IMAGES.logo}
             alt={t('logoAlt')}
             width={159}
             height={63}
-            className="hidden h-[63px] w-[159px] object-contain min-[834px]:block"
+            className="h-[63px] w-[159px] object-contain"
           />
-          <p
-            className={cn(
-              'text-center font-bold text-content',
-              'text-[10px] leading-6 min-[834px]:text-2xl min-[834px]:leading-[52px]'
-            )}
-          >
+          <p className="max-w-[982px] text-center text-2xl font-bold leading-[52px] text-content">
             {t('body')}
           </p>
         </div>
+      </div>
 
-        <Image
-          src={HOME_IMAGES.introPattern}
-          alt=""
-          width={195}
-          height={253}
-          aria-hidden
-          className="hidden h-auto w-[120px] shrink-0 scale-x-[-1] object-contain min-[834px]:block min-[834px]:w-[195px]"
+      {/* Mobile — patterns 197×255, text 10/24 centered, no logo */}
+      <div className="relative flex min-h-[255px] items-center justify-center min-[834px]:hidden" dir="ltr">
+        <IntroSidePattern
+          side="left"
+          className="pointer-events-none absolute start-0 top-1/2 h-[255px] w-[197px] -translate-y-1/2 object-contain object-left"
         />
+        <IntroSidePattern
+          side="right"
+          className="pointer-events-none absolute end-0 top-1/2 h-[255px] w-[197px] -translate-y-1/2 object-contain object-right"
+        />
+
+        <p
+          dir="rtl"
+          className="relative z-10 max-w-[256px] px-4 text-center text-[10px] font-bold leading-6 text-content"
+        >
+          {t('body')}
+        </p>
       </div>
     </section>
   );

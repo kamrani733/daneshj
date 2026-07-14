@@ -23,9 +23,9 @@ import { cn } from '@/lib/utils';
 import { HOME_IMAGES } from '../home-assets';
 
 const NAV_LINKS = [
-  { key: 'contact', icon: Headphones },
-  { key: 'services', icon: Grid3X3 },
   { key: 'cooperation', icon: Users },
+  { key: 'services', icon: Grid3X3 },
+  { key: 'contact', icon: Headphones },
 ] as const;
 
 export function HomeHeader() {
@@ -70,32 +70,26 @@ export function HomeHeader() {
             />
             <input
               type="search"
+              dir="rtl"
               placeholder={t('searchPlaceholder')}
-              className="h-14 w-full rounded-[28px] border border-border bg-home-search-fill pe-4 ps-12 text-base leading-6 tracking-[0.0094em] text-content outline-none placeholder:text-content-muted focus-visible:ring-2 focus-visible:ring-primary/30"
+              className="h-14 w-full rounded-[28px] border border-border bg-home-search-fill pe-12 ps-4 text-end text-base leading-6 tracking-[0.0094em] text-content outline-none placeholder:text-content-muted focus-visible:ring-2 focus-visible:ring-primary/30"
             />
           </label>
 
           <div className="flex items-center gap-3">
-            <NotificationButton count={3} label={t('notifications')} />
-            <IconButton label={t('profile')} icon={UserRound} href={AUTH_ROUTES.login} />
             <ThemeToggle />
+            <IconButton label={t('profile')} icon={UserRound} href={AUTH_ROUTES.login} />
+            <NotificationButton count={3} label={t('notifications')} />
           </div>
         </div>
       </div>
 
-      {/* Mobile — Figma Mobile Header: padding 4px 16px */}
+      {/* Mobile — Figma: actions (start/right) | logo (center) | menu (end/left) */}
       <div className="flex items-center justify-between gap-3 px-4 py-1 min-[834px]:hidden">
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon"
-          className="size-10 shrink-0 rounded-full"
-          aria-expanded={mobileOpen}
-          aria-label={t('menu')}
-          onClick={() => setMobileOpen((open) => !open)}
-        >
-          <Menu className="size-6" />
-        </Button>
+        <div className="flex items-center gap-2">
+          <IconButton label={t('profile')} icon={UserRound} href={AUTH_ROUTES.login} size="sm" />
+          <NotificationButton count={3} label={t('notifications')} size="sm" />
+        </div>
 
         <Link href="/" className="shrink-0">
           <Image
@@ -108,10 +102,17 @@ export function HomeHeader() {
           />
         </Link>
 
-        <div className="flex items-center gap-2">
-          <IconButton label={t('profile')} icon={UserRound} href={AUTH_ROUTES.login} size="sm" />
-          <NotificationButton count={3} label={t('notifications')} size="sm" />
-        </div>
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          className="size-10 shrink-0 rounded-full"
+          aria-expanded={mobileOpen}
+          aria-label={t('menu')}
+          onClick={() => setMobileOpen((open) => !open)}
+        >
+          <Menu className="size-6" />
+        </Button>
       </div>
 
       {mobileOpen ? (
@@ -206,8 +207,9 @@ export function HomeSearchCategoryBar() {
         />
         <input
           type="search"
+          dir="rtl"
           placeholder={t('placeholder')}
-          className="h-14 w-full rounded-s-[28px] border border-border bg-home-search-category pe-4 ps-12 text-base leading-6 tracking-[0.0094em] text-content outline-none placeholder:text-content-muted focus-visible:ring-2 focus-visible:ring-primary/30"
+          className="h-14 w-full rounded-s-[28px] border border-border bg-home-search-category pe-12 ps-4 text-end text-base leading-6 tracking-[0.0094em] text-content outline-none placeholder:text-content-muted focus-visible:ring-2 focus-visible:ring-primary/30"
         />
       </label>
       <button

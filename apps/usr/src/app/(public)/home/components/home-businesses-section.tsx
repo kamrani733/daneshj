@@ -11,13 +11,13 @@ export async function HomeBusinessesSection() {
 
   return (
     <section className="flex flex-col gap-4">
-      <SectionTitle title={t('title')} className="self-end" />
+      <SectionTitle title={t('title')} className="self-start" />
 
       <div className="flex justify-center">
         <ViewAllLink label={t('viewAll')} />
       </div>
 
-      <div className="-mx-4 flex gap-4 overflow-x-auto px-4 pb-2 [scrollbar-width:thin] min-[834px]:mx-0 min-[834px]:px-0">
+      <div className="-mx-4 flex flex-row-reverse gap-4 overflow-x-auto px-4 pb-2 [scrollbar-width:thin] min-[834px]:mx-0 min-[834px]:px-0">
         {BUSINESS_ITEMS.map((item) => (
           <ContentCard
             key={item.id}

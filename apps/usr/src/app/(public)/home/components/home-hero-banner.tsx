@@ -27,7 +27,7 @@ export function HomeHeroBanner() {
         className="object-cover object-center opacity-90"
       />
 
-      <div className="relative z-10 flex min-h-[242px] flex-col items-end justify-center gap-4 px-6 py-8 text-end min-[834px]:absolute min-[834px]:end-[64px] min-[834px]:top-1/2 min-[834px]:min-h-0 min-[834px]:w-[372px] min-[834px]:-translate-y-1/2 min-[834px]:gap-12 min-[834px]:px-0 min-[834px]:py-0">
+      <div className="relative z-10 flex min-h-[242px] flex-col items-start justify-center gap-4 px-6 py-8 text-right min-[834px]:absolute min-[834px]:start-[64px] min-[834px]:top-1/2 min-[834px]:min-h-0 min-[834px]:w-[372px] min-[834px]:-translate-y-1/2 min-[834px]:gap-12 min-[834px]:px-0 min-[834px]:py-0">
         <h1 className="text-2xl font-bold leading-10 text-neutral-white min-[834px]:text-[28px]">
           {t('brand')}
         </h1>

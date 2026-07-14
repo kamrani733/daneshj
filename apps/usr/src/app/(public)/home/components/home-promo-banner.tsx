@@ -12,111 +12,189 @@ import { HOME_IMAGES } from '../home-assets';
 import { CarouselDots } from './home-hero-banner';
 import { SectionTitle } from './section-title';
 
-const TONE_CLASS: Record<PromoSlide['tone'], string> = {
-  primary: 'bg-primary-subtle text-accent-foreground',
-  invite: 'bg-info-100 text-info',
-  reward: 'bg-warning-subtle text-content',
+type SlideStyle = {
+  surface: string;
+  text: string;
+  action: string;
 };
 
-/** Figma Banner — inner 1312×300 desktop, radius 24px, elevation-3. */
+const SLIDE_STYLES: Record<PromoSlide['tone'], SlideStyle> = {
+  primary: {
+    surface: 'bg-primary-subtle',
+    text: 'text-accent-foreground',
+    action: 'bg-accent-foreground text-primary-foreground',
+  },
+  invite: {
+    surface: 'bg-info-100',
+    text: 'text-info',
+    action: 'bg-info text-primary-foreground',
+  },
+  reward: {
+    surface: 'bg-warning-subtle',
+    text: 'text-warning-700',
+    action: 'bg-warning-700 text-primary-foreground',
+  },
+};
+
+function PromoSplitButton({
+  label,
+  nextLabel,
+  actionClass,
+  onNext,
+  className,
+}: {
+  label: string;
+  nextLabel: string;
+  actionClass: string;
+  onNext?: () => void;
+  className?: string;
+}) {
+  return (
+    <div className={cn('inline-flex h-12 gap-0.5', className)}>
+      <button
+        type="button"
+        className={cn(
+          'inline-flex items-center justify-center rounded-s-2xl rounded-e-sm px-4 text-sm font-medium leading-5 tracking-[0.0071em]',
+          actionClass
+        )}
+      >
+        {label}
+      </button>
+      <button
+        type="button"
+        aria-label={nextLabel}
+        onClick={onNext}
+        className={cn(
+          'inline-flex w-12 items-center justify-center rounded-e-2xl rounded-s-sm',
+          actionClass
+        )}
+      >
+        <ChevronLeft className="size-5" />
+      </button>
+    </div>
+  );
+}
+
+function PromoSlideDecor({ className }: { className?: string }) {
+  return (
+    <>
+      <Image
+        src={HOME_IMAGES.promoDecor}
+        alt=""
+        width={570}
+        height={395}
+        aria-hidden
+        className={cn(
+          'pointer-events-none absolute start-0 bottom-0 h-[250px] w-[min(96%,346px)] object-contain object-bottom min-[834px]:-top-[95px] min-[834px]:h-[395px] min-[834px]:w-[570px]',
+          className
+        )}
+      />
+      <Image
+        src={HOME_IMAGES.bgPattern}
+        alt=""
+        width={516}
+        height={258}
+        aria-hidden
+        className="pointer-events-none absolute end-0 top-[42px] hidden h-[258px] w-[min(40%,516px)] object-contain object-right min-[834px]:block"
+      />
+    </>
+  );
+}
+
+/** Figma Banner #1:9072 — 1312×342 desktop (slide 300px + dots), 361×405 mobile cards. */
 export function HomePromoBanner() {
   const t = useTranslations('home');
   const [activeIndex, setActiveIndex] = useState(0);
   const slide = PROMO_SLIDES[activeIndex];
+  const styles = SLIDE_STYLES[slide.tone];
 
   const goPrev = () => setActiveIndex((index) => (index === 0 ? PROMO_SLIDES.length - 1 : index - 1));
   const goNext = () => setActiveIndex((index) => (index === PROMO_SLIDES.length - 1 ? 0 : index + 1));
 
   return (
     <section className="flex flex-col gap-4">
-      <SectionTitle title={t('promo.sectionTitle')} className="self-end" />
+      <SectionTitle title={t('promo.sectionTitle')} className="self-start" />
 
-      <div className="relative pb-10">
+      <div className="relative min-[834px]:h-[342px]">
         {/* Desktop carousel */}
         <article
           className={cn(
-            'relative hidden min-h-[300px] overflow-hidden rounded-3xl shadow-home-elevation-3 min-[834px]:block',
-            TONE_CLASS[slide.tone]
+            'relative hidden h-[300px] overflow-hidden rounded-3xl shadow-home-elevation-3 min-[834px]:block',
+            styles.surface
           )}
         >
-          <Image
-            src={HOME_IMAGES.promoDecor}
-            alt=""
-            width={595}
-            height={399}
-            aria-hidden
-            className="pointer-events-none absolute bottom-0 start-0 opacity-40"
-          />
+          <PromoSlideDecor className="opacity-60 min-[834px]:opacity-100" />
 
-          <div className="relative z-10 flex flex-col items-end gap-6 px-6 py-9 min-[834px]:ms-auto min-[834px]:max-w-[612px] min-[834px]:pe-[123px] min-[834px]:pt-9">
-            <p className="w-full text-justify text-xl font-bold leading-[52px] tracking-normal">
+          <div className="relative z-10 flex h-full flex-col items-end justify-center gap-6 ps-[123px] pe-[577px]">
+            <p
+              className={cn(
+                'w-full max-w-[612px] text-justify text-xl font-bold leading-[52px]',
+                styles.text
+              )}
+            >
               {t(slide.body)}
             </p>
 
-            <div className="inline-flex h-12 overflow-hidden">
-              <button
-                type="button"
-                className="inline-flex items-center justify-center rounded-s-2xl rounded-ee-sm bg-primary px-4 text-sm font-medium leading-5 tracking-[0.0071em] text-primary-foreground"
-              >
-                {t(slide.cta)}
-              </button>
-              <button
-                type="button"
-                aria-label={t('promo.next')}
-                className="inline-flex w-12 items-center justify-center rounded-ee-2xl rounded-es-sm bg-primary text-primary-foreground"
-              >
-                <ChevronLeft className="size-5" />
-              </button>
-            </div>
+            <PromoSplitButton
+              label={t(slide.cta)}
+              nextLabel={t('promo.next')}
+              actionClass={styles.action}
+              onNext={goNext}
+            />
           </div>
+
+          <button
+            type="button"
+            aria-label={t('promo.prev')}
+            onClick={goPrev}
+            className="absolute top-[130px] start-4 z-20 flex size-10 items-center justify-center rounded-full bg-primary/30 shadow-[0_4px_4px_rgba(0,0,0,0.25)] backdrop-blur"
+          >
+            <ChevronRight className="size-5 text-content" />
+          </button>
+          <button
+            type="button"
+            aria-label={t('promo.next')}
+            onClick={goNext}
+            className="absolute top-[130px] end-4 z-20 flex size-10 items-center justify-center rounded-full bg-primary/30 shadow-[0_4px_4px_rgba(0,0,0,0.25)] backdrop-blur"
+          >
+            <ChevronLeft className="size-5 text-content" />
+          </button>
         </article>
 
-        {/* Mobile horizontal banners */}
-        <div className="-mx-4 flex gap-4 overflow-x-auto px-4 pb-2 [scrollbar-width:none] min-[834px]:hidden">
-          {PROMO_SLIDES.map((promoSlide) => (
-            <article
-              key={promoSlide.id}
-              className={cn(
-                'flex h-[405px] w-[min(100%,340px)] shrink-0 flex-col justify-between overflow-hidden rounded-3xl p-6 shadow-home-elevation-3',
-                TONE_CLASS[promoSlide.tone]
-              )}
-            >
-              <p className="text-justify text-base font-bold leading-[52px]">{t(promoSlide.body)}</p>
-              <div className="inline-flex h-12 self-end overflow-hidden rounded-2xl">
-                <button
-                  type="button"
-                  className="inline-flex items-center justify-center bg-primary px-4 text-sm font-medium text-primary-foreground"
-                >
-                  {t(promoSlide.cta)}
-                </button>
-                <button
-                  type="button"
-                  aria-label={t('promo.next')}
-                  className="inline-flex w-12 items-center justify-center bg-primary text-primary-foreground"
-                >
-                  <ChevronLeft className="size-5" />
-                </button>
-              </div>
-            </article>
-          ))}
-        </div>
+        {/* Mobile horizontal banners — 361×405, gap 12px */}
+        <div className="-mx-4 flex flex-row-reverse gap-3 overflow-x-auto px-4 pb-2 [scrollbar-width:none] min-[834px]:hidden">
+          {PROMO_SLIDES.map((promoSlide) => {
+            const mobileStyles = SLIDE_STYLES[promoSlide.tone];
 
-        <button
-          type="button"
-          aria-label={t('promo.prev')}
-          onClick={goPrev}
-          className="absolute top-[130px] start-4 hidden size-10 items-center justify-center rounded-full bg-primary/30 shadow-[0_4px_4px_rgba(0,0,0,0.25)] backdrop-blur min-[834px]:flex"
-        >
-          <ChevronRight className="size-5 text-content" />
-        </button>
-        <button
-          type="button"
-          aria-label={t('promo.next')}
-          onClick={goNext}
-          className="absolute top-[130px] end-4 hidden size-10 items-center justify-center rounded-full bg-primary/30 shadow-[0_4px_4px_rgba(0,0,0,0.25)] backdrop-blur min-[834px]:flex"
-        >
-          <ChevronLeft className="size-5 text-content" />
-        </button>
+            return (
+              <article
+                key={promoSlide.id}
+                className={cn(
+                  'relative flex h-[405px] w-[361px] max-w-[calc(100%-2rem)] shrink-0 flex-col overflow-hidden rounded-3xl shadow-home-elevation-3',
+                  mobileStyles.surface
+                )}
+              >
+                <PromoSlideDecor className="opacity-60" />
+
+                <p
+                  className={cn(
+                    'relative z-10 p-6 text-justify text-base font-bold leading-[52px]',
+                    mobileStyles.text
+                  )}
+                >
+                  {t(promoSlide.body)}
+                </p>
+
+                <PromoSplitButton
+                  label={t(promoSlide.cta)}
+                  nextLabel={t('promo.next')}
+                  actionClass={mobileStyles.action}
+                  className="relative z-10 mb-6 me-4 mt-auto self-end"
+                />
+              </article>
+            );
+          })}
+        </div>
 
         <CarouselDots
           count={PROMO_SLIDES.length}

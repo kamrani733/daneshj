@@ -17,7 +17,7 @@ const HomeFooter = dynamic(() => import('./components/home-footer').then((mod) =
 /** Figma Private panel #1:8903 — desktop 1512px, tablet 834px, mobile 390px. */
 export function HomePage() {
   return (
-    <div className="relative min-h-screen bg-home-scene">
+    <div className="relative min-h-screen bg-home-scene" dir="rtl">
       <HomeHeader />
       <HomeBgPattern />
 
