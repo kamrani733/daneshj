@@ -16,34 +16,6 @@ export type BusinessItem = {
   imageSrc: string;
 };
 
-export type PromoSlide = {
-  id: string;
-  body: string;
-  cta: string;
-  tone: 'primary' | 'invite' | 'reward';
-};
-
-export const PROMO_SLIDES: PromoSlide[] = [
-  {
-    id: '1',
-    tone: 'primary',
-    body: 'promo.slide1.body',
-    cta: 'promo.cta',
-  },
-  {
-    id: '2',
-    tone: 'invite',
-    body: 'promo.slide2.body',
-    cta: 'promo.cta',
-  },
-  {
-    id: '3',
-    tone: 'reward',
-    body: 'promo.slide3.body',
-    cta: 'promo.cta',
-  },
-];
-
 export const DISCOUNT_ITEMS: DiscountItem[] = Array.from({ length: 8 }, (_, index) => ({
   id: `discount-${index + 1}`,
   title: 'home.discounts.cardTitle',

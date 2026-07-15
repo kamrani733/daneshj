@@ -1,5 +1,8 @@
 export const HOME_IMAGES = {
   heroBg: '/images/home/hero-bg.png',
+  heroBg1: '/images/home/hero-bg-1.png',
+  heroBg2: '/images/home/hero-bg-2.png',
+  heroBg3: '/images/home/hero-bg-3.png',
   motivationBg: '/images/home/motivation-bg.png',
   discountCard: '/images/home/discount-card.png',
   logo: '/logo.svg',
@@ -8,7 +11,11 @@ export const HOME_IMAGES = {
   introPatternLeft: '/images/home/intro-pattern-left.svg',
   introPatternRight: '/images/home/intro-pattern-right.svg',
   sectionTitleAccent: '/images/home/section-title-accent.svg',
+  /** Promo Banner1/2/3 illustrations — Figma #1:10556 / #1:10695 / #1:10850 */
   promoDecor: '/images/home/promo-decor.svg',
+  promoDecor1: '/images/home/promo-decor-1.svg',
+  promoDecor2: '/images/home/promo-decor-2.svg',
+  promoDecor3: '/images/home/promo-decor-3.svg',
   footerDeco1: '/images/home/footer-deco-1.png',
   footerDeco2: '/images/home/footer-deco-2.png',
   socialX: '/images/home/simple-icons_x.png',
