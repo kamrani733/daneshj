@@ -86,7 +86,7 @@ export function ContentCard({
         </h3>
 
         {subtitle ? (
-          <p className="w-full text-end text-sm font-medium leading-5 tracking-[0.0071em] text-content-muted">
+          <p className="w-full text-end text-xs font-bold leading-4 tracking-[0.0083em] text-content-muted">
             {subtitle}
           </p>
         ) : null}

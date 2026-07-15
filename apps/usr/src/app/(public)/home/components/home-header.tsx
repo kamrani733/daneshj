@@ -18,7 +18,6 @@ import { useRef, useState } from 'react';
 
 import { AUTH_ROUTES } from '@auth/lib/auth-routes';
 import { ThemeToggle } from '@/components/theme-toggle';
-import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
 import { NAV_MENUS } from '../data/home-menu-data';
@@ -47,35 +46,30 @@ export function HomeHeader() {
 
   return (
     <header className="sticky top-0 z-50 bg-home-header shadow-home-elevation-1">
-      {/* Mobile — Figma Mobile Header: actions | logo | search + menu */}
+      {/* Mobile — Figma Mobile Header #1:3603: avatar/notif | logo | search + menu */}
       <div
         dir="ltr"
-        className="grid grid-cols-[1fr_auto_1fr] items-center px-4 py-1 min-[834px]:hidden"
+        className="flex h-12 items-center justify-between px-4 py-1 min-[834px]:hidden"
       >
         <HeaderIconGroup
           profileLabel={t('profile')}
           notificationsLabel={t('notifications')}
-          className="justify-self-start"
         />
-        <HeaderLogo alt={t('logoAlt')} size="compact" className="justify-self-center" />
+        <HeaderLogo alt={t('logoAlt')} size="compact" />
         <HeaderSearchMenuGroup
           searchLabel={t('searchPlaceholder')}
           menuLabel={t('menu')}
           menuOpen={mobileOpen}
           onMenuToggle={() => setMobileOpen((open) => !open)}
-          className="justify-self-end"
         />
       </div>
 
-      {/* Tablet — Figma Tablet Header: actions | search + menu | logo */}
+      {/* Tablet — Figma Tablet Header #1:13029: avatar/notif | search + menu | logo */}
       <div
         dir="ltr"
-        className="hidden items-center justify-between gap-3 px-4 py-1 min-[834px]:flex lg:hidden"
+        className="hidden h-12 items-center justify-between px-4 py-1 min-[834px]:flex lg:hidden"
       >
-        <div className="flex items-center gap-2">
-          <ThemeToggle />
-          <HeaderIconGroup profileLabel={t('profile')} notificationsLabel={t('notifications')} />
-        </div>
+        <HeaderIconGroup profileLabel={t('profile')} notificationsLabel={t('notifications')} />
         <HeaderSearchMenuGroup
           searchLabel={t('searchPlaceholder')}
           menuLabel={t('menu')}
@@ -166,7 +160,7 @@ type HeaderIconGroupProps = {
 
 function HeaderIconGroup({ profileLabel, notificationsLabel, className }: HeaderIconGroupProps) {
   return (
-    <div className={cn('flex items-center gap-2', className)}>
+    <div className={cn('flex shrink-0 items-center gap-2', className)}>
       <IconButton label={profileLabel} icon={UserRound} href={AUTH_ROUTES.login} size="sm" />
       <NotificationButton count={3} label={notificationsLabel} size="sm" />
     </div>
@@ -181,6 +175,7 @@ type HeaderSearchMenuGroupProps = {
   className?: string;
 };
 
+/** Figma: filled 40×40 search pill + plain 40×40 menu icon, gap 10px */
 function HeaderSearchMenuGroup({
   searchLabel,
   menuLabel,
@@ -189,25 +184,23 @@ function HeaderSearchMenuGroup({
   className,
 }: HeaderSearchMenuGroupProps) {
   return (
-    <div className={cn('flex items-center gap-2.5', className)}>
+    <div className={cn('flex shrink-0 items-center gap-2.5', className)}>
       <button
         type="button"
         aria-label={searchLabel}
-        className="inline-flex size-10 shrink-0 items-center justify-center rounded-full bg-home-search-category text-content transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
+        className="inline-flex size-10 shrink-0 items-center justify-center rounded-full bg-home-search-category text-content transition-colors hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
       >
-        <Search className="size-5" aria-hidden />
+        <Search className="size-[23px]" strokeWidth={1.75} aria-hidden />
       </button>
-      <Button
+      <button
         type="button"
-        variant="ghost"
-        size="icon"
-        className="size-10 shrink-0 rounded-full"
+        className="inline-flex size-10 shrink-0 items-center justify-center text-content transition-colors hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
         aria-expanded={menuOpen}
         aria-label={menuLabel}
         onClick={onMenuToggle}
       >
-        <Menu className="size-6" />
-      </Button>
+        <Menu className="size-6" strokeWidth={2} aria-hidden />
+      </button>
     </div>
   );
 }
@@ -331,21 +324,22 @@ type IconButtonProps = {
 
 function IconButton({ label, icon: Icon, href, size = 'md' }: IconButtonProps) {
   const className = cn(
-    'inline-flex items-center justify-center rounded-full bg-home-search-category text-content transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30',
+    'inline-flex items-center justify-center rounded-full bg-home-search-category text-content transition-colors hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30',
     size === 'sm' ? 'size-10' : 'size-14'
   );
+  const iconClass = size === 'sm' ? 'size-[23px]' : 'size-8';
 
   if (href) {
     return (
       <Link href={href} aria-label={label} className={className}>
-        <Icon className={size === 'sm' ? 'size-5' : 'size-8'} />
+        <Icon className={iconClass} strokeWidth={1.75} />
       </Link>
     );
   }
 
   return (
     <button type="button" aria-label={label} className={className}>
-      <Icon className={size === 'sm' ? 'size-5' : 'size-8'} />
+      <Icon className={iconClass} strokeWidth={1.75} />
     </button>
   );
 }
@@ -362,11 +356,11 @@ function NotificationButton({ count, label, size = 'md' }: NotificationButtonPro
       type="button"
       aria-label={label}
       className={cn(
-        'relative inline-flex items-center justify-center rounded-full bg-home-search-category text-content transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30',
+        'relative inline-flex items-center justify-center rounded-full bg-home-search-category text-content transition-colors hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30',
         size === 'sm' ? 'size-10' : 'size-14'
       )}
     >
-      <Bell className={size === 'sm' ? 'size-5' : 'size-8'} />
+      <Bell className={size === 'sm' ? 'size-[23px]' : 'size-8'} strokeWidth={1.75} />
       {count > 0 ? (
         <span className="absolute -left-0.5 -top-0.5 flex min-h-4 min-w-4 items-center justify-center rounded-full bg-destructive px-1 text-[11px] font-medium leading-4 tracking-[0.0091em] text-primary-foreground">
           {count}

@@ -32,15 +32,28 @@ export function HomeHeroBanner() {
 
       <div
         dir="rtl"
-        className="relative z-10 flex min-h-[242px] flex-col items-end justify-center gap-4 px-6 py-8 text-right min-[834px]:absolute min-[834px]:right-[64px] min-[834px]:top-[130px] min-[834px]:min-h-0 min-[834px]:w-[372px] min-[834px]:gap-12 min-[834px]:px-0 min-[834px]:py-0"
+        className={cn(
+          'relative z-10 mx-auto flex min-h-[242px] w-full max-w-[259px] flex-col items-end justify-center gap-3 px-1 py-8 text-right',
+          'min-[834px]:absolute min-[834px]:right-[64px] min-[834px]:top-[130px] min-[834px]:mx-0 min-[834px]:min-h-0 min-[834px]:max-w-none min-[834px]:w-[372px] min-[834px]:gap-12 min-[834px]:px-0 min-[834px]:py-0'
+        )}
       >
-        <h1 className="w-full text-[28px] font-bold leading-10 text-neutral-white">
+        <h1 className="w-full text-base font-bold leading-6 tracking-[0.0094em] text-neutral-white min-[834px]:text-[28px] min-[834px]:leading-10 min-[834px]:tracking-normal">
           {t('brand')}
         </h1>
-        <p className={cn(lalezar.className, 'w-full text-[28px] leading-7 text-neutral-white')}>
+        <p
+          className={cn(
+            lalezar.className,
+            'w-full text-base leading-5 text-neutral-white min-[834px]:text-[28px] min-[834px]:leading-7'
+          )}
+        >
           {t('tagline')}
         </p>
-        <p className={cn(lalezar.className, 'w-full text-xl leading-7 text-neutral-white')}>
+        <p
+          className={cn(
+            lalezar.className,
+            'w-full max-w-[239px] text-sm leading-5 text-neutral-white min-[834px]:max-w-none min-[834px]:text-xl min-[834px]:leading-7'
+          )}
+        >
           {t('description')}
         </p>
       </div>
