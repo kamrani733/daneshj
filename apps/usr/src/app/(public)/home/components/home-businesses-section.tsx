@@ -29,7 +29,7 @@ export async function HomeBusinessesSection() {
       <div className="flex w-full flex-col gap-4">
         <ViewAllLink label={t('viewAll')} className="hidden self-end px-2 min-[834px]:inline-flex" />
 
-        <div className="relative left-1/2 flex w-screen max-w-[1512px] -translate-x-1/2 flex-row-reverse gap-4 overflow-x-auto pb-2 [scrollbar-width:thin] min-[834px]:gap-0">
+        <div className="-mx-4 flex flex-row-reverse gap-4 overflow-x-auto px-4 pb-2 [scrollbar-width:thin] min-[834px]:mx-0 min-[834px]:px-0">
           {BUSINESS_ITEMS.map((item) => (
             <ContentCard
               key={item.id}

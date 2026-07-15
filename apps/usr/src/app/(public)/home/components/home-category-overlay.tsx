@@ -136,7 +136,7 @@ export function CategoryMenuDropdown({ open, onClose, containerRef }: CategoryMe
   if (!open) return null;
 
   return (
-    <div dir="rtl" className="absolute right-0 top-[calc(100%+4px)] z-[60] hidden min-[834px]:block">
+    <div dir="rtl" className="absolute right-0 top-[calc(100%+4px)] z-[80] hidden min-[834px]:block">
       <HomeMenuPanel items={CATEGORY_MENU_ITEMS} onNavigate={onClose} />
     </div>
   );

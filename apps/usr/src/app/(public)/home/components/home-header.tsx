@@ -47,19 +47,54 @@ export function HomeHeader() {
 
   return (
     <header className="sticky top-0 z-50 bg-home-header shadow-home-elevation-1">
-      {/* Desktop / tablet — Figma Top Navigation Bar #28:1410 */}
+      {/* Mobile — Figma Mobile Header: actions | logo | search + menu */}
       <div
         dir="ltr"
-        className="mx-auto hidden h-[88px] w-full max-w-[1512px] items-center justify-between px-4 py-4 min-[834px]:flex min-[834px]:px-12"
+        className="grid grid-cols-[1fr_auto_1fr] items-center px-4 py-1 min-[834px]:hidden"
       >
-        <div className="flex items-center gap-8">
-          <div className="flex items-center gap-3">
+        <HeaderIconGroup
+          profileLabel={t('profile')}
+          notificationsLabel={t('notifications')}
+          className="justify-self-start"
+        />
+        <HeaderLogo alt={t('logoAlt')} size="compact" className="justify-self-center" />
+        <HeaderSearchMenuGroup
+          searchLabel={t('searchPlaceholder')}
+          menuLabel={t('menu')}
+          menuOpen={mobileOpen}
+          onMenuToggle={() => setMobileOpen((open) => !open)}
+          className="justify-self-end"
+        />
+      </div>
+
+      {/* Tablet — Figma Tablet Header: actions | search + menu | logo */}
+      <div
+        dir="ltr"
+        className="hidden items-center justify-between gap-3 px-4 py-1 min-[834px]:flex lg:hidden"
+      >
+        <HeaderIconGroup profileLabel={t('profile')} notificationsLabel={t('notifications')} />
+        <HeaderSearchMenuGroup
+          searchLabel={t('searchPlaceholder')}
+          menuLabel={t('menu')}
+          menuOpen={mobileOpen}
+          onMenuToggle={() => setMobileOpen((open) => !open)}
+        />
+        <HeaderLogo alt={t('logoAlt')} size="compact" />
+      </div>
+
+      {/* Desktop — full nav from laptop widths (lg / 1024px+) */}
+      <div
+        dir="ltr"
+        className="mx-auto hidden h-[88px] w-full max-w-[1512px] min-w-0 items-center justify-between gap-3 px-6 py-4 lg:flex min-[1280px]:gap-4 min-[1280px]:px-12"
+      >
+        <div className="flex min-w-0 flex-1 items-center gap-4 min-[1280px]:gap-8">
+          <div className="flex shrink-0 items-center gap-3">
             <ThemeToggle />
             <IconButton label={t('profile')} icon={UserRound} href={AUTH_ROUTES.login} />
             <NotificationButton count={3} label={t('notifications')} />
           </div>
 
-          <label className="relative block h-14 w-[420px] shrink-0">
+          <label className="relative block h-14 w-full max-w-[420px] min-w-0">
             <span className="sr-only">{t('searchPlaceholder')}</span>
             <Search
               className="pointer-events-none absolute right-4 top-1/2 size-6 -translate-y-1/2 text-content-muted"
@@ -74,7 +109,7 @@ export function HomeHeader() {
           </label>
         </div>
 
-        <nav className="flex items-center gap-1" aria-label={t('mainNav')}>
+        <nav className="flex shrink-0 items-center gap-0.5 min-[1280px]:gap-1" aria-label={t('mainNav')}>
           {NAV_LINKS.map(({ key, icon: Icon, menuKey }) => (
             <NavMenuItem
               key={key}
@@ -86,54 +121,91 @@ export function HomeHeader() {
               items={NAV_MENUS[menuKey]}
             />
           ))}
-          <Link href="/" className="ms-1 shrink-0">
-            <Image
-              src={HOME_IMAGES.logo}
-              alt={t('logoAlt')}
-              width={142}
-              height={56}
-              priority
-              className="h-14 w-[142px] object-contain"
-            />
-          </Link>
+          <HeaderLogo alt={t('logoAlt')} size="desktop" className="ms-1" />
         </nav>
-      </div>
-
-      {/* Mobile — Figma Mobile Header */}
-      <div dir="ltr" className="flex items-center justify-between px-4 py-1 min-[834px]:hidden">
-        <div className="flex items-center gap-2">
-          <IconButton label={t('profile')} icon={UserRound} href={AUTH_ROUTES.login} size="sm" />
-          <NotificationButton count={3} label={t('notifications')} size="sm" />
-        </div>
-
-        <Link href="/" className="shrink-0">
-          <Image
-            src={HOME_IMAGES.logo}
-            alt={t('logoAlt')}
-            width={120}
-            height={48}
-            priority
-            className="h-12 w-[120px] object-contain"
-          />
-        </Link>
-
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon"
-          className="size-10 shrink-0 rounded-full"
-          aria-expanded={mobileOpen}
-          aria-label={t('menu')}
-          onClick={() => setMobileOpen((open) => !open)}
-        >
-          <Menu className="size-6" />
-        </Button>
       </div>
 
       {mobileOpen ? (
         <MobileNavDrawer items={NAV_LINKS} onClose={() => setMobileOpen(false)} t={t} />
       ) : null}
     </header>
+  );
+}
+
+type HeaderLogoProps = {
+  alt: string;
+  size: 'compact' | 'desktop';
+  className?: string;
+};
+
+function HeaderLogo({ alt, size, className }: HeaderLogoProps) {
+  const isDesktop = size === 'desktop';
+
+  return (
+    <Link href="/" className={cn('inline-flex shrink-0', className)}>
+      <Image
+        src={HOME_IMAGES.logo}
+        alt={alt}
+        width={isDesktop ? 142 : 98}
+        height={isDesktop ? 56 : 40}
+        priority
+        className={cn('object-contain', isDesktop ? 'h-14 w-[142px]' : 'h-10 w-[98px]')}
+      />
+    </Link>
+  );
+}
+
+type HeaderIconGroupProps = {
+  profileLabel: string;
+  notificationsLabel: string;
+  className?: string;
+};
+
+function HeaderIconGroup({ profileLabel, notificationsLabel, className }: HeaderIconGroupProps) {
+  return (
+    <div className={cn('flex items-center gap-2', className)}>
+      <IconButton label={profileLabel} icon={UserRound} href={AUTH_ROUTES.login} size="sm" />
+      <NotificationButton count={3} label={notificationsLabel} size="sm" />
+    </div>
+  );
+}
+
+type HeaderSearchMenuGroupProps = {
+  searchLabel: string;
+  menuLabel: string;
+  menuOpen: boolean;
+  onMenuToggle: () => void;
+  className?: string;
+};
+
+function HeaderSearchMenuGroup({
+  searchLabel,
+  menuLabel,
+  menuOpen,
+  onMenuToggle,
+  className,
+}: HeaderSearchMenuGroupProps) {
+  return (
+    <div className={cn('flex items-center gap-2.5', className)}>
+      <button
+        type="button"
+        aria-label={searchLabel}
+        className="inline-flex size-10 shrink-0 items-center justify-center rounded-full bg-home-search-category text-content transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
+      >
+        <Search className="size-5" aria-hidden />
+      </button>
+      <Button
+        type="button"
+        variant="ghost"
+        size="icon"
+        className="size-10 shrink-0 rounded-full"
+        aria-expanded={menuOpen}
+        aria-label={menuLabel}
+        onClick={onMenuToggle}
+      >
+        <Menu className="size-6" />
+      </Button>
+    </div>
   );
 }
 
@@ -158,7 +230,7 @@ function NavMenuItem({ label, icon: Icon, open, onToggle, onClose, items }: NavM
         aria-haspopup="menu"
         onClick={onToggle}
         className={cn(
-          'inline-flex h-12 w-[164px] items-center justify-center gap-2 rounded-full px-6 text-base font-medium leading-6 tracking-[0.0094em] text-content-muted transition-colors hover:bg-muted hover:text-content',
+          'inline-flex h-12 min-w-0 items-center justify-center gap-2 rounded-full px-3 text-sm font-medium leading-6 tracking-[0.0094em] text-content-muted transition-colors hover:bg-muted hover:text-content min-[1280px]:px-4 min-[1280px]:text-base min-[1512px]:w-[164px] min-[1512px]:px-6',
           open && 'bg-muted text-content'
         )}
       >
@@ -187,7 +259,7 @@ function MobileNavDrawer({ items, onClose, t }: MobileNavDrawerProps) {
 
   return (
     <nav
-      className="border-t border-border bg-home-header px-4 py-3 min-[834px]:hidden"
+      className="border-t border-border bg-home-header px-4 py-3 lg:hidden"
       aria-label={t('mainNav')}
     >
       <div className="mb-3 flex items-center justify-between">
@@ -315,8 +387,8 @@ export function HomeSearchCategoryBar() {
 
   return (
     <>
-      <div dir="ltr" className="relative mx-auto flex h-14 w-full max-w-[572px]">
-        <label className="relative h-14 w-[420px] shrink-0">
+      <div dir="ltr" className="relative mx-auto flex h-14 w-full max-w-[572px] min-w-0">
+        <label className="relative h-14 min-w-0 flex-1">
           <span className="sr-only">{t('placeholder')}</span>
           <Search
             className="pointer-events-none absolute left-4 top-1/2 size-6 -translate-y-1/2 text-content-muted"
@@ -329,7 +401,7 @@ export function HomeSearchCategoryBar() {
             className="h-14 w-full rounded-l-[28px] rounded-r-none border border-border bg-home-search-category pl-12 pr-5 text-end text-base leading-6 tracking-[0.0094em] text-content outline-none placeholder:text-content-muted focus-visible:ring-2 focus-visible:ring-primary/30"
           />
         </label>
-        <div className="relative" ref={categoryWrapRef}>
+        <div className="relative shrink-0" ref={categoryWrapRef}>
           <button
             type="button"
             dir="rtl"
@@ -345,7 +417,7 @@ export function HomeSearchCategoryBar() {
               setCategoryOpen(false);
             }}
             className={cn(
-              'inline-flex h-14 shrink-0 items-center gap-1 rounded-l-none rounded-r-[100px] bg-primary-subtle px-5 text-base font-medium leading-6 tracking-[0.0094em] text-accent-foreground transition-opacity hover:opacity-90',
+              'inline-flex h-14 shrink-0 items-center gap-1 rounded-l-none rounded-r-[100px] bg-primary-subtle px-3 text-sm font-medium leading-6 tracking-[0.0094em] text-accent-foreground transition-opacity hover:opacity-90 min-[834px]:px-5 min-[834px]:text-base',
               (listOpen || categoryOpen) && 'opacity-90'
             )}
           >

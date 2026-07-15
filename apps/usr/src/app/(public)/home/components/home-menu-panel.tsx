@@ -111,7 +111,7 @@ function HomeMenuRow({
       {hasChildren && open ? (
         <div
           dir="rtl"
-          className="absolute right-full top-0 z-10 me-1"
+          className="absolute right-full top-0 z-[80] me-1"
           role="presentation"
         >
           <HomeMenuPanel
@@ -171,7 +171,7 @@ export function HomeMenuDropdown({
     <div
       dir="rtl"
       className={cn(
-        'absolute top-[calc(100%+4px)] z-[60]',
+        'absolute top-[calc(100%+4px)] z-[80]',
         align === 'end' ? 'right-0' : 'left-0',
         className
       )}
