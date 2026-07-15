@@ -11,7 +11,7 @@ import type { HomeMenuItem } from '../data/home-menu-data';
 type HomeMenuPanelProps = {
   items: HomeMenuItem[];
   className?: string;
-  onNavigate?: () => void;
+  onNavigate?: (label: string) => void;
 };
 
 /** Figma Menu — 280×auto, #EFEDE6, radius 4px, elevation 2, items 56px. */
@@ -45,7 +45,7 @@ function HomeMenuRow({
   onNavigate,
 }: {
   item: HomeMenuItem;
-  onNavigate?: () => void;
+  onNavigate?: (label: string) => void;
 }) {
   const [open, setOpen] = useState(false);
   const rowRef = useRef<HTMLLIElement>(null);
@@ -63,6 +63,8 @@ function HomeMenuRow({
     document.addEventListener('mousedown', handlePointer);
     return () => document.removeEventListener('mousedown', handlePointer);
   }, [open]);
+
+  const select = () => onNavigate?.(item.label.trim());
 
   const content = (
     <>
@@ -83,7 +85,7 @@ function HomeMenuRow({
           href={item.href}
           role="menuitem"
           dir="rtl"
-          onClick={onNavigate}
+          onClick={select}
           className={rowClassName}
         >
           {content}
@@ -100,7 +102,7 @@ function HomeMenuRow({
               setOpen((value) => !value);
               return;
             }
-            onNavigate?.();
+            select();
           }}
           className={rowClassName}
         >
@@ -116,9 +118,9 @@ function HomeMenuRow({
         >
           <HomeMenuPanel
             items={item.children!}
-            onNavigate={() => {
+            onNavigate={(label) => {
               setOpen(false);
-              onNavigate?.();
+              onNavigate?.(label);
             }}
           />
         </div>
@@ -176,7 +178,7 @@ export function HomeMenuDropdown({
         className
       )}
     >
-      <HomeMenuPanel items={items} onNavigate={onClose} />
+      <HomeMenuPanel items={items} onNavigate={() => onClose()} />
     </div>
   );
 }

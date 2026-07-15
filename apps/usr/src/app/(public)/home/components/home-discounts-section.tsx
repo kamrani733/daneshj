@@ -49,7 +49,6 @@ export async function HomeDiscountsSection() {
               variant="discount"
               title={t('cardTitle')}
               subtitle={t('cardSubtitle')}
-              badge={t('cardBadge')}
               imageSrc={item.imageSrc}
               imageAlt={t('cardImageAlt')}
               className="min-[834px]:w-full min-[834px]:max-w-none min-[834px]:shrink"

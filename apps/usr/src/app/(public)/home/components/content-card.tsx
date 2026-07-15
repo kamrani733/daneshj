@@ -87,7 +87,13 @@ export function ContentCard({
           </div>
         ) : null}
 
-        <h3 className="w-full text-end text-base font-bold leading-6 tracking-[0.0094em] text-content">
+        <h3
+          className={cn(
+            'w-full text-end text-base font-bold leading-6 tracking-[0.0094em] text-content',
+            'motion-safe:transition-colors motion-safe:duration-300 motion-safe:ease-out',
+            'group-hover:text-primary'
+          )}
+        >
           {title}
         </h3>
 

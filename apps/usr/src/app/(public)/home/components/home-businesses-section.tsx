@@ -34,11 +34,7 @@ export async function HomeBusinessesSection() {
             <ContentCard
               key={item.id}
               variant="business"
-              header={t('cardHeader')}
-              subhead={t('cardSubhead')}
               title={t('cardTitle')}
-              subtitle={t('cardSubtitle')}
-              description={t('cardDescription')}
               imageSrc={item.imageSrc}
               imageAlt={t('cardImageAlt')}
             />

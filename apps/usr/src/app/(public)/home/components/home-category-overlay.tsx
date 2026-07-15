@@ -13,10 +13,11 @@ import { HomeMenuPanel } from './home-menu-panel';
 type HomeCategoryOverlayProps = {
   open: boolean;
   onClose: () => void;
+  onSelect?: (label: string) => void;
 };
 
 /** Figma category overlay — grid desktop (#1:9227), list mobile. */
-export function HomeCategoryOverlay({ open, onClose }: HomeCategoryOverlayProps) {
+export function HomeCategoryOverlay({ open, onClose, onSelect }: HomeCategoryOverlayProps) {
   useEffect(() => {
     if (!open) return;
 
@@ -70,7 +71,10 @@ export function HomeCategoryOverlay({ open, onClose }: HomeCategoryOverlayProps)
                 key={item.id}
                 type="button"
                 dir="rtl"
-                onClick={onClose}
+                onClick={() => {
+                  onSelect?.(item.label.trim());
+                  onClose();
+                }}
                 className="group flex flex-col items-center gap-6"
               >
                 <span className="flex size-[135px] items-center justify-center overflow-hidden rounded-full bg-home-header shadow-home-elevation-1 transition-transform group-hover:scale-[1.02] dark:bg-home-search-fill">
@@ -96,7 +100,10 @@ export function HomeCategoryOverlay({ open, onClose }: HomeCategoryOverlayProps)
           <HomeMenuPanel
             items={CATEGORY_MENU_ITEMS}
             className="w-full max-w-[280px]"
-            onNavigate={onClose}
+            onNavigate={(label) => {
+              onSelect?.(label);
+              onClose();
+            }}
           />
         </div>
       </div>
@@ -107,11 +114,17 @@ export function HomeCategoryOverlay({ open, onClose }: HomeCategoryOverlayProps)
 type CategoryMenuDropdownProps = {
   open: boolean;
   onClose: () => void;
+  onSelect?: (label: string) => void;
   containerRef: React.RefObject<HTMLDivElement | null>;
 };
 
 /** Desktop/tablet anchored list dropdown from category button. */
-export function CategoryMenuDropdown({ open, onClose, containerRef }: CategoryMenuDropdownProps) {
+export function CategoryMenuDropdown({
+  open,
+  onClose,
+  onSelect,
+  containerRef,
+}: CategoryMenuDropdownProps) {
   useEffect(() => {
     if (!open) return;
 
@@ -137,7 +150,13 @@ export function CategoryMenuDropdown({ open, onClose, containerRef }: CategoryMe
 
   return (
     <div dir="rtl" className="absolute right-0 top-[calc(100%+4px)] z-[80] hidden min-[834px]:block">
-      <HomeMenuPanel items={CATEGORY_MENU_ITEMS} onNavigate={onClose} />
+      <HomeMenuPanel
+        items={CATEGORY_MENU_ITEMS}
+        onNavigate={(label) => {
+          onSelect?.(label);
+          onClose();
+        }}
+      />
     </div>
   );
 }

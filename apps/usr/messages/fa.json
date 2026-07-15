@@ -71,17 +71,12 @@
       "viewAll": "مشاهده همه ",
       "cardTitle": "عنوان تخفیف ",
       "cardSubtitle": "عنوان کسب و کار ارایه دهنده تخفیف ",
-      "cardBadge": "138 خرید",
       "cardImageAlt": "تصویر تخفیف"
     },
     "businesses": {
       "title": "کسب و کارها",
       "viewAll": "مشاهده همه ",
-      "cardHeader": "تیتر",
-      "cardSubhead": "تیتر دوم",
       "cardTitle": "عنوان کسب و کار ",
-      "cardSubtitle": "عنوان کسب و کار ارایه دهنده تخفیف ",
-      "cardDescription": "لورم ایپسوم متن ساختگی با تولید محتوای نامفهوم جهت استفاده طراحان گرافیک است",
       "cardImageAlt": "تصویر کسب‌وکار"
     },
     "motivation": {

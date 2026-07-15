@@ -14,7 +14,7 @@ import {
   X,
 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { AUTH_ROUTES } from '@auth/lib/auth-routes';
 import { ThemeToggle } from '@/components/theme-toggle';
@@ -46,10 +46,10 @@ export function HomeHeader() {
 
   return (
     <header className="sticky top-0 z-50 bg-home-header shadow-home-elevation-1">
-      {/* Mobile — Figma Mobile Header #1:3603: avatar/notif | logo | search + menu */}
+      {/* Mobile + tablet — avatar/notif | logo (center) | search + menu; desktop from lg */}
       <div
         dir="ltr"
-        className="flex h-12 items-center justify-between px-4 py-1 min-[834px]:hidden"
+        className="flex h-12 items-center justify-between px-4 py-1 lg:hidden"
       >
         <HeaderIconGroup
           profileLabel={t('profile')}
@@ -62,21 +62,6 @@ export function HomeHeader() {
           menuOpen={mobileOpen}
           onMenuToggle={() => setMobileOpen((open) => !open)}
         />
-      </div>
-
-      {/* Tablet — Figma Tablet Header #1:13029: avatar/notif | search + menu | logo */}
-      <div
-        dir="ltr"
-        className="hidden h-12 items-center justify-between px-4 py-1 min-[834px]:flex lg:hidden"
-      >
-        <HeaderIconGroup profileLabel={t('profile')} notificationsLabel={t('notifications')} />
-        <HeaderSearchMenuGroup
-          searchLabel={t('searchPlaceholder')}
-          menuLabel={t('menu')}
-          menuOpen={mobileOpen}
-          onMenuToggle={() => setMobileOpen((open) => !open)}
-        />
-        <HeaderLogo alt={t('logoAlt')} size="compact" />
       </div>
 
       {/* Desktop — full nav from laptop widths (lg / 1024px+) */}
@@ -248,6 +233,14 @@ function MobileNavDrawer({ items, onClose, t }: MobileNavDrawerProps) {
   const [stack, setStack] = useState<{ title: string; items: HomeMenuItem[] }[]>([]);
   const current = stack[stack.length - 1];
 
+  useEffect(() => {
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = previous;
+    };
+  }, []);
+
   const resetAndClose = () => {
     setStack([]);
     onClose();
@@ -255,10 +248,10 @@ function MobileNavDrawer({ items, onClose, t }: MobileNavDrawerProps) {
 
   return (
     <nav
-      className="border-t border-border bg-home-header px-4 py-3 lg:hidden"
+      className="fixed inset-x-0 bottom-0 top-12 z-50 flex flex-col overflow-y-auto border-t border-border bg-home-header px-4 py-3 lg:hidden"
       aria-label={t('mainNav')}
     >
-      <div className="mb-3 flex items-center justify-between">
+      <div className="mb-3 flex shrink-0 items-center justify-between">
         {current ? (
           <button
             type="button"
@@ -284,7 +277,7 @@ function MobileNavDrawer({ items, onClose, t }: MobileNavDrawerProps) {
         </button>
       </div>
 
-      <ul dir="rtl" className="flex flex-col text-right">
+      <ul dir="rtl" className="flex min-h-0 flex-1 flex-col text-right">
         {(current?.items ?? items.map(({ key, menuKey }) => ({
           id: key,
           label: t(key),
@@ -375,11 +368,17 @@ export function HomeSearchCategoryBar() {
   const t = useTranslations('home.search');
   const [categoryOpen, setCategoryOpen] = useState(false);
   const [listOpen, setListOpen] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const categoryWrapRef = useRef<HTMLDivElement>(null);
 
   const closeAll = () => {
     setCategoryOpen(false);
     setListOpen(false);
+  };
+
+  const selectCategory = (label: string) => {
+    setSelectedCategory(label);
+    closeAll();
   };
 
   return (
@@ -414,22 +413,27 @@ export function HomeSearchCategoryBar() {
               setCategoryOpen(false);
             }}
             className={cn(
-              'inline-flex h-14 shrink-0 items-center gap-1 rounded-l-none rounded-r-[100px] bg-primary-subtle px-3 text-sm font-medium leading-6 tracking-[0.0094em] text-accent-foreground transition-opacity hover:opacity-90 dark:bg-primary-700 dark:text-primary-100 min-[834px]:px-5 min-[834px]:text-base',
+              'inline-flex h-14 max-w-[160px] shrink-0 items-center gap-1 rounded-l-none rounded-r-[100px] bg-primary-subtle px-3 text-sm font-medium leading-6 tracking-[0.0094em] text-accent-foreground transition-opacity hover:opacity-90 dark:bg-primary-700 dark:text-primary-100 min-[834px]:max-w-[220px] min-[834px]:px-5 min-[834px]:text-base',
               (listOpen || categoryOpen) && 'opacity-90'
             )}
           >
-            <span>{t('category')}</span>
+            <span className="truncate">{selectedCategory ?? t('category')}</span>
             <CategoryTriggerChevron open={listOpen || categoryOpen} />
           </button>
           <CategoryMenuDropdown
             open={listOpen}
             onClose={() => setListOpen(false)}
+            onSelect={selectCategory}
             containerRef={categoryWrapRef}
           />
         </div>
       </div>
 
-      <HomeCategoryOverlay open={categoryOpen} onClose={closeAll} />
+      <HomeCategoryOverlay
+        open={categoryOpen}
+        onClose={closeAll}
+        onSelect={selectCategory}
+      />
     </>
   );
 }
