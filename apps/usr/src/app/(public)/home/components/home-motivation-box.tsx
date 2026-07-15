@@ -23,7 +23,7 @@ export async function HomeMotivationBox() {
         backgroundSize: '20%',
       }}
     >
-      <div className="absolute inset-0 bg-black/20" aria-hidden />
+      <div className="absolute inset-0 bg-black/20 dark:bg-black/45" aria-hidden />
 
       <div
         className={cn(
@@ -41,7 +41,7 @@ export async function HomeMotivationBox() {
 
         <p
           className={cn(
-            'max-w-[312px] text-center text-sm font-bold leading-5 tracking-[0.0071em] text-[#FAFAF7]',
+            'max-w-[312px] text-center text-sm font-bold leading-5 tracking-[0.0071em] text-neutral-white',
             'min-[834px]:max-w-[460px] min-[834px]:text-base min-[834px]:leading-6 min-[834px]:tracking-[0.0094em]'
           )}
         >

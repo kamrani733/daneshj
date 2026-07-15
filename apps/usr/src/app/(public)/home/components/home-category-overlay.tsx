@@ -35,7 +35,7 @@ export function HomeCategoryOverlay({ open, onClose }: HomeCategoryOverlayProps)
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-[70] flex items-start justify-center bg-black/40 px-4 pt-24 min-[834px]:pt-32">
+    <div className="fixed inset-0 z-[70] flex items-start justify-center bg-black/40 px-4 pt-24 dark:bg-black/60 min-[834px]:pt-32">
       <div
         role="dialog"
         aria-modal="true"
@@ -73,7 +73,7 @@ export function HomeCategoryOverlay({ open, onClose }: HomeCategoryOverlayProps)
                 onClick={onClose}
                 className="group flex flex-col items-center gap-6"
               >
-                <span className="flex size-[135px] items-center justify-center overflow-hidden rounded-full bg-surface shadow-home-elevation-1 transition-transform group-hover:scale-[1.02]">
+                <span className="flex size-[135px] items-center justify-center overflow-hidden rounded-full bg-home-header shadow-home-elevation-1 transition-transform group-hover:scale-[1.02] dark:bg-home-search-fill">
                   <Image
                     src={HOME_IMAGES.discountCard}
                     alt=""

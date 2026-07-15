@@ -147,13 +147,31 @@
   --color-auth-input-border: #707973;
   --color-auth-panel-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
 
-  /* Home — Figma Private panel #1:8903 */
+  /* Home — Figma Private panel light #1:8903 / dark #1:10043 · #77:6879 */
   --color-home-scene: #fafaf7;
   --color-home-header: #fafaf5;
+  --color-home-card: #fafaf5;
   --color-home-search-fill: #f8f8f0;
   --color-home-search-category: #efede6;
   --color-home-hero: #1a6d61;
   --color-home-carousel-inactive: #e3e0da;
+  --color-home-intro-border: #ffdbcf;
+  /* Promo Banner1/2/3 — light #1:10555–10849 */
+  --color-home-promo-primary: #d3f4e1;
+  --color-home-promo-primary-text: #005138;
+  --color-home-promo-primary-action: #005138;
+  --color-home-promo-primary-on-action: #ffffff;
+  --color-home-promo-invite: #c1e9fb;
+  --color-home-promo-invite-text: #244c5b;
+  --color-home-promo-invite-action: #244c5b;
+  --color-home-promo-invite-on-action: #ffffff;
+  --color-home-promo-reward: #ffdbcf;
+  --color-home-promo-reward-text: #72351f;
+  --color-home-promo-reward-action: #72351f;
+  --color-home-promo-reward-on-action: #ffffff;
+  --color-theme-toggle-track: #efede6;
+  --color-theme-toggle-knob: #3d4443;
+  --color-theme-toggle-icon: #ffffff;
   --shadow-home-elevation-1: 0 1px 3px 1px rgba(0, 0, 0, 0.15), 0 1px 2px 0 rgba(0, 0, 0, 0.3);
   --shadow-home-elevation-2: 0 2px 6px 2px rgba(0, 0, 0, 0.15), 0 1px 2px 0 rgba(0, 0, 0, 0.3);
   --shadow-home-elevation-3: 0 1px 3px 0 rgba(0, 0, 0, 0.3), 0 4px 8px 3px rgba(0, 0, 0, 0.15);
@@ -216,10 +234,28 @@
 
   --color-home-scene: #0f1511;
   --color-home-header: #353b37;
+  --color-home-card: #0f1511;
   --color-home-search-fill: #171d19;
-  --color-home-search-category: #2c322e;
+  --color-home-search-category: #1b211d;
   --color-home-hero: #003825;
   --color-home-carousel-inactive: #404943;
+  --color-home-intro-border: #72351f;
+  /* Promo Banner1/2/3 — dark #1:11129–11423 */
+  --color-home-promo-primary: #005138;
+  --color-home-promo-primary-text: #a9f2cd;
+  --color-home-promo-primary-action: #a9f2cd;
+  --color-home-promo-primary-on-action: #003825;
+  --color-home-promo-invite: #244c5b;
+  --color-home-promo-invite-text: #c1e9fb;
+  --color-home-promo-invite-action: #c1e9fb;
+  --color-home-promo-invite-on-action: #073543;
+  --color-home-promo-reward: #72351f;
+  --color-home-promo-reward-text: #ffdbcf;
+  --color-home-promo-reward-action: #ffdbcf;
+  --color-home-promo-reward-on-action: #55200b;
+  --color-theme-toggle-track: #1b211d;
+  --color-theme-toggle-knob: #0f1511;
+  --color-theme-toggle-icon: #bfc9c1;
   --shadow-home-elevation-1: 0 1px 3px 1px rgba(0, 0, 0, 0.35), 0 1px 2px 0 rgba(0, 0, 0, 0.45);
   --shadow-home-elevation-2: 0 2px 6px 2px rgba(0, 0, 0, 0.35), 0 1px 2px 0 rgba(0, 0, 0, 0.45);
   --shadow-home-elevation-3: 0 1px 3px 0 rgba(0, 0, 0, 0.45), 0 4px 8px 3px rgba(0, 0, 0, 0.35);
@@ -388,6 +424,10 @@
     background-color: var(--color-home-header);
   }
 
+  .bg-home-card {
+    background-color: var(--color-home-card);
+  }
+
   .bg-home-search-fill {
     background-color: var(--color-home-search-fill);
   }
@@ -402,6 +442,65 @@
 
   .bg-home-carousel-inactive {
     background-color: var(--color-home-carousel-inactive);
+  }
+
+  .bg-home-promo-primary {
+    background-color: var(--color-home-promo-primary);
+  }
+
+  .bg-home-promo-invite {
+    background-color: var(--color-home-promo-invite);
+  }
+
+  .bg-home-promo-reward {
+    background-color: var(--color-home-promo-reward);
+  }
+
+  .text-home-promo-primary {
+    color: var(--color-home-promo-primary-text);
+  }
+
+  .text-home-promo-invite {
+    color: var(--color-home-promo-invite-text);
+  }
+
+  .text-home-promo-reward {
+    color: var(--color-home-promo-reward-text);
+  }
+
+  .bg-home-promo-primary-action {
+    background-color: var(--color-home-promo-primary-action);
+    color: var(--color-home-promo-primary-on-action);
+  }
+
+  .bg-home-promo-invite-action {
+    background-color: var(--color-home-promo-invite-action);
+    color: var(--color-home-promo-invite-on-action);
+  }
+
+  .bg-home-promo-reward-action {
+    background-color: var(--color-home-promo-reward-action);
+    color: var(--color-home-promo-reward-on-action);
+  }
+
+  .border-home-intro {
+    border-color: var(--color-home-intro-border);
+  }
+
+  .home-promo-decor {
+    opacity: 1;
+  }
+
+  .dark .home-promo-decor {
+    opacity: 0.85;
+  }
+
+  .home-promo-pattern {
+    opacity: 0.55;
+  }
+
+  .dark .home-promo-pattern {
+    opacity: 0.2;
   }
 
   .shadow-home-elevation-1 {
@@ -424,7 +523,23 @@
     opacity: 0.4;
   }
 
+  .home-hero-image {
+    opacity: 0.9;
+  }
+
   .dark .home-bg-pattern {
     opacity: 0.16;
+  }
+
+  .dark .home-intro-pattern {
+    opacity: 0.35;
+  }
+
+  .dark .home-footer-pattern {
+    opacity: 0.12;
+  }
+
+  .dark .home-hero-image {
+    opacity: 0.75;
   }
 }

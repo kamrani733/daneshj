@@ -18,21 +18,22 @@ type SlideStyle = {
   action: string;
 };
 
+/** Figma Banner1/2/3 — light #1:10555–10849 · dark #1:11129–11423 */
 const SLIDE_STYLES: Record<PromoSlide['tone'], SlideStyle> = {
   primary: {
-    surface: 'bg-primary-subtle',
-    text: 'text-accent-foreground',
-    action: 'bg-accent-foreground text-primary-foreground',
+    surface: 'bg-home-promo-primary',
+    text: 'text-home-promo-primary',
+    action: 'bg-home-promo-primary-action',
   },
   invite: {
-    surface: 'bg-info-100',
-    text: 'text-info',
-    action: 'bg-info text-primary-foreground',
+    surface: 'bg-home-promo-invite',
+    text: 'text-home-promo-invite',
+    action: 'bg-home-promo-invite-action',
   },
   reward: {
-    surface: 'bg-warning-subtle',
-    text: 'text-warning-700',
-    action: 'bg-warning-700 text-primary-foreground',
+    surface: 'bg-home-promo-reward',
+    text: 'text-home-promo-reward',
+    action: 'bg-home-promo-reward-action',
   },
 };
 
@@ -50,22 +51,22 @@ function PromoSplitButton({
   className?: string;
 }) {
   return (
-    <div dir="ltr" className={cn('inline-flex h-12 gap-0.5', className)}>
+    <div dir="ltr" className={cn('inline-flex h-8 items-center gap-0.5', className)}>
       <button
         type="button"
         aria-label={nextLabel}
         onClick={onNext}
         className={cn(
-          'inline-flex w-12 shrink-0 items-center justify-center rounded-s-2xl rounded-e-sm',
+          'inline-flex h-8 w-12 shrink-0 items-center justify-center rounded-s-2xl rounded-e-sm',
           actionClass
         )}
       >
-        <ChevronLeft className="size-5" />
+        <ChevronLeft className="size-[22px]" />
       </button>
       <button
         type="button"
         className={cn(
-          'inline-flex items-center justify-center rounded-s-sm rounded-e-2xl px-3 text-sm font-medium leading-5 tracking-[0.0071em]',
+          'inline-flex h-8 items-center justify-center rounded-s-sm rounded-e-2xl px-3 text-sm font-medium leading-5 tracking-[0.0071em]',
           actionClass
         )}
       >
@@ -85,7 +86,7 @@ function PromoSlideDecor({ className }: { className?: string }) {
         height={395}
         aria-hidden
         className={cn(
-          'pointer-events-none absolute left-0 bottom-0 h-[250px] w-[min(96%,346px)] object-contain object-bottom min-[834px]:-top-[95px] min-[834px]:h-[395px] min-[834px]:w-[570px]',
+          'home-promo-decor pointer-events-none absolute left-0 bottom-0 h-[250px] w-[min(96%,346px)] object-contain object-bottom min-[834px]:-top-[95px] min-[834px]:h-[395px] min-[834px]:w-[570px]',
           className
         )}
       />
@@ -95,13 +96,13 @@ function PromoSlideDecor({ className }: { className?: string }) {
         width={516}
         height={258}
         aria-hidden
-        className="pointer-events-none absolute right-0 top-[42px] hidden h-[258px] w-[min(40%,516px)] object-contain object-right min-[834px]:block"
+        className="home-promo-pattern pointer-events-none absolute right-0 top-[42px] hidden h-[258px] w-[min(40%,516px)] object-contain object-right min-[834px]:block"
       />
     </>
   );
 }
 
-/** Figma Banner #1:9072 */
+/** Figma Banner #1:9072 (light) / #1:10212 (dark) */
 export function HomePromoBanner() {
   const t = useTranslations('home');
   const [activeIndex, setActiveIndex] = useState(0);
@@ -127,7 +128,7 @@ export function HomePromoBanner() {
       <div className="relative min-[834px]:h-[342px]">
         <article
           className={cn(
-            'relative hidden h-[300px] overflow-hidden rounded-3xl shadow-home-elevation-3 min-[834px]:block',
+            'relative hidden h-[300px]  rounded-3xl shadow-home-elevation-3 min-[834px]:block',
             styles.surface
           )}
         >
@@ -149,17 +150,17 @@ export function HomePromoBanner() {
             type="button"
             aria-label={t('promo.prev')}
             onClick={goPrev}
-            className="absolute left-4 top-1/2 z-20 flex size-10 -translate-y-1/2 items-center justify-center rounded-full bg-primary/30 shadow-[0_4px_4px_rgba(0,0,0,0.25)] backdrop-blur"
+            className="absolute left-4 top-1/2 z-20 flex size-10 -translate-y-1/2 items-center justify-center rounded-full bg-primary/30 text-content shadow-[0_4px_4px_rgba(0,0,0,0.25)] backdrop-blur dark:bg-primary/25 dark:text-primary-100"
           >
-            <ChevronLeft className="size-5 text-content" />
+            <ChevronLeft className="size-5" />
           </button>
           <button
             type="button"
             aria-label={t('promo.next')}
             onClick={goNext}
-            className="absolute right-4 top-1/2 z-20 flex size-10 -translate-y-1/2 items-center justify-center rounded-full bg-primary/30 shadow-[0_4px_4px_rgba(0,0,0,0.25)] backdrop-blur"
+            className="absolute right-4 top-1/2 z-20 flex size-10 -translate-y-1/2 items-center justify-center rounded-full bg-primary/30 text-content shadow-[0_4px_4px_rgba(0,0,0,0.25)] backdrop-blur dark:bg-primary/25 dark:text-primary-100"
           >
-            <ChevronRight className="size-5 text-content" />
+            <ChevronRight className="size-5" />
           </button>
         </article>
 
@@ -174,9 +175,14 @@ export function HomePromoBanner() {
                   mobileStyles.surface
                 )}
               >
-                <PromoSlideDecor className="opacity-60" />
+                <PromoSlideDecor className="opacity-60 dark:opacity-50" />
                 <div className="relative z-10 flex h-full flex-col gap-4 p-6">
-                  <p className={cn('w-[313px] max-w-full text-justify text-base font-bold leading-[52px]', mobileStyles.text)}>
+                  <p
+                    className={cn(
+                      'w-[313px] max-w-full text-justify text-base font-bold leading-[52px]',
+                      mobileStyles.text
+                    )}
+                  >
                     {t(promoSlide.body)}
                   </p>
                   <PromoSplitButton

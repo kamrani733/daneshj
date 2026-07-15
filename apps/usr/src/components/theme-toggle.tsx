@@ -11,7 +11,7 @@ type ThemeToggleProps = {
   className?: string;
 };
 
-/** Figma Mode shifters #813:2223 — 39×24 pill, #EFEDE6 track, #3D4443 knob. */
+/** Figma Mode shifters — light track #EFEDE6 / dark track #1B211D. */
 export function ThemeToggle({ className }: ThemeToggleProps) {
   const t = useTranslations('common');
   const { resolvedTheme, setTheme } = useTheme();
@@ -23,7 +23,10 @@ export function ThemeToggle({ className }: ThemeToggleProps) {
     return (
       <span
         aria-hidden
-        className={cn('inline-block h-6 w-[39px] shrink-0 rounded-full bg-[#efede6]', className)}
+        className={cn(
+          'inline-block h-6 w-[39px] shrink-0 rounded-full bg-[var(--color-theme-toggle-track)]',
+          className
+        )}
       />
     );
   }
@@ -38,14 +41,14 @@ export function ThemeToggle({ className }: ThemeToggleProps) {
       aria-label={isDark ? t('themeLight') : t('themeDark')}
       onClick={() => setTheme(isDark ? 'light' : 'dark')}
       className={cn(
-        'relative inline-flex h-6 w-[39px] shrink-0 items-center rounded-full bg-[#efede6] p-[3px] transition-colors',
+        'relative inline-flex h-6 w-[39px] shrink-0 items-center rounded-full bg-[var(--color-theme-toggle-track)] p-[3px] transition-colors',
         'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40',
         className
       )}
     >
       <span
         className={cn(
-          'flex size-[18px] items-center justify-center rounded-full bg-[#3d4443] text-white shadow-sm transition-transform duration-200',
+          'flex size-[18px] items-center justify-center rounded-full bg-[var(--color-theme-toggle-knob)] text-[var(--color-theme-toggle-icon)] shadow-sm transition-transform duration-200',
           isDark ? 'translate-x-[15px]' : 'translate-x-0'
         )}
       >

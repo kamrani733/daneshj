@@ -1,6 +1,8 @@
 import Image from 'next/image';
 import { getTranslations } from 'next-intl/server';
 
+import { cn } from '@/lib/utils';
+
 import { HOME_IMAGES } from '../home-assets';
 
 function IntroSidePattern({
@@ -20,7 +22,7 @@ function IntroSidePattern({
       width={390}
       height={505}
       aria-hidden
-      className={className}
+      className={cn('home-intro-pattern', className)}
     />
   );
 }
@@ -30,7 +32,7 @@ export async function HomeIntroduction() {
   const t = await getTranslations('home.intro');
 
   return (
-    <section className="w-full overflow-hidden rounded-xl border border-warning-subtle bg-home-header min-[834px]:rounded-3xl min-[834px]:border-2 min-[834px]:bg-surface">
+    <section className="w-full overflow-hidden rounded-xl border border-home-intro bg-home-header min-[834px]:rounded-3xl min-[834px]:border-2 min-[834px]:bg-home-card">
       {/* Desktop / tablet — row, space-between, center column 1078px */}
       <div
         className="relative hidden min-h-[280px] items-center justify-center min-[834px]:flex"

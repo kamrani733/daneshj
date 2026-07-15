@@ -27,7 +27,7 @@ export function HomeHeroBanner() {
         fill
         priority
         sizes="(max-width: 834px) 100vw, 1312px"
-        className="object-cover object-center opacity-90"
+        className="home-hero-image object-cover object-center"
       />
 
       <div

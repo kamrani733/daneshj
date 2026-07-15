@@ -36,7 +36,7 @@ export function ContentCard({
   return (
     <article
       className={cn(
-        'flex shrink-0 flex-col items-end overflow-hidden rounded-[12px] bg-home-header shadow-home-elevation-1',
+        'flex shrink-0 flex-col items-end overflow-hidden rounded-[12px] bg-home-card shadow-home-elevation-1',
         isDiscount ? 'w-[280px] shrink-0' : 'w-[260px] min-[834px]:w-[344px]',
         className
       )}
@@ -59,7 +59,7 @@ export function ContentCard({
           className="object-cover"
         />
         {badge ? (
-          <Badge className="absolute start-3 top-3 h-8 rounded-full border-0 bg-warning-subtle px-3 text-sm font-medium leading-5 tracking-[0.0071em] text-warning-700">
+          <Badge className="absolute start-3 top-3 h-8 rounded-full border-0 bg-warning-subtle px-3 text-sm font-medium leading-5 tracking-[0.0071em] text-warning-700 dark:text-warning-50">
             {badge}
           </Badge>
         ) : null}

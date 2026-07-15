@@ -74,7 +74,7 @@ function HomeMenuRow({
   );
 
   const rowClassName =
-    'flex h-14 w-full items-center justify-between gap-3 px-3 text-right text-base leading-6 tracking-[0.0094em] text-content transition-colors hover:bg-black/5';
+    'flex h-14 w-full items-center justify-between gap-3 px-3 text-right text-base leading-6 tracking-[0.0094em] text-content transition-colors hover:bg-black/5 dark:hover:bg-white/5';
 
   return (
     <li ref={rowRef} className="relative" role="none">

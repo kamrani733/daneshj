@@ -72,7 +72,10 @@ export function HomeHeader() {
         dir="ltr"
         className="hidden items-center justify-between gap-3 px-4 py-1 min-[834px]:flex lg:hidden"
       >
-        <HeaderIconGroup profileLabel={t('profile')} notificationsLabel={t('notifications')} />
+        <div className="flex items-center gap-2">
+          <ThemeToggle />
+          <HeaderIconGroup profileLabel={t('profile')} notificationsLabel={t('notifications')} />
+        </div>
         <HeaderSearchMenuGroup
           searchLabel={t('searchPlaceholder')}
           menuLabel={t('menu')}
@@ -417,7 +420,7 @@ export function HomeSearchCategoryBar() {
               setCategoryOpen(false);
             }}
             className={cn(
-              'inline-flex h-14 shrink-0 items-center gap-1 rounded-l-none rounded-r-[100px] bg-primary-subtle px-3 text-sm font-medium leading-6 tracking-[0.0094em] text-accent-foreground transition-opacity hover:opacity-90 min-[834px]:px-5 min-[834px]:text-base',
+              'inline-flex h-14 shrink-0 items-center gap-1 rounded-l-none rounded-r-[100px] bg-primary-subtle px-3 text-sm font-medium leading-6 tracking-[0.0094em] text-accent-foreground transition-opacity hover:opacity-90 dark:bg-primary-700 dark:text-primary-100 min-[834px]:px-5 min-[834px]:text-base',
               (listOpen || categoryOpen) && 'opacity-90'
             )}
           >

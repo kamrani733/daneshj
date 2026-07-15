@@ -13,7 +13,7 @@ export async function HomeFooter() {
     <footer className="relative overflow-hidden bg-home-header">
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 opacity-30"
+        className="home-footer-pattern pointer-events-none absolute inset-0 opacity-30"
         style={{
           backgroundImage: `url(${HOME_IMAGES.bgPattern})`,
           backgroundSize: 'cover',
