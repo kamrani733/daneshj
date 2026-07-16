@@ -7,6 +7,7 @@ import {
   ChevronLeft,
   Grid3X3,
   Headphones,
+  LayoutDashboard,
   Menu,
   Search,
   UserRound,
@@ -37,7 +38,11 @@ const NAV_LINKS = [
   { key: 'services' as const, icon: Grid3X3, menuKey: 'services' as const },
 ];
 
-export function HomeHeader() {
+type HomeHeaderProps = {
+  isAuthenticated?: boolean;
+};
+
+export function HomeHeader({ isAuthenticated = false }: HomeHeaderProps) {
   const t = useTranslations('home.header');
   const [mobileOpen, setMobileOpen] = useState(false);
   const [openNav, setOpenNav] = useState<string | null>(null);
@@ -52,7 +57,9 @@ export function HomeHeader() {
         className="flex h-12 items-center justify-between px-4 py-1 lg:hidden"
       >
         <HeaderIconGroup
+          isAuthenticated={isAuthenticated}
           profileLabel={t('profile')}
+          dashboardLabel={t('dashboard')}
           notificationsLabel={t('notifications')}
         />
         <HeaderLogo alt={t('logoAlt')} size="compact" />
@@ -72,7 +79,11 @@ export function HomeHeader() {
         <div className="flex min-w-0 flex-1 items-center gap-4 min-[1280px]:gap-8">
           <div className="flex shrink-0 items-center gap-3">
             <ThemeToggle />
-            <IconButton label={t('profile')} icon={UserRound} href={AUTH_ROUTES.login} />
+            <AuthEntryButton
+              isAuthenticated={isAuthenticated}
+              profileLabel={t('profile')}
+              dashboardLabel={t('dashboard')}
+            />
             <NotificationButton count={3} label={t('notifications')} />
           </div>
 
@@ -138,17 +149,64 @@ function HeaderLogo({ alt, size, className }: HeaderLogoProps) {
 }
 
 type HeaderIconGroupProps = {
+  isAuthenticated: boolean;
   profileLabel: string;
+  dashboardLabel: string;
   notificationsLabel: string;
   className?: string;
 };
 
-function HeaderIconGroup({ profileLabel, notificationsLabel, className }: HeaderIconGroupProps) {
+function HeaderIconGroup({
+  isAuthenticated,
+  profileLabel,
+  dashboardLabel,
+  notificationsLabel,
+  className,
+}: HeaderIconGroupProps) {
   return (
     <div className={cn('flex shrink-0 items-center gap-2', className)}>
-      <IconButton label={profileLabel} icon={UserRound} href={AUTH_ROUTES.login} size="sm" />
+      <AuthEntryButton
+        isAuthenticated={isAuthenticated}
+        profileLabel={profileLabel}
+        dashboardLabel={dashboardLabel}
+        size="sm"
+      />
       <NotificationButton count={3} label={notificationsLabel} size="sm" />
     </div>
+  );
+}
+
+type AuthEntryButtonProps = {
+  isAuthenticated: boolean;
+  profileLabel: string;
+  dashboardLabel: string;
+  size?: 'sm' | 'md';
+};
+
+function AuthEntryButton({
+  isAuthenticated,
+  profileLabel,
+  dashboardLabel,
+  size = 'md',
+}: AuthEntryButtonProps) {
+  if (isAuthenticated) {
+    return (
+      <Link
+        href={AUTH_ROUTES.dashboard}
+        aria-label={dashboardLabel}
+        className={cn(
+          'inline-flex items-center justify-center rounded-full bg-primary text-primary-foreground transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30',
+          size === 'sm' ? 'h-10 gap-1.5 px-3 text-sm font-medium' : 'h-14 gap-2 px-4 text-base font-medium'
+        )}
+      >
+        <LayoutDashboard className={size === 'sm' ? 'size-[18px]' : 'size-5'} strokeWidth={1.75} />
+        <span>{dashboardLabel}</span>
+      </Link>
+    );
+  }
+
+  return (
+    <IconButton label={profileLabel} icon={UserRound} href={AUTH_ROUTES.login} size={size} />
   );
 }
 

@@ -6,6 +6,7 @@ import {
   changePassword,
   deleteSession,
   deleteSessionForLimitReached,
+  getPublicSecurityQuestions,
   getSessions,
   getSessionsForLimitReached,
   inactiveSessionThenGetToken,
@@ -37,6 +38,17 @@ export function useVerifyCodeMutation() {
 
 export function useResetPasswordMutation() {
   return useMutation({ mutationFn: resetPassword });
+}
+
+export function usePublicSecurityQuestionsQuery(
+  accessToken: string | null,
+  enabled = true
+) {
+  return useQuery({
+    queryKey: authQueryKeys.securityQuestions(),
+    queryFn: () => getPublicSecurityQuestions(accessToken!),
+    enabled: enabled && !!accessToken,
+  });
 }
 
 export function useChangePasswordMutation() {

@@ -30,6 +30,9 @@ const KNOWN_AUTH_ERROR_MESSAGES: Record<string, string> = {
     'برای بازیابی رمز عبور باید شماره‌همراه یا ایمیل وارد کنید',
   'you must enter email/mobile for reset password':
     'برای بازیابی رمز عبور باید شماره‌همراه یا ایمیل وارد کنید',
+  'internal server error': 'خطای داخلی سرور. لطفاً دوباره تلاش کنید یا با پشتیبانی تماس بگیرید',
+  'authentication credentials were not provided.':
+    'توکن احراز هویت ارسال نشده است. لطفاً دوباره کد تایید را وارد کنید',
 };
 
 function translateKnownAuthError(message: string): string {

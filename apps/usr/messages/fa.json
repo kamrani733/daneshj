@@ -21,6 +21,7 @@
       "contact": "ارتباط با ما",
       "searchPlaceholder": " جستجو...",
       "profile": "پروفایل کاربر",
+      "dashboard": "داشبورد",
       "notifications": "اعلان‌ها",
       "menu": "باز کردن منو"
     },
@@ -162,6 +163,7 @@
     "passwordTooShort": "رمز عبور باید حداقل ۸ کاراکتر باشد",
     "passwordMismatch": "رمز عبور و تکرار آن یکسان نیست",
     "resetFailed": "بازیابی رمز عبور با خطا مواجه شد",
+    "resetTokenMissing": "توکن بازیابی رمز دریافت نشد. لطفاً دوباره کد تایید را وارد کنید",
     "backToLogin": "بازگشت به ورود"
   },
   "changePassword": {

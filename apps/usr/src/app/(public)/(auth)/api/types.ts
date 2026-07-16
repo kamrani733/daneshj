@@ -148,6 +148,11 @@ export interface InactiveSessionThenGetTokenPayload {
   identityInfo: IdentityInfo;
 }
 
+export interface SecurityQuestion {
+  code: number;
+  question: string;
+}
+
 export interface ResetPasswordPayload {
   password: string;
   confirmPassword: string;

@@ -31,6 +31,7 @@ import type {
   RefreshTokenResponse,
   ChangePasswordPayload,
   ResetPasswordPayload,
+  SecurityQuestion,
   SendCodeData,
   SendVerifyCodePayload,
   SendVerifyCodeResponse,
@@ -297,12 +298,28 @@ export async function inactiveSessionThenGetToken(
   return mapVerifyCodeResponse(data, 'login');
 }
 
+export async function getPublicSecurityQuestions(
+  accessToken: string
+): Promise<SecurityQuestion[]> {
+  return getAuth<SecurityQuestion[]>(
+    '/auth/public_security_questions_content',
+    {},
+    accessToken
+  );
+}
+
 export async function resetPassword(payload: ResetPasswordPayload): Promise<void> {
+  if (!payload.accessToken?.trim()) {
+    throw new Error('Authentication credentials were not provided.');
+  }
+
   await postAuth<null>(
     '/auth/actor_reset_password',
     {
       new_password: payload.password,
       confirm_new_password: payload.confirmPassword,
+      security_question_code: null,
+      security_question_answer: null,
     },
     { actor_type: USR_ACTOR_TYPE },
     payload.accessToken,

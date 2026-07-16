@@ -1,4 +1,5 @@
 import dynamic from 'next/dynamic';
+import { getSession } from '@daneshjoam/auth';
 
 import { HomeBgPattern } from './components/home-bg-pattern';
 import { HomeBusinessesSection } from './components/home-businesses-section';
@@ -15,10 +16,12 @@ const HomeMotivationBox = dynamic(
 const HomeFooter = dynamic(() => import('./components/home-footer').then((mod) => mod.HomeFooter));
 
 /** Figma Private panel #1:8903 — desktop 1512px, tablet 834px, mobile 390px. */
-export function HomePage() {
+export async function HomePage() {
+  const session = await getSession();
+
   return (
     <div className="relative min-h-screen overflow-x-clip bg-home-scene" dir="rtl">
-      <HomeHeader />
+      <HomeHeader isAuthenticated={!!session} />
       <HomeBgPattern />
 
       <div className="relative z-10 mx-auto w-full max-w-[1512px] px-4 pb-16 min-[834px]:px-12 min-[1512px]:px-[100px]">

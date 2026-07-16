@@ -237,7 +237,8 @@ export function OtpForm({
       const result = await verifyCodeMutation.mutateAsync({
         identity: identifier,
         code: value,
-        operation: verifyContext.operation,
+        operation:
+          purpose === 'forgot-password' ? 'RESET_PASSWORD' : verifyContext.operation,
         codeType: verifyContext.codeType,
         purpose,
       });
@@ -259,9 +260,11 @@ export function OtpForm({
       }
 
       if (purpose === 'forgot-password' && result.redirectVerifyPassword) {
-        if (result.resetAccessToken) {
-          setResetAccessToken(result.resetAccessToken);
+        if (!result.resetAccessToken) {
+          setError(t('resetTokenMissing'));
+          return;
         }
+        setResetAccessToken(result.resetAccessToken);
         markOtpVerified();
         router.push(authNextAfterOtp(purpose));
         return;
@@ -433,7 +436,7 @@ type ResetPasswordFormProps = {
 };
 
 export function ResetPasswordForm({
-  successPath = AUTH_ROUTES.login,
+  successPath = AUTH_ROUTES.dashboard,
 }: ResetPasswordFormProps) {
   const t = useTranslations('forgotPassword');
   const auth = useTranslations('auth');
@@ -556,13 +559,13 @@ type ChangePasswordFormProps = {
 export function ChangePasswordForm({ accessToken }: ChangePasswordFormProps) {
   const t = useTranslations('changePassword');
   const auth = useTranslations('auth');
+  const router = useRouter();
   const changePasswordMutation = useChangePasswordMutation();
 
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmNewPassword, setConfirmNewPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -581,18 +584,14 @@ export function ChangePasswordForm({ accessToken }: ChangePasswordFormProps) {
     }
 
     setError(null);
-    setSuccess(null);
     try {
-      const message = await changePasswordMutation.mutateAsync({
+      await changePasswordMutation.mutateAsync({
         currentPassword,
         newPassword,
         confirmNewPassword,
         accessToken,
       });
-      setCurrentPassword('');
-      setNewPassword('');
-      setConfirmNewPassword('');
-      setSuccess(message || t('success'));
+      router.push(AUTH_ROUTES.dashboard);
     } catch (err) {
       setError(getAuthApiErrorMessage(err, t('changeFailed')));
     }
@@ -643,9 +642,6 @@ export function ChangePasswordForm({ accessToken }: ChangePasswordFormProps) {
           }}
         />
         <FieldError message={error} />
-        {success ? (
-          <p className="text-right text-sm text-primary">{success}</p>
-        ) : null}
       </div>
 
       <Button
