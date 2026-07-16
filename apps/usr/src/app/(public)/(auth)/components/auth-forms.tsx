@@ -8,6 +8,8 @@ import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { FloatingInput } from '@/components/ui/floating-input';
 import {
+  getAuthApiErrorMessage,
+  useChangePasswordMutation,
   useResetPasswordMutation,
   useSendVerifyCodeMutation,
   useVerifyCodeMutation,
@@ -32,6 +34,7 @@ import {
   detectLoginIdentityType,
   isValidLoginIdentity,
   isValidReferralCode,
+  isValidResetPasswordIdentity,
 } from '@auth/lib/identity';
 
 const submitBtnBase =
@@ -73,6 +76,8 @@ export function IdentifierForm({
   referralCode,
 }: IdentifierFormProps) {
   const auth = useTranslations('auth');
+  const forgot = useTranslations('forgotPassword');
+  const isForgotPassword = purpose === 'forgot-password';
   const startFlow = useAuthFlowStore((s) => s.startFlow);
   const setSendVerifyContext = useAuthFlowStore((s) => s.setSendVerifyContext);
   const markOtpSent = useAuthFlowStore((s) => s.markOtpSent);
@@ -86,10 +91,19 @@ export function IdentifierForm({
     e.preventDefault();
     const value = identifier.trim();
     if (!value) {
-      setError(auth('identifierRequired'));
+      setError(isForgotPassword ? forgot('identifierRequired') : auth('identifierRequired'));
       return;
     }
-    if (!isValidLoginIdentity(value)) {
+    if (isForgotPassword) {
+      if (!isValidResetPasswordIdentity(value)) {
+        setError(
+          detectLoginIdentityType(value) === 'username'
+            ? forgot('emailMobileRequired')
+            : forgot('identifierInvalid')
+        );
+        return;
+      }
+    } else if (!isValidLoginIdentity(value)) {
       setError(auth('identifierInvalid'));
       return;
     }
@@ -130,8 +144,8 @@ export function IdentifierForm({
       }
 
       router.push(authOtpPath(purpose));
-    } catch {
-      setError(auth('sendOtpFailed'));
+    } catch (err) {
+      setError(getAuthApiErrorMessage(err, auth('sendOtpFailed')));
     }
   }
 
@@ -144,7 +158,9 @@ export function IdentifierForm({
           name="identifier"
           value={identifier}
           onChange={(e) => setIdentifier(e.target.value)}
-          label={auth('identifierPlaceholder')}
+          label={
+            isForgotPassword ? forgot('identifierPlaceholder') : auth('identifierPlaceholder')
+          }
           autoComplete="username"
         />
         <FieldError message={error} />
@@ -257,8 +273,8 @@ export function OtpForm({
       }
 
       setError(t('verifyFailed'));
-    } catch {
-      setError(t('verifyFailed'));
+    } catch (err) {
+      setError(getAuthApiErrorMessage(err, t('verifyFailed')));
     }
   }
 
@@ -283,8 +299,8 @@ export function OtpForm({
         devOtpCode: result.code,
       });
       markOtpSent();
-    } catch {
-      setError(auth('sendOtpFailed'));
+    } catch (err) {
+      setError(getAuthApiErrorMessage(err, auth('sendOtpFailed')));
     } finally {
       setResending(false);
     }
@@ -379,8 +395,8 @@ export function TotpForm({ successPath = AUTH_ROUTES.dashboard }: TotpFormProps)
         return;
       }
       await finishAuthAndRedirect(result.session, successPath, clearFlow);
-    } catch {
-      setError(t('verifyFailed'));
+    } catch (err) {
+      setError(getAuthApiErrorMessage(err, t('verifyFailed')));
     }
   }
 
@@ -457,8 +473,8 @@ export function ResetPasswordForm({
       });
       clearFlow();
       router.push(successPath);
-    } catch {
-      setError(t('resetFailed'));
+    } catch (err) {
+      setError(getAuthApiErrorMessage(err, t('resetFailed')));
     }
   }
 
@@ -529,5 +545,116 @@ export function AuthTextLink({
     >
       {children}
     </Link>
+  );
+}
+
+type ChangePasswordFormProps = {
+  accessToken: string;
+};
+
+/** Security settings — POST /auth/actor_change_password */
+export function ChangePasswordForm({ accessToken }: ChangePasswordFormProps) {
+  const t = useTranslations('changePassword');
+  const auth = useTranslations('auth');
+  const changePasswordMutation = useChangePasswordMutation();
+
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmNewPassword, setConfirmNewPassword] = useState('');
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
+
+  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+
+    if (!currentPassword.trim()) {
+      setError(t('currentPasswordRequired'));
+      return;
+    }
+    if (newPassword.length < 8) {
+      setError(t('passwordTooShort'));
+      return;
+    }
+    if (newPassword !== confirmNewPassword) {
+      setError(t('passwordMismatch'));
+      return;
+    }
+
+    setError(null);
+    setSuccess(null);
+    try {
+      const message = await changePasswordMutation.mutateAsync({
+        currentPassword,
+        newPassword,
+        confirmNewPassword,
+        accessToken,
+      });
+      setCurrentPassword('');
+      setNewPassword('');
+      setConfirmNewPassword('');
+      setSuccess(message || t('success'));
+    } catch (err) {
+      setError(getAuthApiErrorMessage(err, t('changeFailed')));
+    }
+  }
+
+  return (
+    <form className="flex w-full max-w-md flex-col gap-8" onSubmit={onSubmit}>
+      <AuthHeading>{t('description')}</AuthHeading>
+
+      <div className="space-y-4">
+        <FloatingInput
+          name="currentPassword"
+          type="password"
+          value={currentPassword}
+          onChange={(e) => setCurrentPassword(e.target.value)}
+          label={t('currentPassword')}
+          autoComplete="current-password"
+          showVisibilityToggle
+          visibilityLabels={{
+            show: t('showPassword'),
+            hide: t('hidePassword'),
+          }}
+        />
+        <FloatingInput
+          name="newPassword"
+          type="password"
+          value={newPassword}
+          onChange={(e) => setNewPassword(e.target.value)}
+          label={t('newPassword')}
+          autoComplete="new-password"
+          showVisibilityToggle
+          visibilityLabels={{
+            show: t('showPassword'),
+            hide: t('hidePassword'),
+          }}
+        />
+        <FloatingInput
+          name="confirmNewPassword"
+          type="password"
+          value={confirmNewPassword}
+          onChange={(e) => setConfirmNewPassword(e.target.value)}
+          label={t('confirmPassword')}
+          autoComplete="new-password"
+          showVisibilityToggle
+          visibilityLabels={{
+            show: t('showPassword'),
+            hide: t('hidePassword'),
+          }}
+        />
+        <FieldError message={error} />
+        {success ? (
+          <p className="text-right text-sm text-primary">{success}</p>
+        ) : null}
+      </div>
+
+      <Button
+        type="submit"
+        disabled={changePasswordMutation.isPending}
+        className={submitBtn}
+      >
+        {auth('submit')}
+      </Button>
+    </form>
   );
 }

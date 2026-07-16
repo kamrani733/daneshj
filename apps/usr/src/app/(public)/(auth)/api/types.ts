@@ -154,6 +154,13 @@ export interface ResetPasswordPayload {
   accessToken: string;
 }
 
+export interface ChangePasswordPayload {
+  currentPassword: string;
+  newPassword: string;
+  confirmNewPassword: string;
+  accessToken: string;
+}
+
 export interface ActorSendCodeQuery {
   actor_type: ActorType;
   operation: AuthOperation;

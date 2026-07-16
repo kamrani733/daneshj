@@ -1,4 +1,5 @@
 export {
+  changePassword,
   deleteSession,
   deleteSessionForLimitReached,
   getSessions,
@@ -11,8 +12,10 @@ export {
   verifyCode,
   verifyOtp,
 } from './auth';
+export { formatApiResponseError, getAuthApiErrorMessage } from './errors';
 export { USR_ACTOR_TYPE, USR_LOGIN_SOURCE, MAX_ACTIVE_SESSIONS } from './constants';
 export {
+  useChangePasswordMutation,
   useDeleteSessionForLimitReachedMutation,
   useDeleteSessionMutation,
   useGetSessionsForLimitReachedQuery,
@@ -28,6 +31,7 @@ export {
 export type {
   AuthOperation,
   AuthPurpose,
+  ChangePasswordPayload,
   CodeType,
   IdentityInfo,
   IdentityType,

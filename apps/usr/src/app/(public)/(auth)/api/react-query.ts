@@ -3,6 +3,7 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 
 import {
+  changePassword,
   deleteSession,
   deleteSessionForLimitReached,
   getSessions,
@@ -15,6 +16,7 @@ import {
 } from './auth';
 import { authQueryKeys } from './query-keys';
 import type {
+  ChangePasswordPayload,
   DeleteSessionForLimitReachedPayload,
   DeleteSessionPayload,
   GetSessionsPayload,
@@ -35,6 +37,10 @@ export function useVerifyCodeMutation() {
 
 export function useResetPasswordMutation() {
   return useMutation({ mutationFn: resetPassword });
+}
+
+export function useChangePasswordMutation() {
+  return useMutation({ mutationFn: changePassword });
 }
 
 export function useRefreshTokenMutation() {
@@ -84,6 +90,7 @@ export const useSendOtpMutation = useSendVerifyCodeMutation;
 export const useVerifyOtpMutation = useVerifyCodeMutation;
 
 export type {
+  ChangePasswordPayload,
   DeleteSessionForLimitReachedPayload,
   DeleteSessionPayload,
   GetSessionsPayload,

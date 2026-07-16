@@ -150,6 +150,10 @@
   },
   "forgotPassword": {
     "greeting": "برای بازیابی رمز عبور، شماره‌همراه یا ایمیل خود را وارد کنید",
+    "identifierPlaceholder": "شماره‌همراه/پست‌الکترونیکی",
+    "identifierRequired": "لطفاً شماره‌همراه یا ایمیل را وارد کنید",
+    "identifierInvalid": "فرمت شماره‌همراه یا ایمیل نامعتبر است",
+    "emailMobileRequired": "برای بازیابی رمز عبور باید شماره‌همراه یا ایمیل وارد کنید",
     "resetDescription": "رمز عبور جدید خود را وارد کنید",
     "newPassword": "رمز عبور جدید",
     "confirmPassword": "تکرار رمز عبور",
@@ -159,6 +163,19 @@
     "passwordMismatch": "رمز عبور و تکرار آن یکسان نیست",
     "resetFailed": "بازیابی رمز عبور با خطا مواجه شد",
     "backToLogin": "بازگشت به ورود"
+  },
+  "changePassword": {
+    "description": "رمز عبور فعلی و رمز عبور جدید را وارد کنید",
+    "currentPassword": "رمز عبور فعلی",
+    "newPassword": "رمز عبور جدید",
+    "confirmPassword": "تکرار رمز عبور جدید",
+    "showPassword": "نمایش رمز عبور",
+    "hidePassword": "مخفی کردن رمز عبور",
+    "currentPasswordRequired": "لطفاً رمز عبور فعلی را وارد کنید",
+    "passwordTooShort": "رمز عبور باید حداقل ۸ کاراکتر باشد",
+    "passwordMismatch": "رمز عبور جدید و تکرار آن یکسان نیست",
+    "changeFailed": "تغییر رمز عبور با خطا مواجه شد",
+    "success": "رمز عبور با موفقیت تغییر کرد"
   },
   "sessions": {
     "pageTitle": "مدیریت سشن‌های فعال",

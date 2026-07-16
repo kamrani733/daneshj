@@ -35,3 +35,9 @@ export function isValidLoginIdentity(identity: string) {
 export function isValidReferralCode(code: string) {
   return REFERRAL_PATTERN.test(code);
 }
+
+export function isValidResetPasswordIdentity(identity: string) {
+  const kind = detectLoginIdentityType(identity);
+  if (kind === 'username') return false;
+  return isValidLoginIdentity(identity);
+}

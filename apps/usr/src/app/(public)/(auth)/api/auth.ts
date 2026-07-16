@@ -2,6 +2,7 @@ import { withMockFallback } from '@daneshjoam/api-client';
 
 import { usrHttpClient } from '@/shared/api/usr-http';
 import { USR_ACTOR_TYPE } from './constants';
+import { formatApiResponseError } from './errors';
 import {
   isAuthApiMocked,
   mockRefreshToken,
@@ -28,6 +29,7 @@ import type {
   RefreshTokenData,
   RefreshTokenPayload,
   RefreshTokenResponse,
+  ChangePasswordPayload,
   ResetPasswordPayload,
   SendCodeData,
   SendVerifyCodePayload,
@@ -40,11 +42,7 @@ import type {
 
 function assertApiSuccess<T>(response: ApiResponse<T>, requireData = true): T {
   if (!response.success || (requireData && response.data == null)) {
-    const message =
-      response.message ??
-      Object.values(response.errors)[0] ??
-      'Request failed';
-    throw new Error(message);
+    throw new Error(formatApiResponseError(response.message, response.errors));
   }
   return response.data as T;
 }
@@ -310,6 +308,21 @@ export async function resetPassword(payload: ResetPasswordPayload): Promise<void
     payload.accessToken,
     false
   );
+}
+
+export async function changePassword(payload: ChangePasswordPayload): Promise<string> {
+  const { message } = await postAuth<null>(
+    '/auth/actor_change_password',
+    {
+      current_password: payload.currentPassword,
+      new_password: payload.newPassword,
+      confirm_new_password: payload.confirmNewPassword,
+    },
+    { actor_type: USR_ACTOR_TYPE },
+    payload.accessToken,
+    false
+  );
+  return message ?? 'Password changed successfully.';
 }
 
 /** @deprecated Use sendVerifyCode */
