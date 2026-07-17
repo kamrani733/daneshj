@@ -3,6 +3,7 @@ import { getSession } from '@daneshjoam/auth';
 
 import { HomeBgPattern } from './components/home-bg-pattern';
 import { HomeBusinessesSection } from './components/home-businesses-section';
+import { HomeCategoriesSection } from './components/home-categories-section';
 import { HomeDiscountsSection } from './components/home-discounts-section';
 import { HomeHeader, HomeSearchCategoryBar } from './components/home-header';
 import { HomeHeroBanner } from './components/home-hero-banner';
@@ -33,6 +34,8 @@ export async function HomePage() {
           <HomeIntroduction />
 
           <HomePromoBanner />
+
+          <HomeCategoriesSection />
 
           <HomeDiscountsSection />
 
