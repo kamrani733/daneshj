@@ -1,15 +1,17 @@
 import dynamic from 'next/dynamic';
 import { getSession } from '@daneshjoam/auth';
 
+import { SessionKeepAlive } from '@/components/session-keep-alive';
+
 import { HomeBgPattern } from './components/home-bg-pattern';
 import { HomeBusinessesSection } from './components/home-businesses-section';
 import { HomeCategoriesSection } from './components/home-categories-section';
 import { HomeDiscountsSection } from './components/home-discounts-section';
-import { HomeHeader, HomeSearchCategoryBar } from './components/home-header';
+import { HomeHeader } from './components/home-header';
 import { HomeHeroBanner } from './components/home-hero-banner';
 import { HomeIntroduction } from './components/home-introduction';
 import { HomePromoBanner } from './components/home-promo-banner';
-import { SessionKeepAlive } from '@/components/session-keep-alive';
+import { HomeSearchShell } from './components/home-search-shell';
 
 const HomeMotivationBox = dynamic(
   () => import('./components/home-motivation-box').then((mod) => mod.HomeMotivationBox)
@@ -29,29 +31,17 @@ export async function HomePage() {
         userName={session?.user.name?.trim() || undefined}
       />
       <HomeBgPattern />
-
-      <div className="relative z-10 mx-auto w-full max-w-[1512px] px-4 pb-16 min-[834px]:px-12 min-[1512px]:px-[100px]">
-        <div className="flex flex-col gap-12 pt-6 min-[834px]:gap-12 min-[834px]:pt-8">
-          <HomeSearchCategoryBar />
-
-          <HomeHeroBanner />
-
-          <HomeIntroduction />
-
-          <HomePromoBanner />
-
-          <HomeCategoriesSection />
-
-          <HomeDiscountsSection />
-
-          <HomeBusinessesSection />
-        </div>
-      </div>
-
-      <div className="relative z-10 mt-16 flex flex-col">
-        <HomeMotivationBox />
-        <HomeFooter />
-      </div>
+      <HomeSearchShell
+        motivation={<HomeMotivationBox />}
+        footer={<HomeFooter />}
+      >
+        <HomeHeroBanner />
+        <HomeIntroduction />
+        <HomePromoBanner />
+        <HomeCategoriesSection />
+        <HomeDiscountsSection />
+        <HomeBusinessesSection />
+      </HomeSearchShell>
     </div>
   );
 }

@@ -37,7 +37,42 @@
     },
     "search": {
       "placeholder": " جستجو...",
-      "category": "دسته بندی "
+      "category": "دسته بندی ",
+      "clear": "پاک کردن جستجو"
+    },
+    "searchResults": {
+      "title": "نتایج جستجو",
+      "titleWithQuery": "نتایج «{query}»",
+      "count": "{count} مورد یافت شد",
+      "emptyTitle": "موردی پیدا نشد",
+      "emptyBody": "عبارت یا دسته‌بندی دیگری را امتحان کنید",
+      "filter": {
+        "searchPlaceholder": " جستجو  ",
+        "filterTooltip": "فیلتر گذاری ",
+        "sortTooltip": "مرتب‌سازی",
+        "title": "فیلتر ها ",
+        "apply": "اعمال فیلتر ",
+        "clear": "پاک کردن ",
+        "fields": {
+          "discount": "بازه میزان تخفیف ",
+          "price": "بازه قیمت",
+          "date": "بازه زمانی ارایه تخفیف ",
+          "rating": "امتیاز",
+          "ratingMin": "حداقل امتیاز",
+          "rangeStart": "شروع بازه ",
+          "rangeEnd": "پایان بازه ",
+          "percent": "درصد",
+          "toman": "تومان",
+          "dateHint": "روز/ماه/سال "
+        },
+        "sort": {
+          "newest": "جدیدترین ",
+          "mostDiscount": "بیشترین تخفیف ",
+          "popular": "محبوب ترین",
+          "priceHigh": "گرانترین",
+          "priceLow": "ارزانترین"
+        }
+      }
     },
     "hero": {
       "slidesLabel": "اسلایدهای بنر اصلی",

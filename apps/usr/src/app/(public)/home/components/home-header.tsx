@@ -434,12 +434,21 @@ function NotificationButton({ count, label, size = 'md' }: NotificationButtonPro
   );
 }
 
+type HomeSearchCategoryBarProps = {
+  onSearch?: (search: { query: string; category: string | null }) => void;
+  onClearSearch?: () => void;
+};
+
 /** Figma Search box + category #1:9073 — 572×56, search left-rounded, category right-rounded */
-export function HomeSearchCategoryBar() {
+export function HomeSearchCategoryBar({
+  onSearch,
+  onClearSearch,
+}: HomeSearchCategoryBarProps) {
   const t = useTranslations('home.search');
   const [categoryOpen, setCategoryOpen] = useState(false);
   const [listOpen, setListOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [query, setQuery] = useState('');
   const categoryWrapRef = useRef<HTMLDivElement>(null);
 
   const closeAll = () => {
@@ -447,14 +456,39 @@ export function HomeSearchCategoryBar() {
     setListOpen(false);
   };
 
+  const emitSearch = (nextQuery: string, nextCategory: string | null) => {
+    const trimmed = nextQuery.trim();
+    if (!trimmed && !nextCategory) {
+      onClearSearch?.();
+      return;
+    }
+    onSearch?.({ query: trimmed, category: nextCategory });
+  };
+
+  const clearSearch = () => {
+    setQuery('');
+    setSelectedCategory(null);
+    closeAll();
+    onClearSearch?.();
+  };
+
   const selectCategory = (label: string) => {
     setSelectedCategory(label);
     closeAll();
   };
 
+  const showClear = query.trim().length > 0 || selectedCategory !== null;
+
   return (
     <>
-      <div dir="ltr" className="relative mx-auto flex h-14 w-full max-w-[572px] min-w-0">
+      <form
+        dir="ltr"
+        className="relative mx-auto flex h-14 w-full max-w-[572px] min-w-0"
+        onSubmit={(event) => {
+          event.preventDefault();
+          emitSearch(query, selectedCategory);
+        }}
+      >
         <label className="relative h-14 min-w-0 flex-1">
           <span className="sr-only">{t('placeholder')}</span>
           <Search
@@ -464,9 +498,33 @@ export function HomeSearchCategoryBar() {
           <input
             type="search"
             dir="rtl"
+            value={query}
+            onChange={(event) => {
+              const next = event.target.value;
+              setQuery(next);
+              // Native search "x" clears the value — exit search mode.
+              if (!next.trim()) {
+                setSelectedCategory(null);
+                onClearSearch?.();
+              }
+            }}
             placeholder={t('placeholder')}
-            className="h-14 w-full rounded-l-[28px] rounded-r-none border border-border bg-home-search-category pl-12 pr-5 text-end text-base leading-6 tracking-[0.0094em] text-content outline-none placeholder:text-content-muted focus-visible:ring-2 focus-visible:ring-primary/30"
+            className={cn(
+              'h-14 w-full rounded-l-[28px] rounded-r-none border border-border bg-home-search-category pl-12 text-end text-base leading-6 tracking-[0.0094em] text-content outline-none placeholder:text-content-muted focus-visible:ring-2 focus-visible:ring-primary/30',
+              showClear ? 'pr-11' : 'pr-5',
+              '[&::-webkit-search-cancel-button]:hidden [&::-webkit-search-decoration]:hidden'
+            )}
           />
+          {showClear ? (
+            <button
+              type="button"
+              aria-label={t('clear')}
+              onClick={clearSearch}
+              className="absolute right-3 top-1/2 inline-flex size-7 -translate-y-1/2 items-center justify-center rounded-full text-content-muted transition-colors hover:bg-muted hover:text-content"
+            >
+              <X className="size-4" />
+            </button>
+          ) : null}
         </label>
         <div className="relative shrink-0" ref={categoryWrapRef}>
           <button
@@ -498,7 +556,7 @@ export function HomeSearchCategoryBar() {
             containerRef={categoryWrapRef}
           />
         </div>
-      </div>
+      </form>
 
       <HomeCategoryOverlay
         open={categoryOpen}

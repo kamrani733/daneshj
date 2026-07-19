@@ -153,6 +153,12 @@
   --color-home-card: #fafaf5;
   --color-home-search-fill: #f8f8f0;
   --color-home-search-category: #efede6;
+  /* Filter bar — Figma Login-logout report Filter / Temp #75:1065 */
+  --color-home-filter-bar: #f5f8f5;
+  --color-home-filter-search: #f5f3ec;
+  --color-home-filter-border: #bfc9c1;
+  --color-home-filter-ink: #171d19;
+  --color-home-filter-muted: #404943;
   --color-home-hero: #1a6d61;
   --color-home-carousel-inactive: #e3e0da;
   --color-home-intro-border: #ffdbcf;
@@ -237,6 +243,11 @@
   --color-home-card: #0f1511;
   --color-home-search-fill: #171d19;
   --color-home-search-category: #1b211d;
+  --color-home-filter-bar: #1b211d;
+  --color-home-filter-search: #171d19;
+  --color-home-filter-border: #404943;
+  --color-home-filter-ink: #eff1ed;
+  --color-home-filter-muted: #bfc9c1;
   --color-home-hero: #003825;
   --color-home-carousel-inactive: #404943;
   --color-home-intro-border: #72351f;
@@ -434,6 +445,26 @@
 
   .bg-home-search-category {
     background-color: var(--color-home-search-category);
+  }
+
+  .bg-home-filter-bar {
+    background-color: var(--color-home-filter-bar);
+  }
+
+  .bg-home-filter-search {
+    background-color: var(--color-home-filter-search);
+  }
+
+  .border-home-filter {
+    border-color: var(--color-home-filter-border);
+  }
+
+  .text-home-filter-ink {
+    color: var(--color-home-filter-ink);
+  }
+
+  .text-home-filter-muted {
+    color: var(--color-home-filter-muted);
   }
 
   .bg-home-hero {
