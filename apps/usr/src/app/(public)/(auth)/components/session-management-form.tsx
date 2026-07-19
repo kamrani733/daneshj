@@ -16,6 +16,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { CircularProgress } from '@/components/ui/circular-progress';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import {
   Table,
@@ -112,7 +113,7 @@ function SessionActionCell({
     <Button
       type="button"
       size="sm"
-      disabled={disabled}
+      loading={disabled}
       onClick={() => onLogout(session.id)}
       className="h-auto rounded-full bg-warning px-7 py-1.5 text-xs font-medium text-white hover:bg-warning-500"
     >
@@ -160,7 +161,7 @@ function SessionMobileCard({
         ) : (
           <Button
             type="button"
-            disabled={disabled}
+            loading={disabled}
             onClick={() => onLogout(session.id)}
             className="h-11 w-full rounded-xl bg-warning text-sm font-medium text-white hover:bg-warning-500"
           >
@@ -437,13 +438,17 @@ export function SessionManagementForm({
             </AlertDialogCancel>
             <AlertDialogAction
               disabled={busyId !== null}
-              className="h-auto rounded-full bg-primary-500 px-7 py-2 text-sm font-medium hover:bg-primary-600"
+              className="h-auto min-w-[5.5rem] rounded-full bg-primary-500 px-7 py-2 text-sm font-medium hover:bg-primary-600"
               onClick={(event) => {
                 event.preventDefault();
                 void onConfirmLogout();
               }}
             >
-              {t('confirm')}
+              {busyId !== null ? (
+                <CircularProgress size={20} aria-label={t('confirm')} />
+              ) : (
+                t('confirm')
+              )}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

@@ -543,3 +543,35 @@
     opacity: 0.75;
   }
 }
+
+/* Material Design indeterminate circular progress */
+@keyframes md-circular-rotate {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes md-circular-dash {
+  0% {
+    stroke-dasharray: 1, 200;
+    stroke-dashoffset: 0;
+  }
+  50% {
+    stroke-dasharray: 100, 200;
+    stroke-dashoffset: -15px;
+  }
+  100% {
+    stroke-dasharray: 100, 200;
+    stroke-dashoffset: -125px;
+  }
+}
+
+.md-circular-progress {
+  display: block;
+  animation: md-circular-rotate 1.4s linear infinite;
+  transform-origin: center;
+}
+
+.md-circular-progress__path {
+  animation: md-circular-dash 1.4s ease-in-out infinite;
+}

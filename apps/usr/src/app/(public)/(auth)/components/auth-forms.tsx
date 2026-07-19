@@ -168,7 +168,7 @@ export function IdentifierForm({
 
       <Button
         type="submit"
-        disabled={sendVerifyCodeMutation.isPending}
+        loading={sendVerifyCodeMutation.isPending}
         className={submitBtn}
       >
         {auth('submit')}
@@ -330,15 +330,16 @@ export function OtpForm({
           <Button
             type="button"
             variant="ghost"
-            disabled={!canResend || resending}
+            disabled={!canResend}
+            loading={resending}
             onClick={onResend}
-            className={canResend ? resendOn : resendOff}
+            className={canResend || resending ? resendOn : resendOff}
           >
             {t('resend')}
           </Button>
           <Button
             type="submit"
-            disabled={verifyCodeMutation.isPending}
+            loading={verifyCodeMutation.isPending}
             className={submitBtnBase}
           >
             {auth('submit')}
@@ -422,7 +423,7 @@ export function TotpForm({ successPath = AUTH_ROUTES.dashboard }: TotpFormProps)
 
       <Button
         type="submit"
-        disabled={verifyCodeMutation.isPending}
+        loading={verifyCodeMutation.isPending}
         className={submitBtn}
       >
         {auth('submit')}
@@ -517,7 +518,7 @@ export function ResetPasswordForm({
 
       <Button
         type="submit"
-        disabled={resetPasswordMutation.isPending}
+        loading={resetPasswordMutation.isPending}
         className={submitBtn}
       >
         {auth('submit')}
@@ -646,7 +647,7 @@ export function ChangePasswordForm({ accessToken }: ChangePasswordFormProps) {
 
       <Button
         type="submit"
-        disabled={changePasswordMutation.isPending}
+        loading={changePasswordMutation.isPending}
         className={submitBtn}
       >
         {auth('submit')}
