@@ -436,7 +436,7 @@ type ResetPasswordFormProps = {
 };
 
 export function ResetPasswordForm({
-  successPath = AUTH_ROUTES.dashboard,
+  successPath = AUTH_ROUTES.login,
 }: ResetPasswordFormProps) {
   const t = useTranslations('forgotPassword');
   const auth = useTranslations('auth');
@@ -475,7 +475,7 @@ export function ResetPasswordForm({
         accessToken: resetAccessToken!,
       });
       clearFlow();
-      router.push(successPath);
+      router.replace(successPath);
     } catch (err) {
       setError(getAuthApiErrorMessage(err, t('resetFailed')));
     }
