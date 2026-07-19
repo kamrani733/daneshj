@@ -72,6 +72,14 @@ function createMockSessionsForLimitReached(): SessionData[] {
   ];
 }
 
+function mockOperationForPurpose(
+  purpose: SendVerifyCodePayload['purpose']
+): SendVerifyCodeResponse['operation'] {
+  if (purpose === 'register') return 'REGISTER';
+  if (purpose === 'forgot-password') return 'RESET_PASSWORD';
+  return 'LOGIN';
+}
+
 export function mockSendVerifyCode(
   payload: SendVerifyCodePayload
 ): SendVerifyCodeResponse {
@@ -79,7 +87,7 @@ export function mockSendVerifyCode(
   return {
     identityType: isEmail ? 'email' : 'mobile',
     codeType: 'OTP',
-    operation: payload.purpose === 'register' ? 'REGISTER' : 'LOGIN',
+    operation: mockOperationForPurpose(payload.purpose),
     code: '123456',
     message: 'Mock OTP sent.',
   };
@@ -91,9 +99,23 @@ export function mockVerifyCode(payload: VerifyCodePayload): VerifyCodeResponse {
     mobile: payload.identity.includes('@') ? null : payload.identity,
     email: payload.identity.includes('@') ? payload.identity : null,
     operation: payload.operation,
-    redirect_verify_password: false,
+    redirect_verify_password:
+      payload.purpose === 'forgot-password' ||
+      payload.operation === 'RESET_PASSWORD',
     is_two_step_login: false,
   };
+
+  // Forgot-password must continue to the reset form — never invent a login session.
+  if (
+    payload.purpose === 'forgot-password' ||
+    payload.operation === 'RESET_PASSWORD'
+  ) {
+    return {
+      identityInfo,
+      redirectVerifyPassword: true,
+      resetAccessToken: 'mock-reset-access-token',
+    };
+  }
 
   return {
     session: {

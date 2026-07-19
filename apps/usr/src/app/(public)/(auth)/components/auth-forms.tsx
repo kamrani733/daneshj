@@ -259,8 +259,8 @@ export function OtpForm({
         return;
       }
 
-      if (purpose === 'forgot-password' && result.redirectVerifyPassword) {
-        if (!result.resetAccessToken) {
+      if (purpose === 'forgot-password') {
+        if (!result.redirectVerifyPassword || !result.resetAccessToken) {
           setError(t('resetTokenMissing'));
           return;
         }

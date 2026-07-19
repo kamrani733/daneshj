@@ -313,6 +313,24 @@ export async function resetPassword(payload: ResetPasswordPayload): Promise<void
     throw new Error('Authentication credentials were not provided.');
   }
 
+  if (isAuthApiMocked()) {
+    await withMockFallback(async () => {
+      await postAuth<null>(
+        '/auth/actor_reset_password',
+        {
+          new_password: payload.password,
+          confirm_new_password: payload.confirmPassword,
+          security_question_code: null,
+          security_question_answer: null,
+        },
+        { actor_type: USR_ACTOR_TYPE },
+        payload.accessToken,
+        false
+      );
+    }, undefined);
+    return;
+  }
+
   await postAuth<null>(
     '/auth/actor_reset_password',
     {
