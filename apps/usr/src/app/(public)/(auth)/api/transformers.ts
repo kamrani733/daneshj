@@ -156,5 +156,7 @@ export function toIdentityInfoRequest(info: IdentityInfo) {
     mobile: info.mobile,
     email: info.email,
     operation: info.operation,
+    redirect_verify_password: info.redirect_verify_password,
+    is_two_step_login: info.is_two_step_login,
   };
 }
