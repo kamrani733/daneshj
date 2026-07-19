@@ -10,10 +10,13 @@ import {
   getSessions,
   getSessionsForLimitReached,
   inactiveSessionThenGetToken,
+  loginByIdentityAndPassword,
   refreshToken,
   resetPassword,
+  sendOtpForLogin,
   sendVerifyCode,
   verifyCode,
+  verifyPassword,
 } from './auth';
 import { authQueryKeys } from './query-keys';
 import type {
@@ -22,10 +25,13 @@ import type {
   DeleteSessionPayload,
   GetSessionsPayload,
   InactiveSessionThenGetTokenPayload,
+  LoginByIdentityPasswordPayload,
   RefreshTokenPayload,
   ResetPasswordPayload,
+  SendOtpForLoginPayload,
   SendVerifyCodePayload,
   VerifyCodePayload,
+  VerifyPasswordPayload,
 } from './types';
 
 export function useSendVerifyCodeMutation() {
@@ -57,6 +63,18 @@ export function useChangePasswordMutation() {
 
 export function useRefreshTokenMutation() {
   return useMutation({ mutationFn: refreshToken });
+}
+
+export function useSendOtpForLoginMutation() {
+  return useMutation({ mutationFn: sendOtpForLogin });
+}
+
+export function useVerifyPasswordMutation() {
+  return useMutation({ mutationFn: verifyPassword });
+}
+
+export function useLoginByIdentityAndPasswordMutation() {
+  return useMutation({ mutationFn: loginByIdentityAndPassword });
 }
 
 export function useGetSessionsQuery(
@@ -107,8 +125,11 @@ export type {
   DeleteSessionPayload,
   GetSessionsPayload,
   InactiveSessionThenGetTokenPayload,
+  LoginByIdentityPasswordPayload,
   RefreshTokenPayload,
   ResetPasswordPayload,
+  SendOtpForLoginPayload,
   SendVerifyCodePayload,
   VerifyCodePayload,
+  VerifyPasswordPayload,
 };

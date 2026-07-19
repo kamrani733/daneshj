@@ -1,7 +1,20 @@
+import type { LucideIcon } from 'lucide-react';
+import {
+  Briefcase,
+  GraduationCap,
+  HardHat,
+  HeartHandshake,
+  Landmark,
+  Megaphone,
+  Wallet,
+} from 'lucide-react';
+
 export type HomeMenuItem = {
   id: string;
   label: string;
   href?: string;
+  /** Figma leading icon (services menu). */
+  icon?: LucideIcon;
   children?: HomeMenuItem[];
 };
 
@@ -80,12 +93,62 @@ export const CATEGORY_MENU_ITEMS: HomeMenuItem[] = [
       { id: 'hotel', label: 'هتل' },
     ],
   },
-  { id: 'fashion', label: 'پوشاک و مد' },
-  { id: 'cafe', label: 'رستوران و کافی شاپ' },
-  { id: 'finance', label: 'مالی' },
-  { id: 'home', label: 'خانه و دکوراسیون' },
-  { id: 'repair', label: 'تعمیرات و خدمات' },
-  { id: 'other', label: 'سایر' },
+  {
+    id: 'fashion',
+    label: 'پوشاک و مد',
+    children: [
+      { id: 'clothes', label: 'پوشاک  ' },
+      { id: 'bags-shoes', label: 'کیف و کفش ' },
+      { id: 'sportswear', label: 'پوشاک ورزشی' },
+      { id: 'sunglasses', label: 'عینک آفتابی ' },
+      { id: 'perfume', label: 'عطر و ادکلن' },
+      { id: 'accessories', label: 'زیور آلات ' },
+      { id: 'jewelry', label: 'جواهرات' },
+    ],
+  },
+  {
+    id: 'cafe',
+    label: 'رستوران و کافی شاپ',
+    children: [
+      { id: 'restaurant', label: 'غذا و رستوران' },
+      { id: 'coffee', label: 'کافی شاپ' },
+      { id: 'snack', label: 'اسنک' },
+    ],
+  },
+  {
+    id: 'finance',
+    label: 'مالی',
+    children: [{ id: 'crypto', label: 'ارز دیجیتال' }],
+  },
+  {
+    id: 'home',
+    label: 'خانه و دکوراسیون',
+    children: [
+      { id: 'plants', label: 'گل و گیاه ' },
+      { id: 'decor', label: 'دکوراسیون و لوازم تزئینی' },
+      { id: 'home-goods', label: 'لوازم خانه' },
+    ],
+  },
+  {
+    id: 'repair',
+    label: 'تعمیرات و خدمات',
+    children: [
+      { id: 'clothing-repair', label: 'تعمیرات پوشاک و کیف و کفش' },
+      { id: 'home-install', label: 'تاسیسات و لوازم منزل' },
+      { id: 'digital-repair', label: 'تعمیرات دیجیتال و کامپیوتر' },
+      { id: 'translation', label: 'ترجمه' },
+      { id: 'cleaning', label: 'نظافتی' },
+    ],
+  },
+  {
+    id: 'other',
+    label: 'سایر',
+    children: [
+      { id: 'cooking', label: 'مواد اولیه و لوازم پخت و پز غذا و شیرینی' },
+      { id: 'kids', label: 'کودک و نوجوان' },
+      { id: 'photo-video', label: 'عکاسی و فیلمبرداری و چاپ' },
+    ],
+  },
 ];
 
 /** Figma Category grid #1:9227 — 7×2 overlay tiles. */
@@ -105,11 +168,12 @@ export const CATEGORY_GRID_ITEMS: HomeCategoryGridItem[] = [
   { id: 'fashion', label: 'پوشاک ومد' },
 ];
 
-/** Figma Menu #1:10403 — سرویس‌ها with nested flyouts. */
+/** Figma Menu #1:323 — سرویس‌ها with Material leading icons + nested flyouts. */
 export const SERVICES_MENU_ITEMS: HomeMenuItem[] = [
   {
     id: 'welfare',
     label: 'رفاهی',
+    icon: HeartHandshake, // volunteer_activism
     children: [
       { id: 'housing', label: 'رفاه- اسکان دانشجویی' },
       { id: 'welfare-other', label: 'سایر خدمات رفاهی' },
@@ -118,6 +182,7 @@ export const SERVICES_MENU_ITEMS: HomeMenuItem[] = [
   {
     id: 'financial',
     label: 'مالی',
+    icon: Wallet, // local_atm
     children: [
       { id: 'transport', label: 'تسهیلات و تخفیف  در سیستم های حمل و انتقال' },
       { id: 'loan', label: 'وام دانشجویی' },
@@ -133,6 +198,7 @@ export const SERVICES_MENU_ITEMS: HomeMenuItem[] = [
   {
     id: 'insurance',
     label: 'بیمه',
+    icon: Landmark, // assured_workload
     children: [
       {
         id: 'student-insurance',
@@ -143,6 +209,7 @@ export const SERVICES_MENU_ITEMS: HomeMenuItem[] = [
   {
     id: 'education',
     label: 'آموزش',
+    icon: GraduationCap, // school
     children: [
       { id: 'courses', label: 'معرفی دوره های تحصیلی دانشگاهی' },
       { id: 'free-courses', label: 'آموزش های آزاد- کرس های مستقل' },
@@ -154,6 +221,7 @@ export const SERVICES_MENU_ITEMS: HomeMenuItem[] = [
   {
     id: 'social',
     label: 'اطلاع رسانی و اجتماعی',
+    icon: Megaphone, // campaign
     children: [
       { id: 'news', label: 'اخبار' },
       { id: 'newsletter', label: 'خبر نامه' },
@@ -166,6 +234,7 @@ export const SERVICES_MENU_ITEMS: HomeMenuItem[] = [
   {
     id: 'industry',
     label: 'صنعت و دانشگاه',
+    icon: HardHat, // engineering
     children: [
       { id: 'showcase', label: 'معرفی و ارایه کار دانشجویی' },
       { id: 'thesis', label: 'پایان نامه های تحصیلی در صنایع' },
@@ -177,6 +246,7 @@ export const SERVICES_MENU_ITEMS: HomeMenuItem[] = [
   {
     id: 'employment',
     label: 'اشتغال',
+    icon: Briefcase, // business_center
     children: [
       { id: 'student-jobs', label: 'شغل برای دانشجویان' },
       { id: 'gap-year', label: 'فراغت میان دوره از تحصیل برای کار' },

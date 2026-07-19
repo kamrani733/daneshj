@@ -4,10 +4,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import {
   Bell,
-  ChevronLeft,
   Grid3X3,
   Headphones,
-  LayoutDashboard,
   Menu,
   Search,
   UserRound,
@@ -29,7 +27,8 @@ import {
   CategoryTriggerChevron,
   HomeCategoryOverlay,
 } from './home-category-overlay';
-import { HomeMenuDropdown } from './home-menu-panel';
+import { HomeMenuDropdown, HomeMenuStackList } from './home-menu-panel';
+import { UserProfileMenu } from './user-profile-menu';
 
 /** Figma menu order (LTR, logo last on the right edge) */
 const NAV_LINKS = [
@@ -40,10 +39,12 @@ const NAV_LINKS = [
 
 type HomeHeaderProps = {
   isAuthenticated?: boolean;
+  userName?: string;
 };
 
-export function HomeHeader({ isAuthenticated = false }: HomeHeaderProps) {
+export function HomeHeader({ isAuthenticated = false, userName }: HomeHeaderProps) {
   const t = useTranslations('home.header');
+  const tHome = useTranslations('home');
   const [mobileOpen, setMobileOpen] = useState(false);
   const [openNav, setOpenNav] = useState<string | null>(null);
 
@@ -58,8 +59,9 @@ export function HomeHeader({ isAuthenticated = false }: HomeHeaderProps) {
       >
         <HeaderIconGroup
           isAuthenticated={isAuthenticated}
+          userName={userName}
           profileLabel={t('profile')}
-          dashboardLabel={t('dashboard')}
+          loginLabel={tHome('login')}
           notificationsLabel={t('notifications')}
         />
         <HeaderLogo alt={t('logoAlt')} size="compact" />
@@ -81,8 +83,9 @@ export function HomeHeader({ isAuthenticated = false }: HomeHeaderProps) {
             <ThemeToggle />
             <AuthEntryButton
               isAuthenticated={isAuthenticated}
+              userName={userName}
               profileLabel={t('profile')}
-              dashboardLabel={t('dashboard')}
+              loginLabel={tHome('login')}
             />
             <NotificationButton count={3} label={t('notifications')} />
           </div>
@@ -150,16 +153,18 @@ function HeaderLogo({ alt, size, className }: HeaderLogoProps) {
 
 type HeaderIconGroupProps = {
   isAuthenticated: boolean;
+  userName?: string;
   profileLabel: string;
-  dashboardLabel: string;
+  loginLabel: string;
   notificationsLabel: string;
   className?: string;
 };
 
 function HeaderIconGroup({
   isAuthenticated,
+  userName,
   profileLabel,
-  dashboardLabel,
+  loginLabel,
   notificationsLabel,
   className,
 }: HeaderIconGroupProps) {
@@ -167,8 +172,9 @@ function HeaderIconGroup({
     <div className={cn('flex shrink-0 items-center gap-2', className)}>
       <AuthEntryButton
         isAuthenticated={isAuthenticated}
+        userName={userName}
         profileLabel={profileLabel}
-        dashboardLabel={dashboardLabel}
+        loginLabel={loginLabel}
         size="sm"
       />
       <NotificationButton count={3} label={notificationsLabel} size="sm" />
@@ -179,34 +185,49 @@ function HeaderIconGroup({
 type AuthEntryButtonProps = {
   isAuthenticated: boolean;
   profileLabel: string;
-  dashboardLabel: string;
+  loginLabel: string;
+  userName?: string;
   size?: 'sm' | 'md';
 };
 
 function AuthEntryButton({
   isAuthenticated,
   profileLabel,
-  dashboardLabel,
+  loginLabel,
+  userName,
   size = 'md',
 }: AuthEntryButtonProps) {
-  if (isAuthenticated) {
+  if (!isAuthenticated) {
     return (
       <Link
-        href={AUTH_ROUTES.dashboard}
-        aria-label={dashboardLabel}
+        href={AUTH_ROUTES.login}
         className={cn(
-          'inline-flex items-center justify-center rounded-full bg-primary text-primary-foreground transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30',
-          size === 'sm' ? 'h-10 gap-1.5 px-3 text-sm font-medium' : 'h-14 gap-2 px-4 text-base font-medium'
+          'inline-flex items-center justify-center rounded-md border border-primary bg-primary px-4 font-medium text-primary-foreground transition-colors',
+          'hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30',
+          size === 'sm' ? 'h-9 text-sm' : 'h-11 text-base'
         )}
       >
-        <LayoutDashboard className={size === 'sm' ? 'size-[18px]' : 'size-5'} strokeWidth={1.75} />
-        <span>{dashboardLabel}</span>
+        {loginLabel}
       </Link>
     );
   }
 
   return (
-    <IconButton label={profileLabel} icon={UserRound} href={AUTH_ROUTES.login} size={size} />
+    <UserProfileMenu
+      displayName={userName?.trim() || 'نام و نام خانوادگی'}
+      triggerLabel={profileLabel}
+      trigger={({ open, menuId, onToggle }) => (
+        <IconButton
+          label={profileLabel}
+          icon={UserRound}
+          size={size}
+          aria-expanded={open}
+          aria-haspopup="menu"
+          aria-controls={open ? menuId : undefined}
+          onClick={onToggle}
+        />
+      )}
+    />
   );
 }
 
@@ -288,8 +309,12 @@ type MobileNavDrawerProps = {
 };
 
 function MobileNavDrawer({ items, onClose, t }: MobileNavDrawerProps) {
-  const [stack, setStack] = useState<{ title: string; items: HomeMenuItem[] }[]>([]);
-  const current = stack[stack.length - 1];
+  const rootItems: HomeMenuItem[] = items.map(({ key, icon, menuKey }) => ({
+    id: key,
+    label: t(key),
+    icon,
+    children: NAV_MENUS[menuKey],
+  }));
 
   useEffect(() => {
     const previous = document.body.style.overflow;
@@ -299,70 +324,37 @@ function MobileNavDrawer({ items, onClose, t }: MobileNavDrawerProps) {
     };
   }, []);
 
-  const resetAndClose = () => {
-    setStack([]);
-    onClose();
-  };
-
   return (
-    <nav
-      className="fixed inset-x-0 bottom-0 top-12 z-50 flex flex-col overflow-y-auto border-t border-border bg-home-header px-4 py-3 lg:hidden"
-      aria-label={t('mainNav')}
-    >
-      <div className="mb-3 flex shrink-0 items-center justify-between">
-        {current ? (
+    <div className="fixed inset-0 top-12 z-[60] lg:hidden">
+      <button
+        type="button"
+        aria-label="بستن منو"
+        className="absolute inset-0 bg-black/30"
+        onClick={onClose}
+      />
+      <nav
+        className="relative z-10 flex max-h-[calc(100dvh-3rem)] flex-col px-4 pb-6 pt-3"
+        aria-label={t('mainNav')}
+      >
+        <div className="mb-3 flex shrink-0 justify-end">
           <button
             type="button"
-            dir="rtl"
-            onClick={() => setStack((value) => value.slice(0, -1))}
-            className="inline-flex items-center gap-2 text-right text-sm font-medium text-content"
+            aria-label="بستن منو"
+            onClick={onClose}
+            className="inline-flex size-9 items-center justify-center rounded-md bg-home-header text-content shadow-home-elevation-1 hover:bg-muted"
           >
-            <ChevronLeft className="size-5" />
-            <span>{current.title}</span>
+            <X className="size-5" />
           </button>
-        ) : (
-          <span dir="rtl" className="text-right text-sm font-medium text-content-muted">
-            {t('mainNav')}
-          </span>
-        )}
-        <button
-          type="button"
-          aria-label="بستن منو"
-          onClick={resetAndClose}
-          className="inline-flex size-9 items-center justify-center rounded-full hover:bg-muted"
-        >
-          <X className="size-5" />
-        </button>
-      </div>
+        </div>
 
-      <ul dir="rtl" className="flex min-h-0 flex-1 flex-col text-right">
-        {(current?.items ?? items.map(({ key, menuKey }) => ({
-          id: key,
-          label: t(key),
-          children: NAV_MENUS[menuKey],
-        }))).map((item) => (
-          <li key={item.id}>
-            <button
-              type="button"
-              dir="rtl"
-              className="flex h-14 w-full items-center justify-between gap-2 border-b border-border/60 px-2 text-right text-base font-medium text-content"
-              onClick={() => {
-                if (item.children?.length) {
-                  setStack((value) => [...value, { title: item.label, items: item.children! }]);
-                  return;
-                }
-                resetAndClose();
-              }}
-            >
-              <span>{item.label}</span>
-              {item.children?.length ? (
-                <ChevronLeft className="size-5 text-content-muted" aria-hidden />
-              ) : null}
-            </button>
-          </li>
-        ))}
-      </ul>
-    </nav>
+        <HomeMenuStackList
+          items={rootItems}
+          rootTitle={t('mainNav')}
+          className="ms-auto w-full max-w-[360px] min-h-0 overflow-y-auto"
+          onNavigate={() => onClose()}
+        />
+      </nav>
+    </div>
   );
 }
 
@@ -371,9 +363,22 @@ type IconButtonProps = {
   icon: typeof UserRound;
   href?: string;
   size?: 'sm' | 'md';
+  onClick?: () => void;
+  'aria-expanded'?: boolean;
+  'aria-haspopup'?: 'menu' | boolean;
+  'aria-controls'?: string;
 };
 
-function IconButton({ label, icon: Icon, href, size = 'md' }: IconButtonProps) {
+function IconButton({
+  label,
+  icon: Icon,
+  href,
+  size = 'md',
+  onClick,
+  'aria-expanded': ariaExpanded,
+  'aria-haspopup': ariaHaspopup,
+  'aria-controls': ariaControls,
+}: IconButtonProps) {
   const className = cn(
     'inline-flex items-center justify-center rounded-full bg-home-search-category text-content transition-colors hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30',
     size === 'sm' ? 'size-10' : 'size-14'
@@ -389,7 +394,15 @@ function IconButton({ label, icon: Icon, href, size = 'md' }: IconButtonProps) {
   }
 
   return (
-    <button type="button" aria-label={label} className={className}>
+    <button
+      type="button"
+      aria-label={label}
+      aria-expanded={ariaExpanded}
+      aria-haspopup={ariaHaspopup}
+      aria-controls={ariaControls}
+      onClick={onClick}
+      className={className}
+    >
       <Icon className={iconClass} strokeWidth={1.75} />
     </button>
   );

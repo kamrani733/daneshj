@@ -9,6 +9,7 @@ import { HomeHeader, HomeSearchCategoryBar } from './components/home-header';
 import { HomeHeroBanner } from './components/home-hero-banner';
 import { HomeIntroduction } from './components/home-introduction';
 import { HomePromoBanner } from './components/home-promo-banner';
+import { SessionKeepAlive } from '@/components/session-keep-alive';
 
 const HomeMotivationBox = dynamic(
   () => import('./components/home-motivation-box').then((mod) => mod.HomeMotivationBox)
@@ -22,7 +23,11 @@ export async function HomePage() {
 
   return (
     <div className="relative min-h-screen overflow-x-clip bg-home-scene" dir="rtl">
-      <HomeHeader isAuthenticated={!!session} />
+      <SessionKeepAlive enabled={!!session?.refreshToken && !!session.sessionKey} />
+      <HomeHeader
+        isAuthenticated={!!session}
+        userName={session?.user.name?.trim() || undefined}
+      />
       <HomeBgPattern />
 
       <div className="relative z-10 mx-auto w-full max-w-[1512px] px-4 pb-16 min-[834px]:px-12 min-[1512px]:px-[100px]">

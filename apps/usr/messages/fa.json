@@ -23,7 +23,17 @@
       "profile": "پروفایل کاربر",
       "dashboard": "داشبورد",
       "notifications": "اعلان‌ها",
-      "menu": "باز کردن منو"
+      "menu": "باز کردن منو",
+      "profileMenu": {
+        "userType": "کاربر",
+        "privatePanel": "پنل خصوصی ",
+        "publicPanel": "پنل عمومی ",
+        "operationalPanel": "پنل عملیاتی ",
+        "membershipOps": "عملیات سطح عضویت",
+        "sessions": "مدیریت سشن ها",
+        "security": "تنظیمات امنیتی",
+        "logout": "خروج"
+      }
     },
     "search": {
       "placeholder": " جستجو...",

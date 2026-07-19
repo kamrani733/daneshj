@@ -8,7 +8,7 @@ import { cn } from '@/lib/utils';
 
 import { CATEGORY_GRID_ITEMS, CATEGORY_MENU_ITEMS } from '../data/home-menu-data';
 import { HOME_IMAGES } from '../home-assets';
-import { HomeMenuPanel } from './home-menu-panel';
+import { HomeMenuPanel, HomeMenuStackList } from './home-menu-panel';
 
 type HomeCategoryOverlayProps = {
   open: boolean;
@@ -97,9 +97,9 @@ export function HomeCategoryOverlay({ open, onClose, onSelect }: HomeCategoryOve
 
         <div dir="rtl" className="flex flex-col items-end gap-4 pt-8 min-[834px]:hidden">
           <h2 className="w-full text-right text-xl font-bold leading-8 text-primary">دسته بندی تخفیف ها </h2>
-          <HomeMenuPanel
+          <HomeMenuStackList
             items={CATEGORY_MENU_ITEMS}
-            className="w-full max-w-[280px]"
+            className="w-full max-w-[360px]"
             onNavigate={(label) => {
               onSelect?.(label);
               onClose();
@@ -149,7 +149,7 @@ export function CategoryMenuDropdown({
   if (!open) return null;
 
   return (
-    <div dir="rtl" className="absolute right-0 top-[calc(100%+4px)] z-[80] hidden min-[834px]:block">
+    <div dir="rtl" className="absolute right-0 top-[calc(100%+4px)] z-[100] hidden min-[834px]:block">
       <HomeMenuPanel
         items={CATEGORY_MENU_ITEMS}
         onNavigate={(label) => {

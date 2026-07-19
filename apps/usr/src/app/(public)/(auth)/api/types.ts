@@ -141,6 +141,46 @@ export interface DeleteSessionPayload {
   sessionIds: number[];
 }
 
+/** POST /auth/actor_logout — خروج کاربر */
+export interface ActorLogoutPayload {
+  accessToken: string;
+  sessionKey: string;
+}
+
+/** GET /auth/get_token_info */
+export interface TokenInfoData {
+  sub: number;
+  iat: number;
+  exp: number;
+}
+
+/** POST /auth/actor_send_otp_for_login */
+export interface SendOtpForLoginPayload {
+  identity: string;
+}
+
+/** Shared password-login / verify-password response data */
+export interface VerifyPasswordData {
+  access_token: string;
+  refresh_token?: string | null;
+  session_info: SessionInfo;
+}
+
+/** POST /auth/actor_verify_password — two-step login */
+export interface VerifyPasswordPayload {
+  identity: string;
+  password: string;
+  recaptchaResponse: string;
+  accessToken: string;
+}
+
+/** POST /auth/actor_login_by_identity_and_password */
+export interface LoginByIdentityPasswordPayload {
+  identity: string;
+  password: string;
+  recaptchaResponse: string;
+}
+
 export interface InactiveSessionThenGetTokenPayload {
   accessToken: string;
   sessionIds: number[];

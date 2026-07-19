@@ -1,4 +1,5 @@
 import { withMockFallback } from '@daneshjoam/api-client';
+import type { Session } from '@daneshjoam/shared-types';
 
 import { usrHttpClient } from '@/shared/api/usr-http';
 import { USR_ACTOR_TYPE } from './constants';
@@ -21,11 +22,13 @@ import {
   toVerifyCodeQuery,
 } from './transformers';
 import type {
+  ActorLogoutPayload,
   ApiResponse,
   DeleteSessionForLimitReachedPayload,
   DeleteSessionPayload,
   GetSessionsPayload,
   InactiveSessionThenGetTokenPayload,
+  LoginByIdentityPasswordPayload,
   RefreshTokenData,
   RefreshTokenPayload,
   RefreshTokenResponse,
@@ -33,12 +36,16 @@ import type {
   ResetPasswordPayload,
   SecurityQuestion,
   SendCodeData,
+  SendOtpForLoginPayload,
   SendVerifyCodePayload,
   SendVerifyCodeResponse,
   SessionData,
+  TokenInfoData,
   VerifyCodeData,
   VerifyCodePayload,
   VerifyCodeResponse,
+  VerifyPasswordData,
+  VerifyPasswordPayload,
 } from './types';
 
 function assertApiSuccess<T>(response: ApiResponse<T>, requireData = true): T {
@@ -138,10 +145,7 @@ export async function verifyCode(
   return mapVerifyCodeResponse(data, payload.purpose);
 }
 
-/**
- * Refresh access token (45 min lifetime). Backend endpoint is ready.
- * TODO: Wire automatic refresh with team — do not enable silent refresh yet.
- */
+/** POST /auth/refresh_token — stay logged in (no Bearer required). */
 export async function refreshToken(
   payload: RefreshTokenPayload
 ): Promise<RefreshTokenResponse> {
@@ -175,6 +179,112 @@ export async function refreshToken(
     accessToken: data.access_token,
     refreshToken: data.refresh_token,
   };
+}
+
+/** GET /auth/get_token_info — check access-token expiry (iat/exp). */
+export async function getTokenInfo(accessToken: string): Promise<TokenInfoData> {
+  return getAuth<TokenInfoData>('/auth/get_token_info', {}, accessToken);
+}
+
+/** POST /auth/actor_send_otp_for_login — send OTP for login step 1. */
+export async function sendOtpForLogin(
+  payload: SendOtpForLoginPayload
+): Promise<SendVerifyCodeResponse> {
+  if (isAuthApiMocked()) {
+    return mockSendVerifyCode({
+      identity: payload.identity,
+      purpose: 'login',
+    });
+  }
+
+  const { data: response } = await usrHttpClient.post<ApiResponse<SendCodeData>>(
+    '/auth/actor_send_otp_for_login',
+    undefined,
+    {
+      params: {
+        actor_type: USR_ACTOR_TYPE,
+        identity: payload.identity,
+      },
+    }
+  );
+  const data = assertApiSuccess(response);
+  return mapSendCodeResponse(data, response.message);
+}
+
+function mapPasswordLoginResponse(
+  data: VerifyPasswordData,
+  identity: string
+): VerifyCodeResponse {
+  const sessionInfo = data.session_info;
+
+  if (sessionInfo.session_limit_reached && !sessionInfo.session_key) {
+    return {
+      sessionLimitReached: true,
+      pendingAccessToken: data.access_token,
+      loginType: sessionInfo.login_type,
+    };
+  }
+
+  if (!sessionInfo.session_key) {
+    throw new Error(formatApiResponseError('Login failed.'));
+  }
+
+  const session: Session = {
+    user: {
+      id: sessionInfo.session_key,
+      email: identity.includes('@') ? identity : '',
+      name: identity,
+    },
+    accessToken: data.access_token,
+    refreshToken: data.refresh_token ?? undefined,
+    sessionKey: sessionInfo.session_key,
+    loginType: sessionInfo.login_type,
+  };
+
+  return { session };
+}
+
+/** POST /auth/actor_verify_password — two-step login (password after OTP). */
+export async function verifyPassword(
+  payload: VerifyPasswordPayload
+): Promise<VerifyCodeResponse> {
+  const { data } = await postAuth<VerifyPasswordData>(
+    '/auth/actor_verify_password',
+    {
+      identity: payload.identity,
+      password: payload.password,
+      recaptcha_response: payload.recaptchaResponse,
+      user_agent:
+        typeof navigator !== 'undefined' ? navigator.userAgent : undefined,
+    },
+    {
+      actor_type: USR_ACTOR_TYPE,
+      login_source: 'Web',
+    },
+    payload.accessToken
+  );
+
+  return mapPasswordLoginResponse(data, payload.identity);
+}
+
+/** POST /auth/actor_login_by_identity_and_password — one-step password login. */
+export async function loginByIdentityAndPassword(
+  payload: LoginByIdentityPasswordPayload
+): Promise<VerifyCodeResponse> {
+  const { data } = await postAuth<VerifyPasswordData>(
+    '/auth/actor_login_by_identity_and_password',
+    {
+      identity: payload.identity,
+      password: payload.password,
+      recaptcha_response: payload.recaptchaResponse,
+      user_agent:
+        typeof navigator !== 'undefined' ? navigator.userAgent : undefined,
+      login_source: 'Web',
+    },
+    { actor_type: USR_ACTOR_TYPE }
+  );
+
+  return mapPasswordLoginResponse(data, payload.identity);
 }
 
 export async function getSessions(
@@ -255,6 +365,19 @@ export async function deleteSession(
       actor_type: USR_ACTOR_TYPE,
       session_list: payload.sessionIds.join(','),
     },
+    payload.accessToken,
+    false
+  );
+}
+
+/** POST /auth/actor_logout — logout current session (USR-Aut-3N1). */
+export async function actorLogout(payload: ActorLogoutPayload): Promise<void> {
+  if (isAuthApiMocked()) return;
+
+  await postAuth<null>(
+    '/auth/actor_logout',
+    { session_key: payload.sessionKey },
+    { actor_type: USR_ACTOR_TYPE },
     payload.accessToken,
     false
   );

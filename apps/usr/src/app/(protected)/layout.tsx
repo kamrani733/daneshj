@@ -1,6 +1,8 @@
 import { redirect } from 'next/navigation';
 import { getSession } from '@daneshjoam/auth';
 
+import { SessionKeepAlive } from '@/components/session-keep-alive';
+
 export default async function ProtectedLayout({
   children,
 }: {
@@ -11,5 +13,10 @@ export default async function ProtectedLayout({
     redirect('/login');
   }
 
-  return <>{children}</>;
+  return (
+    <>
+      <SessionKeepAlive enabled={!!session.refreshToken && !!session.sessionKey} />
+      {children}
+    </>
+  );
 }
