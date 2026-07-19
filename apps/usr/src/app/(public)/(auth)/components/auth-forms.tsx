@@ -441,7 +441,6 @@ export function ResetPasswordForm({
 }: ResetPasswordFormProps) {
   const t = useTranslations('forgotPassword');
   const auth = useTranslations('auth');
-  const router = useRouter();
   const clearFlow = useAuthFlowStore((s) => s.clear);
   const resetAccessToken = useAuthFlowStore((s) => s.resetAccessToken);
   const { ready } = useAuthFlowGuard(
@@ -476,7 +475,7 @@ export function ResetPasswordForm({
         accessToken: resetAccessToken!,
       });
       clearFlow();
-      router.replace(successPath);
+      window.location.assign(successPath);
     } catch (err) {
       setError(getAuthApiErrorMessage(err, t('resetFailed')));
     }
