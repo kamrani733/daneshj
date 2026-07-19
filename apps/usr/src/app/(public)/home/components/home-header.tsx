@@ -17,6 +17,8 @@ import { useEffect, useRef, useState } from 'react';
 
 import { AUTH_ROUTES } from '@auth/lib/auth-routes';
 import { ThemeToggle } from '@/components/theme-toggle';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 
 import { NAV_MENUS } from '../data/home-menu-data';
@@ -249,22 +251,26 @@ function HeaderSearchMenuGroup({
 }: HeaderSearchMenuGroupProps) {
   return (
     <div className={cn('flex shrink-0 items-center gap-2.5', className)}>
-      <button
+      <Button
         type="button"
+        variant="toolbar"
+        size="icon"
         aria-label={searchLabel}
-        className="inline-flex size-10 shrink-0 items-center justify-center rounded-full bg-home-search-category text-content transition-colors hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
+        className="size-10 shrink-0 rounded-full bg-home-search-category text-content hover:bg-home-search-category hover:opacity-90"
       >
         <Search className="size-[23px]" strokeWidth={1.75} aria-hidden />
-      </button>
-      <button
+      </Button>
+      <Button
         type="button"
-        className="inline-flex size-10 shrink-0 items-center justify-center text-content transition-colors hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
+        variant="ghost"
+        size="icon"
+        className="size-10 shrink-0 text-content hover:bg-transparent hover:opacity-80"
         aria-expanded={menuOpen}
         aria-label={menuLabel}
         onClick={onMenuToggle}
       >
         <Menu className="size-6" strokeWidth={2} aria-hidden />
-      </button>
+      </Button>
     </div>
   );
 }
@@ -283,20 +289,22 @@ function NavMenuItem({ label, icon: Icon, open, onToggle, onClose, items }: NavM
 
   return (
     <div ref={wrapRef} className="relative">
-      <button
+      <Button
         type="button"
+        variant="ghost"
+        size="none"
         dir="rtl"
         aria-expanded={open}
         aria-haspopup="menu"
         onClick={onToggle}
         className={cn(
-          'inline-flex h-12 min-w-0 items-center justify-center gap-2 rounded-full px-3 text-sm font-medium leading-6 tracking-[0.0094em] text-content-muted transition-colors hover:bg-muted hover:text-content min-[1280px]:px-4 min-[1280px]:text-base min-[1512px]:w-[164px] min-[1512px]:px-6',
+          'h-12 min-w-0 gap-2 rounded-full px-3 text-sm font-medium leading-6 tracking-[0.0094em] text-content-muted hover:bg-muted hover:text-content min-[1280px]:px-4 min-[1280px]:text-base min-[1512px]:w-[164px] min-[1512px]:px-6',
           open && 'bg-muted text-content'
         )}
       >
         <span>{label}</span>
         <Icon className="size-5 shrink-0" aria-hidden />
-      </button>
+      </Button>
       <HomeMenuDropdown open={open} onClose={onClose} items={items} containerRef={wrapRef} />
     </div>
   );
@@ -326,10 +334,12 @@ function MobileNavDrawer({ items, onClose, t }: MobileNavDrawerProps) {
 
   return (
     <div className="fixed inset-0 top-12 z-[60] lg:hidden">
-      <button
+      <Button
         type="button"
+        variant="ghost"
+        size="none"
         aria-label="بستن منو"
-        className="absolute inset-0 bg-black/30"
+        className="absolute inset-0 h-auto w-auto rounded-none bg-black/30 hover:bg-black/30"
         onClick={onClose}
       />
       <nav
@@ -337,14 +347,16 @@ function MobileNavDrawer({ items, onClose, t }: MobileNavDrawerProps) {
         aria-label={t('mainNav')}
       >
         <div className="mb-3 flex shrink-0 justify-end">
-          <button
+          <Button
             type="button"
+            variant="secondary"
+            size="icon"
             aria-label="بستن منو"
             onClick={onClose}
-            className="inline-flex size-9 items-center justify-center rounded-md bg-home-header text-content shadow-home-elevation-1 hover:bg-muted"
+            className="size-9 rounded-md bg-home-header text-content shadow-home-elevation-1 hover:bg-muted"
           >
             <X className="size-5" />
-          </button>
+          </Button>
         </div>
 
         <HomeMenuStackList
@@ -380,22 +392,26 @@ function IconButton({
   'aria-controls': ariaControls,
 }: IconButtonProps) {
   const className = cn(
-    'inline-flex items-center justify-center rounded-full bg-home-search-category text-content transition-colors hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30',
+    'rounded-full bg-home-search-category text-content hover:bg-home-search-category hover:opacity-90',
     size === 'sm' ? 'size-10' : 'size-14'
   );
   const iconClass = size === 'sm' ? 'size-[23px]' : 'size-8';
 
   if (href) {
     return (
-      <Link href={href} aria-label={label} className={className}>
-        <Icon className={iconClass} strokeWidth={1.75} />
-      </Link>
+      <Button asChild variant="toolbar" size="icon" className={className}>
+        <Link href={href} aria-label={label}>
+          <Icon className={iconClass} strokeWidth={1.75} />
+        </Link>
+      </Button>
     );
   }
 
   return (
-    <button
+    <Button
       type="button"
+      variant="toolbar"
+      size="icon"
       aria-label={label}
       aria-expanded={ariaExpanded}
       aria-haspopup={ariaHaspopup}
@@ -404,7 +420,7 @@ function IconButton({
       className={className}
     >
       <Icon className={iconClass} strokeWidth={1.75} />
-    </button>
+    </Button>
   );
 }
 
@@ -416,11 +432,13 @@ type NotificationButtonProps = {
 
 function NotificationButton({ count, label, size = 'md' }: NotificationButtonProps) {
   return (
-    <button
+    <Button
       type="button"
+      variant="toolbar"
+      size="icon"
       aria-label={label}
       className={cn(
-        'relative inline-flex items-center justify-center rounded-full bg-home-search-category text-content transition-colors hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30',
+        'relative rounded-full bg-home-search-category text-content hover:bg-home-search-category hover:opacity-90',
         size === 'sm' ? 'size-10' : 'size-14'
       )}
     >
@@ -430,7 +448,7 @@ function NotificationButton({ count, label, size = 'md' }: NotificationButtonPro
           {count}
         </span>
       ) : null}
-    </button>
+    </Button>
   );
 }
 
@@ -495,7 +513,7 @@ export function HomeSearchCategoryBar({
             className="pointer-events-none absolute left-4 top-1/2 size-6 -translate-y-1/2 text-content-muted"
             aria-hidden
           />
-          <input
+          <Input
             type="search"
             dir="rtl"
             value={query}
@@ -510,25 +528,29 @@ export function HomeSearchCategoryBar({
             }}
             placeholder={t('placeholder')}
             className={cn(
-              'h-14 w-full rounded-l-[28px] rounded-r-none border border-border bg-home-search-category pl-12 text-end text-base leading-6 tracking-[0.0094em] text-content outline-none placeholder:text-content-muted focus-visible:ring-2 focus-visible:ring-primary/30',
+              'h-14 rounded-l-[28px] rounded-r-none border-border bg-home-search-category pl-12 text-end text-base leading-6 tracking-[0.0094em] shadow-none',
               showClear ? 'pr-11' : 'pr-5',
               '[&::-webkit-search-cancel-button]:hidden [&::-webkit-search-decoration]:hidden'
             )}
           />
           {showClear ? (
-            <button
+            <Button
               type="button"
+              variant="ghost"
+              size="icon"
               aria-label={t('clear')}
               onClick={clearSearch}
-              className="absolute right-3 top-1/2 inline-flex size-7 -translate-y-1/2 items-center justify-center rounded-full text-content-muted transition-colors hover:bg-muted hover:text-content"
+              className="absolute right-3 top-1/2 size-7 -translate-y-1/2 rounded-full text-content-muted hover:bg-muted hover:text-content"
             >
               <X className="size-4" />
-            </button>
+            </Button>
           ) : null}
         </label>
         <div className="relative shrink-0" ref={categoryWrapRef}>
-          <button
+          <Button
             type="button"
+            variant="default"
+            size="none"
             dir="rtl"
             aria-expanded={listOpen || categoryOpen}
             aria-haspopup="menu"
@@ -542,13 +564,13 @@ export function HomeSearchCategoryBar({
               setCategoryOpen(false);
             }}
             className={cn(
-              'inline-flex h-14 max-w-[160px] shrink-0 items-center gap-1 rounded-l-none rounded-r-[100px] bg-primary-subtle px-3 text-sm font-medium leading-6 tracking-[0.0094em] text-accent-foreground transition-opacity hover:opacity-90 dark:bg-primary-700 dark:text-primary-100 min-[834px]:max-w-[220px] min-[834px]:px-5 min-[834px]:text-base',
+              'h-14 max-w-[160px] shrink-0 gap-1 rounded-l-none rounded-r-[100px] bg-primary-subtle px-3 text-sm font-medium leading-6 tracking-[0.0094em] text-accent-foreground hover:bg-primary-subtle hover:opacity-90 dark:bg-primary-700 dark:text-primary-100 dark:hover:bg-primary-700 min-[834px]:max-w-[220px] min-[834px]:px-5 min-[834px]:text-base',
               (listOpen || categoryOpen) && 'opacity-90'
             )}
           >
             <span className="truncate">{selectedCategory ?? t('category')}</span>
             <CategoryTriggerChevron open={listOpen || categoryOpen} />
-          </button>
+          </Button>
           <CategoryMenuDropdown
             open={listOpen}
             onClose={() => setListOpen(false)}

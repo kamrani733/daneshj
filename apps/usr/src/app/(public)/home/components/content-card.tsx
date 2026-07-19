@@ -64,7 +64,6 @@ export function ContentCard({
         />
       </div>
 
-      {/* Figma #42:432 — hover text: rgba(23,29,25,0.08); pressed: 0.1; elev 2 */}
       <div
         className={cn(
           'flex w-full flex-col items-end gap-2 p-4',

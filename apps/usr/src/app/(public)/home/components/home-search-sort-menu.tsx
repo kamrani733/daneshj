@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 
+import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
 import {
@@ -93,25 +94,28 @@ export function HomeSearchSortMenu({
 
         return (
           <li key={option.id} role="none">
-            <button
+            <Button
               type="button"
+              variant="menuitem"
+              size="none"
               role="menuitemradio"
               aria-checked={selected}
               onClick={() => onSelect(option.id)}
-              className={cn(
-                'flex h-12 w-full items-center gap-3 px-3 text-base leading-6 tracking-[0.0094em]',
-                'text-home-filter-ink transition-colors',
-                'hover:bg-black/5 dark:hover:bg-white/10',
-                selected && 'bg-black/[0.04] dark:bg-white/5'
-              )}
+              className={cn(selected && 'bg-black/[0.04] dark:bg-white/5')}
             >
               <span className="flex size-6 shrink-0 items-center justify-center">
                 {selected ? (
-                  <Check className="size-5 text-primary" strokeWidth={2} aria-hidden />
+                  <Check
+                    className="size-5 text-primary"
+                    strokeWidth={2}
+                    aria-hidden
+                  />
                 ) : null}
               </span>
-              <span className="min-w-0 flex-1 text-right">{t(`sort.${option.labelKey}`)}</span>
-            </button>
+              <span className="min-w-0 flex-1 text-right">
+                {t(`sort.${option.labelKey}`)}
+              </span>
+            </Button>
           </li>
         );
       })}

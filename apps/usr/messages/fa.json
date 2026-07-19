@@ -49,6 +49,7 @@
       "filter": {
         "searchPlaceholder": " جستجو  ",
         "filterTooltip": "فیلتر گذاری ",
+        "filterLabel": "فیلتر ها",
         "sortTooltip": "مرتب‌سازی",
         "title": "فیلتر ها ",
         "apply": "اعمال فیلتر ",

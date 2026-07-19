@@ -15,7 +15,11 @@ export type SearchResultItem = {
   /** 0–100 for mock filtering / sorting */
   discountPercent: number;
   price: number;
+  /** Original price before discount (optional showcase field). */
+  originalPrice?: number;
   rating: number;
+  /** Review count for card UI; falls back to popularity when omitted. */
+  reviewCount?: number;
   popularity: number;
   /** ISO date string */
   createdAt: string;

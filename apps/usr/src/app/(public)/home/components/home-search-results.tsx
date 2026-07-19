@@ -16,8 +16,8 @@ import {
   type SearchQuery,
   type SearchResultItem,
 } from '../data/search-mock';
-import { ContentCard } from './content-card';
 import { HomeSearchFilterBar } from './home-search-filter-bar';
+import { SearchResultCard } from './search-result-card';
 import { SectionTitle } from './section-title';
 
 type HomeSearchResultsProps = {
@@ -114,15 +114,18 @@ export function HomeSearchResults({
           )}
         >
           {items.map((item) => (
-            <ContentCard
+            <SearchResultCard
               key={item.id}
-              variant="discount"
               title={item.title}
-              subtitle={item.subtitle}
-              badge={item.badge}
+              businessName={item.subtitle}
               imageSrc={item.imageSrc}
               imageAlt={item.title}
-              className="w-full max-w-[320px] min-[640px]:max-w-none"
+              rating={item.rating}
+              reviewCount={item.reviewCount ?? item.popularity}
+              price={item.price}
+              originalPrice={item.originalPrice}
+              discountPercent={item.discountPercent}
+              className="w-full"
             />
           ))}
         </div>

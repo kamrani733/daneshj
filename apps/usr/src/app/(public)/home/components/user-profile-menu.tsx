@@ -3,11 +3,20 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { useEffect, useId, useLayoutEffect, useRef, useState } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useId,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from 'react';
 import { createPortal } from 'react-dom';
 
 import { clearSession } from '@auth/lib/auth-actions';
 import { AUTH_ROUTES } from '@auth/lib/auth-routes';
+import { Button } from '@/components/ui/button';
+import { useDismissible } from '@/hooks/use-dismissible';
 import { cn } from '@/lib/utils';
 
 export type UserProfileMenuProps = {
@@ -35,6 +44,9 @@ type MenuCoords = {
   top: number;
   left: number;
 };
+
+const itemClassName =
+  'flex h-14 w-full items-center justify-start rounded-none px-3 text-right text-base font-normal leading-6 tracking-[0.0094em] text-content hover:bg-black/5 dark:hover:bg-white/5';
 
 export function UserProfileMenu({
   displayName,
@@ -71,7 +83,6 @@ export function UserProfileMenu({
       const padding = 8;
       let left = triggerRect.left;
 
-      // Keep the panel inside the viewport when the trigger is near the edge.
       left = Math.min(left, window.innerWidth - menuWidth - padding);
       left = Math.max(padding, left);
 
@@ -90,28 +101,8 @@ export function UserProfileMenu({
     };
   }, [open]);
 
-  useEffect(() => {
-    if (!open) return;
-
-    const handlePointer = (event: MouseEvent) => {
-      const target = event.target as Node;
-      if (wrapRef.current?.contains(target) || menuRef.current?.contains(target)) {
-        return;
-      }
-      setOpen(false);
-    };
-
-    const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') setOpen(false);
-    };
-
-    document.addEventListener('mousedown', handlePointer);
-    document.addEventListener('keydown', handleEscape);
-    return () => {
-      document.removeEventListener('mousedown', handlePointer);
-      document.removeEventListener('keydown', handleEscape);
-    };
-  }, [open]);
+  const dismiss = useCallback(() => setOpen(false), []);
+  useDismissible(open, dismiss, [wrapRef, menuRef]);
 
   async function handleLogout() {
     if (loggingOut) return;
@@ -125,9 +116,6 @@ export function UserProfileMenu({
       setLoggingOut(false);
     }
   }
-
-  const itemClassName =
-    'flex h-14 w-full items-center justify-start px-3 text-right text-base leading-6 tracking-[0.0094em] text-content transition-colors hover:bg-black/5 dark:hover:bg-white/5';
 
   const menu =
     open && coords && mounted
@@ -161,15 +149,18 @@ export function UserProfileMenu({
                 </li>
               ))}
               <li role="none">
-                <button
+                <Button
                   type="button"
+                  variant="ghost"
+                  size="none"
                   role="menuitem"
                   disabled={loggingOut}
+                  loading={loggingOut}
                   className={itemClassName}
                   onClick={() => void handleLogout()}
                 >
                   {t('logout')}
-                </button>
+                </Button>
               </li>
             </ul>
           </div>,

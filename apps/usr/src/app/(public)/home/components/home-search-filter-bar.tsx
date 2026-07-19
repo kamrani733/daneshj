@@ -1,9 +1,12 @@
 'use client';
 
-import { ArrowDownUp, ChevronDown, Filter, Search } from 'lucide-react';
+import { ArrowDownNarrowWide, ChevronDown, Filter } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
 
+import { Button } from '@/components/ui/button';
+import { UnderlineField } from '@/components/ui/underline-field';
+import { useDismissible } from '@/hooks/use-dismissible';
 import { cn } from '@/lib/utils';
 
 import {
@@ -11,6 +14,7 @@ import {
   type SearchFilterValues,
   type SearchSortId,
 } from '../data/search-filter-data';
+import { FilterToolbarButton } from './filter-toolbar-button';
 import { HomeSearchSortMenu } from './home-search-sort-menu';
 
 type HomeSearchFilterBarProps = {
@@ -23,9 +27,6 @@ type HomeSearchFilterBarProps = {
   className?: string;
 };
 
-/**
- * Figma Temp filter bar (#75:1065) + sort menu (#82:1705).
- */
 export function HomeSearchFilterBar({
   filters,
   sort,
@@ -47,33 +48,15 @@ export function HomeSearchFilterBar({
     if (panelOpen) setDraft(filters);
   }, [panelOpen, filters]);
 
-  useEffect(() => {
-    if (!sortOpen) return;
-
-    const handlePointer = (event: MouseEvent) => {
-      const target = event.target as Node;
-      if (
-        sortBtnRef.current?.contains(target) ||
-        sortMenuRef.current?.contains(target)
-      ) {
-        return;
-      }
-      setSortOpen(false);
-    };
-    const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') setSortOpen(false);
-    };
-
-    document.addEventListener('mousedown', handlePointer);
-    document.addEventListener('keydown', handleEscape);
-    return () => {
-      document.removeEventListener('mousedown', handlePointer);
-      document.removeEventListener('keydown', handleEscape);
-    };
-  }, [sortOpen]);
+  const dismissSort = useCallback(() => setSortOpen(false), []);
+  useDismissible(sortOpen, dismissSort, [sortBtnRef, sortMenuRef]);
 
   const patchDraft = (patch: Partial<SearchFilterValues>) => {
     setDraft((prev) => ({ ...prev, ...patch }));
+  };
+
+  const toggleField = (id: string) => {
+    setOpenField((current) => (current === id ? null : id));
   };
 
   const elevated = panelOpen || sortOpen;
@@ -87,91 +70,32 @@ export function HomeSearchFilterBar({
         className
       )}
     >
-      {/* Control bar — 8×16 · h content 56 · total ~72 */}
-      <div
-        dir="ltr"
-        className="flex items-center justify-between gap-6 px-4 py-2"
-      >
-        <label className="relative h-14 w-full max-w-[420px] shrink min-w-0">
-          <span className="sr-only">{t('searchPlaceholder')}</span>
-          <Search
-            className="pointer-events-none absolute left-4 top-1/2 size-6 -translate-y-1/2 text-home-filter-muted"
-            strokeWidth={1.75}
-            aria-hidden
-          />
-          <input
-            type="search"
-            value={panelOpen ? draft.query : filters.query}
-            onChange={(event) => {
-              const query = event.target.value;
-              if (panelOpen) {
-                patchDraft({ query });
-              } else {
-                onFiltersChange({ ...filters, query });
-              }
-            }}
-            onKeyDown={(event) => {
-              if (event.key === 'Enter') {
-                event.preventDefault();
-                const next = panelOpen
-                  ? draft
-                  : { ...filters, query: event.currentTarget.value };
-                onFiltersChange(next);
-                onApply(next);
-              }
-            }}
-            placeholder={t('searchPlaceholder')}
-            className={cn(
-              'h-14 w-full rounded-[28px] border border-home-filter bg-home-filter-search',
-              'pl-12 pr-5 text-end text-base leading-6 tracking-[0.0094em] text-home-filter-ink outline-none',
-              'placeholder:text-home-filter-muted focus-visible:ring-2 focus-visible:ring-primary/30',
-              '[&::-webkit-search-cancel-button]:hidden'
-            )}
-          />
-        </label>
+      <div dir="ltr" className="flex items-center justify-end gap-4 px-4 py-2">
+        <FilterToolbarButton
+          icon={Filter}
+          label={t('filterLabel')}
+          active={panelOpen}
+          aria-expanded={panelOpen}
+          aria-label={t('filterLabel')}
+          onClick={() => {
+            setSortOpen(false);
+            setPanelOpen((open) => !open);
+          }}
+        />
 
-        <div className="flex shrink-0 items-center gap-4">
-          <button
-            type="button"
-            aria-expanded={panelOpen}
-            aria-label={t('filterTooltip')}
-            title={t('filterTooltip')}
-            onClick={() => {
-              setSortOpen(false);
-              setPanelOpen((open) => !open);
-            }}
-            className={cn(
-              'inline-flex size-14 items-center justify-center rounded-full text-home-filter-ink transition-colors',
-              'hover:bg-black/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30',
-              'dark:hover:bg-white/10',
-              panelOpen && 'bg-black/5 text-primary dark:bg-white/10'
-            )}
-          >
-            <Filter className="size-6" strokeWidth={1.75} />
-          </button>
-
-          {/* Sorting — Figma import_export + Menu #82:1705 */}
-          <button
-            ref={sortBtnRef}
-            type="button"
-            aria-expanded={sortOpen}
-            aria-haspopup="menu"
-            aria-label={t('sortTooltip')}
-            title={t('sortTooltip')}
-            onClick={() => {
-              setPanelOpen(false);
-              setSortOpen((open) => !open);
-            }}
-            className={cn(
-              'inline-flex size-14 items-center justify-center rounded-full text-home-filter-ink transition-colors',
-              'hover:bg-black/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30',
-              'dark:hover:bg-white/10',
-              sortOpen && 'bg-black/5 text-primary dark:bg-white/10'
-            )}
-          >
-            <ArrowDownUp className="size-6" strokeWidth={1.75} />
-          </button>
-        </div>
+        <FilterToolbarButton
+          ref={sortBtnRef}
+          icon={ArrowDownNarrowWide}
+          label={t('sortTooltip')}
+          active={sortOpen}
+          aria-expanded={sortOpen}
+          aria-haspopup="menu"
+          aria-label={t('sortTooltip')}
+          onClick={() => {
+            setPanelOpen(false);
+            setSortOpen((open) => !open);
+          }}
+        />
       </div>
 
       <HomeSearchSortMenu
@@ -187,7 +111,6 @@ export function HomeSearchFilterBar({
 
       {panelOpen ? (
         <div dir="rtl" className="flex flex-col">
-          {/* Title row — menu list item style */}
           <div className="flex h-14 items-center justify-end px-3">
             <p className="text-base leading-6 tracking-[0.0094em] text-home-filter-ink">
               {t('title')}
@@ -200,9 +123,7 @@ export function HomeSearchFilterBar({
                 id="discount"
                 label={t('fields.discount')}
                 open={openField === 'discount'}
-                onToggle={() =>
-                  setOpenField((id) => (id === 'discount' ? null : 'discount'))
-                }
+                onToggle={() => toggleField('discount')}
               >
                 <RangeInputs
                   startLabel={t('fields.rangeStart')}
@@ -219,7 +140,7 @@ export function HomeSearchFilterBar({
                 id="price"
                 label={t('fields.price')}
                 open={openField === 'price'}
-                onToggle={() => setOpenField((id) => (id === 'price' ? null : 'price'))}
+                onToggle={() => toggleField('price')}
               >
                 <RangeInputs
                   startLabel={t('fields.rangeStart')}
@@ -236,7 +157,7 @@ export function HomeSearchFilterBar({
                 id="date"
                 label={t('fields.date')}
                 open={openField === 'date'}
-                onToggle={() => setOpenField((id) => (id === 'date' ? null : 'date'))}
+                onToggle={() => toggleField('date')}
               >
                 <RangeInputs
                   startLabel={t('fields.rangeStart')}
@@ -256,58 +177,50 @@ export function HomeSearchFilterBar({
                 id="rating"
                 label={t('fields.rating')}
                 open={openField === 'rating'}
-                onToggle={() => setOpenField((id) => (id === 'rating' ? null : 'rating'))}
+                onToggle={() => toggleField('rating')}
                 className="min-[834px]:w-[calc((100%-0px)/3)] min-[834px]:max-w-none min-[834px]:flex-none"
               >
-                <label className="flex w-full max-w-[200px] flex-col items-stretch gap-0 self-end px-2 pb-2">
-                  <span className="sr-only">{t('fields.ratingMin')}</span>
-                  <input
-                    type="number"
-                    min={0}
-                    max={5}
-                    step={0.1}
-                    value={draft.ratingMin}
-                    onChange={(event) => patchDraft({ ratingMin: event.target.value })}
-                    placeholder={t('fields.ratingMin')}
-                    className={cn(
-                      'h-14 w-full rounded-t border-0 border-b border-home-filter bg-home-card',
-                      'px-4 text-end text-base text-home-filter-ink outline-none',
-                      'placeholder:text-home-filter-muted focus-visible:ring-2 focus-visible:ring-primary/30'
-                    )}
-                  />
-                </label>
+                <UnderlineField
+                  label={t('fields.ratingMin')}
+                  type="number"
+                  min={0}
+                  max={5}
+                  step={0.1}
+                  value={draft.ratingMin}
+                  onChange={(event) =>
+                    patchDraft({ ratingMin: event.target.value })
+                  }
+                  className="self-end px-2 pb-2"
+                />
               </FilterField>
             </div>
           </div>
 
-          {/* Actions — padding 20 16 20 24 · gap 8 · buttons h-10 / Figma wrap h-48 */}
-          <div
-            dir="ltr"
-            className="flex items-center gap-2 px-4 py-5 pe-6 ps-4"
-          >
-            <button
+          <div dir="ltr" className="flex items-center gap-2 px-4 py-5 pe-6 ps-4">
+            <Button
               type="button"
+              size="pillSm"
               onClick={() => {
                 onFiltersChange(draft);
                 onApply(draft);
                 setPanelOpen(false);
                 setOpenField(null);
               }}
-              className="inline-flex h-10 items-center justify-center rounded-full bg-primary px-6 text-sm font-medium leading-5 tracking-[0.0071em] text-primary-foreground transition-opacity hover:opacity-90"
             >
               {t('apply')}
-            </button>
-            <button
+            </Button>
+            <Button
               type="button"
+              variant="soft"
+              size="pillSm"
               onClick={() => {
                 setDraft(EMPTY_SEARCH_FILTERS);
                 onClear();
                 setOpenField(null);
               }}
-              className="inline-flex h-10 items-center justify-center rounded-full px-6 text-sm font-medium leading-5 tracking-[0.0071em] text-primary transition-colors hover:bg-primary/5"
             >
               {t('clear')}
-            </button>
+            </Button>
           </div>
         </div>
       ) : null}
@@ -332,13 +245,15 @@ function FilterField({
 }) {
   return (
     <div className={cn('flex min-w-0 flex-1 flex-col', className)}>
-      <button
+      <Button
         type="button"
+        variant="toolbar"
+        size="field"
         dir="ltr"
         aria-expanded={open}
         aria-controls={`filter-field-${id}`}
         onClick={onToggle}
-        className="flex h-14 w-full items-center justify-end gap-3 px-3 text-home-filter-ink transition-colors hover:bg-black/[0.04] dark:hover:bg-white/5"
+        className="justify-end gap-3 hover:bg-black/[0.04] dark:hover:bg-white/5"
       >
         <ChevronDown
           className={cn(
@@ -347,10 +262,8 @@ function FilterField({
           )}
           aria-hidden
         />
-        <span className="truncate text-base font-medium leading-6 tracking-[0.0094em]">
-          {label}
-        </span>
-      </button>
+        <span className="truncate">{label}</span>
+      </Button>
       {open ? (
         <div id={`filter-field-${id}`} className="px-2 pb-2">
           {children}
@@ -384,54 +297,20 @@ function RangeInputs({
       dir="ltr"
       className="flex flex-col gap-4 px-2 pb-1 min-[640px]:flex-row min-[640px]:items-start"
     >
-      <LabeledField
+      <UnderlineField
         label={startLabel}
         supporting={supporting}
+        type={inputType}
         value={startValue}
-        onChange={onStartChange}
-        inputType={inputType}
+        onChange={(event) => onStartChange(event.target.value)}
       />
-      <LabeledField
+      <UnderlineField
         label={endLabel}
         supporting={supporting}
+        type={inputType}
         value={endValue}
-        onChange={onEndChange}
-        inputType={inputType}
+        onChange={(event) => onEndChange(event.target.value)}
       />
     </div>
-  );
-}
-
-function LabeledField({
-  label,
-  supporting,
-  value,
-  onChange,
-  inputType,
-}: {
-  label: string;
-  supporting: string;
-  value: string;
-  onChange: (value: string) => void;
-  inputType: 'text' | 'date' | 'number';
-}) {
-  return (
-    <label className="flex w-full max-w-[200px] flex-col items-stretch gap-0">
-      <span className="sr-only">{label}</span>
-      <input
-        type={inputType}
-        value={value}
-        onChange={(event) => onChange(event.target.value)}
-        placeholder={label}
-        className={cn(
-          'h-14 w-full rounded-t border-0 border-b border-home-filter bg-home-card',
-          'px-4 text-end text-base leading-6 text-home-filter-ink outline-none',
-          'placeholder:text-home-filter-muted focus-visible:ring-2 focus-visible:ring-primary/30'
-        )}
-      />
-      <span className="px-4 pt-1 text-xs leading-4 tracking-[0.0083em] text-home-filter-muted">
-        {supporting}
-      </span>
-    </label>
   );
 }

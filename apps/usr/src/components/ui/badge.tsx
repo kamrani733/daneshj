@@ -19,6 +19,9 @@ const badgeVariants = cva(
         ghost:
           "hover:bg-muted hover:text-muted-foreground dark:hover:bg-muted/50",
         link: "text-primary underline-offset-4 hover:underline",
+        /** Search result discount chip — orange pill */
+        warning:
+          "h-7 rounded-full border-0 bg-warning px-3 text-sm font-bold leading-5 tracking-[0.0071em] text-white",
       },
     },
     defaultVariants: {
