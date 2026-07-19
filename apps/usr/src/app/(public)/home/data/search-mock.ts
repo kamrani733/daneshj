@@ -7,7 +7,10 @@ export type SearchResultItem = {
   title: string;
   subtitle: string;
   badge?: string;
+  /** Parent category label (e.g. هنر و ورزش). */
   category: string;
+  /** Leaf category from menu (e.g. ورزش). */
+  subcategory?: string;
   imageSrc: string;
   /** 0–100 for mock filtering / sorting */
   discountPercent: number;
@@ -70,6 +73,7 @@ export const MOCK_SEARCH_RESULTS: SearchResultItem[] = [
     subtitle: 'فروشگاه اسپورت',
     badge: '۱۵٪',
     category: 'هنر و ورزش',
+    subcategory: 'ورزش',
     imageSrc: HOME_IMAGES.discountCard,
     discountPercent: 15,
     price: 450_000,
@@ -78,8 +82,64 @@ export const MOCK_SEARCH_RESULTS: SearchResultItem[] = [
     createdAt: '2026-06-20',
   },
   {
+    id: 'sr-4b',
+    title: 'باشگاه بدنسازی دانشجویی',
+    subtitle: 'فیتنس پردیس',
+    badge: '۲۵٪',
+    category: 'هنر و ورزش',
+    subcategory: 'ورزش',
+    imageSrc: HOME_IMAGES.discountCard,
+    discountPercent: 25,
+    price: 380_000,
+    rating: 4.3,
+    popularity: 165,
+    createdAt: '2026-07-14',
+  },
+  {
+    id: 'sr-4c',
+    title: 'کلاس یوگا و پیلاتس',
+    subtitle: 'استودیو آرامش',
+    badge: '۳۰٪',
+    category: 'هنر و ورزش',
+    subcategory: 'ورزش',
+    imageSrc: HOME_IMAGES.discountCard,
+    discountPercent: 30,
+    price: 290_000,
+    rating: 4.6,
+    popularity: 140,
+    createdAt: '2026-07-11',
+  },
+  {
+    id: 'sr-4d',
+    title: 'بلیت استخر دانشجویی',
+    subtitle: 'مجموعه ورزشی دانشگاه',
+    badge: '۲۰٪',
+    category: 'هنر و ورزش',
+    subcategory: 'ورزش',
+    imageSrc: HOME_IMAGES.discountCard,
+    discountPercent: 20,
+    price: 120_000,
+    rating: 4.0,
+    popularity: 110,
+    createdAt: '2026-07-09',
+  },
+  {
+    id: 'sr-4e',
+    title: 'بدمینتون',
+    subtitle: 'اسپورت‌لند',
+    badge: '۳۵٪',
+    category: 'هنر و ورزش',
+    subcategory: 'ورزش',
+    imageSrc: HOME_IMAGES.discountCard,
+    discountPercent: 35,
+    price: 890_000,
+    rating: 4.4,
+    popularity: 200,
+    createdAt: '2026-07-16',
+  },
+  {
     id: 'sr-5',
-    title: 'بیمه تکمیلی دانشجویی',
+    title: 'بدمینتون',
     subtitle: 'بیمه دانشجوام',
     category: 'سلامت و زیبایی',
     imageSrc: HOME_IMAGES.discountCard,
@@ -91,7 +151,7 @@ export const MOCK_SEARCH_RESULTS: SearchResultItem[] = [
   },
   {
     id: 'sr-6',
-    title: 'فضای کار اشتراکی',
+    title: 'بدمینتون',
     subtitle: 'هاب استارتاپ',
     badge: '۲۵٪',
     category: 'ایجاد کسب و کار ',
@@ -163,6 +223,17 @@ function parseOptionalNumber(value: string): number | null {
   return Number.isFinite(n) ? n : null;
 }
 
+function matchesCategoryLabel(item: SearchResultItem, category: string): boolean {
+  const cat = category.trim();
+  if (!cat) return true;
+
+  const parent = item.category.trim();
+  const child = item.subcategory?.trim() ?? '';
+
+  // Exact match on parent (هنر و ورزش) or leaf (ورزش).
+  return parent === cat || child === cat;
+}
+
 /** Client-side mock filter — swap for API call later. */
 export function filterMockSearchResults({
   query,
@@ -173,16 +244,14 @@ export function filterMockSearchResults({
 
   return MOCK_SEARCH_RESULTS.filter((item) => {
     const itemCat = item.category.trim();
-    const matchesCategory =
-      !cat ||
-      itemCat === cat.trim() ||
-      itemCat.includes(cat.trim()) ||
-      cat.trim().includes(itemCat);
+    const itemSub = item.subcategory?.trim() ?? '';
+    const matchesCategory = matchesCategoryLabel(item, cat);
     const matchesQuery =
       !q ||
       item.title.toLowerCase().includes(q) ||
       item.subtitle.toLowerCase().includes(q) ||
-      itemCat.toLowerCase().includes(q);
+      itemCat.toLowerCase().includes(q) ||
+      itemSub.toLowerCase().includes(q);
     return matchesCategory && matchesQuery;
   });
 }
@@ -207,7 +276,8 @@ export function applySearchFilters(
       q &&
       !item.title.toLowerCase().includes(q) &&
       !item.subtitle.toLowerCase().includes(q) &&
-      !item.category.toLowerCase().includes(q)
+      !item.category.toLowerCase().includes(q) &&
+      !(item.subcategory?.toLowerCase().includes(q) ?? false)
     ) {
       return false;
     }

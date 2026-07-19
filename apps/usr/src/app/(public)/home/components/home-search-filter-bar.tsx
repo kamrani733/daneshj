@@ -1,24 +1,17 @@
 'use client';
 
-import { ArrowUpDown, ChevronDown, Filter, Search } from 'lucide-react';
+import { ArrowDownUp, ChevronDown, Filter, Search } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import {
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useState,
-  type ReactNode,
-} from 'react';
-import { createPortal } from 'react-dom';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 
 import { cn } from '@/lib/utils';
 
 import {
   EMPTY_SEARCH_FILTERS,
-  SEARCH_SORT_OPTIONS,
   type SearchFilterValues,
   type SearchSortId,
 } from '../data/search-filter-data';
+import { HomeSearchSortMenu } from './home-search-sort-menu';
 
 type HomeSearchFilterBarProps = {
   filters: SearchFilterValues;
@@ -30,11 +23,8 @@ type HomeSearchFilterBarProps = {
   className?: string;
 };
 
-type MenuCoords = { top: number; left: number };
-
 /**
- * Figma Temp #75:1065 / Login-logout report Filter —
- * collapsed 72px control bar · expand panel · sort menu (elev 2, z portal).
+ * Figma Temp filter bar (#75:1065) + sort menu (#82:1705).
  */
 export function HomeSearchFilterBar({
   filters,
@@ -50,42 +40,12 @@ export function HomeSearchFilterBar({
   const [sortOpen, setSortOpen] = useState(false);
   const [draft, setDraft] = useState(filters);
   const [openField, setOpenField] = useState<string | null>(null);
-  const [mounted, setMounted] = useState(false);
-  const [sortCoords, setSortCoords] = useState<MenuCoords | null>(null);
   const sortBtnRef = useRef<HTMLButtonElement>(null);
   const sortMenuRef = useRef<HTMLUListElement>(null);
 
   useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  useEffect(() => {
     if (panelOpen) setDraft(filters);
   }, [panelOpen, filters]);
-
-  useLayoutEffect(() => {
-    if (!sortOpen || !sortBtnRef.current) return;
-
-    const update = () => {
-      const rect = sortBtnRef.current?.getBoundingClientRect();
-      if (!rect) return;
-      const menuWidth = 280;
-      const gap = 4;
-      const padding = 8;
-      let left = rect.right - menuWidth;
-      left = Math.min(left, window.innerWidth - menuWidth - padding);
-      left = Math.max(padding, left);
-      setSortCoords({ top: rect.bottom + gap, left });
-    };
-
-    update();
-    window.addEventListener('resize', update);
-    window.addEventListener('scroll', update, true);
-    return () => {
-      window.removeEventListener('resize', update);
-      window.removeEventListener('scroll', update, true);
-    };
-  }, [sortOpen]);
 
   useEffect(() => {
     if (!sortOpen) return;
@@ -123,7 +83,7 @@ export function HomeSearchFilterBar({
       className={cn(
         'relative w-full rounded-xl border border-home-filter',
         panelOpen ? 'bg-home-card' : 'bg-home-filter-bar',
-        elevated && 'z-[60]',
+        elevated ? 'z-[60] overflow-visible' : 'overflow-visible',
         className
       )}
     >
@@ -190,6 +150,7 @@ export function HomeSearchFilterBar({
             <Filter className="size-6" strokeWidth={1.75} />
           </button>
 
+          {/* Sorting — Figma import_export + Menu #82:1705 */}
           <button
             ref={sortBtnRef}
             type="button"
@@ -208,49 +169,21 @@ export function HomeSearchFilterBar({
               sortOpen && 'bg-black/5 text-primary dark:bg-white/10'
             )}
           >
-            <ArrowUpDown className="size-6" strokeWidth={1.75} />
+            <ArrowDownUp className="size-6" strokeWidth={1.75} />
           </button>
         </div>
       </div>
 
-      {mounted && sortOpen && sortCoords
-        ? createPortal(
-            <ul
-              ref={sortMenuRef}
-              role="menu"
-              dir="rtl"
-              style={{
-                position: 'fixed',
-                top: sortCoords.top,
-                left: sortCoords.left,
-                zIndex: 9999,
-                width: 280,
-              }}
-              className="flex flex-col rounded bg-home-search-category py-2 shadow-home-elevation-2"
-            >
-              {SEARCH_SORT_OPTIONS.map((option) => (
-                <li key={option.id} role="none">
-                  <button
-                    type="button"
-                    role="menuitem"
-                    onClick={() => {
-                      onSortChange(option.id);
-                      setSortOpen(false);
-                    }}
-                    className={cn(
-                      'flex h-12 w-full items-center justify-end px-3 text-base leading-6 tracking-[0.0094em] text-home-filter-ink transition-colors',
-                      'hover:bg-black/5 dark:hover:bg-white/10',
-                      sort === option.id && 'font-semibold text-primary'
-                    )}
-                  >
-                    {t(`sort.${option.labelKey}`)}
-                  </button>
-                </li>
-              ))}
-            </ul>,
-            document.body
-          )
-        : null}
+      <HomeSearchSortMenu
+        open={sortOpen}
+        value={sort}
+        anchorRef={sortBtnRef}
+        menuRef={sortMenuRef}
+        onSelect={(id) => {
+          onSortChange(id);
+          setSortOpen(false);
+        }}
+      />
 
       {panelOpen ? (
         <div dir="rtl" className="flex flex-col">
