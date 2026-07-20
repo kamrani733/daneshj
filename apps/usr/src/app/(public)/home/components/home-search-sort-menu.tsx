@@ -1,6 +1,5 @@
 'use client';
 
-import { Check } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
@@ -12,6 +11,7 @@ import {
   SEARCH_SORT_OPTIONS,
   type SearchSortId,
 } from '../data/search-filter-data';
+import { CheckIcon } from './material-icons';
 
 type HomeSearchSortMenuProps = {
   open: boolean;
@@ -104,13 +104,7 @@ export function HomeSearchSortMenu({
               className={cn(selected && 'bg-black/[0.04] dark:bg-white/5')}
             >
               <span className="flex size-6 shrink-0 items-center justify-center">
-                {selected ? (
-                  <Check
-                    className="size-5 text-primary"
-                    strokeWidth={2}
-                    aria-hidden
-                  />
-                ) : null}
+                {selected ? <CheckIcon className="text-primary" size={20} /> : null}
               </span>
               <span className="min-w-0 flex-1 text-right">
                 {t(`sort.${option.labelKey}`)}

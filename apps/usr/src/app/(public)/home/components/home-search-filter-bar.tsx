@@ -66,13 +66,13 @@ export function HomeSearchFilterBar({
     <div
       className={cn(
         /* Figma Login-logout report Filter — radius 12 · stroke 1 #BFC9C1 · bg #F5F8F5 · h 72 */
-        'relative w-full rounded-xl border border-home-filter',
+        'relative w-full rounded-[12px] border border-home-filter',
         panelOpen ? 'bg-home-card' : 'bg-home-filter-bar',
         elevated ? 'z-[60] overflow-visible' : 'overflow-visible',
         className
       )}
     >
-      {/* Control bar #1:13393 — pad 8×16 · icons 56 · gap 16 · filter_alt + import_export */}
+      {/* Control bar #1:13393 — pad 8×16 · icons 56 · gap 16 · MUI filter_alt + import_export */}
       <div
         dir="ltr"
         className="flex h-[72px] items-center justify-end gap-4 px-4 py-2"
@@ -86,7 +86,7 @@ export function HomeSearchFilterBar({
             setPanelOpen((open) => !open);
           }}
         >
-          <FilterAltIcon />
+          <FilterAltIcon size={24} />
         </FilterToolbarButton>
 
         <FilterToolbarButton
@@ -100,7 +100,7 @@ export function HomeSearchFilterBar({
             setSortOpen((open) => !open);
           }}
         >
-          <ImportExportIcon />
+          <ImportExportIcon size={24} />
         </FilterToolbarButton>
       </div>
 

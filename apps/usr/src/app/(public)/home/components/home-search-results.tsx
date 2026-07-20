@@ -3,7 +3,6 @@
 import { useTranslations } from 'next-intl';
 import { useEffect, useMemo, useState } from 'react';
 
-import { formatFaNumber } from '@/lib/format-fa';
 import { cn } from '@/lib/utils';
 
 import {
@@ -23,8 +22,8 @@ import {
   getSelectedChipId,
 } from '../lib/search-category-chips';
 import { HomeSearchFilterBar } from './home-search-filter-bar';
-import { SearchFilterChip } from './search-filter-chip';
 import { SearchResultCard } from './search-result-card';
+import { SearchResultsHeader } from './search-results-header';
 
 type HomeSearchResultsProps = {
   search: SearchQuery;
@@ -86,37 +85,12 @@ export function HomeSearchResults({
       className={cn('relative flex w-full flex-col gap-6', className)}
       aria-label={t('title')}
     >
-      {/* Head content #1:10021 — column · align end · gap 24 */}
-      <header className="flex w-full flex-col items-end gap-6">
-        {/* Count — h 32 · pad 4 0 · M3/title/medium #404943 · «N تخفیف فعال» */}
-        <div className="flex h-8 w-full items-stretch justify-center py-1">
-          <p
-            dir="rtl"
-            className="w-full self-stretch text-right text-base font-medium leading-6 tracking-[0.0094em] text-home-filter-muted"
-          >
-            {t('count', { count: formatFaNumber(items.length) })}
-          </p>
-        </div>
-
-        {/* Sub Category chips — gap 24 · LTR + justify-end → همه on the right */}
-        {chips ? (
-          <div
-            dir="ltr"
-            className="flex flex-wrap items-center justify-end gap-6"
-            role="group"
-            aria-label={t('title')}
-          >
-            {chips.map((chip) => (
-              <SearchFilterChip
-                key={chip.id}
-                label={chip.id === 'all' ? t('allChip') : chip.label}
-                selected={chipId === chip.id}
-                onSelect={() => setChipId(chip.id)}
-              />
-            ))}
-          </div>
-        ) : null}
-      </header>
+      <SearchResultsHeader
+        count={items.length}
+        chips={chips}
+        chipId={chipId}
+        onChipSelect={setChipId}
+      />
 
       <HomeSearchFilterBar
         filters={filters}

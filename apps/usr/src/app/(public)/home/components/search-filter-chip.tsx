@@ -29,7 +29,7 @@ export function SearchFilterChip({
       onClick={onSelect}
       className={cn(
         'inline-flex h-8 shrink-0 items-center justify-center gap-2',
-        'rounded-lg text-sm font-medium leading-5 tracking-[0.0071em]',
+        'rounded-[8px] text-sm font-medium leading-5 tracking-[0.0071em]',
         'transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30',
         selected
           ? 'bg-warning-50 py-1.5 pe-4 ps-2 text-warning-700'
