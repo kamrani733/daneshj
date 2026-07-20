@@ -25,7 +25,14 @@ export function HomeSearchShell({ children, motivation, footer }: HomeSearchShel
   return (
     <>
       <div className="relative z-10 mx-auto w-full max-w-[1512px] px-4 pb-16 min-[834px]:px-12 min-[1512px]:px-[100px]">
-        <div className="flex flex-col gap-12 pt-6 min-[834px]:gap-12 min-[834px]:pt-8">
+        <div
+          className={
+            activeSearch
+              ? /* Figma: search bottom → head = 24px */
+                'flex flex-col gap-6 pt-6 min-[834px]:pt-8'
+              : 'flex flex-col gap-12 pt-6 min-[834px]:gap-12 min-[834px]:pt-8'
+          }
+        >
           <HomeSearchCategoryBar
             onSearch={(search) => setActiveSearch(search)}
             onClearSearch={() => setActiveSearch(null)}

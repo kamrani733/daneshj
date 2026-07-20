@@ -1,6 +1,6 @@
 'use client';
 
-import { ArrowDownNarrowWide, ChevronDown, Filter } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
 
@@ -16,6 +16,7 @@ import {
 } from '../data/search-filter-data';
 import { FilterToolbarButton } from './filter-toolbar-button';
 import { HomeSearchSortMenu } from './home-search-sort-menu';
+import { FilterAltIcon, ImportExportIcon } from './material-icons';
 
 type HomeSearchFilterBarProps = {
   filters: SearchFilterValues;
@@ -64,38 +65,43 @@ export function HomeSearchFilterBar({
   return (
     <div
       className={cn(
+        /* Figma Login-logout report Filter — radius 12 · stroke 1 #BFC9C1 · bg #F5F8F5 · h 72 */
         'relative w-full rounded-xl border border-home-filter',
         panelOpen ? 'bg-home-card' : 'bg-home-filter-bar',
         elevated ? 'z-[60] overflow-visible' : 'overflow-visible',
         className
       )}
     >
-      <div dir="ltr" className="flex items-center justify-end gap-4 px-4 py-2">
+      {/* Control bar #1:13393 — pad 8×16 · icons 56 · gap 16 · filter_alt + import_export */}
+      <div
+        dir="ltr"
+        className="flex h-[72px] items-center justify-end gap-4 px-4 py-2"
+      >
         <FilterToolbarButton
-          icon={Filter}
-          label={t('filterLabel')}
+          label={t('filterTooltip')}
           active={panelOpen}
           aria-expanded={panelOpen}
-          aria-label={t('filterLabel')}
           onClick={() => {
             setSortOpen(false);
             setPanelOpen((open) => !open);
           }}
-        />
+        >
+          <FilterAltIcon />
+        </FilterToolbarButton>
 
         <FilterToolbarButton
           ref={sortBtnRef}
-          icon={ArrowDownNarrowWide}
           label={t('sortTooltip')}
           active={sortOpen}
           aria-expanded={sortOpen}
           aria-haspopup="menu"
-          aria-label={t('sortTooltip')}
           onClick={() => {
             setPanelOpen(false);
             setSortOpen((open) => !open);
           }}
-        />
+        >
+          <ImportExportIcon />
+        </FilterToolbarButton>
       </div>
 
       <HomeSearchSortMenu

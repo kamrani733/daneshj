@@ -3,6 +3,7 @@
 import { useTranslations } from 'next-intl';
 import { useEffect, useMemo, useState } from 'react';
 
+import { formatFaNumber } from '@/lib/format-fa';
 import { cn } from '@/lib/utils';
 
 import {
@@ -16,9 +17,14 @@ import {
   type SearchQuery,
   type SearchResultItem,
 } from '../data/search-mock';
+import {
+  getChipFilterCategory,
+  getSearchCategoryChips,
+  getSelectedChipId,
+} from '../lib/search-category-chips';
 import { HomeSearchFilterBar } from './home-search-filter-bar';
+import { SearchFilterChip } from './search-filter-chip';
 import { SearchResultCard } from './search-result-card';
-import { SectionTitle } from './section-title';
 
 type HomeSearchResultsProps = {
   search: SearchQuery;
@@ -28,8 +34,8 @@ type HomeSearchResultsProps = {
 };
 
 /**
- * Figma Temp #66:5403 / #66:5524 — search results + filter bar (#75:1065).
- * Mock data for now; pass `results` from an API later.
+ * Figma Temp #66:5403 / library Head content #1:10021
+ * Count («N تخفیف فعال») + Sub Category chips (gap 24) → filter 72 → cards.
  */
 export function HomeSearchResults({
   search,
@@ -42,45 +48,75 @@ export function HomeSearchResults({
     useState<SearchFilterValues>(EMPTY_SEARCH_FILTERS);
   const [sort, setSort] = useState<SearchSortId>('newest');
 
+  const chips = useMemo(
+    () => getSearchCategoryChips(search.category),
+    [search.category]
+  );
+  const [chipId, setChipId] = useState(() =>
+    getSelectedChipId(search.category, chips)
+  );
+
   useEffect(() => {
     setFilters(EMPTY_SEARCH_FILTERS);
     setAppliedFilters(EMPTY_SEARCH_FILTERS);
     setSort('newest');
-  }, [search.query, search.category]);
+    setChipId(getSelectedChipId(search.category, chips));
+  }, [search.query, search.category, chips]);
 
-  const baseItems = useMemo(
-    () => results ?? filterMockSearchResults(search),
-    [results, search]
+  const chipCategory = useMemo(
+    () => getChipFilterCategory(search.category, chipId, chips),
+    [search.category, chipId, chips]
   );
+
+  const baseItems = useMemo(() => {
+    if (results) return results;
+    return filterMockSearchResults({
+      query: search.query,
+      category: chipCategory,
+    });
+  }, [results, search.query, chipCategory]);
 
   const items = useMemo(
     () => applySearchFilters(baseItems, appliedFilters, sort),
     [baseItems, appliedFilters, sort]
   );
 
-  const activeLabel = search.query.trim() || search.category?.trim() || '';
-  const heading = activeLabel
-    ? t('titleWithQuery', { query: activeLabel })
-    : t('title');
-
   return (
     <section
-      className={cn('relative flex w-full flex-col gap-6 min-[834px]:gap-8', className)}
+      className={cn('relative flex w-full flex-col gap-6', className)}
       aria-label={t('title')}
     >
-      <div className="flex flex-col items-end gap-2">
-        <SectionTitle
-          title={heading}
-          variant="wide"
-          className="!min-h-[89px] !w-[384px] max-w-full self-start [&_h2]:text-2xl [&_h2]:leading-9"
-        />
-        <p
-          dir="rtl"
-          className="w-full px-4 text-right text-base font-medium leading-6 tracking-[0.0094em] text-home-filter-ink"
-        >
-          {t('count', { count: items.length })}
-        </p>
-      </div>
+      {/* Head content #1:10021 — column · align end · gap 24 */}
+      <header className="flex w-full flex-col items-end gap-6">
+        {/* Count — h 32 · pad 4 0 · M3/title/medium #404943 · «N تخفیف فعال» */}
+        <div className="flex h-8 w-full items-stretch justify-center py-1">
+          <p
+            dir="rtl"
+            className="w-full self-stretch text-right text-base font-medium leading-6 tracking-[0.0094em] text-home-filter-muted"
+          >
+            {t('count', { count: formatFaNumber(items.length) })}
+          </p>
+        </div>
+
+        {/* Sub Category chips — gap 24 · LTR + justify-end → همه on the right */}
+        {chips ? (
+          <div
+            dir="ltr"
+            className="flex flex-wrap items-center justify-end gap-6"
+            role="group"
+            aria-label={t('title')}
+          >
+            {chips.map((chip) => (
+              <SearchFilterChip
+                key={chip.id}
+                label={chip.id === 'all' ? t('allChip') : chip.label}
+                selected={chipId === chip.id}
+                onSelect={() => setChipId(chip.id)}
+              />
+            ))}
+          </div>
+        ) : null}
+      </header>
 
       <HomeSearchFilterBar
         filters={filters}
@@ -100,15 +136,16 @@ export function HomeSearchResults({
       {items.length === 0 ? (
         <div
           dir="rtl"
-          className="relative z-0 flex min-h-[200px] w-full flex-col items-center justify-center gap-2 rounded-2xl bg-home-card px-6 py-12 text-center shadow-home-elevation-1"
+          className="relative z-0 flex min-h-[200px] w-full flex-col items-center justify-center gap-2 rounded-xl border border-home-filter bg-home-card px-6 py-12 text-center"
         >
           <p className="text-base font-medium text-content">{t('emptyTitle')}</p>
           <p className="text-sm text-content-muted">{t('emptyBody')}</p>
         </div>
       ) : (
+        /* Cards — 4×320 · col-gap 12 · row-gap 16 */
         <div
           className={cn(
-            'relative z-0 grid grid-cols-1 justify-items-center gap-4',
+            'relative z-0 grid w-full grid-cols-1 justify-items-center gap-4',
             'min-[640px]:grid-cols-2 min-[640px]:justify-items-stretch min-[640px]:gap-x-3 min-[640px]:gap-y-4',
             'min-[1280px]:grid-cols-4'
           )}

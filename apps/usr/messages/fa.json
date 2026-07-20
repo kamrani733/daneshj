@@ -43,7 +43,8 @@
     "searchResults": {
       "title": "نتایج جستجو",
       "titleWithQuery": "نتایج «{query}»",
-      "count": "{count} مورد یافت شد",
+      "count": "{count} تخفیف فعال",
+      "allChip": "همه",
       "emptyTitle": "موردی پیدا نشد",
       "emptyBody": "عبارت یا دسته‌بندی دیگری را امتحان کنید",
       "filter": {

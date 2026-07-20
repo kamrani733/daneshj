@@ -1,45 +1,44 @@
 'use client';
 
-import type { LucideIcon } from 'lucide-react';
-import { forwardRef, type ComponentPropsWithoutRef } from 'react';
+import { forwardRef, type ButtonHTMLAttributes, type ReactNode } from 'react';
 
-import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
-type FilterToolbarButtonProps = Omit<
-  ComponentPropsWithoutRef<typeof Button>,
-  'variant' | 'size'
-> & {
-  icon: LucideIcon;
+type FilterToolbarButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
+  /** Accessible name + native tooltip (Figma rich tooltip). */
   label: string;
   active?: boolean;
+  children: ReactNode;
 };
 
 /**
- * Shared filter/sort pill control — one composition for toolbar actions.
+ * Figma Icon button — fixed 56×56, icon 24×24, radius full.
+ * Label is aria + title only (Filtering / Sorting tooltips).
  */
 export const FilterToolbarButton = forwardRef<
   HTMLButtonElement,
   FilterToolbarButtonProps
 >(function FilterToolbarButton(
-  { icon: Icon, label, active = false, className, ...props },
+  { label, active = false, className, children, type = 'button', ...props },
   ref
 ) {
   return (
-    <Button
+    <button
       ref={ref}
-      type="button"
-      variant="toolbar"
-      size="pill"
-      dir="rtl"
+      type={type}
+      title={label}
+      aria-label={label}
       className={cn(
+        'inline-flex size-14 shrink-0 items-center justify-center rounded-full',
+        'text-home-filter-ink transition-colors',
+        'hover:bg-black/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30',
+        'dark:hover:bg-white/10',
         active && 'bg-black/5 text-primary dark:bg-white/10',
         className
       )}
       {...props}
     >
-      <Icon className="size-6 shrink-0" strokeWidth={1.75} />
-      <span>{label}</span>
-    </Button>
+      {children}
+    </button>
   );
 });
