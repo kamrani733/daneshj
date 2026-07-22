@@ -73,10 +73,11 @@ function createMockSessionsForLimitReached(): SessionData[] {
 }
 
 function mockOperationForPurpose(
-  purpose: SendVerifyCodePayload['purpose']
+  payload: SendVerifyCodePayload
 ): SendVerifyCodeResponse['operation'] {
-  if (purpose === 'register') return 'REGISTER';
-  if (purpose === 'forgot-password') return 'RESET_PASSWORD';
+  if (payload.purpose === 'forgot-password') return 'RESET_PASSWORD';
+  // Backend decides LOGIN vs REGISTER; mock: referral / explicit register → REGISTER
+  if (payload.purpose === 'register' || payload.referralCode) return 'REGISTER';
   return 'LOGIN';
 }
 
@@ -87,7 +88,7 @@ export function mockSendVerifyCode(
   return {
     identityType: isEmail ? 'email' : 'mobile',
     codeType: 'OTP',
-    operation: mockOperationForPurpose(payload.purpose),
+    operation: mockOperationForPurpose(payload),
     code: '123456',
     message: 'Mock OTP sent.',
   };

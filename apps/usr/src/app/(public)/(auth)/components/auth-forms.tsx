@@ -119,34 +119,40 @@ export function IdentifierForm({
     try {
       const loginIdentityType =
         purpose === 'forgot-password' ? detectLoginIdentityType(value) : undefined;
+      // Unified login/register: always send LOGIN; pass referral when present.
+      // Backend responds with operation LOGIN or REGISTER.
+      const referral =
+        purpose !== 'forgot-password' && referralCode ? referralCode : undefined;
 
       const result = await sendVerifyCodeMutation.mutateAsync({
         identity: value,
-        purpose,
-        referralCode: purpose === 'register' ? referralCode : undefined,
+        purpose: purpose === 'register' ? 'login' : purpose,
+        referralCode: referral,
         loginIdentityType,
         pageType: purpose === 'forgot-password' ? 'login_by_username' : undefined,
       });
 
-      startFlow(purpose, value);
+      // Persist flow as login — register is not a separate UI flow.
+      const flowKind = purpose === 'forgot-password' ? 'forgot-password' : 'login';
+      startFlow(flowKind, value);
       setSendVerifyContext({
         operation: result.operation,
         codeType: result.codeType,
         identityType: result.identityType,
         // TODO: Remove devOtpCode — users should enter OTP from SMS/email in production.
         devOtpCode: result.code,
-        referralCode: purpose === 'register' ? referralCode : undefined,
+        referralCode: referral,
         loginIdentityType,
         pageType: purpose === 'forgot-password' ? 'login_by_username' : undefined,
       });
       markOtpSent();
 
-      if (purpose === 'login' && result.codeType === 'TOTP') {
-        router.push(authTotpPath(purpose));
+      if (flowKind === 'login' && result.codeType === 'TOTP') {
+        router.push(authTotpPath(flowKind));
         return;
       }
 
-      router.push(authOtpPath(purpose));
+      router.push(authOtpPath(flowKind));
     } catch (err) {
       setError(getAuthApiErrorMessage(err, auth('sendOtpFailed')));
     }

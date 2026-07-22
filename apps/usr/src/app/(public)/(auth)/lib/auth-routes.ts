@@ -6,9 +6,10 @@ export const AUTH_ROUTES = {
   loginPassword: '/login/password',
   loginSessions: '/login/sessions',
   loginTotp: '/login/totp',
-  register: '/register',
-  registerOtp: '/register/otp',
-  registerSessions: '/register/sessions',
+  /** @deprecated Alias of login — login/register share one flow */
+  register: '/login',
+  registerOtp: '/login/otp',
+  registerSessions: '/login/sessions',
   forgot: '/forgot-password',
   forgotOtp: '/forgot-password/otp',
   forgotReset: '/forgot-password/reset',
@@ -16,49 +17,38 @@ export const AUTH_ROUTES = {
   home: '/',
 } as const;
 
-export function authSessionsPath(kind: AuthFlowKind) {
-  switch (kind) {
-    case 'login':
-      return AUTH_ROUTES.loginSessions;
-    default:
-      return AUTH_ROUTES.registerSessions;
-  }
+export function authSessionsPath(_kind: AuthFlowKind) {
+  return AUTH_ROUTES.loginSessions;
 }
 
 export function authOtpPath(kind: AuthFlowKind) {
   switch (kind) {
-    case 'login':
-      return AUTH_ROUTES.loginOtp;
     case 'forgot-password':
       return AUTH_ROUTES.forgotOtp;
     default:
-      return AUTH_ROUTES.registerOtp;
+      return AUTH_ROUTES.loginOtp;
   }
 }
 
 export function authNextAfterOtp(kind: AuthFlowKind) {
   switch (kind) {
-    case 'login':
-      return AUTH_ROUTES.loginTotp;
     case 'forgot-password':
       return AUTH_ROUTES.forgotReset;
     default:
-      return AUTH_ROUTES.dashboard;
+      return AUTH_ROUTES.loginTotp;
   }
 }
 
 export function authTotpPath(kind: AuthFlowKind = 'login') {
-  if (kind === 'login') return AUTH_ROUTES.loginTotp;
-  return authOtpPath(kind);
+  if (kind === 'forgot-password') return AUTH_ROUTES.forgotOtp;
+  return AUTH_ROUTES.loginTotp;
 }
 
 export function authFallback(kind: AuthFlowKind) {
   switch (kind) {
-    case 'login':
-      return AUTH_ROUTES.login;
     case 'forgot-password':
       return AUTH_ROUTES.forgot;
     default:
-      return AUTH_ROUTES.register;
+      return AUTH_ROUTES.login;
   }
 }

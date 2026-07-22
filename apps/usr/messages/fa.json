@@ -188,10 +188,8 @@
   },
   "login": {
     "greeting": "سلام!",
-    "welcome": "دوباره به دانشجوام خوش آمدید!",
+    "welcome": "به دانشجوام خوش آمدید!",
     "forgotPassword": "فراموشی رمزعبور",
-    "noAccount": "حساب کاربری ندارید؟",
-    "register": "ثبت‌نام کنید",
     "passwordPrompt": "لطفا رمز عبور خود را وارد کنید",
     "passwordLabel": "رمز عبور",
     "passwordRequired": "لطفاً رمز عبور را وارد کنید",

@@ -52,7 +52,7 @@ export async function HomeMotivationBox() {
           asChild
           className="h-12 w-[112px] rounded-full border-0 bg-warning px-6 text-base font-medium leading-6 tracking-[0.0094em] text-neutral-white shadow-none hover:bg-warning/90 min-[834px]:w-[180px]"
         >
-          <Link href={AUTH_ROUTES.register}>{t('cta')}</Link>
+          <Link href={AUTH_ROUTES.login}>{t('cta')}</Link>
         </Button>
       </div>
     </section>
