@@ -1,6 +1,6 @@
 import type { Session } from '@daneshjoam/shared-types';
 
-export type AuthPurpose = 'register' | 'login' | 'forgot-password';
+export type AuthPurpose = 'login' | 'forgot-password';
 
 export type AuthOperation = 'LOGIN' | 'REGISTER' | 'RESET_PASSWORD';
 

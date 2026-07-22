@@ -12,6 +12,20 @@ const nextConfig = {
     '@daneshjoam/shared-ui',
     '@daneshjoam/shared-types',
   ],
+  async redirects() {
+    return [
+      {
+        source: '/register',
+        destination: '/login',
+        permanent: false,
+      },
+      {
+        source: '/register/:path*',
+        destination: '/login/:path*',
+        permanent: false,
+      },
+    ];
+  },
   async rewrites() {
     const backend = process.env.AUTH_API_URL;
     if (!backend) return [];

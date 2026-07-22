@@ -12,7 +12,6 @@
     "title": "دانشجو",
     "subtitle": "به اپلیکیشن دانشجو خوش آمدید",
     "login": "ورود",
-    "register": "ثبت‌نام",
     "header": {
       "mainNav": "منوی اصلی",
       "logoAlt": "دانشجوام",
@@ -203,14 +202,8 @@
     "loginWithOtp": "ورود با رمز یکبار مصرف",
     "loginFailed": "ورود با رمز عبور ناموفق بود",
     "showPassword": "نمایش رمز عبور",
-    "hidePassword": "مخفی کردن رمز عبور"
-  },
-  "register": {
-    "greeting": "سلام!",
-    "welcome": "به دانشجوام خوش آمدید!",
-    "hasAccount": "قبلاً ثبت‌نام کرده‌اید؟",
-    "loginLink": "وارد شوید",
-    "terms": "ثبت‌نام شما به معنای پذیرش <terms>شرایط دانشجوام</terms> و <privacy>قوانین حریم خصوصی</privacy> است"
+    "hidePassword": "مخفی کردن رمز عبور",
+    "terms": "ورود شما به معنای پذیرش <terms>شرایط دانشجوام</terms> و <privacy>قوانین حریم خصوصی</privacy> است"
   },
   "otp": {
     "sentTo": "کد تایید برای {identifier} ارسال شد",

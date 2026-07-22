@@ -76,8 +76,8 @@ function mockOperationForPurpose(
   payload: SendVerifyCodePayload
 ): SendVerifyCodeResponse['operation'] {
   if (payload.purpose === 'forgot-password') return 'RESET_PASSWORD';
-  // Backend decides LOGIN vs REGISTER; mock: referral / explicit register → REGISTER
-  if (payload.purpose === 'register' || payload.referralCode) return 'REGISTER';
+  // Backend decides LOGIN vs REGISTER; mock: referral → REGISTER
+  if (payload.referralCode) return 'REGISTER';
   return 'LOGIN';
 }
 

@@ -117,24 +117,21 @@ export function IdentifierForm({
 
     setError(null);
     try {
-      const loginIdentityType =
-        purpose === 'forgot-password' ? detectLoginIdentityType(value) : undefined;
-      // Unified login/register: always send LOGIN; pass referral when present.
-      // Backend responds with operation LOGIN or REGISTER.
+      const loginIdentityType = isForgotPassword
+        ? detectLoginIdentityType(value)
+        : undefined;
       const referral =
-        purpose !== 'forgot-password' && referralCode ? referralCode : undefined;
+        !isForgotPassword && referralCode ? referralCode : undefined;
 
       const result = await sendVerifyCodeMutation.mutateAsync({
         identity: value,
-        purpose: purpose === 'register' ? 'login' : purpose,
+        purpose,
         referralCode: referral,
         loginIdentityType,
-        pageType: purpose === 'forgot-password' ? 'login_by_username' : undefined,
+        pageType: isForgotPassword ? 'login_by_username' : undefined,
       });
 
-      // Persist flow as login — register is not a separate UI flow.
-      const flowKind = purpose === 'forgot-password' ? 'forgot-password' : 'login';
-      startFlow(flowKind, value);
+      startFlow(purpose, value);
       setSendVerifyContext({
         operation: result.operation,
         codeType: result.codeType,
@@ -143,16 +140,16 @@ export function IdentifierForm({
         devOtpCode: result.code,
         referralCode: referral,
         loginIdentityType,
-        pageType: purpose === 'forgot-password' ? 'login_by_username' : undefined,
+        pageType: isForgotPassword ? 'login_by_username' : undefined,
       });
       markOtpSent();
 
-      if (flowKind === 'login' && result.codeType === 'TOTP') {
-        router.push(authTotpPath(flowKind));
+      if (purpose === 'login' && result.codeType === 'TOTP') {
+        router.push(authTotpPath(purpose));
         return;
       }
 
-      router.push(authOtpPath(flowKind));
+      router.push(authOtpPath(purpose));
     } catch (err) {
       setError(getAuthApiErrorMessage(err, auth('sendOtpFailed')));
     }
@@ -392,7 +389,9 @@ type TotpFormProps = {
 export function TotpForm({ successPath = AUTH_ROUTES.dashboard }: TotpFormProps) {
   const t = useTranslations('totp');
   const auth = useTranslations('auth');
+  const router = useRouter();
   const clearFlow = useAuthFlowStore((s) => s.clear);
+  const setPendingSessionLimit = useAuthFlowStore((s) => s.setPendingSessionLimit);
   const { ready, identifier, sendVerifyContext } = useAuthFlowGuard(
     'login',
     AUTH_ROUTES.login,
@@ -424,6 +423,17 @@ export function TotpForm({ successPath = AUTH_ROUTES.dashboard }: TotpFormProps)
         codeType: 'TOTP',
         purpose: 'login',
       });
+
+      if (result.sessionLimitReached && result.pendingAccessToken && result.identityInfo) {
+        setPendingSessionLimit({
+          accessToken: result.pendingAccessToken,
+          loginType: result.loginType ?? 1,
+          identityInfo: result.identityInfo,
+        });
+        router.push(AUTH_ROUTES.loginSessions);
+        return;
+      }
+
       if (!result.session) {
         setError(t('verifyFailed'));
         return;

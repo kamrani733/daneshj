@@ -23,7 +23,7 @@ function resolveBackHref(pathname: string): string {
   return `/${segments.slice(0, -1).join('/')}`;
 }
 
-/** Shared shell for login, register, and forgot-password flows. */
+/** Shared shell for login and forgot-password flows. */
 export default function AuthFlowLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
 
