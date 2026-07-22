@@ -257,13 +257,6 @@ export const SERVICES_MENU_ITEMS: HomeMenuItem[] = [
   },
 ];
 
-/** Figma cooperation / business partner items. */
-export const COOPERATION_MENU_ITEMS: HomeMenuItem[] = [
-  { id: 'coworking', label: 'فضای کار اشتراکی ' },
-  { id: 'tools', label: 'ابزار' },
-  { id: 'office', label: 'لوازم اداری' },
-];
-
 /** Figma Menu #1:10411 — ارتباط با ما. */
 export const CONTACT_MENU_ITEMS: HomeMenuItem[] = [
   { id: 'support', label: 'پشتیبانی' },
@@ -272,6 +265,5 @@ export const CONTACT_MENU_ITEMS: HomeMenuItem[] = [
 
 export const NAV_MENUS = {
   services: SERVICES_MENU_ITEMS,
-  cooperation: COOPERATION_MENU_ITEMS,
   contact: CONTACT_MENU_ITEMS,
 } as const;

@@ -70,7 +70,8 @@ export function HomeMenuStackList({
       <ul
         dir="rtl"
         className={cn(
-          'flex w-full flex-col overflow-hidden rounded bg-home-search-category py-2 text-right shadow-home-elevation-2',
+          'flex min-h-0 w-full flex-col overflow-y-auto overscroll-contain rounded bg-home-search-category py-2 text-right shadow-home-elevation-2',
+          'max-h-[min(60vh,calc(100dvh-10rem))]',
           listClassName
         )}
         role="menu"
@@ -78,34 +79,53 @@ export function HomeMenuStackList({
         {list.map((item) => {
           const Icon = item.icon;
           const hasChildren = Boolean(item.children?.length);
+          const rowClassName =
+            'flex h-14 w-full items-center justify-between gap-3 px-3 text-right text-base leading-6 tracking-[0.0094em] text-content transition-colors hover:bg-black/5 dark:hover:bg-white/5';
+          const content = (
+            <>
+              {Icon ? (
+                <Icon className="size-6 shrink-0 text-content" strokeWidth={1.5} aria-hidden />
+              ) : null}
+              <span className="min-w-0 flex-1 text-right">{item.label}</span>
+              {hasChildren ? (
+                <ChevronLeft className="size-6 shrink-0 text-content-muted" aria-hidden />
+              ) : null}
+            </>
+          );
 
           return (
             <li key={item.id} role="none">
-              <button
-                type="button"
-                role="menuitem"
-                dir="rtl"
-                aria-haspopup={hasChildren ? 'menu' : undefined}
-                className="flex h-14 w-full items-center justify-between gap-3 px-3 text-right text-base leading-6 tracking-[0.0094em] text-content transition-colors hover:bg-black/5 dark:hover:bg-white/5"
-                onClick={() => {
-                  if (hasChildren) {
-                    setStack((value) => [
-                      ...value,
-                      { title: item.label.trim(), items: item.children! },
-                    ]);
-                    return;
-                  }
-                  onNavigate?.(item.label.trim());
-                }}
-              >
-                {Icon ? (
-                  <Icon className="size-6 shrink-0 text-content" strokeWidth={1.5} aria-hidden />
-                ) : null}
-                <span className="min-w-0 flex-1 text-right">{item.label}</span>
-                {hasChildren ? (
-                  <ChevronLeft className="size-6 shrink-0 text-content-muted" aria-hidden />
-                ) : null}
-              </button>
+              {item.href && !hasChildren ? (
+                <Link
+                  href={item.href}
+                  role="menuitem"
+                  dir="rtl"
+                  onClick={() => onNavigate?.(item.label.trim())}
+                  className={rowClassName}
+                >
+                  {content}
+                </Link>
+              ) : (
+                <button
+                  type="button"
+                  role="menuitem"
+                  dir="rtl"
+                  aria-haspopup={hasChildren ? 'menu' : undefined}
+                  className={rowClassName}
+                  onClick={() => {
+                    if (hasChildren) {
+                      setStack((value) => [
+                        ...value,
+                        { title: item.label.trim(), items: item.children! },
+                      ]);
+                      return;
+                    }
+                    onNavigate?.(item.label.trim());
+                  }}
+                >
+                  {content}
+                </button>
+              )}
             </li>
           );
         })}
@@ -119,12 +139,16 @@ export function HomeMenuPanel({
   items,
   className,
   onNavigate,
-}: HomeMenuPanelProps) {
+  scrollable = false,
+}: HomeMenuPanelProps & { scrollable?: boolean }) {
   return (
     <ul
       dir="rtl"
       className={cn(
-        'relative z-[90] flex w-max min-w-[280px] max-w-[min(480px,90vw)] flex-col overflow-visible rounded bg-home-search-category py-2 text-right shadow-home-elevation-2',
+        'relative z-[90] flex w-max min-w-[280px] max-w-[min(480px,90vw)] flex-col rounded bg-home-search-category py-2 text-right shadow-home-elevation-2',
+        scrollable
+          ? 'max-h-[min(70vh,calc(100dvh-6rem))] overflow-y-auto overscroll-contain'
+          : 'overflow-visible',
         className
       )}
       role="menu"
@@ -220,6 +244,7 @@ function HomeMenuRow({
         >
           <HomeMenuPanel
             items={item.children!}
+            scrollable
             onNavigate={(label) => {
               setOpen(false);
               onNavigate?.(label);

@@ -33,10 +33,24 @@ import { HomeMenuDropdown, HomeMenuStackList } from './home-menu-panel';
 import { UserProfileMenu } from './user-profile-menu';
 
 /** Figma menu order (LTR, logo last on the right edge) */
-const NAV_LINKS = [
-  { key: 'contact' as const, icon: Headphones, menuKey: 'contact' as const },
-  { key: 'cooperation' as const, icon: Users, menuKey: 'cooperation' as const },
-  { key: 'services' as const, icon: Grid3X3, menuKey: 'services' as const },
+type NavLink =
+  | {
+      key: 'contact' | 'services';
+      icon: typeof Headphones;
+      menuKey: 'contact' | 'services';
+      href?: never;
+    }
+  | {
+      key: 'cooperation';
+      icon: typeof Users;
+      href: string;
+      menuKey?: never;
+    };
+
+const NAV_LINKS: NavLink[] = [
+  { key: 'contact', icon: Headphones, menuKey: 'contact' },
+  { key: 'cooperation', icon: Users, href: '/cooperation' },
+  { key: 'services', icon: Grid3X3, menuKey: 'services' },
 ];
 
 type HomeHeaderProps = {
@@ -108,17 +122,28 @@ export function HomeHeader({ isAuthenticated = false, userName }: HomeHeaderProp
         </div>
 
         <nav className="flex shrink-0 items-center gap-0.5 min-[1280px]:gap-1" aria-label={t('mainNav')}>
-          {NAV_LINKS.map(({ key, icon: Icon, menuKey }) => (
-            <NavMenuItem
-              key={key}
-              label={t(key)}
-              icon={Icon}
-              open={openNav === key}
-              onToggle={() => setOpenNav((current) => (current === key ? null : key))}
-              onClose={closeNav}
-              items={NAV_MENUS[menuKey]}
-            />
-          ))}
+          {NAV_LINKS.map((link) =>
+            link.href ? (
+              <NavDirectLink
+                key={link.key}
+                label={t(link.key)}
+                icon={link.icon}
+                href={link.href}
+              />
+            ) : (
+              <NavMenuItem
+                key={link.key}
+                label={t(link.key)}
+                icon={link.icon}
+                open={openNav === link.key}
+                onToggle={() =>
+                  setOpenNav((current) => (current === link.key ? null : link.key))
+                }
+                onClose={closeNav}
+                items={NAV_MENUS[link.menuKey]}
+              />
+            )
+          )}
           <HeaderLogo alt={t('logoAlt')} size="desktop" className="ms-1" />
         </nav>
       </div>
@@ -284,6 +309,30 @@ type NavMenuItemProps = {
   items: HomeMenuItem[];
 };
 
+function NavDirectLink({
+  label,
+  icon: Icon,
+  href,
+}: {
+  label: string;
+  icon: typeof Grid3X3;
+  href: string;
+}) {
+  return (
+    <Button
+      asChild
+      variant="ghost"
+      size="none"
+      className="h-12 min-w-0 gap-2 rounded-full px-3 text-sm font-medium leading-6 tracking-[0.0094em] text-content-muted hover:bg-muted hover:text-content min-[1280px]:px-4 min-[1280px]:text-base min-[1512px]:w-[164px] min-[1512px]:px-6"
+    >
+      <Link href={href} dir="rtl" className="inline-flex items-center gap-2">
+        <span>{label}</span>
+        <Icon className="size-5 shrink-0" aria-hidden />
+      </Link>
+    </Button>
+  );
+}
+
 function NavMenuItem({ label, icon: Icon, open, onToggle, onClose, items }: NavMenuItemProps) {
   const wrapRef = useRef<HTMLDivElement>(null);
 
@@ -311,17 +360,18 @@ function NavMenuItem({ label, icon: Icon, open, onToggle, onClose, items }: NavM
 }
 
 type MobileNavDrawerProps = {
-  items: typeof NAV_LINKS;
+  items: NavLink[];
   onClose: () => void;
   t: ReturnType<typeof useTranslations<'home.header'>>;
 };
 
 function MobileNavDrawer({ items, onClose, t }: MobileNavDrawerProps) {
-  const rootItems: HomeMenuItem[] = items.map(({ key, icon, menuKey }) => ({
-    id: key,
-    label: t(key),
-    icon,
-    children: NAV_MENUS[menuKey],
+  const rootItems: HomeMenuItem[] = items.map((link) => ({
+    id: link.key,
+    label: t(link.key),
+    icon: link.icon,
+    href: link.href,
+    children: link.menuKey ? NAV_MENUS[link.menuKey] : undefined,
   }));
 
   useEffect(() => {

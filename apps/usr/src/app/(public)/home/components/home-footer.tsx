@@ -34,7 +34,13 @@ export async function HomeFooter() {
               {FOOTER_QUICK_LINKS.map((key) => (
                 <Link
                   key={key}
-                  href="#"
+                  href={
+                    key === 'quickHome'
+                      ? '/'
+                      : key === 'quickCooperation'
+                        ? '/cooperation'
+                        : '#'
+                  }
                   dir="rtl"
                   className="rounded-full px-4 py-2.5 text-sm font-semibold leading-5 tracking-[0.0071em] text-content transition-colors hover:bg-muted"
                 >
