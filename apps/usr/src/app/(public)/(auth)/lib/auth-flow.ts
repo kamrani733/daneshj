@@ -45,12 +45,15 @@ type AuthFlowState = {
   sendVerifyContext: SendVerifyCodeContext | null;
   pendingSessionLimit: PendingSessionLimit | null;
   resetAccessToken: string | null;
+  /** Temp access token after OTP for two-step password login */
+  verifyPasswordAccessToken: string | null;
   resendAvailableAt: number | null;
   otpVerified: boolean;
   startFlow: (kind: AuthFlowKind, identifier: string) => void;
   setSendVerifyContext: (context: SendVerifyCodeContext) => void;
   setPendingSessionLimit: (pending: PendingSessionLimit | null) => void;
   setResetAccessToken: (token: string) => void;
+  setVerifyPasswordAccessToken: (token: string | null) => void;
   markOtpSent: () => void;
   markOtpVerified: () => void;
   clear: () => void;
@@ -64,6 +67,7 @@ export const useAuthFlowStore = create<AuthFlowState>()(
       sendVerifyContext: null,
       pendingSessionLimit: null,
       resetAccessToken: null,
+      verifyPasswordAccessToken: null,
       resendAvailableAt: null,
       otpVerified: false,
       startFlow: (kind, identifier) => {
@@ -76,12 +80,17 @@ export const useAuthFlowStore = create<AuthFlowState>()(
           pendingSessionLimit: null,
           otpVerified: false,
           resetAccessToken: null,
+          verifyPasswordAccessToken: sameFlow
+            ? prev.verifyPasswordAccessToken
+            : null,
           resendAvailableAt: sameFlow ? prev.resendAvailableAt : null,
         });
       },
       setSendVerifyContext: (context) => set({ sendVerifyContext: context }),
       setPendingSessionLimit: (pending) => set({ pendingSessionLimit: pending }),
       setResetAccessToken: (token) => set({ resetAccessToken: token }),
+      setVerifyPasswordAccessToken: (token) =>
+        set({ verifyPasswordAccessToken: token }),
       markOtpSent: () =>
         set({
           resendAvailableAt: Date.now() + RESEND_COOLDOWN_SECONDS * 1000,
@@ -94,6 +103,7 @@ export const useAuthFlowStore = create<AuthFlowState>()(
           sendVerifyContext: null,
           pendingSessionLimit: null,
           resetAccessToken: null,
+          verifyPasswordAccessToken: null,
           resendAvailableAt: null,
           otpVerified: false,
         }),

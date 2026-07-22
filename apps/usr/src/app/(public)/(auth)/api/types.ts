@@ -108,7 +108,10 @@ export interface VerifyCodeResponse {
   session?: Session;
   identityInfo?: IdentityInfo;
   requiresTotp?: boolean;
+  /** Two-step login → continue with /auth/actor_verify_password */
   redirectVerifyPassword?: boolean;
+  /** Temp token after OTP for two-step password verify */
+  verifyPasswordAccessToken?: string;
   resetAccessToken?: string;
   sessionLimitReached?: boolean;
   pendingAccessToken?: string;

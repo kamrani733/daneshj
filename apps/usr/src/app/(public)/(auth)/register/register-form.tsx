@@ -41,10 +41,6 @@ export function RegisterForm() {
               ),
             })}
           </p>
-          <AuthLinkRow>
-            {t('hasAccount')}{' '}
-            <AuthTextLink href="/login">{t('loginLink')}</AuthTextLink>
-          </AuthLinkRow>
         </div>
       }
     />

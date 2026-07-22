@@ -21,13 +21,7 @@ export default function LoginPage() {
       }
       footer={
         <div className="flex flex-col gap-3">
-          <AuthLinkRow>
-            <AuthTextLink href="/forgot-password">{t('forgotPassword')}</AuthTextLink>
-          </AuthLinkRow>
-          <AuthLinkRow>
-            {t('noAccount')}{' '}
-            <AuthTextLink href="/register">{t('register')}</AuthTextLink>
-          </AuthLinkRow>
+          
         </div>
       }
     />

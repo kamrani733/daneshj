@@ -106,8 +106,18 @@ export function mapVerifyCodeResponse(
     };
   }
 
-  if (purpose === 'login' && info.is_two_step_login && !data.access_token) {
-    return { identityInfo: info, requiresTotp: true };
+  // Two-step OTP login → password (YAML: verify for 2-step-login)
+  if (
+    purpose === 'login' &&
+    info.is_two_step_login &&
+    info.redirect_verify_password &&
+    data.access_token
+  ) {
+    return {
+      identityInfo: info,
+      redirectVerifyPassword: true,
+      verifyPasswordAccessToken: data.access_token,
+    };
   }
 
   if (data.access_token && sessionInfo?.session_key) {

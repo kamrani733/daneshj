@@ -3,6 +3,7 @@ import type { AuthFlowKind } from '@auth/lib/auth-flow';
 export const AUTH_ROUTES = {
   login: '/login',
   loginOtp: '/login/otp',
+  loginPassword: '/login/password',
   loginSessions: '/login/sessions',
   loginTotp: '/login/totp',
   register: '/register',

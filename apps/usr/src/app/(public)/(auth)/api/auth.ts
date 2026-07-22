@@ -27,6 +27,7 @@ import type {
   DeleteSessionForLimitReachedPayload,
   DeleteSessionPayload,
   GetSessionsPayload,
+  IdentityInfo,
   InactiveSessionThenGetTokenPayload,
   LoginByIdentityPasswordPayload,
   RefreshTokenData,
@@ -216,12 +217,22 @@ function mapPasswordLoginResponse(
   identity: string
 ): VerifyCodeResponse {
   const sessionInfo = data.session_info;
+  const isEmail = identity.includes('@');
+  const identityInfo: IdentityInfo = {
+    identity_type: isEmail ? 'email' : 'mobile',
+    mobile: isEmail ? null : identity,
+    email: isEmail ? identity : null,
+    operation: 'LOGIN',
+    redirect_verify_password: false,
+    is_two_step_login: false,
+  };
 
   if (sessionInfo.session_limit_reached && !sessionInfo.session_key) {
     return {
       sessionLimitReached: true,
       pendingAccessToken: data.access_token,
       loginType: sessionInfo.login_type,
+      identityInfo,
     };
   }
 
@@ -232,7 +243,7 @@ function mapPasswordLoginResponse(
   const session: Session = {
     user: {
       id: sessionInfo.session_key,
-      email: identity.includes('@') ? identity : '',
+      email: isEmail ? identity : '',
       name: identity,
     },
     accessToken: data.access_token,
@@ -241,7 +252,7 @@ function mapPasswordLoginResponse(
     loginType: sessionInfo.login_type,
   };
 
-  return { session };
+  return { session, identityInfo };
 }
 
 /** POST /auth/actor_verify_password — two-step login (password after OTP). */

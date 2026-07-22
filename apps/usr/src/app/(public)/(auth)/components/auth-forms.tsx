@@ -10,11 +10,14 @@ import { FloatingInput } from '@/components/ui/floating-input';
 import {
   getAuthApiErrorMessage,
   useChangePasswordMutation,
+  useLoginByIdentityAndPasswordMutation,
   useResetPasswordMutation,
   useSendVerifyCodeMutation,
   useVerifyCodeMutation,
+  useVerifyPasswordMutation,
   type AuthPurpose,
 } from '@auth/api';
+import { AuthRecaptcha } from '@/components/auth/recaptcha';
 import { finishAuthAndRedirect } from '@auth/lib/auth-redirect';
 import {
   AUTH_ROUTES,
@@ -42,8 +45,8 @@ const submitBtnBase =
 const submitBtn = `${submitBtnBase} self-end`;
 const resendOn =
   'h-12 rounded-full px-4 text-base font-medium dark:text-green-300/50 dark:bg-green-700/30 text-primary hover:bg-primary-subtle hover:text-primary disabled:opacity-100';
-const resendOff =
-  'h-12 rounded-full bg-on-surface/10 px-4 text-base font-medium text-on-surface/40 disabled:opacity-100';
+const resendGhostDisabled =
+  'h-12 rounded-full px-4 text-base font-medium text-on-surface/40 hover:bg-transparent disabled:opacity-100';
 
 function digitsOnly(value: string, max = 6) {
   return value.replace(/\D/g, '').slice(0, max);
@@ -190,11 +193,15 @@ export function OtpForm({
 }: OtpFormProps) {
   const t = useTranslations('otp');
   const auth = useTranslations('auth');
+  const login = useTranslations('login');
   const router = useRouter();
   const resendAt = useAuthFlowStore((s) => s.resendAvailableAt);
   const sendVerifyContext = useAuthFlowStore((s) => s.sendVerifyContext);
   const setSendVerifyContext = useAuthFlowStore((s) => s.setSendVerifyContext);
   const setPendingSessionLimit = useAuthFlowStore((s) => s.setPendingSessionLimit);
+  const setVerifyPasswordAccessToken = useAuthFlowStore(
+    (s) => s.setVerifyPasswordAccessToken
+  );
   const markOtpSent = useAuthFlowStore((s) => s.markOtpSent);
   const markOtpVerified = useAuthFlowStore((s) => s.markOtpVerified);
   const setResetAccessToken = useAuthFlowStore((s) => s.setResetAccessToken);
@@ -259,6 +266,17 @@ export function OtpForm({
         return;
       }
 
+      if (
+        purpose === 'login' &&
+        result.redirectVerifyPassword &&
+        result.verifyPasswordAccessToken
+      ) {
+        setVerifyPasswordAccessToken(result.verifyPasswordAccessToken);
+        markOtpVerified();
+        router.push(AUTH_ROUTES.loginPassword);
+        return;
+      }
+
       if (purpose === 'forgot-password') {
         if (!result.redirectVerifyPassword || !result.resetAccessToken) {
           setError(t('resetTokenMissing'));
@@ -311,46 +329,52 @@ export function OtpForm({
 
   return (
     <form className="flex flex-col gap-8" onSubmit={onSubmit}>
-        <AuthHeading>{t('sentTo', { identifier })}</AuthHeading>
+      <AuthHeading>{t('sentTo', { identifier })}</AuthHeading>
 
-        <div className="space-y-2">
-          <FloatingInput
-            name="code"
-            value={code}
-            onChange={(e) => setCode(digitsOnly(e.target.value))}
-            label={t('codePlaceholder')}
-            inputMode="numeric"
-            autoComplete="one-time-code"
-            className="tracking-widest"
-          />
-          <FieldError message={error} />
+      <div className="space-y-2">
+        <FloatingInput
+          name="code"
+          value={code}
+          onChange={(e) => setCode(digitsOnly(e.target.value))}
+          label={t('codePlaceholder')}
+          inputMode="numeric"
+          autoComplete="one-time-code"
+          className="tracking-widest"
+        />
+        <FieldError message={error} />
+      </div>
+
+      {purpose === 'login' && (
+        <div className="self-start">
+          <AuthTextLink href={AUTH_ROUTES.loginPassword}>
+            {login('loginWithPassword')}
+          </AuthTextLink>
         </div>
-
-        <div className="flex w-full max-w-[286px] items-center justify-between self-end">
-          <Button
-            type="button"
-            variant="ghost"
-            disabled={!canResend}
-            loading={resending}
-            onClick={onResend}
-            className={canResend || resending ? resendOn : resendOff}
-          >
-            {t('resend')}
-          </Button>
-          <Button
-            type="submit"
-            loading={verifyCodeMutation.isPending}
-            className={submitBtnBase}
-          >
-            {auth('submit')}
-          </Button>
-        </div>
-
-        {!canResend && (
-          <p className="text-center text-[11px] font-medium leading-6 text-green-850 dark:text-muted-foreground">
-            {t('countdown', { time: formatCountdown(secondsLeft) })}
-          </p>
       )}
+
+      <div className="flex w-full max-w-[286px] items-center justify-between self-end">
+        <Button
+          type="button"
+          variant="ghost"
+          disabled={!canResend}
+          loading={resending}
+          onClick={onResend}
+          className={canResend || resending ? resendOn : resendGhostDisabled}
+        >
+          {t('resend')}
+        </Button>
+        <Button
+          type="submit"
+          loading={verifyCodeMutation.isPending}
+          className={submitBtnBase}
+        >
+          {auth('submit')}
+        </Button>
+      </div>
+
+      <p className="text-center text-[11px] font-medium leading-6 text-green-850 dark:text-muted-foreground">
+        {t('countdown', { time: formatCountdown(secondsLeft) })}
+      </p>
     </form>
   );
 }
@@ -428,6 +452,178 @@ export function TotpForm({ successPath = AUTH_ROUTES.dashboard }: TotpFormProps)
       >
         {auth('submit')}
       </Button>
+    </form>
+  );
+}
+
+type PasswordLoginFormProps = {
+  successPath?: string;
+};
+
+/** One-step password login + two-step verify_password after OTP (Figma + Aut-1). */
+export function PasswordLoginForm({
+  successPath = AUTH_ROUTES.dashboard,
+}: PasswordLoginFormProps) {
+  const t = useTranslations('login');
+  const auth = useTranslations('auth');
+  const router = useRouter();
+  const clearFlow = useAuthFlowStore((s) => s.clear);
+  const setPendingSessionLimit = useAuthFlowStore((s) => s.setPendingSessionLimit);
+  const verifyPasswordAccessToken = useAuthFlowStore(
+    (s) => s.verifyPasswordAccessToken
+  );
+  const markOtpSent = useAuthFlowStore((s) => s.markOtpSent);
+  const setSendVerifyContext = useAuthFlowStore((s) => s.setSendVerifyContext);
+  const sendVerifyContext = useAuthFlowStore((s) => s.sendVerifyContext);
+  const { ready, identifier } = useAuthFlowGuard('login', AUTH_ROUTES.login);
+  const loginMutation = useLoginByIdentityAndPasswordMutation();
+  const verifyPasswordMutation = useVerifyPasswordMutation();
+  const sendVerifyCodeMutation = useSendVerifyCodeMutation();
+
+  const [password, setPassword] = useState('');
+  const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [switchingToOtp, setSwitchingToOtp] = useState(false);
+
+  const isTwoStep = !!verifyPasswordAccessToken;
+  const isPending =
+    loginMutation.isPending ||
+    verifyPasswordMutation.isPending ||
+    switchingToOtp;
+
+  if (!ready) return null;
+
+  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    if (!password.trim()) {
+      setError(t('passwordRequired'));
+      return;
+    }
+    if (!recaptchaToken) {
+      setError(t('recaptchaRequired'));
+      return;
+    }
+
+    setError(null);
+    try {
+      const result = isTwoStep
+        ? await verifyPasswordMutation.mutateAsync({
+            identity: identifier,
+            password,
+            recaptchaResponse: recaptchaToken,
+            accessToken: verifyPasswordAccessToken!,
+          })
+        : await loginMutation.mutateAsync({
+            identity: identifier,
+            password,
+            recaptchaResponse: recaptchaToken,
+          });
+
+      if (
+        result.sessionLimitReached &&
+        result.pendingAccessToken &&
+        result.identityInfo
+      ) {
+        setPendingSessionLimit({
+          accessToken: result.pendingAccessToken,
+          loginType: result.loginType ?? 4,
+          identityInfo: result.identityInfo,
+        });
+        router.push(AUTH_ROUTES.loginSessions);
+        return;
+      }
+
+      if (result.session) {
+        await finishAuthAndRedirect(result.session, successPath, clearFlow);
+        return;
+      }
+
+      setError(t('loginFailed'));
+    } catch (err) {
+      setError(getAuthApiErrorMessage(err, t('loginFailed')));
+    }
+  }
+
+  async function onSwitchToOtp() {
+    setError(null);
+    setSwitchingToOtp(true);
+    try {
+      if (sendVerifyContext) {
+        router.push(AUTH_ROUTES.loginOtp);
+        return;
+      }
+
+      const result = await sendVerifyCodeMutation.mutateAsync({
+        identity: identifier,
+        purpose: 'login',
+      });
+      setSendVerifyContext({
+        operation: result.operation,
+        codeType: result.codeType,
+        identityType: result.identityType,
+        // TODO: Remove devOtpCode — users should enter OTP from SMS/email in production.
+        devOtpCode: result.code,
+      });
+      markOtpSent();
+
+      if (result.codeType === 'TOTP') {
+        router.push(AUTH_ROUTES.loginTotp);
+        return;
+      }
+      router.push(AUTH_ROUTES.loginOtp);
+    } catch (err) {
+      setError(getAuthApiErrorMessage(err, auth('sendOtpFailed')));
+    } finally {
+      setSwitchingToOtp(false);
+    }
+  }
+
+  return (
+    <form className="flex flex-col gap-8" onSubmit={onSubmit}>
+      <AuthHeading>{t('passwordPrompt')}</AuthHeading>
+
+      <div className="space-y-2">
+        <FloatingInput
+          name="password"
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          label={t('passwordLabel')}
+          autoComplete="current-password"
+          showVisibilityToggle
+          visibilityLabels={{
+            show: t('showPassword'),
+            hide: t('hidePassword'),
+          }}
+        />
+        <FieldError message={error} />
+      </div>
+
+      <div className="flex w-full flex-wrap items-center justify-between gap-3">
+        <AuthRecaptcha
+          label={t('recaptchaLabel')}
+          onChange={setRecaptchaToken}
+        />
+        <AuthTextLink href={AUTH_ROUTES.forgot}>{t('forgotPassword')}</AuthTextLink>
+      </div>
+
+      <div className="flex w-full items-center justify-between gap-3">
+        <Button
+          type="button"
+          variant="ghost"
+          loading={switchingToOtp}
+          disabled={isPending && !switchingToOtp}
+          onClick={onSwitchToOtp}
+          className={resendOn}
+        >
+          {t('loginWithOtp')}
+        </Button>
+      </div>
+      <div className="flex w-full justify-end items-center gap-3">
+       <Button type="submit" loading={isPending && !switchingToOtp} className={submitBtnBase}>
+          {auth('submit')}
+        </Button>
+       </div>
     </form>
   );
 }

@@ -189,9 +189,19 @@
   "login": {
     "greeting": "سلام!",
     "welcome": "دوباره به دانشجوام خوش آمدید!",
-    "forgotPassword": "رمز عبور را فراموش کرده‌اید؟",
+    "forgotPassword": "فراموشی رمزعبور",
     "noAccount": "حساب کاربری ندارید؟",
-    "register": "ثبت‌نام کنید"
+    "register": "ثبت‌نام کنید",
+    "passwordPrompt": "لطفا رمز عبور خود را وارد کنید",
+    "passwordLabel": "رمز عبور",
+    "passwordRequired": "لطفاً رمز عبور را وارد کنید",
+    "recaptchaLabel": "من ربات نیستم",
+    "recaptchaRequired": "لطفاً تیک «من ربات نیستم» را بزنید",
+    "loginWithPassword": "ورود با رمز عبور",
+    "loginWithOtp": "ورود با رمز یکبار مصرف",
+    "loginFailed": "ورود با رمز عبور ناموفق بود",
+    "showPassword": "نمایش رمز عبور",
+    "hidePassword": "مخفی کردن رمز عبور"
   },
   "register": {
     "greeting": "سلام!",
@@ -209,7 +219,7 @@
     "countdown": "{time} مانده تا دریافت مجدد کد"
   },
   "totp": {
-    "description": "کد احراز هویت دو مرحله‌ای را از اپلیکیشن خود وارد کنید",
+    "description": "کد دریافتی از Google Authenticator را وارد نمایید",
     "codePlaceholder": "کد احراز هویت",
     "codeRequired": "لطفاً کد احراز هویت را وارد کنید",
     "verifyFailed": "کد احراز هویت نامعتبر است"
