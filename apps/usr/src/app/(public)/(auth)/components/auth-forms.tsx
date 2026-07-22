@@ -90,14 +90,17 @@ export function IdentifierForm({
 
   const [identifier, setIdentifier] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const [emptyError, setEmptyError] = useState(false);
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const value = identifier.trim();
     if (!value) {
-      setError(isForgotPassword ? forgot('identifierRequired') : auth('identifierRequired'));
+      setEmptyError(true);
+      setError(auth('identifierRequired'));
       return;
     }
+    setEmptyError(false);
     if (isForgotPassword) {
       if (!isValidResetPasswordIdentity(value)) {
         setError(
@@ -170,11 +173,16 @@ export function IdentifierForm({
         <FloatingInput
           name="identifier"
           value={identifier}
-          onChange={(e) => setIdentifier(e.target.value)}
+          onChange={(e) => {
+            setIdentifier(e.target.value);
+            if (emptyError) setEmptyError(false);
+            if (error) setError(null);
+          }}
           label={
             isForgotPassword ? forgot('identifierPlaceholder') : auth('identifierPlaceholder')
           }
           autoComplete="username"
+          error={emptyError}
         />
         <FieldError message={error} />
       </div>
