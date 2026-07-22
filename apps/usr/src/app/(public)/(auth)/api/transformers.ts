@@ -108,7 +108,6 @@ export function mapVerifyCodeResponse(
 
   // Two-step OTP → password (YAML: verify for 2-step-login)
   if (
-    purpose !== 'forgot-password' &&
     info.is_two_step_login &&
     info.redirect_verify_password &&
     data.access_token
