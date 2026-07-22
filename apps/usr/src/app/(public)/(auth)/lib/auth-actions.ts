@@ -12,6 +12,14 @@ export async function establishSession(session: Session) {
   await login(session);
 }
 
+/** Reject guest auth flows when a real session/token already exists. */
+export async function assertGuestAuth() {
+  const session = await getSession();
+  if (session?.accessToken) {
+    throw new Error('Already authenticated.');
+  }
+}
+
 /** Call POST /auth/actor_logout then clear the local session cookie. */
 export async function clearSession() {
   const session = await getSession();

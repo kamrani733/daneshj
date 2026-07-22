@@ -18,6 +18,7 @@ import {
   type AuthPurpose,
 } from '@auth/api';
 import { AuthRecaptcha } from '@/components/auth/recaptcha';
+import { assertGuestAuth } from '@auth/lib/auth-actions';
 import { finishAuthAndRedirect } from '@auth/lib/auth-redirect';
 import {
   AUTH_ROUTES,
@@ -117,6 +118,8 @@ export function IdentifierForm({
 
     setError(null);
     try {
+      await assertGuestAuth();
+
       const loginIdentityType = isForgotPassword
         ? detectLoginIdentityType(value)
         : undefined;
@@ -151,6 +154,10 @@ export function IdentifierForm({
 
       router.push(authOtpPath(purpose));
     } catch (err) {
+      if (err instanceof Error && err.message === 'Already authenticated.') {
+        window.location.assign(AUTH_ROUTES.dashboard);
+        return;
+      }
       setError(getAuthApiErrorMessage(err, auth('sendOtpFailed')));
     }
   }
@@ -244,6 +251,8 @@ export function OtpForm({
 
     setError(null);
     try {
+      await assertGuestAuth();
+
       const result = await verifyCodeMutation.mutateAsync({
         identity: identifier,
         code: value,
@@ -298,6 +307,10 @@ export function OtpForm({
 
       setError(t('verifyFailed'));
     } catch (err) {
+      if (err instanceof Error && err.message === 'Already authenticated.') {
+        window.location.assign(AUTH_ROUTES.dashboard);
+        return;
+      }
       setError(getAuthApiErrorMessage(err, t('verifyFailed')));
     }
   }
@@ -416,6 +429,8 @@ export function TotpForm({ successPath = AUTH_ROUTES.dashboard }: TotpFormProps)
 
     setError(null);
     try {
+      await assertGuestAuth();
+
       const result = await verifyCodeMutation.mutateAsync({
         identity: identifier,
         code: value,
@@ -440,6 +455,10 @@ export function TotpForm({ successPath = AUTH_ROUTES.dashboard }: TotpFormProps)
       }
       await finishAuthAndRedirect(result.session, successPath, clearFlow);
     } catch (err) {
+      if (err instanceof Error && err.message === 'Already authenticated.') {
+        window.location.assign(AUTH_ROUTES.dashboard);
+        return;
+      }
       setError(getAuthApiErrorMessage(err, t('verifyFailed')));
     }
   }
@@ -522,6 +541,8 @@ export function PasswordLoginForm({
 
     setError(null);
     try {
+      await assertGuestAuth();
+
       const result = isTwoStep
         ? await verifyPasswordMutation.mutateAsync({
             identity: identifier,
@@ -556,6 +577,10 @@ export function PasswordLoginForm({
 
       setError(t('loginFailed'));
     } catch (err) {
+      if (err instanceof Error && err.message === 'Already authenticated.') {
+        window.location.assign(AUTH_ROUTES.dashboard);
+        return;
+      }
       setError(getAuthApiErrorMessage(err, t('loginFailed')));
     }
   }
@@ -681,6 +706,7 @@ export function ResetPasswordForm({
 
     setError(null);
     try {
+      await assertGuestAuth();
       await resetPasswordMutation.mutateAsync({
         password,
         confirmPassword,
@@ -689,6 +715,10 @@ export function ResetPasswordForm({
       clearFlow();
       window.location.assign(successPath);
     } catch (err) {
+      if (err instanceof Error && err.message === 'Already authenticated.') {
+        window.location.assign(AUTH_ROUTES.dashboard);
+        return;
+      }
       setError(getAuthApiErrorMessage(err, t('resetFailed')));
     }
   }
