@@ -30,8 +30,7 @@ function findCategoryGroup(category: string | null) {
 
 /**
  * Subcategory chips under «N تخفیف فعال».
- * DOM is LTR with children reversed + «همه» last so `justify-end` matches
- * Figma Head content #1:10021 / #1:13286 (e.g. ورزش → هنر → همه).
+ * RTL order: «همه» first (visual right), then children (Figma Head content).
  */
 export function getSearchCategoryChips(
   category: string | null
@@ -40,11 +39,11 @@ export function getSearchCategoryChips(
   if (!group) return null;
 
   return [
-    ...[...group.children].reverse().map((child) => ({
+    ALL_CHIP,
+    ...group.children.map((child) => ({
       id: child.id,
       label: child.label.trim(),
     })),
-    ALL_CHIP,
   ];
 }
 

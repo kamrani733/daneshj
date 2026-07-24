@@ -136,6 +136,10 @@ export function HomeSearchResults({
               price={item.price}
               originalPrice={item.originalPrice}
               discountPercent={item.discountPercent}
+              badge={item.badge}
+              timeLabel={item.timeLabel}
+              sellCount={item.sellCount}
+              address={item.address}
               className="w-full"
             />
           ))}

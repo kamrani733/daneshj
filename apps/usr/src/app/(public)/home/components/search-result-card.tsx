@@ -2,6 +2,7 @@
 
 import Image from 'next/image';
 
+import { Badge } from '@/components/ui/badge';
 import { formatFaNumber, formatFaRating, formatToman } from '@/lib/format-fa';
 import { cn } from '@/lib/utils';
 
@@ -30,12 +31,18 @@ export type SearchResultCardProps = {
   price: number;
   discountPercent?: number;
   originalPrice?: number;
+  /** Image overlay discount percent label (e.g. «۳۰٪»). */
+  badge?: string;
+  /** Image overlay time chip (e.g. «۲ ساعت پیش»). */
+  timeLabel?: string;
+  /** Image overlay sell count (e.g. 138 → «۱۳۸ خرید»). */
+  sellCount?: number;
+  /** Image overlay address chip. */
+  address?: string;
   className?: string;
 };
 
-/**
- * Figma Discount card — 320×340 · media 188 · radius 12 · elev 1 · stroke #BFC9C1.
- */
+
 export function SearchResultCard({
   title,
   businessName,
@@ -46,6 +53,10 @@ export function SearchResultCard({
   price,
   discountPercent,
   originalPrice,
+  badge,
+  timeLabel,
+  sellCount,
+  address,
   className,
 }: SearchResultCardProps) {
   const hasDiscount = typeof discountPercent === 'number' && discountPercent > 0;
@@ -54,6 +65,12 @@ export function SearchResultCard({
     (hasDiscount
       ? Math.round(price / (1 - discountPercent / 100))
       : undefined);
+
+  const hasImageBadges =
+    Boolean(badge) ||
+    Boolean(timeLabel) ||
+    typeof sellCount === 'number' ||
+    Boolean(address);
 
   return (
     <article
@@ -73,6 +90,23 @@ export function SearchResultCard({
           sizes="(max-width: 640px) 320px, (max-width: 1279px) 50vw, 320px"
           className="object-cover"
         />
+
+        {hasImageBadges ? (
+          <div className="absolute start-3 top-3 z-10 flex max-w-[calc(100%-1.5rem)] flex-wrap items-center justify-end gap-2">
+            {badge ? (
+              <Badge className="h-8 rounded-full border-0 bg-warning-subtle px-3 text-sm font-medium leading-5 tracking-[0.0071em] text-warning-700 dark:text-warning-50">
+                {badge}
+              </Badge>
+            ) : null}
+            {timeLabel ? <Badge variant="meta">{timeLabel}</Badge> : null}
+            {typeof sellCount === 'number' ? (
+              <Badge variant="sell">
+                {formatFaNumber(sellCount)} خرید
+              </Badge>
+            ) : null}
+            {address ? <Badge variant="meta">{address}</Badge> : null}
+          </div>
+        ) : null}
       </div>
 
       <div className="flex w-full flex-col gap-2 p-4" dir="rtl">
@@ -100,9 +134,9 @@ export function SearchResultCard({
         <div className="flex w-full items-end justify-between gap-3 px-2">
           <div className="flex flex-col items-end gap-1">
             {hasDiscount ? (
-              <span className="inline-flex h-7 items-center justify-center rounded-full bg-warning px-3 text-sm font-bold leading-5 tracking-[0.0071em] text-white">
+              <Badge variant="warning">
                 {formatFaNumber(discountPercent)}٪ تخفیف
-              </span>
+              </Badge>
             ) : null}
             {beforePrice != null ? (
               <span className="text-xs leading-4 tracking-[0.0083em] text-[#707973] line-through">

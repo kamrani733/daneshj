@@ -14,9 +14,9 @@ import {
   type SearchFilterValues,
   type SearchSortId,
 } from '../data/search-filter-data';
-import { FilterToolbarButton } from './filter-toolbar-button';
+import { FilterControlButton } from './filter-control-button';
 import { HomeSearchSortMenu } from './home-search-sort-menu';
-import { FilterAltIcon, ImportExportIcon } from './material-icons';
+import { FilterAltIcon, SortIcon } from './material-icons';
 
 type HomeSearchFilterBarProps = {
   filters: SearchFilterValues;
@@ -27,6 +27,7 @@ type HomeSearchFilterBarProps = {
   onClear: () => void;
   className?: string;
 };
+
 
 export function HomeSearchFilterBar({
   filters,
@@ -41,7 +42,7 @@ export function HomeSearchFilterBar({
   const [panelOpen, setPanelOpen] = useState(false);
   const [sortOpen, setSortOpen] = useState(false);
   const [draft, setDraft] = useState(filters);
-  const [openField, setOpenField] = useState<string | null>(null);
+  const [openFields, setOpenFields] = useState<Set<string>>(() => new Set());
   const sortBtnRef = useRef<HTMLButtonElement>(null);
   const sortMenuRef = useRef<HTMLUListElement>(null);
 
@@ -57,41 +58,29 @@ export function HomeSearchFilterBar({
   };
 
   const toggleField = (id: string) => {
-    setOpenField((current) => (current === id ? null : id));
+    setOpenFields((current) => {
+      const next = new Set(current);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
   };
-
-  const elevated = panelOpen || sortOpen;
 
   return (
     <div
       className={cn(
-        /* Figma Login-logout report Filter — radius 12 · stroke 1 #BFC9C1 · bg #F5F8F5 · h 72 */
-        'relative w-full rounded-[12px] border border-home-filter',
-        panelOpen ? 'bg-home-card' : 'bg-home-filter-bar',
-        elevated ? 'z-[60] overflow-visible' : 'overflow-visible',
+        'relative w-full rounded-[12px] border border-home-filter bg-home-search-fill',
+        (panelOpen || sortOpen) && 'z-[60]',
         className
       )}
     >
-      {/* Control bar #1:13393 — pad 8×16 · icons 56 · gap 16 · MUI filter_alt + import_export */}
       <div
-        dir="ltr"
-        className="flex h-[72px] items-center justify-end gap-4 px-4 py-2"
+        dir="rtl"
+        className="flex items-center justify-start gap-4 px-4 py-2"
       >
-        <FilterToolbarButton
-          label={t('filterTooltip')}
-          active={panelOpen}
-          aria-expanded={panelOpen}
-          onClick={() => {
-            setSortOpen(false);
-            setPanelOpen((open) => !open);
-          }}
-        >
-          <FilterAltIcon size={24} />
-        </FilterToolbarButton>
-
-        <FilterToolbarButton
+        <FilterControlButton
           ref={sortBtnRef}
-          label={t('sortTooltip')}
+          label={t('sortLabel')}
           active={sortOpen}
           aria-expanded={sortOpen}
           aria-haspopup="menu"
@@ -99,9 +88,20 @@ export function HomeSearchFilterBar({
             setPanelOpen(false);
             setSortOpen((open) => !open);
           }}
-        >
-          <ImportExportIcon size={24} />
-        </FilterToolbarButton>
+          icon={<SortIcon size={24} />}
+        />
+        <FilterControlButton
+          label={t('filterLabel')}
+          active={panelOpen}
+          aria-expanded={panelOpen}
+          onClick={() => {
+            setSortOpen(false);
+            setPanelOpen((open) => !open);
+          }}
+          icon={<FilterAltIcon size={24} />}
+        />
+
+
       </div>
 
       <HomeSearchSortMenu
@@ -117,7 +117,7 @@ export function HomeSearchFilterBar({
 
       {panelOpen ? (
         <div dir="rtl" className="flex flex-col">
-          <div className="flex h-14 items-center justify-end px-3">
+          <div className="flex h-14 items-center justify-start px-3">
             <p className="text-base leading-6 tracking-[0.0094em] text-home-filter-ink">
               {t('title')}
             </p>
@@ -128,7 +128,7 @@ export function HomeSearchFilterBar({
               <FilterField
                 id="discount"
                 label={t('fields.discount')}
-                open={openField === 'discount'}
+                open={openFields.has('discount')}
                 onToggle={() => toggleField('discount')}
               >
                 <RangeInputs
@@ -145,7 +145,7 @@ export function HomeSearchFilterBar({
               <FilterField
                 id="price"
                 label={t('fields.price')}
-                open={openField === 'price'}
+                open={openFields.has('price')}
                 onToggle={() => toggleField('price')}
               >
                 <RangeInputs
@@ -162,7 +162,7 @@ export function HomeSearchFilterBar({
               <FilterField
                 id="date"
                 label={t('fields.date')}
-                open={openField === 'date'}
+                open={openFields.has('date')}
                 onToggle={() => toggleField('date')}
               >
                 <RangeInputs
@@ -178,11 +178,11 @@ export function HomeSearchFilterBar({
               </FilterField>
             </div>
 
-            <div className="flex w-full flex-col min-[834px]:flex-row min-[834px]:justify-end">
+            <div className="flex w-full flex-col min-[834px]:flex-row min-[834px]:justify-start">
               <FilterField
                 id="rating"
                 label={t('fields.rating')}
-                open={openField === 'rating'}
+                open={openFields.has('rating')}
                 onToggle={() => toggleField('rating')}
                 className="min-[834px]:w-[calc((100%-0px)/3)] min-[834px]:max-w-none min-[834px]:flex-none"
               >
@@ -210,7 +210,6 @@ export function HomeSearchFilterBar({
                 onFiltersChange(draft);
                 onApply(draft);
                 setPanelOpen(false);
-                setOpenField(null);
               }}
             >
               {t('apply')}
@@ -222,7 +221,6 @@ export function HomeSearchFilterBar({
               onClick={() => {
                 setDraft(EMPTY_SEARCH_FILTERS);
                 onClear();
-                setOpenField(null);
               }}
             >
               {t('clear')}

@@ -6,7 +6,14 @@ export type SearchResultItem = {
   id: string;
   title: string;
   subtitle: string;
+  /** Image overlay percent badge (e.g. «۳۰٪»). */
   badge?: string;
+  /** Image overlay time chip (Figma Time=Yes). */
+  timeLabel?: string;
+  /** Image overlay purchase count (Figma Sell number=Yes). */
+  sellCount?: number;
+  /** Image overlay address chip (Figma Address=Yes). */
+  address?: string;
   /** Parent category label (e.g. هنر و ورزش). */
   category: string;
   /** Leaf category from menu (e.g. ورزش). */
@@ -37,6 +44,8 @@ export const MOCK_SEARCH_RESULTS: SearchResultItem[] = [
     title: 'تخفیف کتاب دانشگاهی',
     subtitle: 'کتاب‌فروشی دانشجو',
     badge: '۳۰٪',
+    timeLabel: '۲ ساعت پیش ',
+    sellCount: 138,
     category: 'کتاب و لوازم التحریر',
     imageSrc: HOME_IMAGES.discountCard,
     discountPercent: 30,
@@ -50,6 +59,8 @@ export const MOCK_SEARCH_RESULTS: SearchResultItem[] = [
     title: 'کافه دانشجویی ویژه',
     subtitle: 'کافه پردیس',
     badge: '۲۰٪',
+    timeLabel: 'دو روز پیش ',
+    sellCount: 86,
     category: 'رستوران و کافی شاپ',
     imageSrc: HOME_IMAGES.discountCard,
     discountPercent: 20,
@@ -63,6 +74,8 @@ export const MOCK_SEARCH_RESULTS: SearchResultItem[] = [
     title: 'دوره آموزش برنامه‌نویسی',
     subtitle: 'آکادمی مهارت',
     badge: '۴۰٪',
+    timeLabel: 'سه روز پیش ',
+    address: 'تهران',
     category: 'آموزش و مشاوره ',
     imageSrc: HOME_IMAGES.discountCard,
     discountPercent: 40,
@@ -76,6 +89,8 @@ export const MOCK_SEARCH_RESULTS: SearchResultItem[] = [
     title: 'لوازم ورزشی دانشجویان',
     subtitle: 'فروشگاه اسپورت',
     badge: '۱۵٪',
+    timeLabel: '۲ ساعت پیش ',
+    sellCount: 52,
     category: 'هنر و ورزش',
     subcategory: 'ورزش',
     imageSrc: HOME_IMAGES.discountCard,
@@ -90,6 +105,7 @@ export const MOCK_SEARCH_RESULTS: SearchResultItem[] = [
     title: 'باشگاه بدنسازی دانشجویی',
     subtitle: 'فیتنس پردیس',
     badge: '۲۵٪',
+    sellCount: 210,
     category: 'هنر و ورزش',
     subcategory: 'ورزش',
     imageSrc: HOME_IMAGES.discountCard,
@@ -104,6 +120,8 @@ export const MOCK_SEARCH_RESULTS: SearchResultItem[] = [
     title: 'کلاس یوگا و پیلاتس',
     subtitle: 'استودیو آرامش',
     badge: '۳۰٪',
+    timeLabel: 'دو روز پیش ',
+    address: 'اصفهان',
     category: 'هنر و ورزش',
     subcategory: 'ورزش',
     imageSrc: HOME_IMAGES.discountCard,
@@ -118,6 +136,8 @@ export const MOCK_SEARCH_RESULTS: SearchResultItem[] = [
     title: 'بلیت استخر دانشجویی',
     subtitle: 'مجموعه ورزشی دانشگاه',
     badge: '۲۰٪',
+    timeLabel: '۲ ساعت پیش ',
+    sellCount: 98,
     category: 'هنر و ورزش',
     subcategory: 'ورزش',
     imageSrc: HOME_IMAGES.discountCard,
@@ -132,6 +152,9 @@ export const MOCK_SEARCH_RESULTS: SearchResultItem[] = [
     title: 'بدمینتون',
     subtitle: 'اسپورت‌لند',
     badge: '۳۵٪',
+    timeLabel: 'سه روز پیش ',
+    sellCount: 44,
+    address: 'شیراز',
     category: 'هنر و ورزش',
     subcategory: 'ورزش',
     imageSrc: HOME_IMAGES.discountCard,

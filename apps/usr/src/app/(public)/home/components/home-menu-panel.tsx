@@ -134,23 +134,61 @@ export function HomeMenuStackList({
   );
 }
 
+const MENU_VIEWPORT_PADDING = 16;
+
+/** Cap panel height to remaining viewport space so overflow can scroll. */
+function useViewportMaxHeight(
+  open: boolean,
+  anchorRef: React.RefObject<HTMLElement | null>
+) {
+  const [maxHeight, setMaxHeight] = useState<number | undefined>();
+
+  useEffect(() => {
+    if (!open) {
+      setMaxHeight(undefined);
+      return;
+    }
+
+    const update = () => {
+      const el = anchorRef.current;
+      if (!el) return;
+      const top = el.getBoundingClientRect().top;
+      const available = window.innerHeight - top - MENU_VIEWPORT_PADDING;
+      setMaxHeight(Math.max(160, Math.min(available, window.innerHeight * 0.7)));
+    };
+
+    update();
+    window.addEventListener('resize', update);
+    window.addEventListener('scroll', update, true);
+    return () => {
+      window.removeEventListener('resize', update);
+      window.removeEventListener('scroll', update, true);
+    };
+  }, [open, anchorRef]);
+
+  return maxHeight;
+}
+
 /** Figma Menu — min 280px, expands with label length; elevation 2, items 56px. */
 export function HomeMenuPanel({
   items,
   className,
   onNavigate,
   scrollable = false,
-}: HomeMenuPanelProps & { scrollable?: boolean }) {
+  maxHeight,
+}: HomeMenuPanelProps & { scrollable?: boolean; maxHeight?: number }) {
   return (
     <ul
       dir="rtl"
       className={cn(
         'relative z-[90] flex w-max min-w-[280px] max-w-[min(480px,90vw)] flex-col rounded bg-home-search-category py-2 text-right shadow-home-elevation-2',
         scrollable
-          ? 'max-h-[min(70vh,calc(100dvh-6rem))] overflow-y-auto overscroll-contain'
+          ? 'overflow-y-auto overscroll-contain'
           : 'overflow-visible',
+        scrollable && maxHeight == null && 'max-h-[min(70vh,calc(100dvh-6rem))]',
         className
       )}
+      style={scrollable && maxHeight != null ? { maxHeight } : undefined}
       role="menu"
     >
       {items.map((item) => (
@@ -174,6 +212,7 @@ function HomeMenuRow({
   const [open, setOpen] = useState(false);
   const rowRef = useRef<HTMLLIElement>(null);
   const hasChildren = Boolean(item.children?.length);
+  const flyoutMaxHeight = useViewportMaxHeight(open && hasChildren, rowRef);
 
   useEffect(() => {
     if (!open) return;
@@ -245,6 +284,7 @@ function HomeMenuRow({
           <HomeMenuPanel
             items={item.children!}
             scrollable
+            maxHeight={flyoutMaxHeight}
             onNavigate={(label) => {
               setOpen(false);
               onNavigate?.(label);
