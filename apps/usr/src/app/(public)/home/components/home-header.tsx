@@ -123,14 +123,7 @@ export function HomeHeader({ isAuthenticated = false, userName }: HomeHeaderProp
 
         <nav className="flex shrink-0 items-center gap-0.5 min-[1280px]:gap-1" aria-label={t('mainNav')}>
           {NAV_LINKS.map((link) =>
-            link.href ? (
-              <NavDirectLink
-                key={link.key}
-                label={t(link.key)}
-                icon={link.icon}
-                href={link.href}
-              />
-            ) : (
+            link.menuKey ? (
               <NavMenuItem
                 key={link.key}
                 label={t(link.key)}
@@ -141,6 +134,13 @@ export function HomeHeader({ isAuthenticated = false, userName }: HomeHeaderProp
                 }
                 onClose={closeNav}
                 items={NAV_MENUS[link.menuKey]}
+              />
+            ) : (
+              <NavDirectLink
+                key={link.key}
+                label={t(link.key)}
+                icon={link.icon}
+                href={link.href}
               />
             )
           )}
@@ -383,36 +383,26 @@ function MobileNavDrawer({ items, onClose, t }: MobileNavDrawerProps) {
   }, []);
 
   return (
-    <div className="fixed inset-0 top-12 z-[60] lg:hidden">
-      <Button
+    <div className="fixed inset-0 z-[70] flex h-[100dvh] w-screen flex-col bg-home-header lg:hidden">
+      <button
         type="button"
-        variant="ghost"
-        size="none"
         aria-label="بستن منو"
-        className="absolute inset-0 h-auto w-auto rounded-none bg-black/30 hover:bg-black/30"
         onClick={onClose}
-      />
+        className="absolute left-4 top-4 z-10 inline-flex size-10 items-center justify-center rounded-full bg-home-search-category text-content transition-colors hover:bg-muted"
+      >
+        <X className="size-5" />
+      </button>
+
       <nav
-        className="relative z-10 flex max-h-[calc(100dvh-3rem)] flex-col px-4 pb-6 pt-3"
+        dir="rtl"
+        className="flex size-full min-h-0 flex-1 flex-col"
         aria-label={t('mainNav')}
       >
-        <div className="mb-3 flex shrink-0 justify-end">
-          <Button
-            type="button"
-            variant="secondary"
-            size="icon"
-            aria-label="بستن منو"
-            onClick={onClose}
-            className="size-9 rounded-md bg-home-header text-content shadow-home-elevation-1 hover:bg-muted"
-          >
-            <X className="size-5" />
-          </Button>
-        </div>
-
         <HomeMenuStackList
           items={rootItems}
-          rootTitle={t('mainNav')}
-          className="ms-auto w-full max-w-[360px] min-h-0 overflow-y-auto"
+          expandNested
+          className="min-h-0 w-full flex-1 pt-16"
+          listClassName="!max-h-none h-full min-h-0 flex-1 rounded-none shadow-none"
           onNavigate={() => onClose()}
         />
       </nav>

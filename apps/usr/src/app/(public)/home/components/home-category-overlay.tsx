@@ -16,7 +16,7 @@ type HomeCategoryOverlayProps = {
   onSelect?: (label: string) => void;
 };
 
-/** Figma category overlay — grid desktop (#1:9227), list mobile. */
+/** Figma category overlay — grid desktop (#1:9227), full-screen list mobile (#74:5694). */
 export function HomeCategoryOverlay({ open, onClose, onSelect }: HomeCategoryOverlayProps) {
   useEffect(() => {
     if (!open) return;
@@ -36,18 +36,26 @@ export function HomeCategoryOverlay({ open, onClose, onSelect }: HomeCategoryOve
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-[70] flex items-start justify-center bg-black/40 px-4 pt-24 dark:bg-black/60 min-[834px]:pt-32">
+    <div
+      className={cn(
+        'fixed inset-0 z-[70] h-[100dvh] w-screen',
+        'min-[834px]:flex min-[834px]:h-auto min-[834px]:w-auto min-[834px]:items-start min-[834px]:justify-center min-[834px]:bg-black/40 min-[834px]:px-4 min-[834px]:pt-32 dark:min-[834px]:bg-black/60'
+      )}
+    >
       <div
         role="dialog"
         aria-modal="true"
         aria-label="دسته‌بندی"
-        className="relative w-full max-w-[1100px] rounded-3xl bg-home-header p-6 shadow-home-elevation-4 min-[834px]:p-10"
+        className={cn(
+          'relative flex size-full h-[100dvh] w-full flex-col overflow-hidden bg-home-header',
+          'min-[834px]:size-auto min-[834px]:h-auto min-[834px]:max-w-[1100px] min-[834px]:rounded-3xl min-[834px]:p-10 min-[834px]:shadow-home-elevation-4'
+        )}
       >
         <button
           type="button"
           aria-label="بستن"
           onClick={onClose}
-          className="absolute left-4 top-4 inline-flex size-10 items-center justify-center rounded-full bg-home-search-category text-content transition-colors hover:bg-muted min-[834px]:left-6 min-[834px]:top-6"
+          className="absolute left-6 top-6 z-10 hidden size-10 items-center justify-center rounded-full bg-home-search-category text-content transition-colors hover:bg-muted min-[834px]:inline-flex"
         >
           <X className="size-5" />
         </button>
@@ -95,11 +103,25 @@ export function HomeCategoryOverlay({ open, onClose, onSelect }: HomeCategoryOve
           </div>
         </div>
 
-        <div dir="rtl" className="flex flex-col items-end gap-4 pt-8 min-[834px]:hidden">
-          <h2 className="w-full text-right text-xl font-bold leading-8 text-primary">دسته بندی تخفیف ها </h2>
+        <div
+          dir="rtl"
+          className="flex size-full min-h-0 flex-1 flex-col min-[834px]:hidden"
+        >
+          <div className="flex shrink-0 items-center justify-start px-4 pb-2 pt-16" dir="ltr">
+            <button
+              type="button"
+              aria-label="بستن"
+              onClick={onClose}
+              className="inline-flex size-10 items-center justify-center rounded-full bg-home-search-category text-content transition-colors hover:bg-muted"
+            >
+              <X className="size-5" />
+            </button>
+          </div>
           <HomeMenuStackList
             items={CATEGORY_MENU_ITEMS}
-            className="w-full max-w-[360px]"
+            expandNested
+            className="min-h-0 w-full flex-1"
+            listClassName="!max-h-none h-full min-h-0 flex-1 rounded-none shadow-none"
             onNavigate={(label) => {
               onSelect?.(label);
               onClose();
@@ -118,7 +140,6 @@ type CategoryMenuDropdownProps = {
   containerRef: React.RefObject<HTMLDivElement | null>;
 };
 
-/** Desktop/tablet anchored list dropdown from category button. */
 export function CategoryMenuDropdown({
   open,
   onClose,

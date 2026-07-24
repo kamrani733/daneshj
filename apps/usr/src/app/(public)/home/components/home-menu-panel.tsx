@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 
 import { cn } from '@/lib/utils';
 
@@ -24,30 +24,112 @@ type HomeMenuStackListProps = {
   className?: string;
   listClassName?: string;
   onNavigate?: (label: string) => void;
-  /** Shown at root; when nested, replaced by a back control. */
   rootTitle?: string;
+  expandNested?: boolean;
 };
 
-/**
- * Mobile drill-down menu (Figma Temp #56:391 — آیتم های منوی اصلی برای موبایل).
- * Nested items replace the list with a back header (no side flyouts).
- */
+const EXPAND_INDENT_BY_DEPTH = ['px-3', 'pe-3 ps-14', 'pe-3 ps-20', 'pe-3 ps-24'] as const;
+
+function expandRowPadding(depth: number) {
+  return EXPAND_INDENT_BY_DEPTH[Math.min(depth, EXPAND_INDENT_BY_DEPTH.length - 1)];
+}
+
+/** Mobile menu — drill-down by default; `expandNested` opens children inline with right indent. */
 export function HomeMenuStackList({
   items,
   className,
   listClassName,
   onNavigate,
   rootTitle,
+  expandNested = false,
 }: HomeMenuStackListProps) {
   const [stack, setStack] = useState<MenuStackLevel[]>([]);
+  const [openIds, setOpenIds] = useState<Set<string>>(() => new Set());
   const current = stack[stack.length - 1];
-  const list = current?.items ?? items;
+  const list = expandNested ? items : (current?.items ?? items);
 
   const goBack = () => setStack((value) => value.slice(0, -1));
 
+  const toggleOpen = (id: string) => {
+    setOpenIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  const renderExpandItems = (nodes: HomeMenuItem[], depth: number): ReactNode =>
+    nodes.map((item) => {
+      const Icon = item.icon;
+      const hasChildren = Boolean(item.children?.length);
+      const isOpen = openIds.has(item.id);
+      const rowClassName = cn(
+        'flex h-14 w-full items-center justify-between gap-3 text-right text-base leading-6 tracking-[0.0094em] text-content transition-colors hover:bg-black/5 dark:hover:bg-white/5',
+        expandRowPadding(depth)
+      );
+      const content = (
+        <>
+          {Icon ? (
+            <Icon className="size-6 shrink-0 text-content" strokeWidth={1.5} aria-hidden />
+          ) : null}
+          <span className="min-w-0 flex-1 text-right">{item.label}</span>
+          {hasChildren ? (
+            <ChevronLeft
+              className={cn(
+                'size-6 shrink-0 text-content-muted transition-transform',
+                isOpen && '-rotate-90'
+              )}
+              aria-hidden
+            />
+          ) : null}
+        </>
+      );
+
+      return (
+        <li key={item.id} role="none" className="flex flex-col">
+          {item.href && !hasChildren ? (
+            <Link
+              href={item.href}
+              role="menuitem"
+              dir="rtl"
+              onClick={() => onNavigate?.(item.label.trim())}
+              className={rowClassName}
+            >
+              {content}
+            </Link>
+          ) : (
+            <button
+              type="button"
+              role="menuitem"
+              dir="rtl"
+              aria-haspopup={hasChildren ? 'menu' : undefined}
+              aria-expanded={hasChildren ? isOpen : undefined}
+              className={rowClassName}
+              onClick={() => {
+                if (hasChildren) {
+                  toggleOpen(item.id);
+                  return;
+                }
+                onNavigate?.(item.label.trim());
+              }}
+            >
+              {content}
+            </button>
+          )}
+
+          {hasChildren && isOpen ? (
+            <ul role="menu" className="flex w-full flex-col">
+              {renderExpandItems(item.children!, depth + 1)}
+            </ul>
+          ) : null}
+        </li>
+      );
+    });
+
   return (
     <div className={cn('flex w-full flex-col', className)}>
-      {current || rootTitle ? (
+      {!expandNested && (current || rootTitle) ? (
         <div className="mb-2 flex shrink-0 items-center gap-2 px-1">
           {current ? (
             <button
@@ -76,59 +158,61 @@ export function HomeMenuStackList({
         )}
         role="menu"
       >
-        {list.map((item) => {
-          const Icon = item.icon;
-          const hasChildren = Boolean(item.children?.length);
-          const rowClassName =
-            'flex h-14 w-full items-center justify-between gap-3 px-3 text-right text-base leading-6 tracking-[0.0094em] text-content transition-colors hover:bg-black/5 dark:hover:bg-white/5';
-          const content = (
-            <>
-              {Icon ? (
-                <Icon className="size-6 shrink-0 text-content" strokeWidth={1.5} aria-hidden />
-              ) : null}
-              <span className="min-w-0 flex-1 text-right">{item.label}</span>
-              {hasChildren ? (
-                <ChevronLeft className="size-6 shrink-0 text-content-muted" aria-hidden />
-              ) : null}
-            </>
-          );
+        {expandNested
+          ? renderExpandItems(list, 0)
+          : list.map((item) => {
+              const Icon = item.icon;
+              const hasChildren = Boolean(item.children?.length);
+              const rowClassName =
+                'flex h-14 w-full items-center justify-between gap-3 px-3 text-right text-base leading-6 tracking-[0.0094em] text-content transition-colors hover:bg-black/5 dark:hover:bg-white/5';
+              const content = (
+                <>
+                  {Icon ? (
+                    <Icon className="size-6 shrink-0 text-content" strokeWidth={1.5} aria-hidden />
+                  ) : null}
+                  <span className="min-w-0 flex-1 text-right">{item.label}</span>
+                  {hasChildren ? (
+                    <ChevronLeft className="size-6 shrink-0 text-content-muted" aria-hidden />
+                  ) : null}
+                </>
+              );
 
-          return (
-            <li key={item.id} role="none">
-              {item.href && !hasChildren ? (
-                <Link
-                  href={item.href}
-                  role="menuitem"
-                  dir="rtl"
-                  onClick={() => onNavigate?.(item.label.trim())}
-                  className={rowClassName}
-                >
-                  {content}
-                </Link>
-              ) : (
-                <button
-                  type="button"
-                  role="menuitem"
-                  dir="rtl"
-                  aria-haspopup={hasChildren ? 'menu' : undefined}
-                  className={rowClassName}
-                  onClick={() => {
-                    if (hasChildren) {
-                      setStack((value) => [
-                        ...value,
-                        { title: item.label.trim(), items: item.children! },
-                      ]);
-                      return;
-                    }
-                    onNavigate?.(item.label.trim());
-                  }}
-                >
-                  {content}
-                </button>
-              )}
-            </li>
-          );
-        })}
+              return (
+                <li key={item.id} role="none">
+                  {item.href && !hasChildren ? (
+                    <Link
+                      href={item.href}
+                      role="menuitem"
+                      dir="rtl"
+                      onClick={() => onNavigate?.(item.label.trim())}
+                      className={rowClassName}
+                    >
+                      {content}
+                    </Link>
+                  ) : (
+                    <button
+                      type="button"
+                      role="menuitem"
+                      dir="rtl"
+                      aria-haspopup={hasChildren ? 'menu' : undefined}
+                      className={rowClassName}
+                      onClick={() => {
+                        if (hasChildren) {
+                          setStack((value) => [
+                            ...value,
+                            { title: item.label.trim(), items: item.children! },
+                          ]);
+                          return;
+                        }
+                        onNavigate?.(item.label.trim());
+                      }}
+                    >
+                      {content}
+                    </button>
+                  )}
+                </li>
+              );
+            })}
       </ul>
     </div>
   );
