@@ -30,6 +30,7 @@ import {
   HomeCategoryOverlay,
 } from './home-category-overlay';
 import { HomeMenuDropdown, HomeMenuStackList } from './home-menu-panel';
+import { NotificationsPanel } from './notifications-panel';
 import { UserProfileMenu } from './user-profile-menu';
 
 /** Figma menu order (LTR, logo last on the right edge) */
@@ -472,23 +473,37 @@ type NotificationButtonProps = {
 
 function NotificationButton({ count, label, size = 'md' }: NotificationButtonProps) {
   return (
-    <Button
-      type="button"
-      variant="toolbar"
-      size="icon"
-      aria-label={label}
-      className={cn(
-        'relative rounded-full bg-home-search-category text-content hover:bg-home-search-category hover:opacity-90',
-        size === 'sm' ? 'size-10' : 'size-14'
-      )}
-    >
-      <Bell className={size === 'sm' ? 'size-[23px]' : 'size-8'} strokeWidth={1.75} />
-      {count > 0 ? (
-        <span className="absolute -left-0.5 -top-0.5 flex min-h-4 min-w-4 items-center justify-center rounded-full bg-destructive px-1 text-[11px] font-medium leading-4 tracking-[0.0091em] text-primary-foreground">
-          {count}
-        </span>
-      ) : null}
-    </Button>
+    <NotificationsPanel
+      triggerLabel={label}
+      trigger={({ open, unreadCount }) => {
+        const badgeCount = count > 0 ? count : unreadCount;
+        return (
+          <Button
+            type="button"
+            variant="toolbar"
+            size="icon"
+            aria-label={label}
+            aria-expanded={open}
+            aria-haspopup="dialog"
+            className={cn(
+              'relative rounded-full bg-home-search-category text-content hover:bg-home-search-category hover:opacity-90',
+              size === 'sm' ? 'size-10' : 'size-14',
+              open && 'opacity-90'
+            )}
+          >
+            <Bell
+              className={size === 'sm' ? 'size-[23px]' : 'size-8'}
+              strokeWidth={1.75}
+            />
+            {badgeCount > 0 ? (
+              <span className="absolute -left-0.5 -top-0.5 flex min-h-4 min-w-4 items-center justify-center rounded-full bg-destructive px-1 text-[11px] font-medium leading-4 tracking-[0.0091em] text-primary-foreground">
+                {badgeCount}
+              </span>
+            ) : null}
+          </Button>
+        );
+      }}
+    />
   );
 }
 

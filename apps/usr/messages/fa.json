@@ -23,6 +23,18 @@
       "dashboard": "داشبورد",
       "notifications": "اعلان‌ها",
       "menu": "باز کردن منو",
+      "notificationsPanel": {
+        "title": "اعلانات اخیر ",
+        "close": "بستن",
+        "statusUnread": "خوانده‌نشده",
+        "statusRead": "خوانده‌شده",
+        "columns": {
+          "status": "وضعیت",
+          "body": "متن اعلان ",
+          "subject": "موضوع",
+          "date": "تاریخ و زمان ارسال"
+        }
+      },
       "profileMenu": {
         "userType": "کاربر",
         "privatePanel": "پنل خصوصی ",
