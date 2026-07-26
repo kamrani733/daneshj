@@ -57,9 +57,14 @@ const NAV_LINKS: NavLink[] = [
 type HomeHeaderProps = {
   isAuthenticated?: boolean;
   userName?: string;
+  accessToken?: string | null;
 };
 
-export function HomeHeader({ isAuthenticated = false, userName }: HomeHeaderProps) {
+export function HomeHeader({
+  isAuthenticated = false,
+  userName,
+  accessToken,
+}: HomeHeaderProps) {
   const t = useTranslations('home.header');
   const tHome = useTranslations('home');
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -80,6 +85,7 @@ export function HomeHeader({ isAuthenticated = false, userName }: HomeHeaderProp
           profileLabel={t('profile')}
           loginLabel={tHome('login')}
           notificationsLabel={t('notifications')}
+          accessToken={accessToken}
         />
         <HeaderLogo alt={t('logoAlt')} size="compact" />
         <HeaderSearchMenuGroup
@@ -104,7 +110,11 @@ export function HomeHeader({ isAuthenticated = false, userName }: HomeHeaderProp
               profileLabel={t('profile')}
               loginLabel={tHome('login')}
             />
-            <NotificationButton count={3} label={t('notifications')} />
+            <NotificationButton
+              count={0}
+              label={t('notifications')}
+              accessToken={accessToken}
+            />
           </div>
 
           <label className="relative block h-14 w-full max-w-[420px] min-w-0">
@@ -185,6 +195,7 @@ type HeaderIconGroupProps = {
   profileLabel: string;
   loginLabel: string;
   notificationsLabel: string;
+  accessToken?: string | null;
   className?: string;
 };
 
@@ -194,6 +205,7 @@ function HeaderIconGroup({
   profileLabel,
   loginLabel,
   notificationsLabel,
+  accessToken,
   className,
 }: HeaderIconGroupProps) {
   return (
@@ -205,7 +217,12 @@ function HeaderIconGroup({
         loginLabel={loginLabel}
         size="sm"
       />
-      <NotificationButton count={3} label={notificationsLabel} size="sm" />
+      <NotificationButton
+        count={0}
+        label={notificationsLabel}
+        size="sm"
+        accessToken={accessToken}
+      />
     </div>
   );
 }
@@ -469,12 +486,19 @@ type NotificationButtonProps = {
   count: number;
   label: string;
   size?: 'sm' | 'md';
+  accessToken?: string | null;
 };
 
-function NotificationButton({ count, label, size = 'md' }: NotificationButtonProps) {
+function NotificationButton({
+  count,
+  label,
+  size = 'md',
+  accessToken,
+}: NotificationButtonProps) {
   return (
     <NotificationsPanel
       triggerLabel={label}
+      accessToken={accessToken}
       trigger={({ open, unreadCount }) => {
         const badgeCount = count > 0 ? count : unreadCount;
         return (

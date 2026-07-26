@@ -1,13 +1,15 @@
 'use client';
 
-import { useMemo, useState, type ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import { useTranslations } from 'next-intl';
 
 import {
-  countUnreadNotifications,
-  MOCK_NOTIFICATION_RECORDS,
-  type NotificationRecord,
-} from '@/app/(public)/home/data/notifications-mock';
+  useMarkNotificationAsReadMutation,
+  useNotificationsListQuery,
+  type NotificationItem,
+  type NotificationType,
+} from '@notifications/api';
+import type { NotificationRecord } from '@/app/(public)/home/data/notifications-mock';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
 
@@ -17,43 +19,59 @@ import { NotificationsSidebar } from './notifications-sidebar';
 import { NotificationsTable } from './notifications-table';
 import { NotificationsToolbar } from './notifications-toolbar';
 
-const PAGE_SIZE = 12;
-/** Mock — backend paging not wired yet; design shows 25 pages. */
-const TOTAL_PAGES = 25;
-
-type NotificationTab = NotificationRecord['kind'];
+type NotificationTab = NotificationType;
 const TABS: NotificationTab[] = ['manual', 'system'];
 
 type NotificationsPageViewProps = {
-  initialItems?: NotificationRecord[];
+  accessToken?: string | null;
 };
 
-/** Figma Notifications #2392:4782 — title · sidebar (right) · panel (tabs / toolbar / table / pager). */
+function toRecord(item: NotificationItem): NotificationRecord {
+  return {
+    id: item.id,
+    subject: item.subject,
+    body: item.body,
+    date: item.date,
+    time: item.time,
+    status: item.status,
+    kind: item.kind,
+    mainCategory: item.mainCategory,
+    subCategory: item.subCategory,
+    link: item.link,
+    readDate: item.status === 'read' ? item.date || null : null,
+    readTime: item.status === 'read' ? item.time || null : null,
+  };
+}
+
+/** Figma Notifications #2392:4782 — list API with search / type / pagination. */
 export function NotificationsPageView({
-  initialItems = MOCK_NOTIFICATION_RECORDS,
+  accessToken,
 }: NotificationsPageViewProps) {
   const t = useTranslations('notifications');
   const [tab, setTab] = useState<NotificationTab>('manual');
   const [query, setQuery] = useState('');
   const [page, setPage] = useState(1);
 
-  const filtered = useMemo(() => {
-    const q = query.trim();
-    return initialItems.filter(
-      (item) =>
-        item.kind === tab &&
-        (!q ||
-          [item.subject, item.body, item.mainCategory, item.subCategory].some(
-            (value) => value.includes(q)
-          ))
-    );
-  }, [initialItems, query, tab]);
+  const listQuery = useNotificationsListQuery({
+    accessToken,
+    page,
+    type: tab,
+    search: query.trim() || undefined,
+    ordering: '-created_at',
+  });
+  const markOne = useMarkNotificationAsReadMutation();
 
-  const pageItems = filtered.slice(0, PAGE_SIZE);
-  const hasUnreadManual =
-    countUnreadNotifications(
-      initialItems.filter((item) => item.kind === 'manual')
-    ) > 0;
+  const pageItems = (listQuery.data?.items ?? []).map(toRecord);
+  const totalPages = listQuery.data?.totalPages ?? 1;
+  const hasUnreadManual = (listQuery.data?.unreadCounts.manual ?? 0) > 0;
+
+  async function handleRowSelect(item: NotificationRecord) {
+    if (item.status !== 'unread') return;
+    await markOne.mutateAsync({
+      accessToken: accessToken ?? '',
+      sentNotificationId: item.id,
+    });
+  }
 
   return (
     <div className="mx-auto flex w-full max-w-[1364px] flex-col gap-6 px-4 py-4 min-[1200px]:px-0">
@@ -93,10 +111,13 @@ export function NotificationsPageView({
                     setPage(1);
                   }}
                 />
-                <NotificationsTable items={pageItems} />
+                <NotificationsTable
+                  items={pageItems}
+                  onItemSelect={handleRowSelect}
+                />
                 <NotificationsPagination
                   page={page}
-                  totalPages={TOTAL_PAGES}
+                  totalPages={Math.max(totalPages, 1)}
                   onPageChange={setPage}
                 />
               </TabsContent>
@@ -108,7 +129,6 @@ export function NotificationsPageView({
   );
 }
 
-/** Figma Tab — 12×16 padding, green 2px indicator, red unread badge. */
 function NotificationsTabTrigger({
   value,
   children,

@@ -16,10 +16,11 @@ export default async function NotificationsPage() {
       <HomeHeader
         isAuthenticated={!!session}
         userName={session?.user.name?.trim() || undefined}
+        accessToken={session?.accessToken}
       />
       <HomeBgPattern />
       <main className="relative z-[1]">
-        <NotificationsPageView />
+        <NotificationsPageView accessToken={session?.accessToken} />
       </main>
       <HomeMotivationBox />
       <HomeFooter />

@@ -26,9 +26,13 @@ type ColKey = (typeof COLUMNS)[number]['key'];
 
 type NotificationsTableProps = {
   items: NotificationRecord[];
+  onItemSelect?: (item: NotificationRecord) => void;
 };
 
-export function NotificationsTable({ items }: NotificationsTableProps) {
+export function NotificationsTable({
+  items,
+  onItemSelect,
+}: NotificationsTableProps) {
   const t = useTranslations('notifications');
 
   return (
@@ -63,6 +67,8 @@ export function NotificationsTable({ items }: NotificationsTableProps) {
               item={item}
               unreadLabel={t('statusUnread')}
               readLabel={t('statusRead')}
+              fallbackSubject={t('fallbackSubject')}
+              onSelect={onItemSelect}
             />
           ))}
         </tbody>
@@ -75,10 +81,14 @@ function NotificationRow({
   item,
   unreadLabel,
   readLabel,
+  fallbackSubject,
+  onSelect,
 }: {
   item: NotificationRecord;
   unreadLabel: string;
   readLabel: string;
+  fallbackSubject: string;
+  onSelect?: (item: NotificationRecord) => void;
 }) {
   const unread = item.status === 'unread';
   const cells: Record<ColKey, ReactNode> = {
@@ -91,18 +101,21 @@ function NotificationRow({
       />
     ),
     readAt: <NotificationDateTime date={item.readDate} time={item.readTime} />,
-    link: (
+    link: item.link ? (
       <a
-        href={item.link}
+        href={item.link.startsWith('http') ? item.link : `https://${item.link}`}
         target="_blank"
         rel="noreferrer"
         className="break-all hover:underline"
+        onClick={(event) => event.stopPropagation()}
       >
         {item.link}
       </a>
+    ) : (
+      '—'
     ),
     body: item.body,
-    subject: item.subject,
+    subject: item.subject || fallbackSubject,
     subCategory: item.subCategory,
     mainCategory: item.mainCategory,
     sentAt: <NotificationDateTime date={item.date} time={item.time} />,
@@ -110,9 +123,20 @@ function NotificationRow({
 
   return (
     <tr
+      role={onSelect ? 'button' : undefined}
+      tabIndex={onSelect ? 0 : undefined}
+      onClick={() => onSelect?.(item)}
+      onKeyDown={(event) => {
+        if (!onSelect) return;
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          onSelect(item);
+        }
+      }}
       className={cn(
         'text-sm font-medium leading-5 tracking-[0.0071em] text-green-700',
-        unread ? 'bg-home-search-fill' : 'bg-white'
+        unread ? 'bg-home-search-fill' : 'bg-white',
+        onSelect && 'cursor-pointer'
       )}
     >
       {COLUMNS.map((col, index) => (

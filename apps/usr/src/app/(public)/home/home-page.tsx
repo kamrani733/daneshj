@@ -29,6 +29,7 @@ export async function HomePage() {
       <HomeHeader
         isAuthenticated={!!session}
         userName={session?.user.name?.trim() || undefined}
+        accessToken={session?.accessToken}
       />
       <HomeBgPattern />
       <HomeSearchShell

@@ -5,6 +5,14 @@ import { MailCheck, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useState, type ReactNode } from 'react';
 
+import {
+  getNotificationApiErrorMessage,
+  useLast5NotificationsQuery,
+  useMarkLast5NotificationsAsReadMutation,
+  useMarkNotificationAsReadMutation,
+  useUnreadCountQuery,
+  type NotificationItem,
+} from '@notifications/api';
 import { NotificationStatusIcon } from '@/app/(public)/notifications/components/notification-status-icon';
 import { Button } from '@/components/ui/button';
 import {
@@ -17,18 +25,12 @@ import {
 } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
 
-import {
-  MOCK_NOTIFICATIONS,
-  NOTIFICATIONS_PATH,
-  countUnreadNotifications,
-  type NotificationItem,
-} from '../data/notifications-mock';
+import { NOTIFICATIONS_PATH } from '../data/notifications-mock';
 
 export type NotificationsPanelProps = {
   triggerLabel: string;
-  items?: NotificationItem[];
+  accessToken?: string | null;
   onItemSelect?: (item: NotificationItem) => void;
-  onMarkAllRead?: () => void;
   trigger: (props: {
     open: boolean;
     unreadCount: number;
@@ -37,23 +39,57 @@ export type NotificationsPanelProps = {
 
 /**
  * Figma bell modal #2411:1097 — recent notifications popover.
- * Card list (not table): date · subject/body · status icon.
+ * APIs: last5 · read · read-last-5 · unread-count
  */
 export function NotificationsPanel({
   triggerLabel,
-  items: initialItems = MOCK_NOTIFICATIONS,
+  accessToken,
   onItemSelect,
-  onMarkAllRead,
   trigger,
 }: NotificationsPanelProps) {
   const t = useTranslations('home.header.notificationsPanel');
+  const tPage = useTranslations('notifications');
+  const tErrors = useTranslations('notifications.apiErrors');
   const [open, setOpen] = useState(false);
-  const [items, setItems] = useState(initialItems);
-  const unreadCount = countUnreadNotifications(items);
 
-  function markAllRead() {
-    setItems((prev) => prev.map((item) => ({ ...item, status: 'read' as const })));
-    onMarkAllRead?.();
+  const last5Query = useLast5NotificationsQuery(accessToken, open);
+  const unreadQuery = useUnreadCountQuery(accessToken);
+  const markOne = useMarkNotificationAsReadMutation();
+  const markLast5 = useMarkLast5NotificationsAsReadMutation();
+
+  const items = last5Query.data ?? [];
+  const unreadCount =
+    unreadQuery.data?.total ??
+    items.reduce((n, item) => (item.status === 'unread' ? n + 1 : n), 0);
+
+  async function handleMarkAllRead() {
+    try {
+      await markLast5.mutateAsync({ accessToken: accessToken ?? '' });
+    } catch (error) {
+      console.error(
+        getNotificationApiErrorMessage(error, t('markAllFailed'), (key) =>
+          tErrors(key)
+        )
+      );
+    }
+  }
+
+  async function handleSelect(item: NotificationItem) {
+    onItemSelect?.(item);
+    if (item.status === 'unread') {
+      try {
+        await markOne.mutateAsync({
+          accessToken: accessToken ?? '',
+          sentNotificationId: item.id,
+        });
+      } catch (error) {
+        console.error(
+          getNotificationApiErrorMessage(error, t('markOneFailed'), (key) =>
+            tErrors(key)
+          )
+        );
+      }
+    }
   }
 
   return (
@@ -88,8 +124,9 @@ export function NotificationsPanel({
         {unreadCount > 0 ? (
           <button
             type="button"
-            onClick={markAllRead}
-            className="inline-flex items-center gap-2 self-start text-sm font-medium leading-5 text-primary transition-opacity hover:opacity-80"
+            onClick={handleMarkAllRead}
+            disabled={markLast5.isPending}
+            className="inline-flex items-center gap-2 self-start text-sm font-medium leading-5 text-primary transition-opacity hover:opacity-80 disabled:opacity-50"
           >
             <MailCheck className="size-5 shrink-0" strokeWidth={1.5} aria-hidden />
             <span>{t('markAllRead')}</span>
@@ -97,16 +134,27 @@ export function NotificationsPanel({
         ) : null}
 
         <ul className="flex max-h-[min(60vh,420px)] flex-col gap-2.5 overflow-auto overscroll-contain">
-          {items.map((item) => (
-            <li key={item.id}>
-              <NotificationCard
-                item={item}
-                unreadLabel={t('statusUnread')}
-                readLabel={t('statusRead')}
-                onSelect={onItemSelect}
-              />
+          {last5Query.isLoading ? (
+            <li className="py-6 text-center text-sm text-neutral-600">…</li>
+          ) : items.length === 0 ? (
+            <li className="py-6 text-center text-sm text-neutral-600">
+              {last5Query.data === undefined && !accessToken
+                ? t('title')
+                : t('empty')}
             </li>
-          ))}
+          ) : (
+            items.map((item) => (
+              <li key={item.id}>
+                <NotificationCard
+                  item={item}
+                  unreadLabel={t('statusUnread')}
+                  readLabel={t('statusRead')}
+                  fallbackSubject={tPage('fallbackSubject')}
+                  onSelect={handleSelect}
+                />
+              </li>
+            ))
+          )}
         </ul>
 
         <div className="flex justify-end">
@@ -127,11 +175,13 @@ function NotificationCard({
   item,
   unreadLabel,
   readLabel,
+  fallbackSubject,
   onSelect,
 }: {
   item: NotificationItem;
   unreadLabel: string;
   readLabel: string;
+  fallbackSubject: string;
   onSelect?: (item: NotificationItem) => void;
 }) {
   const unread = item.status === 'unread';
@@ -159,7 +209,7 @@ function NotificationCard({
             />
           ) : null}
           <span className="truncate text-sm font-bold leading-5 text-content">
-            {item.subject}
+            {item.subject || fallbackSubject}
           </span>
         </span>
         <span className="mt-1 line-clamp-2 text-xs font-medium leading-4 text-neutral-600">
@@ -177,4 +227,4 @@ function NotificationCard({
   );
 }
 
-export { countUnreadNotifications };
+export { countUnreadNotifications } from '../data/notifications-mock';
