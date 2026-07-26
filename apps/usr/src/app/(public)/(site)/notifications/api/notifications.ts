@@ -1,5 +1,3 @@
-import { withMockFallback } from '@daneshjoam/api-client';
-
 import { notificationHttpClient } from '@/shared/api/notification-http';
 
 import { formatApiResponseError } from './errors';
@@ -91,14 +89,7 @@ export async function getLast5Notifications(
   payload: GetLast5NotificationsPayload
 ): Promise<NotificationItem[]> {
   if (isNotificationApiMocked()) {
-    return withMockFallback(async () => {
-      requireAccessToken(payload.accessToken);
-      const { data } = await getNotification<ActorNotificationDto[]>(
-        '/notification/actor-notifications/last5',
-        payload.accessToken
-      );
-      return (data ?? []).map(mapActorNotification);
-    }, mockGetLast5Notifications());
+    return mockGetLast5Notifications();
   }
 
   requireAccessToken(payload.accessToken);
@@ -114,15 +105,7 @@ export async function listNotifications(
   payload: ListNotificationsPayload
 ): Promise<NotificationListResult> {
   if (isNotificationApiMocked()) {
-    return withMockFallback(async () => {
-      requireAccessToken(payload.accessToken);
-      const { data, message } = await getNotification<ActorNotificationListData>(
-        '/notification/actor-notifications/list',
-        payload.accessToken,
-        toListNotificationsQuery(payload)
-      );
-      return mapNotificationList(data, message);
-    }, mockListNotifications(payload));
+    return mockListNotifications(payload);
   }
 
   requireAccessToken(payload.accessToken);
@@ -138,22 +121,13 @@ export async function listNotifications(
 export async function markNotificationAsRead(
   payload: MarkNotificationAsReadPayload
 ): Promise<MarkNotificationAsReadData> {
-  const path = `/notification/actor-notifications/${payload.sentNotificationId}/read`;
-
   if (isNotificationApiMocked()) {
-    return withMockFallback(async () => {
-      requireAccessToken(payload.accessToken);
-      const { data } = await postNotification<MarkNotificationAsReadData>(
-        path,
-        payload.accessToken
-      );
-      return data;
-    }, mockMarkNotificationAsRead(payload.sentNotificationId));
+    return mockMarkNotificationAsRead(payload.sentNotificationId);
   }
 
   requireAccessToken(payload.accessToken);
   const { data } = await postNotification<MarkNotificationAsReadData>(
-    path,
+    `/notification/actor-notifications/${payload.sentNotificationId}/read`,
     payload.accessToken
   );
   return data;
@@ -164,15 +138,7 @@ export async function markAllNotificationsAsRead(
   payload: MarkAllNotificationsAsReadPayload
 ): Promise<void> {
   if (isNotificationApiMocked()) {
-    return withMockFallback(async () => {
-      requireAccessToken(payload.accessToken);
-      await postNotification<Record<string, never>>(
-        '/notification/actor-notifications/read-all',
-        payload.accessToken,
-        {},
-        false
-      );
-    }, mockMarkAllNotificationsAsRead());
+    return mockMarkAllNotificationsAsRead();
   }
 
   requireAccessToken(payload.accessToken);
@@ -189,15 +155,7 @@ export async function markLast5NotificationsAsRead(
   payload: MarkLast5NotificationsAsReadPayload
 ): Promise<void> {
   if (isNotificationApiMocked()) {
-    return withMockFallback(async () => {
-      requireAccessToken(payload.accessToken);
-      await postNotification<unknown>(
-        '/notification/actor-notifications/read-last-5',
-        payload.accessToken,
-        {},
-        false
-      );
-    }, mockMarkLast5NotificationsAsRead());
+    return mockMarkLast5NotificationsAsRead();
   }
 
   requireAccessToken(payload.accessToken);
@@ -214,14 +172,7 @@ export async function getUnreadCount(
   payload: GetUnreadCountPayload
 ): Promise<UnreadCounts> {
   if (isNotificationApiMocked()) {
-    return withMockFallback(async () => {
-      requireAccessToken(payload.accessToken);
-      const { data } = await getNotification<UnreadCountData>(
-        '/notification/actor-notifications/unread-count',
-        payload.accessToken
-      );
-      return mapUnreadCounts(data);
-    }, mockGetUnreadCount());
+    return mockGetUnreadCount();
   }
 
   requireAccessToken(payload.accessToken);
