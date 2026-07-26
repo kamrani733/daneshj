@@ -1,6 +1,6 @@
 import { withMockFallback } from '@daneshjoam/api-client';
 
-import { usrHttpClient } from '@/shared/api/usr-http';
+import { notificationHttpClient } from '@/shared/api/notification-http';
 
 import { formatApiResponseError } from './errors';
 import {
@@ -48,10 +48,13 @@ async function getNotification<T>(
   params?: object,
   requireData = true
 ): Promise<{ data: T; message: string | null }> {
-  const { data: response } = await usrHttpClient.get<ApiResponse<T>>(path, {
-    params,
-    headers: { Authorization: `Bearer ${accessToken}` },
-  });
+  const { data: response } = await notificationHttpClient.get<ApiResponse<T>>(
+    path,
+    {
+      params,
+      headers: { Authorization: `Bearer ${accessToken}` },
+    }
+  );
   return {
     data: assertApiSuccess(response, requireData),
     message: response.message,
@@ -64,7 +67,7 @@ async function postNotification<T>(
   body: unknown = {},
   requireData = true
 ): Promise<{ data: T; message: string | null }> {
-  const { data: response } = await usrHttpClient.post<ApiResponse<T>>(
+  const { data: response } = await notificationHttpClient.post<ApiResponse<T>>(
     path,
     body,
     {

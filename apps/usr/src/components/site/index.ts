@@ -1,6 +1,2 @@
-export { SiteBgPattern } from './site-bg-pattern';
-export { SiteFooter } from './site-footer';
-export { SiteHeader } from './site-header';
-export { HomeSearchCategoryBar } from './site-header';
-export { SiteMotivationBox } from './site-motivation-box';
-export { SiteShell } from './site-shell';
+/** Client-safe site UI. Server chrome: import from `@/components/site/site-shell`. */
+export { HomeSearchCategoryBar, SiteHeader } from './site-header';

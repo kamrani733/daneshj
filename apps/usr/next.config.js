@@ -27,16 +27,28 @@ const nextConfig = {
     ];
   },
   async rewrites() {
-    const backend = process.env.AUTH_API_URL;
-    if (!backend) return [];
+    /** @type {{ source: string, destination: string }[]} */
+    const rules = [];
 
-    const base = backend.replace(/\/$/, '');
-    return [
-      {
+    const authBackend = process.env.AUTH_API_URL;
+    if (authBackend) {
+      const base = authBackend.replace(/\/$/, '');
+      rules.push({
         source: '/api/auth/:path*',
         destination: `${base}/auth/:path*`,
-      },
-    ];
+      });
+    }
+
+    const notificationBackend = process.env.NOTIFICATION_API_URL;
+    if (notificationBackend) {
+      const base = notificationBackend.replace(/\/$/, '');
+      rules.push({
+        source: '/api/notification/:path*',
+        destination: `${base}/notification/:path*`,
+      });
+    }
+
+    return rules;
   },
 };
 

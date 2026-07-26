@@ -2,7 +2,7 @@
 
 import { useState, type ReactNode } from 'react';
 
-import { HomeSearchCategoryBar } from '@/components/site';
+import { HomeSearchCategoryBar } from '@/components/site/site-header';
 
 import type { SearchQuery } from '../data/search-mock';
 import { HomeSearchResults } from './home-search-results';

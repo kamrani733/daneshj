@@ -8,8 +8,9 @@ import type {
   UnreadCounts,
 } from './types';
 
+/** Live calls only when a Notification MS base URL is configured. */
 export function isNotificationApiMocked() {
-  return !process.env.NEXT_PUBLIC_API_URL;
+  return !process.env.NEXT_PUBLIC_NOTIFICATION_API_URL;
 }
 
 const m = fa.notifications.mock;
