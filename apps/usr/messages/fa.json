@@ -325,6 +325,12 @@
       "stats": "آمار",
       "charts": "نمودار"
     },
+    "stats": {
+      "title": "آمار",
+      "breadcrumbCurrent": "آمار",
+      "trendUp": "↑ {percent}٪ نسبت به دوره‌ی قبل",
+      "ofTotal": "{value} از {total}"
+    },
     "charts": {
       "title": "نمودار",
       "breadcrumbCurrent": "نمودار",
