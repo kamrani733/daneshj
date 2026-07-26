@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, type ReactNode } from 'react';
+import { Loader2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import {
@@ -64,6 +65,9 @@ export function NotificationsPageView({
   const hasUnreadManual =
     (listQuery.data?.pages[0]?.unreadCounts.manual ?? 0) > 0;
   const canLoadMore = !!listQuery.hasNextPage;
+  const isListLoading =
+    listQuery.isPending ||
+    (listQuery.isFetching && !listQuery.isFetchingNextPage && pageItems.length === 0);
 
   async function handleRowSelect(item: NotificationRecord) {
     if (item.status !== 'unread') return;
@@ -89,7 +93,7 @@ export function NotificationsPageView({
             }}
             className="items-stretch gap-4"
           >
-            <TabsList className="h-auto w-full justify-start gap-0 self-stretch rounded-none border-b border-border bg-transparent p-0">
+            <TabsList className="h-auto w-full justify-end gap-0 self-stretch rounded-none border-b border-border bg-transparent p-0">
               <NotificationsTabTrigger
                 value="manual"
                 showUnreadDot={hasUnreadManual}
@@ -111,20 +115,46 @@ export function NotificationsPageView({
                   query={query}
                   onQueryChange={setQuery}
                 />
-                <NotificationsCardList
-                  items={pageItems}
-                  onItemSelect={handleRowSelect}
-                />
-                {canLoadMore ? (
-                  <button
-                    type="button"
-                    onClick={() => listQuery.fetchNextPage()}
-                    disabled={listQuery.isFetchingNextPage}
-                    className="self-start text-sm font-medium leading-5 text-primary transition-opacity hover:opacity-80 disabled:opacity-50"
+                {isListLoading ? (
+                  <div
+                    role="status"
+                    aria-live="polite"
+                    className="flex min-h-[240px] flex-col items-center justify-center gap-3 py-10 text-neutral-600"
                   >
-                    {t('loadMore')}
-                  </button>
-                ) : null}
+                    <Loader2
+                      className="size-8 animate-spin text-primary"
+                      strokeWidth={1.75}
+                      aria-hidden
+                    />
+                    <span className="text-sm font-medium leading-5">
+                      {t('loading')}
+                    </span>
+                  </div>
+                ) : (
+                  <>
+                    <NotificationsCardList
+                      items={pageItems}
+                      onItemSelect={handleRowSelect}
+                    />
+                    {canLoadMore ? (
+                      <button
+                        type="button"
+                        onClick={() => listQuery.fetchNextPage()}
+                        disabled={listQuery.isFetchingNextPage}
+                        className="inline-flex items-center gap-2 self-start text-sm font-medium leading-5 text-primary transition-opacity hover:opacity-80 disabled:opacity-50"
+                      >
+                        {listQuery.isFetchingNextPage ? (
+                          <Loader2
+                            className="size-4 animate-spin"
+                            strokeWidth={1.75}
+                            aria-hidden
+                          />
+                        ) : null}
+                        {t('loadMore')}
+                      </button>
+                    ) : null}
+                  </>
+                )}
               </TabsContent>
             ))}
           </Tabs>

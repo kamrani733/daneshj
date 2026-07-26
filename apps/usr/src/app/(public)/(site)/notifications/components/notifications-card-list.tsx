@@ -77,21 +77,21 @@ function NotificationCard({
       type="button"
       onClick={() => onSelect?.(item)}
       className={cn(
-        'flex w-full flex-col gap-3 rounded-xl border border-border bg-white p-4 text-start',
+        'flex w-full  flex-col gap-3 rounded-xl border border-border bg-white p-4 text-right',
         'transition-opacity hover:opacity-95',
         onSelect && 'cursor-pointer'
       )}
     >
       <div className="flex items-start justify-between gap-3">
-        <span className="text-sm font-medium leading-5 text-neutral-600">
-          {sentLabel}
-        </span>
         <NotificationStatusIcon
           status={item.status}
           unreadLabel={unreadLabel}
           readLabel={readLabel}
           className="shrink-0 text-content"
         />
+        <span className="text-sm font-medium leading-5 text-neutral-600">
+          {sentLabel}
+        </span>
       </div>
 
       <div className="flex flex-col gap-2 text-sm leading-5 text-content">
