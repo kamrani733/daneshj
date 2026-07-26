@@ -1,9 +1,9 @@
 import Image from 'next/image';
 
-import { HOME_IMAGES } from '../home-assets';
+import { HOME_IMAGES } from '@home/home-assets';
 
 /** Figma BG Pattern #1:8924 — 1512×756, opacity 40%. */
-export function HomeBgPattern() {
+export function SiteBgPattern() {
   return (
     <div
       aria-hidden

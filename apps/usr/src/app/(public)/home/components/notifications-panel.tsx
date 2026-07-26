@@ -13,7 +13,7 @@ import {
   useUnreadCountQuery,
   type NotificationItem,
 } from '@notifications/api';
-import { NotificationStatusIcon } from '@/app/(public)/notifications/components/notification-status-icon';
+import { NotificationStatusIcon } from '@notifications/components/notification-status-icon';
 import { Button } from '@/components/ui/button';
 import {
   Popover,

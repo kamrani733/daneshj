@@ -2,11 +2,11 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
 
-import { FOOTER_LEGAL_LINKS, FOOTER_QUICK_LINKS } from '../data/home-content';
-import { HOME_IMAGES } from '../home-assets';
+import { FOOTER_LEGAL_LINKS, FOOTER_QUICK_LINKS } from '@home/data/home-content';
+import { HOME_IMAGES } from '@home/home-assets';
 
 /** Figma Footer #5847:169219 — quick access | brand | logo group. */
-export async function HomeFooter() {
+export async function SiteFooter() {
   const t = await getTranslations('home.footer');
 
   return (

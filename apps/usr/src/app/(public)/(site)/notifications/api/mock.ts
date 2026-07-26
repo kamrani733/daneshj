@@ -1,4 +1,4 @@
-import fa from '../../../../../messages/fa.json';
+import fa from '@messages/fa.json';
 
 import type {
   ListNotificationsPayload,

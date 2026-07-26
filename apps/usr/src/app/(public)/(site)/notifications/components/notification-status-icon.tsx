@@ -1,6 +1,6 @@
 import { Mail, MailOpen } from 'lucide-react';
 
-import type { NotificationStatus } from '@/app/(public)/home/data/notifications-mock';
+import type { NotificationStatus } from '@home/data/notifications-mock';
 import { cn } from '@/lib/utils';
 
 type NotificationStatusIconProps = {

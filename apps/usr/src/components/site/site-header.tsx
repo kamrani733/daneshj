@@ -21,17 +21,20 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 
-import { NAV_MENUS } from '../data/home-menu-data';
-import type { HomeMenuItem } from '../data/home-menu-data';
-import { HOME_IMAGES } from '../home-assets';
+import { NAV_MENUS } from '@home/data/home-menu-data';
+import type { HomeMenuItem } from '@home/data/home-menu-data';
+import { HOME_IMAGES } from '@home/home-assets';
 import {
   CategoryMenuDropdown,
   CategoryTriggerChevron,
   HomeCategoryOverlay,
-} from './home-category-overlay';
-import { HomeMenuDropdown, HomeMenuStackList } from './home-menu-panel';
-import { NotificationsPanel } from './notifications-panel';
-import { UserProfileMenu } from './user-profile-menu';
+} from '@home/components/home-category-overlay';
+import {
+  HomeMenuDropdown,
+  HomeMenuStackList,
+} from '@home/components/home-menu-panel';
+import { NotificationsPanel } from '@home/components/notifications-panel';
+import { UserProfileMenu } from '@home/components/user-profile-menu';
 
 /** Figma menu order (LTR, logo last on the right edge) */
 type NavLink =
@@ -54,17 +57,17 @@ const NAV_LINKS: NavLink[] = [
   { key: 'services', icon: Grid3X3, menuKey: 'services' },
 ];
 
-type HomeHeaderProps = {
+type SiteHeaderProps = {
   isAuthenticated?: boolean;
   userName?: string;
   accessToken?: string | null;
 };
 
-export function HomeHeader({
+export function SiteHeader({
   isAuthenticated = false,
   userName,
   accessToken,
-}: HomeHeaderProps) {
+}: SiteHeaderProps) {
   const t = useTranslations('home.header');
   const tHome = useTranslations('home');
   const [mobileOpen, setMobileOpen] = useState(false);

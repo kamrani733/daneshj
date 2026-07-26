@@ -9,7 +9,7 @@ import {
   type NotificationItem,
   type NotificationType,
 } from '@notifications/api';
-import type { NotificationRecord } from '@/app/(public)/home/data/notifications-mock';
+import type { NotificationRecord } from '@home/data/notifications-mock';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
 

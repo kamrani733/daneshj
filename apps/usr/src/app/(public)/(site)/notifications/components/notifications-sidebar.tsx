@@ -8,7 +8,7 @@ import {
 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import { NOTIFICATIONS_PATH } from '@/app/(public)/home/data/notifications-mock';
+import { NOTIFICATIONS_PATH } from '@home/data/notifications-mock';
 import { cn } from '@/lib/utils';
 
 const ITEMS: Array<{

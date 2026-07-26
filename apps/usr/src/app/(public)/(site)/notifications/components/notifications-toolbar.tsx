@@ -3,7 +3,7 @@
 import { Mail, Search, Settings } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import { FilterAltIcon } from '@/app/(public)/home/components/material-icons';
+import { FilterAltIcon } from '@home/components/material-icons';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 

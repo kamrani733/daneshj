@@ -6,10 +6,10 @@ import { AUTH_ROUTES } from '@auth/lib/auth-routes';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
-import { HOME_IMAGES } from '../home-assets';
+import { HOME_IMAGES } from '@home/home-assets';
 
 /** Figma Motivation box #28:1412 — logo, text, orange CTA; 1512×362, padding 48px 576px, gap 24px. */
-export async function HomeMotivationBox() {
+export async function SiteMotivationBox() {
   const [t, tIntro] = await Promise.all([
     getTranslations('home.motivation'),
     getTranslations('home.intro'),
