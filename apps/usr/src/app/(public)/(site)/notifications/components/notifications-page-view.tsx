@@ -16,9 +16,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
 
 import { NotificationsCardList } from './notifications-card-list';
-import { NotificationsPageHeading } from './notifications-page-heading';
+import { NotificationsPageShell } from './notifications-page-shell';
 import { NotificationsPagination } from './notifications-pagination';
-import { NotificationsSidebar } from './notifications-sidebar';
 import { NotificationsTable } from './notifications-table';
 import { NotificationsToolbar } from './notifications-toolbar';
 
@@ -73,7 +72,8 @@ export function NotificationsPageView({
   const pageItems = (listQuery.data?.items ?? []).map(toRecord);
   const totalPages = Math.max(listQuery.data?.totalPages ?? 1, 1);
   const hasUnreadManual = (listQuery.data?.unreadCounts.manual ?? 0) > 0;
-  const isListLoading = listQuery.isPending || (listQuery.isFetching && pageItems.length === 0);
+  const isListLoading =
+    listQuery.isPending || (listQuery.isFetching && pageItems.length === 0);
   const canLoadMore = page < totalPages;
   const mobileItems = useMemo(
     () =>
@@ -105,101 +105,91 @@ export function NotificationsPageView({
   }
 
   return (
-    <div className="mx-auto flex w-full max-w-[1364px] flex-col gap-6 px-4 py-4 min-[1200px]:px-0">
-      <NotificationsPageHeading />
-
-      <div className="flex w-full flex-col gap-6 min-[720px]:flex-row min-[720px]:items-start min-[720px]:gap-6 min-[1200px]:gap-[70px]">
-        <NotificationsSidebar />
-
-        <section className="flex min-w-0 flex-1 flex-col gap-6 rounded-2xl bg-home-search-fill p-4">
-          <Tabs
-            value={tab}
-            onValueChange={(value) => {
-              setTab(value as NotificationTab);
-              setQuery('');
-            }}
-            className="items-stretch gap-4"
+    <NotificationsPageShell contentClassName="flex flex-col gap-6 rounded-2xl bg-home-search-fill p-4">
+      <Tabs
+        value={tab}
+        onValueChange={(value) => {
+          setTab(value as NotificationTab);
+          setQuery('');
+        }}
+        className="items-stretch gap-4"
+      >
+        <TabsList className="h-auto w-full justify-end gap-0 self-stretch rounded-none border-b border-border bg-transparent p-0">
+          <NotificationsTabTrigger
+            value="manual"
+            showUnreadDot={hasUnreadManual}
           >
-            <TabsList className="h-auto w-full justify-end gap-0 self-stretch rounded-none border-b border-border bg-transparent p-0">
-              <NotificationsTabTrigger
-                value="manual"
-                showUnreadDot={hasUnreadManual}
-              >
-                {t('tabs.manual')}
-              </NotificationsTabTrigger>
-              <NotificationsTabTrigger value="system">
-                {t('tabs.system')}
-              </NotificationsTabTrigger>
-            </TabsList>
+            {t('tabs.manual')}
+          </NotificationsTabTrigger>
+          <NotificationsTabTrigger value="system">
+            {t('tabs.system')}
+          </NotificationsTabTrigger>
+        </TabsList>
 
-            {TABS.map((value) => (
-              <TabsContent
-                key={value}
-                value={value}
-                className="mt-0 flex w-full flex-col gap-3"
+        {TABS.map((value) => (
+          <TabsContent
+            key={value}
+            value={value}
+            className="mt-0 flex w-full flex-col gap-3"
+          >
+            <NotificationsToolbar
+              query={query}
+              onQueryChange={(next) => {
+                setQuery(next);
+                setPage(1);
+              }}
+            />
+            {isListLoading ? (
+              <div
+                role="status"
+                aria-live="polite"
+                className="flex min-h-[240px] flex-col items-center justify-center gap-3 py-10 text-neutral-600"
               >
-                <NotificationsToolbar
-                  query={query}
-                  onQueryChange={(next) => {
-                    setQuery(next);
-                    setPage(1);
-                  }}
+                <Spinner
+                  className="size-9 text-primary"
+                  aria-label={t('loading')}
                 />
-                {isListLoading ? (
-                  <div
-                    role="status"
-                    aria-live="polite"
-                    className="flex min-h-[240px] flex-col items-center justify-center gap-3 py-10 text-neutral-600"
-                  >
-                    <Spinner
-                      className="size-9 text-primary"
-                      aria-label={t('loading')}
-                    />
-                    <span className="text-sm font-medium leading-5">
-                      {t('loading')}
-                    </span>
-                  </div>
-                ) : (
-                  <>
-                    {/* Desktop #2424:2076 */}
-                    <div className="hidden flex-col gap-3 lg:flex">
-                      <NotificationsTable
-                        items={pageItems}
-                        onItemSelect={handleRowSelect}
-                      />
-                      <NotificationsPagination
-                        page={page}
-                        totalPages={totalPages}
-                        onPageChange={setPage}
-                      />
-                    </div>
+                <span className="text-sm font-medium leading-5">
+                  {t('loading')}
+                </span>
+              </div>
+            ) : (
+              <>
+                <div className="hidden flex-col gap-3 lg:flex">
+                  <NotificationsTable
+                    items={pageItems}
+                    onItemSelect={handleRowSelect}
+                  />
+                  <NotificationsPagination
+                    page={page}
+                    totalPages={totalPages}
+                    onPageChange={setPage}
+                  />
+                </div>
 
-                    {/* Tablet / mobile #2419:2680 */}
-                    <div className="flex flex-col gap-3 lg:hidden">
-                      <NotificationsCardList
-                        items={mobileItems}
-                        onItemSelect={handleRowSelect}
-                      />
-                      {canLoadMore ? (
-                        <Button
-                          type="button"
-                          variant="link"
-                          loading={listQuery.isFetching}
-                          onClick={() => setPage((current) => current + 1)}
-                          className="h-auto self-start px-0 text-sm font-medium leading-5"
-                        >
-                          {t('loadMore')}
-                        </Button>
-                      ) : null}
-                    </div>
-                  </>
-                )}
-              </TabsContent>
-            ))}
-          </Tabs>
-        </section>
-      </div>
-    </div>
+                <div className="flex flex-col gap-3 lg:hidden">
+                  <NotificationsCardList
+                    items={mobileItems}
+                    onItemSelect={handleRowSelect}
+                  />
+                  {canLoadMore ? (
+                    <Button
+                      type="button"
+                      variant="link"
+                      loading={listQuery.isFetching}
+                      onClick={() => setPage((current) => current + 1)}
+                      className="h-auto self-start px-0 text-sm font-medium leading-5"
+                    >
+                      {t('loadMore')}
+                    </Button>
+                  ) : null}
+                </div>
+              </>
+            )}
+          </TabsContent>
+        ))}
+      </Tabs>
+    </NotificationsPageShell>
   );
 }
 
@@ -222,7 +212,10 @@ function NotificationsTabTrigger({
       )}
     >
       {showUnreadDot ? (
-        <span aria-hidden className="size-1.5 shrink-0 rounded-full bg-error-600" />
+        <span
+          aria-hidden
+          className="size-1.5 shrink-0 rounded-full bg-error-600"
+        />
       ) : null}
       {children}
     </TabsTrigger>

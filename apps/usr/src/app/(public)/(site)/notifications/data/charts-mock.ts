@@ -10,6 +10,43 @@ export type DonutSlice = {
   value: number;
 };
 
+export type ChartLabelKey =
+  | 'systemReceived'
+  | 'manualReceived'
+  | 'readRatio'
+  | 'linkClickRatio'
+  | 'rejected'
+  | 'confirmed'
+  | 'other';
+
+export type LegendDisplay =
+  | { kind: 'percent'; value: number }
+  | { kind: 'count'; value: number };
+
+export type FixedBarChartConfig = {
+  id: 'system' | 'manual';
+  titleKey: Extract<ChartLabelKey, 'systemReceived' | 'manualReceived'>;
+  barColor: string;
+  showValueLabels?: boolean;
+  getSeries: (period: ChartPeriod) => BarPoint[];
+};
+
+export type FixedDonutChartConfig = {
+  id: 'read' | 'link';
+  titleKey: Extract<ChartLabelKey, 'readRatio' | 'linkClickRatio'>;
+  primaryColor: string;
+  otherColor?: string;
+  centerPercent: number;
+  centerLabelKey: Extract<ChartLabelKey, 'rejected' | 'confirmed'>;
+  getSlices: () => DonutSlice[];
+  legend: Array<{
+    labelKey: Extract<ChartLabelKey, 'rejected' | 'confirmed' | 'other'>;
+    color: string;
+    display: LegendDisplay;
+  }>;
+  showTotal: boolean;
+};
+
 export const CHART_PERIODS: ChartPeriod[] = [
   'day',
   'week',
@@ -17,6 +54,8 @@ export const CHART_PERIODS: ChartPeriod[] = [
   'season',
   'year',
 ];
+
+export const CHARTS_TOTAL_REQUESTS = 2557;
 
 function daySeries(seed: number): BarPoint[] {
   return Array.from({ length: 30 }, (_, index) => {
@@ -31,98 +70,140 @@ function daySeries(seed: number): BarPoint[] {
   });
 }
 
+function weekSeries(values: number[]): BarPoint[] {
+  const labels = ['ش', 'ی', 'د', 'س', 'چ', 'پ', 'ج'];
+  return labels.map((label, index) => ({ label, value: values[index] ?? 0 }));
+}
+
+function monthSeries(values: Array<[string, number]>): BarPoint[] {
+  return values.map(([label, value]) => ({ label, value }));
+}
+
 const SYSTEM_SERIES: Record<ChartPeriod, BarPoint[]> = {
   day: daySeries(4),
-  week: [
-    { label: 'ش', value: 40 },
-    { label: 'ی', value: 55 },
-    { label: 'د', value: 48 },
-    { label: 'س', value: 62 },
-    { label: 'چ', value: 70 },
-    { label: 'پ', value: 52 },
-    { label: 'ج', value: 35 },
-  ],
-  month: [
-    { label: '1', value: 30 },
-    { label: '5', value: 48 },
-    { label: '10', value: 62 },
-    { label: '15', value: 55 },
-    { label: '20', value: 78 },
-    { label: '25', value: 66 },
-    { label: '30', value: 42 },
-  ],
-  season: [
-    { label: 'Q1', value: 120 },
-    { label: 'Q2', value: 158 },
-    { label: 'Q3', value: 142 },
-    { label: 'Q4', value: 175 },
-  ],
-  year: [
-    { label: '1400', value: 220 },
-    { label: '1401', value: 280 },
-    { label: '1402', value: 310 },
-    { label: '1403', value: 265 },
-    { label: '1404', value: 340 },
-  ],
+  week: weekSeries([40, 55, 48, 62, 70, 52, 35]),
+  month: monthSeries([
+    ['1', 30],
+    ['5', 48],
+    ['10', 62],
+    ['15', 55],
+    ['20', 78],
+    ['25', 66],
+    ['30', 42],
+  ]),
+  season: monthSeries([
+    ['Q1', 120],
+    ['Q2', 158],
+    ['Q3', 142],
+    ['Q4', 175],
+  ]),
+  year: monthSeries([
+    ['1400', 220],
+    ['1401', 280],
+    ['1402', 310],
+    ['1403', 265],
+    ['1404', 340],
+  ]),
 };
 
 const MANUAL_SERIES: Record<ChartPeriod, BarPoint[]> = {
   day: daySeries(1),
-  week: [
-    { label: 'ش', value: 22 },
-    { label: 'ی', value: 38 },
-    { label: 'د', value: 30 },
-    { label: 'س', value: 45 },
-    { label: 'چ', value: 50 },
-    { label: 'پ', value: 36 },
-    { label: 'ج', value: 20 },
-  ],
-  month: [
-    { label: '1', value: 20 },
-    { label: '5', value: 36 },
-    { label: '10', value: 48 },
-    { label: '15', value: 40 },
-    { label: '20', value: 58 },
-    { label: '25', value: 52 },
-    { label: '30', value: 28 },
-  ],
-  season: [
-    { label: 'Q1', value: 90 },
-    { label: 'Q2', value: 110 },
-    { label: 'Q3', value: 98 },
-    { label: 'Q4', value: 125 },
-  ],
-  year: [
-    { label: '1400', value: 160 },
-    { label: '1401', value: 190 },
-    { label: '1402', value: 210 },
-    { label: '1403', value: 185 },
-    { label: '1404', value: 240 },
-  ],
+  week: weekSeries([22, 38, 30, 45, 50, 36, 20]),
+  month: monthSeries([
+    ['1', 20],
+    ['5', 36],
+    ['10', 48],
+    ['15', 40],
+    ['20', 58],
+    ['25', 52],
+    ['30', 28],
+  ]),
+  season: monthSeries([
+    ['Q1', 90],
+    ['Q2', 110],
+    ['Q3', 98],
+    ['Q4', 125],
+  ]),
+  year: monthSeries([
+    ['1400', 160],
+    ['1401', 190],
+    ['1402', 210],
+    ['1403', 185],
+    ['1404', 240],
+  ]),
 };
 
-export function getSystemReceivedSeries(period: ChartPeriod): BarPoint[] {
-  return SYSTEM_SERIES[period];
-}
-
-export function getManualReceivedSeries(period: ChartPeriod): BarPoint[] {
-  return MANUAL_SERIES[period];
-}
-
-/** Link-click confirmed ratio — Figma ~74%. */
-export function getLinkClickDonut(): DonutSlice[] {
+function donutSlices(primary: number): DonutSlice[] {
   return [
-    { key: 'primary', value: 74 },
-    { key: 'other', value: 26 },
+    { key: 'primary', value: primary },
+    { key: 'other', value: 100 - primary },
   ];
 }
 
-/** Read ratio — Figma highlights rejected slice (~18%). */
-export function getReadRatioDonut(): DonutSlice[] {
-  return [
-    { key: 'primary', value: 18 },
-    { key: 'other', value: 82 },
-  ];
-}
+export const FIXED_BAR_CHARTS: FixedBarChartConfig[] = [
+  {
+    id: 'system',
+    titleKey: 'systemReceived',
+    barColor: 'var(--color-warning-400)',
+    getSeries: (period) => SYSTEM_SERIES[period],
+  },
+  {
+    id: 'manual',
+    titleKey: 'manualReceived',
+    barColor: 'var(--color-primary)',
+    showValueLabels: true,
+    getSeries: (period) => MANUAL_SERIES[period],
+  },
+];
 
-export const CHARTS_TOTAL_REQUESTS = 2557;
+export const FIXED_DONUT_CHARTS: FixedDonutChartConfig[] = [
+  {
+    id: 'read',
+    titleKey: 'readRatio',
+    primaryColor: 'var(--color-warning-400)',
+    centerPercent: 18,
+    centerLabelKey: 'rejected',
+    getSlices: () => donutSlices(18),
+    legend: [
+      {
+        labelKey: 'rejected',
+        color: 'var(--color-warning-400)',
+        display: { kind: 'percent', value: 18 },
+      },
+      {
+        labelKey: 'other',
+        color: 'var(--color-neutral-300)',
+        display: { kind: 'percent', value: 82 },
+      },
+    ],
+    showTotal: true,
+  },
+  {
+    id: 'link',
+    titleKey: 'linkClickRatio',
+    primaryColor: 'var(--color-primary)',
+    centerPercent: 74,
+    centerLabelKey: 'confirmed',
+    getSlices: () => donutSlices(74),
+    legend: [
+      {
+        labelKey: 'confirmed',
+        color: 'var(--color-primary)',
+        display: { kind: 'count', value: 743 },
+      },
+      {
+        labelKey: 'other',
+        color: 'var(--color-neutral-300)',
+        display: { kind: 'count', value: 262 },
+      },
+    ],
+    showTotal: true,
+  },
+];
+
+export const FIXED_CHART_PERIOD_IDS = [
+  ...FIXED_BAR_CHARTS.map((chart) => chart.id),
+  ...FIXED_DONUT_CHARTS.map((chart) => chart.id),
+] as const;
+
+export type FixedChartId = (typeof FIXED_CHART_PERIOD_IDS)[number];

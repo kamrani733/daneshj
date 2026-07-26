@@ -4,6 +4,8 @@ import Link from 'next/link';
 import { ChevronLeft } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
+import { AccentMark } from './accent-mark';
+
 type NotificationsPageHeadingProps = {
   titleKey?: string;
   breadcrumbCurrentKey?: string;
@@ -39,10 +41,7 @@ export function NotificationsPageHeading({
       </nav>
 
       <div className="flex items-center gap-2 px-2">
-        <span
-          aria-hidden
-          className="inline-block h-8 w-2 shrink-0 rounded-[2px] bg-warning-400"
-        />
+        <AccentMark size="lg" />
         <h1 className="text-[32px] font-bold leading-10 text-primary-700">
           {t(titleKey)}
         </h1>
