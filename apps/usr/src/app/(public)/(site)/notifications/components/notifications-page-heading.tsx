@@ -1,9 +1,19 @@
+'use client';
+
 import Link from 'next/link';
 import { ChevronLeft } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-/** Figma Title part #2392:4851 — breadcrumb + orange bar + title (right-aligned). */
-export function NotificationsPageHeading() {
+type NotificationsPageHeadingProps = {
+  titleKey?: string;
+  breadcrumbCurrentKey?: string;
+};
+
+/** Figma Title part #2392:4851 — breadcrumb + orange bar + title. */
+export function NotificationsPageHeading({
+  titleKey = 'title',
+  breadcrumbCurrentKey = 'breadcrumb.current',
+}: NotificationsPageHeadingProps) {
   const t = useTranslations('notifications');
 
   return (
@@ -13,7 +23,7 @@ export function NotificationsPageHeading() {
         className="flex items-center gap-2 text-sm"
       >
         <span className="font-semibold leading-5 tracking-[0.0071em] text-green-700">
-          {t('breadcrumb.current')}
+          {t(breadcrumbCurrentKey)}
         </span>
         <ChevronLeft
           className="size-5 shrink-0 text-neutral-600"
@@ -34,7 +44,7 @@ export function NotificationsPageHeading() {
           className="inline-block h-8 w-2 shrink-0 rounded-[2px] bg-warning-400"
         />
         <h1 className="text-[32px] font-bold leading-10 text-primary-700">
-          {t('title')}
+          {t(titleKey)}
         </h1>
       </div>
     </header>

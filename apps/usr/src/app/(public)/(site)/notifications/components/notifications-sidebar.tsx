@@ -1,4 +1,7 @@
+'use client';
+
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import {
   Bell,
   ChartColumn,
@@ -11,21 +14,36 @@ import { useTranslations } from 'next-intl';
 import { NOTIFICATIONS_PATH } from '@home/data/notifications-mock';
 import { cn } from '@/lib/utils';
 
+const CHARTS_PATH = `${NOTIFICATIONS_PATH}/charts`;
+
 const ITEMS: Array<{
   key: 'received' | 'reports' | 'stats' | 'charts';
   href: string;
   icon: LucideIcon;
-  active?: boolean;
+  match: (pathname: string) => boolean;
 }> = [
-  { key: 'received', href: NOTIFICATIONS_PATH, icon: Bell, active: true },
-  { key: 'reports', href: '#', icon: ClipboardList },
-  { key: 'stats', href: '#', icon: ChartColumn },
-  { key: 'charts', href: '#', icon: ChartNoAxesColumn },
+  {
+    key: 'received',
+    href: NOTIFICATIONS_PATH,
+    icon: Bell,
+    match: (pathname) =>
+      pathname === NOTIFICATIONS_PATH || pathname === `${NOTIFICATIONS_PATH}/`,
+  },
+  { key: 'reports', href: '#', icon: ClipboardList, match: () => false },
+  { key: 'stats', href: '#', icon: ChartColumn, match: () => false },
+  {
+    key: 'charts',
+    href: CHARTS_PATH,
+    icon: ChartNoAxesColumn,
+    match: (pathname) =>
+      pathname === CHARTS_PATH || pathname.startsWith(`${CHARTS_PATH}/`),
+  },
 ];
 
 /** Figma Navigation Drawer #2392:4854 */
 export function NotificationsSidebar() {
   const t = useTranslations('notifications.sidebar');
+  const pathname = usePathname();
 
   return (
     <aside
@@ -38,6 +56,7 @@ export function NotificationsSidebar() {
       <nav aria-label={t('navLabel')} className="flex w-full flex-col">
         {ITEMS.map((item, index) => {
           const Icon = item.icon;
+          const active = item.match(pathname);
           return (
             <div key={item.key} className="flex w-full flex-col">
               {index > 0 ? (
@@ -45,10 +64,10 @@ export function NotificationsSidebar() {
               ) : null}
               <Link
                 href={item.href}
-                aria-current={item.active ? 'page' : undefined}
+                aria-current={active ? 'page' : undefined}
                 className={cn(
                   'flex h-14 w-full items-center gap-3 px-4 text-sm leading-5 tracking-[0.0071em]',
-                  item.active
+                  active
                     ? 'rounded-e-[50px] rounded-s-lg border-s-[2px] border-primary bg-primary-subtle font-bold text-primary'
                     : 'font-medium text-green-700 hover:bg-black/5'
                 )}

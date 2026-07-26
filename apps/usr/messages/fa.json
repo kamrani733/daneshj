@@ -324,6 +324,30 @@
       "stats": "آمار",
       "charts": "نمودار"
     },
+    "charts": {
+      "title": "نمودار",
+      "breadcrumbCurrent": "نمودار",
+      "fixedTitle": "نمودارهای ثابت",
+      "collapse": "جمع کردن بخش نمودار",
+      "expand": "باز کردن بخش نمودار",
+      "periodLabel": "بازه زمانی",
+      "periods": {
+        "day": "روز",
+        "week": "هفته",
+        "month": "ماه",
+        "season": "فصل",
+        "year": "سال"
+      },
+      "systemReceived": "تعداد اعلانات سیستمی دریافتی",
+      "manualReceived": "تعداد اعلانات دستی دریافتی",
+      "linkClickRatio": "نسبت تعداد کلیک روی لینک ارجاعی اعلان‌ها نسبت به کل اعلان‌های حاوی لینک ارجاعی",
+      "readRatio": "درصد اعلانات خوانده نشده",
+      "confirmed": "تأیید شده",
+      "rejected": "رد شده",
+      "read": "خوانده شده",
+      "other": "سایر",
+      "totalRequests": "مجموع: {count} درخواست"
+    },
     "pagination": {
       "label": "صفحه‌بندی",
       "prev": "صفحه قبل",
