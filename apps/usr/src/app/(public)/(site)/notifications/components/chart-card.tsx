@@ -35,7 +35,7 @@ export function ChartCard({
   return (
     <article
       className={cn(
-        '@container/chart flex h-full flex-col gap-4 rounded-xl bg-white px-4 py-5 shadow-sm ring-1 ring-border/30 min-[720px]:gap-5 min-[720px]:px-5 min-[720px]:py-6',
+        '@container/chart flex h-full flex-col gap-4 rounded-xl bg-white px-4 py-5 shadow-sm ring-1 ring-border/30 dark:bg-white/5 dark:ring-white/10 min-[720px]:gap-5 min-[720px]:px-5 min-[720px]:py-6',
         className
       )}
     >
@@ -50,7 +50,7 @@ export function ChartCard({
         <h3
           dir="rtl"
           className={cn(
-            'text-sm font-medium leading-6 text-primary-700',
+            'text-sm font-medium leading-6 text-primary-700 dark:text-primary-100',
             isSplit && 'min-w-0 flex-1'
           )}
         >
@@ -64,7 +64,7 @@ export function ChartCard({
       </div>
       <div className="flex flex-1 flex-col justify-center">{children}</div>
       {footer ? (
-        <p className="border-t border-border/60 pt-3 text-start text-xs font-medium text-neutral-500">
+        <p className="border-t border-border/60 pt-3 text-start text-xs font-medium text-neutral-500 dark:text-muted-foreground">
           {footer}
         </p>
       ) : null}

@@ -34,7 +34,7 @@ export function NotificationsNavList({
               <div
                 aria-hidden
                 className={cn(
-                  'h-px bg-green-400/50',
+                  'h-px bg-green-400/50 dark:bg-border',
                   variant === 'sheet' ? 'mx-5' : 'mx-4'
                 )}
               />
@@ -47,8 +47,8 @@ export function NotificationsNavList({
                 'flex h-14 w-full items-center gap-3 text-sm leading-5 tracking-[0.0071em]',
                 variant === 'sheet' ? 'px-5' : 'px-4',
                 active
-                  ? 'rounded-e-[50px] rounded-s-lg border-s-[2px] border-primary bg-primary-subtle font-bold text-primary'
-                  : 'font-medium text-green-700 hover:bg-black/5'
+                  ? 'rounded-e-[50px] rounded-s-lg border-s-[2px] border-primary bg-primary-subtle font-bold text-primary dark:text-primary-100'
+                  : 'font-medium text-green-700 hover:bg-black/5 dark:text-muted-foreground dark:hover:bg-white/5'
               )}
             >
               <Icon className="size-6 shrink-0" strokeWidth={1.5} aria-hidden />

@@ -42,6 +42,7 @@ export function ChartPeriodToggle({
           className={cn(
             'h-8 min-w-[52px] rounded-md border-0 px-3 text-xs font-medium shadow-none',
             'bg-neutral-100 text-neutral-600 hover:bg-neutral-100 hover:text-content',
+            'dark:bg-white/10 dark:text-muted-foreground dark:hover:bg-white/10 dark:hover:text-content',
             'data-[state=on]:bg-primary data-[state=on]:text-primary-foreground',
             'data-[state=on]:hover:bg-primary data-[state=on]:hover:text-primary-foreground'
           )}

@@ -17,7 +17,7 @@ export function ReportsCardList({ items }: ReportsCardListProps) {
     <ul className="flex w-full flex-col gap-3">
       {items.map((item) => (
         <li key={item.id}>
-          <article className="flex flex-col gap-2.5 rounded-xl bg-white p-4 ring-1 ring-border/40">
+          <article className="flex flex-col gap-2.5 rounded-xl bg-white p-4 ring-1 ring-border/40 dark:bg-home-search-category">
             <Field label={t('columns.subject')} value={item.subject || '—'} />
             <Field label={t('columns.body')} value={item.body || '—'} />
             <Field

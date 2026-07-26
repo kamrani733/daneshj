@@ -24,17 +24,17 @@ export function NotificationsPageHeading({
         aria-label={t('breadcrumb.label')}
         className="flex items-center gap-2 text-sm"
       >
-        <span className="font-semibold leading-5 tracking-[0.0071em] text-green-700">
+        <span className="font-semibold leading-5 tracking-[0.0071em] text-green-700 dark:text-primary-100">
           {t(breadcrumbCurrentKey)}
         </span>
         <ChevronLeft
-          className="size-5 shrink-0 text-neutral-600"
+          className="size-5 shrink-0 text-neutral-600 dark:text-muted-foreground"
           strokeWidth={1.5}
           aria-hidden
         />
         <Link
           href="/"
-          className="font-medium leading-5 tracking-[0.0071em] text-neutral-600 hover:text-green-700"
+          className="font-medium leading-5 tracking-[0.0071em] text-neutral-600 hover:text-green-700 dark:text-muted-foreground dark:hover:text-primary-100"
         >
           {t('breadcrumb.home')}
         </Link>
@@ -42,7 +42,7 @@ export function NotificationsPageHeading({
 
       <div className="flex items-center gap-2 px-2">
         <AccentMark size="lg" />
-        <h1 className="text-[32px] font-bold leading-10 text-primary-700">
+        <h1 className="text-[32px] font-bold leading-10 text-primary-700 dark:text-primary-100">
           {t(titleKey)}
         </h1>
       </div>

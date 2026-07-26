@@ -21,7 +21,7 @@ export function StatCountCard({ stat, className }: StatCountCardProps) {
   return (
     <article
       className={cn(
-        'flex h-full flex-col gap-3 rounded-xl bg-white p-4 shadow-sm ring-1 ring-border/30 min-[720px]:gap-4 min-[720px]:p-5',
+        'flex h-full flex-col gap-3 rounded-xl bg-white p-4 shadow-sm ring-1 ring-border/30 dark:bg-home-search-category min-[720px]:gap-4 min-[720px]:p-5',
         className
       )}
     >
@@ -31,7 +31,7 @@ export function StatCountCard({ stat, className }: StatCountCardProps) {
           {formatFaNumber(stat.value)}
         </p>
       </div>
-      <p className="text-sm font-medium leading-6 text-content">
+      <p className="text-sm font-medium leading-6 text-content dark:text-muted-foreground">
         {t(stat.titleKey)}
       </p>
       <StatTrend percent={stat.trendPercent} className="mt-auto" />

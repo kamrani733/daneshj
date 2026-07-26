@@ -206,7 +206,7 @@ function NotificationsTabTrigger({
     <TabsTrigger
       value={value}
       className={cn(
-        'h-auto gap-2 rounded-none border-0 border-b-2 border-transparent px-4 py-3 text-sm font-medium leading-5 tracking-[0.0071em] text-neutral-600 shadow-none',
+        'h-auto gap-2 rounded-none border-0 border-b-2 border-transparent px-4 py-3 text-sm font-medium leading-5 tracking-[0.0071em] text-neutral-600 shadow-none dark:text-muted-foreground',
         'hover:text-content focus-visible:ring-0',
         'data-[state=active]:border-b-primary data-[state=active]:font-bold data-[state=active]:text-content'
       )}

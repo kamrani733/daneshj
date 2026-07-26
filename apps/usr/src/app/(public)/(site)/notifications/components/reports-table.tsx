@@ -47,8 +47,8 @@ export function ReportsTable({ items }: ReportsTableProps) {
               key={col.key}
               style={{ width: col.width }}
               className={cn(
-                'h-auto bg-home-carousel-inactive px-1.5 py-2.5 text-center text-sm font-medium leading-5 tracking-[0.0071em] text-neutral-600',
-                'border-y border-green-400',
+                'h-auto bg-home-carousel-inactive px-1.5 py-2.5 text-center text-sm font-medium leading-5 tracking-[0.0071em] text-neutral-600 dark:text-muted-foreground',
+                'border-y border-green-400 dark:border-border',
                 index === 0 && 'rounded-l-xl border-l',
                 index === COLUMNS.length - 1 && 'rounded-r-xl border-r'
               )}
@@ -62,7 +62,7 @@ export function ReportsTable({ items }: ReportsTableProps) {
         {items.map((item) => (
           <TableRow
             key={item.id}
-            className="border-0 bg-white shadow-sm hover:bg-white"
+            className="border-0 bg-white shadow-sm hover:bg-white dark:bg-home-search-category dark:hover:bg-home-search-category"
           >
             {COLUMNS.map((col, index) => (
               <TableCell
@@ -70,7 +70,7 @@ export function ReportsTable({ items }: ReportsTableProps) {
                 dir="rtl"
                 className={cn(
                   'px-1.5 py-3 text-center text-sm leading-5 text-content',
-                  'border-y border-border/60',
+                  'border-y border-border/60 dark:border-border',
                   index === 0 && 'rounded-l-xl border-l',
                   index === COLUMNS.length - 1 && 'rounded-r-xl border-r'
                 )}

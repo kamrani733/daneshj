@@ -92,7 +92,7 @@ function NotificationCard({
         }
       }}
       className={cn(
-        'gap-3 bg-white py-4 text-start ring-border/40',
+        'gap-3 bg-white py-4 text-start ring-border/40 dark:bg-home-search-category',
         'transition-opacity hover:opacity-95',
         onSelect && 'cursor-pointer'
       )}

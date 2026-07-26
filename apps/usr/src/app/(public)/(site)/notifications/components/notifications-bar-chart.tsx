@@ -42,28 +42,30 @@ export function NotificationsBarChart({
         >
           <CartesianGrid
             vertical={false}
-            stroke="var(--color-neutral-100)"
+            stroke="var(--color-border)"
             strokeDasharray="4 4"
           />
           <XAxis
             dataKey="label"
             tickLine={false}
             axisLine={false}
-            tick={{ fill: 'var(--color-neutral-500)', fontSize: 11 }}
+            tick={{ fill: 'var(--color-content-muted)', fontSize: 11 }}
           />
           <YAxis
             tickLine={false}
             axisLine={false}
             width={32}
-            tick={{ fill: 'var(--color-neutral-500)', fontSize: 11 }}
+            tick={{ fill: 'var(--color-content-muted)', fontSize: 11 }}
             tickFormatter={(value: number) => formatFaNumber(value)}
           />
           <Tooltip
-            cursor={{ fill: 'var(--color-neutral-100)' }}
+            cursor={{ fill: 'color-mix(in oklab, var(--color-content) 8%, transparent)' }}
             formatter={(value: number) => formatFaNumber(value)}
             contentStyle={{
               borderRadius: 8,
               border: '1px solid var(--color-border)',
+              background: 'var(--color-surface)',
+              color: 'var(--color-content)',
               fontSize: 12,
             }}
           />
@@ -78,7 +80,7 @@ export function NotificationsBarChart({
                 dataKey="value"
                 position="top"
                 formatter={(value: number) => formatFaNumber(value)}
-                className="fill-neutral-500 text-[10px]"
+                className="fill-[var(--color-content-muted)] text-[10px]"
               />
             ) : null}
           </Bar>

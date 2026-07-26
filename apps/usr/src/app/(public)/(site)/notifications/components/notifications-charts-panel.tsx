@@ -35,7 +35,7 @@ export function NotificationsChartsPanel() {
       <header className="flex items-center justify-between gap-3 px-4 py-3.5 min-[720px]:px-5">
         <div className="flex items-center gap-2">
           <AccentMark />
-          <h2 className="text-base font-bold leading-6 text-primary-700">
+          <h2 className="text-base font-bold leading-6 text-primary-700 dark:text-primary-100">
             {t('fixedTitle')}
           </h2>
         </div>
@@ -46,7 +46,7 @@ export function NotificationsChartsPanel() {
           aria-expanded={open}
           aria-label={open ? t('collapse') : t('expand')}
           onClick={() => setOpen((value) => !value)}
-          className="size-8 shrink-0 text-primary-700 hover:bg-transparent hover:text-primary-700"
+          className="size-8 shrink-0 text-primary-700 hover:bg-transparent hover:text-primary-700 dark:text-primary-100 dark:hover:text-primary-100"
         >
           <ChevronDown
             className={cn(

@@ -58,8 +58,8 @@ export function NotificationsTable({
               key={col.key}
               style={{ width: col.width }}
               className={cn(
-                'h-auto bg-home-carousel-inactive px-1.5 py-2.5 text-center text-sm font-medium leading-5 tracking-[0.0071em] text-neutral-600',
-                'border-y border-green-400',
+                'h-auto bg-home-carousel-inactive px-1.5 py-2.5 text-center text-sm font-medium leading-5 tracking-[0.0071em] text-neutral-600 dark:text-muted-foreground',
+                'border-y border-green-400 dark:border-border',
                 index === 0 && 'rounded-l-xl border-l',
                 index === COLUMNS.length - 1 && 'rounded-r-xl border-r'
               )}
@@ -105,7 +105,7 @@ function NotificationRow({
         status={item.status}
         unreadLabel={unreadLabel}
         readLabel={readLabel}
-        className="mx-auto text-green-700"
+        className="mx-auto text-green-700 dark:text-primary-200"
       />
     ),
     readAt: <NotificationDateTime date={item.readDate} time={item.readTime} />,
@@ -148,8 +148,10 @@ function NotificationRow({
         }
       }}
       className={cn(
-        'border-0 text-sm font-medium leading-5 tracking-[0.0071em] text-green-700 hover:bg-transparent',
-        unread ? 'bg-home-search-fill' : 'bg-white',
+        'border-0 text-sm font-medium leading-5 tracking-[0.0071em] text-green-700 hover:bg-transparent dark:text-muted-foreground',
+        unread
+          ? 'bg-home-search-fill'
+          : 'bg-white dark:bg-home-search-category',
         onSelect && 'cursor-pointer'
       )}
     >
@@ -157,7 +159,7 @@ function NotificationRow({
         <TableCell
           key={col.key}
           className={cn(
-            'border-y border-green-400 px-1.5 py-2 text-center align-middle',
+            'border-y border-green-400 px-1.5 py-2 text-center align-middle dark:border-border',
             index === 0 && 'rounded-l-xl border-l',
             index === COLUMNS.length - 1 && 'rounded-r-xl border-r'
           )}

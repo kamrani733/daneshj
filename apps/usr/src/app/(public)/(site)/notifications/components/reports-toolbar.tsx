@@ -112,7 +112,7 @@ export function ReportsToolbar({
             type="button"
             variant="outline"
             onClick={() => onFilterOpenChange(true)}
-            className="size-11 rounded-xl border-border bg-white px-0 text-content hover:bg-home-search-fill min-[720px]:h-11 min-[720px]:w-auto min-[720px]:gap-2 min-[720px]:px-4"
+            className="size-11 rounded-xl border-border bg-white px-0 text-content hover:bg-home-search-fill dark:bg-home-search-category min-[720px]:h-11 min-[720px]:w-auto min-[720px]:gap-2 min-[720px]:px-4"
           >
             <FilterAltIcon size={22} />
             <span className="hidden text-sm font-medium min-[720px]:inline">
@@ -125,7 +125,7 @@ export function ReportsToolbar({
               <Button
                 type="button"
                 variant="outline"
-                className="size-11 rounded-xl border-border bg-white px-0 text-content hover:bg-home-search-fill min-[720px]:h-11 min-[720px]:w-auto min-[720px]:gap-2 min-[720px]:px-4"
+                className="size-11 rounded-xl border-border bg-white px-0 text-content hover:bg-home-search-fill dark:bg-home-search-category min-[720px]:h-11 min-[720px]:w-auto min-[720px]:gap-2 min-[720px]:px-4"
               >
                 <SortIcon size={22} />
                 <span className="hidden text-sm font-medium min-[720px]:inline">
@@ -144,7 +144,7 @@ export function ReportsToolbar({
                         'flex w-full items-center rounded-md px-3 py-2 text-start text-sm',
                         ordering === option
                           ? 'bg-primary-subtle font-bold text-primary'
-                          : 'text-content hover:bg-black/5'
+                          : 'text-content hover:bg-black/5 dark:hover:bg-white/5'
                       )}
                     >
                       {t(`ordering.${option}`)}

@@ -33,7 +33,7 @@ export function OperationalPanelMobileMenu({
         onClick={() => setOpen(true)}
         className={cn(
           'flex h-12 w-full items-center justify-between gap-3 rounded-xl border border-border bg-white px-4',
-          'text-sm font-medium text-neutral-600 shadow-sm',
+          'text-sm font-medium text-neutral-600 shadow-sm dark:bg-home-search-category dark:text-muted-foreground',
           'transition-colors hover:bg-home-search-fill'
         )}
       >

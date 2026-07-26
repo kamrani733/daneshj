@@ -22,7 +22,7 @@ export function NotificationsToolbar({
   const t = useTranslations('notifications.toolbar');
 
   return (
-    <div className="flex w-full items-center justify-between gap-4 rounded-xl border border-border bg-white px-4 py-2">
+    <div className="flex w-full items-center justify-between gap-4 rounded-xl border border-border bg-white px-4 py-2 dark:bg-home-search-category">
       <label className="relative block h-12 w-full max-w-[420px]">
         <span className="sr-only">{t('search')}</span>
         <Search
@@ -67,7 +67,7 @@ function ToolbarAction({
       variant="ghost"
       size="icon"
       aria-label={label}
-      className="size-11 rounded-full text-content hover:bg-black/5"
+      className="size-11 rounded-full text-content hover:bg-black/5 dark:hover:bg-white/5"
     >
       {children}
     </Button>

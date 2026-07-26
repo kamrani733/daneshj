@@ -83,7 +83,7 @@ export function NotificationsReportsPanel({
       <header className="flex items-center justify-between gap-3 px-4 py-3.5 min-[720px]:px-5">
         <div className="flex items-center gap-2">
           <AccentMark />
-          <h2 className="text-sm font-bold leading-6 text-primary-700 min-[720px]:text-base">
+          <h2 className="text-sm font-bold leading-6 text-primary-700 dark:text-primary-100 min-[720px]:text-base">
             {t('panelTitle')}
           </h2>
         </div>
@@ -94,7 +94,7 @@ export function NotificationsReportsPanel({
           aria-expanded={open}
           aria-label={open ? t('collapse') : t('expand')}
           onClick={() => setOpen((value) => !value)}
-          className="size-8 shrink-0 text-primary-700 hover:bg-transparent hover:text-primary-700"
+          className="size-8 shrink-0 text-primary-700 hover:bg-transparent hover:text-primary-700 dark:text-primary-100 dark:hover:text-primary-100"
         >
           <ChevronDown
             className={cn(
@@ -109,7 +109,7 @@ export function NotificationsReportsPanel({
 
       {open ? (
         <div className="flex flex-col gap-4 px-3 pb-4 min-[720px]:gap-5 min-[720px]:px-5 min-[720px]:pb-5">
-          <div className="rounded-xl bg-white p-3 ring-1 ring-border/30 min-[720px]:p-4">
+          <div className="rounded-xl bg-white p-3 ring-1 ring-border/30 dark:bg-home-search-category min-[720px]:p-4">
             <ReportsToolbar
               query={query}
               onQueryChange={setQuery}

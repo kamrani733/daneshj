@@ -55,7 +55,7 @@ export function NotificationsPagination({
             <span
               key={`gap-${index}`}
               aria-hidden
-              className="flex h-12 items-center justify-center px-3.5 text-sm font-medium text-green-700"
+              className="flex h-12 items-center justify-center px-3.5 text-sm font-medium text-green-700 dark:text-muted-foreground"
             >
               …
             </span>
@@ -68,8 +68,9 @@ export function NotificationsPagination({
               aria-label={t('page', { page: item })}
               onClick={() => onPageChange(item)}
               className={cn(
-                'h-12 min-w-8 rounded-full px-3.5 text-sm font-medium text-green-700 hover:bg-black/5',
-                item === page && 'bg-black/10 hover:bg-black/10'
+                'h-12 min-w-8 rounded-full px-3.5 text-sm font-medium text-green-700 hover:bg-black/5 dark:text-muted-foreground dark:hover:bg-white/5',
+                item === page &&
+                  'bg-black/10 hover:bg-black/10 dark:bg-white/10 dark:hover:bg-white/10'
               )}
             >
               {formatFaNumber(item)}
@@ -108,7 +109,7 @@ function PagerIconButton({
       aria-label={label}
       disabled={disabled}
       onClick={onClick}
-      className="size-12 rounded-full text-green-700 hover:bg-black/5"
+      className="size-12 rounded-full text-green-700 hover:bg-black/5 dark:text-muted-foreground dark:hover:bg-white/5"
     >
       {children}
     </Button>

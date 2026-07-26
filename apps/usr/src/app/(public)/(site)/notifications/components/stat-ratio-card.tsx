@@ -23,13 +23,13 @@ export function StatRatioCard({ stat, className }: StatRatioCardProps) {
   return (
     <article
       className={cn(
-        'flex h-full flex-col gap-3 rounded-xl bg-white p-4 shadow-sm ring-1 ring-border/30 min-[720px]:gap-4 min-[720px]:p-5',
+        'flex h-full flex-col gap-3 rounded-xl bg-white p-4 shadow-sm ring-1 ring-border/30 dark:bg-home-search-category min-[720px]:gap-4 min-[720px]:p-5',
         className
       )}
     >
       <div className="flex items-start gap-3">
         <StatIconTile icon={stat.icon} />
-        <h3 className="min-w-0 flex-1 text-sm font-medium leading-6 text-primary-700">
+        <h3 className="min-w-0 flex-1 text-sm font-medium leading-6 text-primary-700 dark:text-primary-100">
           {tCharts(stat.titleKey)}
         </h3>
       </div>
@@ -51,7 +51,7 @@ export function StatRatioCard({ stat, className }: StatRatioCardProps) {
       <Progress
         value={stat.percent}
         dir="ltr"
-        className="h-2 bg-neutral-100 *:data-[slot=progress-indicator]:bg-primary"
+        className="h-2 bg-neutral-100 dark:bg-white/10 *:data-[slot=progress-indicator]:bg-primary"
       />
 
       <StatTrend percent={stat.trendPercent} className="mt-auto" />
