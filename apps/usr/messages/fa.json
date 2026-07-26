@@ -331,6 +331,63 @@
       "trendUp": "↑ {percent}٪ نسبت به دوره‌ی قبل",
       "ofTotal": "{value} از {total}"
     },
+    "reports": {
+      "title": "گزارشات",
+      "breadcrumbCurrent": "گزارشات",
+      "panelTitle": "گزارش اعلان‌های دریافتی و وضعیت آنها",
+      "collapse": "جمع کردن بخش گزارش",
+      "expand": "باز کردن بخش گزارش",
+      "search": "جستجو",
+      "filters": "فیلتر ها",
+      "sort": "مرتب سازی",
+      "applyFilters": "اعمال فیلتر",
+      "clearFilters": "پاک کردن",
+      "loading": "در حال بارگذاری گزارش…",
+      "empty": "گزارشی یافت نشد",
+      "loadMore": "بارگذاری بیشتر",
+      "columns": {
+        "subject": "موضوع",
+        "body": "متن اعلان",
+        "mainCategory": "نام دسته بندی اصلی",
+        "subCategory": "نام دسته بندی فرعی",
+        "priority": "اولویت",
+        "sender": "ارسال کننده",
+        "status": "وضعیت",
+        "channel": "کانال ارسال",
+        "sentAt": "زمان ارسال"
+      },
+      "priority": {
+        "high": "بالا",
+        "medium": "متوسط",
+        "low": "پایین",
+        "all": "همه اولویت‌ها"
+      },
+      "status": {
+        "read": "خوانده شده",
+        "unread": "خوانده نشده",
+        "all": "همه وضعیت‌ها"
+      },
+      "channel": {
+        "email": "ایمیل",
+        "site": "سایت",
+        "sms": "پیامک",
+        "telegram": "تلگرام",
+        "whatsapp": "واتساپ",
+        "all": "همه کانال‌ها"
+      },
+      "ordering": {
+        "sent_at": "زمان ارسال (صعودی)",
+        "-sent_at": "زمان ارسال (نزولی)",
+        "priority": "اولویت (صعودی)",
+        "-priority": "اولویت (نزولی)",
+        "status": "وضعیت (صعودی)",
+        "-status": "وضعیت (نزولی)",
+        "main_category": "دسته اصلی (صعودی)",
+        "-main_category": "دسته اصلی (نزولی)",
+        "sub_category": "دسته فرعی (صعودی)",
+        "-sub_category": "دسته فرعی (نزولی)"
+      }
+    },
     "charts": {
       "title": "نمودار",
       "breadcrumbCurrent": "نمودار",

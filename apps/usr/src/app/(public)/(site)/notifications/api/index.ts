@@ -1,4 +1,5 @@
 export {
+  getDetailedStatusReport,
   getLast5Notifications,
   getUnreadCount,
   listNotifications,
@@ -14,6 +15,7 @@ export type { NotificationKnownErrorKey } from './errors';
 export { isNotificationApiMocked } from './mock';
 export { notificationQueryKeys } from './query-keys';
 export {
+  useDetailedStatusReportQuery,
   useLast5NotificationsQuery,
   useMarkAllNotificationsAsReadMutation,
   useMarkLast5NotificationsAsReadMutation,
@@ -23,6 +25,9 @@ export {
   useUnreadCountQuery,
 } from './react-query';
 export type {
+  DetailedStatusReportItem,
+  DetailedStatusReportResult,
+  GetDetailedStatusReportPayload,
   GetLast5NotificationsPayload,
   GetUnreadCountPayload,
   ListNotificationsPayload,
@@ -34,5 +39,9 @@ export type {
   NotificationListResult,
   NotificationOrdering,
   NotificationType,
+  ReportChannel,
+  ReportOrdering,
+  ReportPriority,
+  ReportReadStatus,
   UnreadCounts,
 } from './types';

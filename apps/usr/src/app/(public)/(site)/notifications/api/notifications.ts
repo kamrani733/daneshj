@@ -3,6 +3,7 @@ import { notificationHttpClient } from '@/shared/api/notification-http';
 import { formatApiResponseError } from './errors';
 import {
   isNotificationApiMocked,
+  mockGetDetailedStatusReport,
   mockGetLast5Notifications,
   mockGetUnreadCount,
   mockListNotifications,
@@ -12,14 +13,19 @@ import {
 } from './mock';
 import {
   mapActorNotification,
+  mapDetailedStatusReportList,
   mapNotificationList,
   mapUnreadCounts,
+  toDetailedStatusReportQuery,
   toListNotificationsQuery,
 } from './transformers';
 import type {
   ActorNotificationDto,
   ActorNotificationListData,
   ApiResponse,
+  DetailedStatusReportListData,
+  DetailedStatusReportResult,
+  GetDetailedStatusReportPayload,
   GetLast5NotificationsPayload,
   GetUnreadCountPayload,
   ListNotificationsPayload,
@@ -181,4 +187,21 @@ export async function getUnreadCount(
     payload.accessToken
   );
   return mapUnreadCounts(data);
+}
+
+/** GET /notification/report/detailed_status_report — Usr-Ntf-6N5 */
+export async function getDetailedStatusReport(
+  payload: GetDetailedStatusReportPayload
+): Promise<DetailedStatusReportResult> {
+  if (isNotificationApiMocked()) {
+    return mockGetDetailedStatusReport(payload);
+  }
+
+  requireAccessToken(payload.accessToken);
+  const { data, message } = await getNotification<DetailedStatusReportListData>(
+    '/notification/report/detailed_status_report',
+    payload.accessToken,
+    toDetailedStatusReportQuery(payload)
+  );
+  return mapDetailedStatusReportList(data, message);
 }

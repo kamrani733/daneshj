@@ -123,3 +123,81 @@ export interface MarkLast5NotificationsAsReadPayload {
 export interface GetUnreadCountPayload {
   accessToken: string;
 }
+
+/** YAML query enums for detailed_status_report */
+export type ReportChannel = 'email' | 'site' | 'sms' | 'telegram' | 'whatsapp';
+export type ReportPriority = 'high' | 'low' | 'medium';
+export type ReportReadStatus = 'read' | 'unread';
+export type ReportOrdering =
+  | 'main_category'
+  | '-main_category'
+  | 'priority'
+  | '-priority'
+  | 'sent_at'
+  | '-sent_at'
+  | 'status'
+  | '-status'
+  | 'sub_category'
+  | '-sub_category';
+
+/** YAML: NotificationDetailedStatusReport */
+export interface DetailedStatusReportDto {
+  id: number;
+  content: string;
+  main_category: string;
+  sub_category: string;
+  subject: string;
+  priority: string;
+  username: string;
+  staff_id?: number;
+  received_channel: string[] | string;
+  status: string;
+  sent_at: string;
+}
+
+/** Example envelope for detailed_status_report (schema types data as array). */
+export interface DetailedStatusReportListData {
+  count: number;
+  total_pages: number;
+  current_page: number;
+  next: string | null;
+  previous: string | null;
+  results: DetailedStatusReportDto[];
+}
+
+export interface DetailedStatusReportItem {
+  id: string;
+  subject: string;
+  body: string;
+  mainCategory: string;
+  subCategory: string;
+  priority: ReportPriority;
+  sender: string;
+  status: 'unread' | 'read';
+  channels: ReportChannel[];
+  sentAt: string | null;
+  sentDate: string;
+  sentTime: string;
+}
+
+export interface DetailedStatusReportResult {
+  items: DetailedStatusReportItem[];
+  count: number;
+  totalPages: number;
+  currentPage: number;
+  message: string | null;
+}
+
+export interface GetDetailedStatusReportPayload {
+  accessToken: string;
+  page?: number;
+  search?: string;
+  ordering?: ReportOrdering;
+  channel?: ReportChannel;
+  priority?: ReportPriority;
+  status?: ReportReadStatus;
+  mainCategoryId?: number;
+  subCategoryId?: number;
+  startDate?: string;
+  endDate?: string;
+}

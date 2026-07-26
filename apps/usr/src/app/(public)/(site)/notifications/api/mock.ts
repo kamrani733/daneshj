@@ -1,6 +1,9 @@
 import fa from '@messages/fa.json';
 
 import type {
+  DetailedStatusReportItem,
+  DetailedStatusReportResult,
+  GetDetailedStatusReportPayload,
   ListNotificationsPayload,
   MarkNotificationAsReadData,
   NotificationItem,
@@ -151,4 +154,64 @@ export async function mockGetUnreadCount(): Promise<UnreadCounts> {
     (item) => item.kind === 'system' && item.status === 'unread'
   ).length;
   return { total: manual + system, manual, system };
+}
+
+const MOCK_REPORT_ITEMS: DetailedStatusReportItem[] = Array.from(
+  { length: 11 },
+  (_, index) => {
+    const n = 11 - index;
+    return {
+      id: String(250 + n),
+      subject: `موضوع ${n}`,
+      body: 'تمام یا بخشی از متن اعلان در این قسمت آورده می‌شود',
+      mainCategory: `نام دسته‌بندی ${n}`,
+      subCategory: `نام دسته‌بندی فرعی ${n}`,
+      priority: n % 3 === 0 ? 'high' : n % 2 === 0 ? 'medium' : 'low',
+      sender: `username${n}`,
+      status: n % 2 === 0 ? 'unread' : 'read',
+      channels: n % 2 === 0 ? ['site', 'email'] : ['site'],
+      sentAt: '1404/12/06 13:15:00',
+      sentDate: '1404/12/06',
+      sentTime: '1:15ب ظ',
+    };
+  }
+);
+
+export async function mockGetDetailedStatusReport(
+  payload: GetDetailedStatusReportPayload
+): Promise<DetailedStatusReportResult> {
+  const page = payload.page ?? 1;
+  const pageSize = 10;
+  let items = [...MOCK_REPORT_ITEMS];
+
+  if (payload.search?.trim()) {
+    const q = payload.search.trim();
+    items = items.filter(
+      (item) =>
+        item.subject.includes(q) ||
+        item.body.includes(q) ||
+        item.sender.includes(q)
+    );
+  }
+  if (payload.priority) {
+    items = items.filter((item) => item.priority === payload.priority);
+  }
+  if (payload.status) {
+    items = items.filter((item) => item.status === payload.status);
+  }
+  if (payload.channel) {
+    items = items.filter((item) => item.channels.includes(payload.channel!));
+  }
+
+  const totalPages = Math.max(1, Math.ceil(items.length / pageSize));
+  const start = (page - 1) * pageSize;
+  const pageItems = items.slice(start, start + pageSize);
+
+  return {
+    items: pageItems,
+    count: items.length,
+    totalPages,
+    currentPage: page,
+    message: 'success',
+  };
 }

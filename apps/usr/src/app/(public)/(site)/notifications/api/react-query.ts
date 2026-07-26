@@ -9,6 +9,7 @@ import {
 
 import { isNotificationApiMocked } from './mock';
 import {
+  getDetailedStatusReport,
   getLast5Notifications,
   getUnreadCount,
   listNotifications,
@@ -17,7 +18,10 @@ import {
   markNotificationAsRead,
 } from './notifications';
 import { notificationQueryKeys } from './query-keys';
-import type { ListNotificationsPayload } from './types';
+import type {
+  GetDetailedStatusReportPayload,
+  ListNotificationsPayload,
+} from './types';
 
 function canFetch(accessToken: string | null | undefined) {
   return !!accessToken || isNotificationApiMocked();
@@ -110,5 +114,20 @@ export function useMarkLast5NotificationsAsReadMutation() {
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: notificationQueryKeys.all });
     },
+  });
+}
+
+export function useDetailedStatusReportQuery(
+  payload: Omit<GetDetailedStatusReportPayload, 'accessToken'> & {
+    accessToken: string | null | undefined;
+  },
+  enabled = true
+) {
+  const { accessToken, ...filters } = payload;
+  return useQuery({
+    queryKey: notificationQueryKeys.detailedStatusReport(filters),
+    queryFn: () =>
+      getDetailedStatusReport({ ...filters, accessToken: accessToken ?? '' }),
+    enabled: enabled && canFetch(accessToken),
   });
 }

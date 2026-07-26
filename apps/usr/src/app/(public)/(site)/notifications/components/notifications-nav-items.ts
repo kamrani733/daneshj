@@ -10,6 +10,7 @@ import { NOTIFICATIONS_PATH } from '@home/data/notifications-mock';
 
 export const CHARTS_PATH = `${NOTIFICATIONS_PATH}/charts`;
 export const STATS_PATH = `${NOTIFICATIONS_PATH}/stats`;
+export const REPORTS_PATH = `${NOTIFICATIONS_PATH}/reports`;
 
 export type NotificationsNavKey =
   | 'received'
@@ -32,7 +33,13 @@ export const NOTIFICATIONS_NAV_ITEMS: NotificationsNavItem[] = [
     match: (pathname) =>
       pathname === NOTIFICATIONS_PATH || pathname === `${NOTIFICATIONS_PATH}/`,
   },
-  { key: 'reports', href: '#', icon: ClipboardList, match: () => false },
+  {
+    key: 'reports',
+    href: REPORTS_PATH,
+    icon: ClipboardList,
+    match: (pathname) =>
+      pathname === REPORTS_PATH || pathname.startsWith(`${REPORTS_PATH}/`),
+  },
   {
     key: 'stats',
     href: STATS_PATH,
