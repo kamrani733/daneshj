@@ -24,16 +24,12 @@
       "notifications": "اعلان‌ها",
       "menu": "باز کردن منو",
       "notificationsPanel": {
-        "title": "اعلانات اخیر ",
+        "title": "اعلان‌های اخیر",
         "close": "بستن",
+        "markAllRead": "تغییر وضعیت همه به خوانده شده",
+        "viewAll": "مشاهده همه اعلانات",
         "statusUnread": "خوانده‌نشده",
-        "statusRead": "خوانده‌شده",
-        "columns": {
-          "status": "وضعیت",
-          "body": "متن اعلان ",
-          "subject": "موضوع",
-          "date": "تاریخ و زمان ارسال"
-        }
+        "statusRead": "خوانده‌شده"
       },
       "profileMenu": {
         "userType": "کاربر",
@@ -284,5 +280,51 @@
     "cancel": "انصراف",
     "removeFailed": "حذف سشن با خطا مواجه شد",
     "continueFailed": "ادامه ورود با خطا مواجه شد"
+  },
+  "notifications": {
+    "title": "اعلانات",
+    "breadcrumb": {
+      "label": "مسیر صفحه",
+      "home": "خانه",
+      "current": "اعلانات"
+    },
+    "tabs": {
+      "manual": "اعلانات دستی",
+      "system": "اعلانات سیستمی"
+    },
+    "toolbar": {
+      "search": " جستجو  ",
+      "filter": "فیلتر",
+      "settings": "تنظیمات",
+      "mail": "علامت‌گذاری به‌عنوان خوانده‌شده"
+    },
+    "columns": {
+      "sentAt": "زمان ارسال",
+      "mainCategory": "دسته بندی اصلی",
+      "subCategory": "دسته بندی فرعی",
+      "subject": "موضوع",
+      "body": "متن اعلان",
+      "link": "لینک ارجاع",
+      "readAt": "زمان خوانده شدن",
+      "status": "وضعیت"
+    },
+    "statusUnread": "خوانده‌نشده",
+    "statusRead": "خوانده‌شده",
+    "sidebar": {
+      "navLabel": "منوی اعلانات",
+      "received": "اعلانات دریافتی",
+      "reports": "گزارشات",
+      "stats": "آمار",
+      "charts": "نمودار"
+    },
+    "pagination": {
+      "label": "صفحه‌بندی",
+      "prev": "صفحه قبل",
+      "next": "صفحه بعد",
+      "page": "صفحه {page}"
+    },
+    "upgrade": {
+      "cta": "ارتقا عضویت"
+    }
   }
 }
