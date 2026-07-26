@@ -4,6 +4,13 @@ import type { ReactNode } from 'react';
 import { useTranslations } from 'next-intl';
 
 import type { NotificationRecord } from '@home/data/notifications-mock';
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 
 import { NotificationStatusIcon } from './notification-status-icon';
@@ -13,7 +20,7 @@ type NotificationsCardListProps = {
   onItemSelect?: (item: NotificationRecord) => void;
 };
 
-/** Figma manual notifications tab #2419:2680 — RTL card list. */
+/** Figma manual notifications tab #2419:2680 — shadcn Card list. */
 export function NotificationsCardList({
   items,
   onItemSelect,
@@ -73,29 +80,39 @@ function NotificationCard({
       : unreadPlaceholder;
 
   return (
-    <button
-      type="button"
+    <Card
+      role={onSelect ? 'button' : undefined}
+      tabIndex={onSelect ? 0 : undefined}
       onClick={() => onSelect?.(item)}
+      onKeyDown={(event) => {
+        if (!onSelect) return;
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          onSelect(item);
+        }
+      }}
       className={cn(
-        'flex w-full  flex-col gap-3 rounded-xl border border-border bg-white p-4 text-right',
+        'gap-3 bg-white py-4 text-start ring-border/40',
         'transition-opacity hover:opacity-95',
         onSelect && 'cursor-pointer'
       )}
     >
-      <div className="flex items-start justify-between gap-3">
+      <CardHeader className="flex flex-row items-start justify-between gap-3 px-4 py-0">
+        <span className="text-sm font-medium leading-5 text-neutral-600">
+          {sentLabel}
+        </span>
         <NotificationStatusIcon
           status={item.status}
           unreadLabel={unreadLabel}
           readLabel={readLabel}
           className="shrink-0 text-content"
         />
-        <span className="text-sm font-medium leading-5 text-neutral-600">
-          {sentLabel}
-        </span>
-      </div>
+      </CardHeader>
 
-      <div className="flex flex-col gap-2 text-sm leading-5 text-content">
-        <p className="font-bold">{item.subject || fallbackSubject}</p>
+      <CardContent className="flex flex-col gap-2 px-4 py-0 text-sm leading-5 text-content">
+        <CardTitle className="text-sm font-bold leading-5">
+          {item.subject || fallbackSubject}
+        </CardTitle>
         {item.body ? (
           <p className="font-medium text-neutral-600">{item.body}</p>
         ) : null}
@@ -123,17 +140,17 @@ function NotificationCard({
             )
           }
         />
-      </div>
+      </CardContent>
 
-      <p
+      <CardFooter
         className={cn(
-          'text-sm font-medium leading-5 text-neutral-600',
+          'border-0 bg-transparent px-4 py-0 text-sm font-medium leading-5 text-neutral-600',
           unread && 'opacity-80'
         )}
       >
         {readAtLabel} : {readLabelText}
-      </p>
-    </button>
+      </CardFooter>
+    </Card>
   );
 }
 

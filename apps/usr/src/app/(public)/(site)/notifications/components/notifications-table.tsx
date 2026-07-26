@@ -1,7 +1,17 @@
+'use client';
+
 import type { ReactNode } from 'react';
 import { useTranslations } from 'next-intl';
 
 import type { NotificationRecord } from '@home/data/notifications-mock';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 import { cn } from '@/lib/utils';
 
 import { NotificationDateTime } from './notification-datetime';
@@ -29,6 +39,7 @@ type NotificationsTableProps = {
   onItemSelect?: (item: NotificationRecord) => void;
 };
 
+/** Desktop Figma #2424:2076 — shadcn Table. */
 export function NotificationsTable({
   items,
   onItemSelect,
@@ -36,44 +47,41 @@ export function NotificationsTable({
   const t = useTranslations('notifications');
 
   return (
-    <div className="w-full overflow-x-auto">
-      <table
-        dir="ltr"
-        className="w-full min-w-[860px] border-separate border-spacing-y-2 text-center"
-      >
-        <thead>
-          <tr>
-            {COLUMNS.map((col, index) => (
-              <th
-                key={col.key}
-                scope="col"
-                style={{ width: col.width }}
-                className={cn(
-                  'bg-home-carousel-inactive px-1.5 py-2.5 text-sm font-medium leading-5 tracking-[0.0071em] text-neutral-600',
-                  'border-y border-green-400',
-                  index === 0 && 'rounded-l-xl border-l',
-                  index === COLUMNS.length - 1 && 'rounded-r-xl border-r'
-                )}
-              >
-                {t(`columns.${col.key}`)}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {items.map((item) => (
-            <NotificationRow
-              key={item.id}
-              item={item}
-              unreadLabel={t('statusUnread')}
-              readLabel={t('statusRead')}
-              fallbackSubject={t('fallbackSubject')}
-              onSelect={onItemSelect}
-            />
+    <Table
+      dir="ltr"
+      className="min-w-[860px] border-separate border-spacing-y-2 text-center"
+    >
+      <TableHeader className="[&_tr]:border-0">
+        <TableRow className="border-0 hover:bg-transparent">
+          {COLUMNS.map((col, index) => (
+            <TableHead
+              key={col.key}
+              style={{ width: col.width }}
+              className={cn(
+                'h-auto bg-home-carousel-inactive px-1.5 py-2.5 text-center text-sm font-medium leading-5 tracking-[0.0071em] text-neutral-600',
+                'border-y border-green-400',
+                index === 0 && 'rounded-l-xl border-l',
+                index === COLUMNS.length - 1 && 'rounded-r-xl border-r'
+              )}
+            >
+              {t(`columns.${col.key}`)}
+            </TableHead>
           ))}
-        </tbody>
-      </table>
-    </div>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {items.map((item) => (
+          <NotificationRow
+            key={item.id}
+            item={item}
+            unreadLabel={t('statusUnread')}
+            readLabel={t('statusRead')}
+            fallbackSubject={t('fallbackSubject')}
+            onSelect={onItemSelect}
+          />
+        ))}
+      </TableBody>
+    </Table>
   );
 }
 
@@ -106,7 +114,7 @@ function NotificationRow({
         href={item.link.startsWith('http') ? item.link : `https://${item.link}`}
         target="_blank"
         rel="noreferrer"
-        className="break-all hover:underline"
+        className="break-all whitespace-normal hover:underline"
         onClick={(event) => event.stopPropagation()}
       >
         {item.link}
@@ -114,15 +122,21 @@ function NotificationRow({
     ) : (
       '—'
     ),
-    body: item.body,
+    body: (
+      <span className="whitespace-normal">{item.body}</span>
+    ),
     subject: item.subject || fallbackSubject,
-    subCategory: item.subCategory,
-    mainCategory: item.mainCategory,
+    subCategory: (
+      <span className="whitespace-normal">{item.subCategory}</span>
+    ),
+    mainCategory: (
+      <span className="whitespace-normal">{item.mainCategory}</span>
+    ),
     sentAt: <NotificationDateTime date={item.date} time={item.time} />,
   };
 
   return (
-    <tr
+    <TableRow
       role={onSelect ? 'button' : undefined}
       tabIndex={onSelect ? 0 : undefined}
       onClick={() => onSelect?.(item)}
@@ -134,23 +148,23 @@ function NotificationRow({
         }
       }}
       className={cn(
-        'text-sm font-medium leading-5 tracking-[0.0071em] text-green-700',
+        'border-0 text-sm font-medium leading-5 tracking-[0.0071em] text-green-700 hover:bg-transparent',
         unread ? 'bg-home-search-fill' : 'bg-white',
         onSelect && 'cursor-pointer'
       )}
     >
       {COLUMNS.map((col, index) => (
-        <td
+        <TableCell
           key={col.key}
           className={cn(
-            'border-y border-green-400 px-1.5 py-2 align-middle',
+            'border-y border-green-400 px-1.5 py-2 text-center align-middle',
             index === 0 && 'rounded-l-xl border-l',
             index === COLUMNS.length - 1 && 'rounded-r-xl border-r'
           )}
         >
           {cells[col.key]}
-        </td>
+        </TableCell>
       ))}
-    </tr>
+    </TableRow>
   );
 }

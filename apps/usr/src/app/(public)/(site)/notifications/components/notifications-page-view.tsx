@@ -1,22 +1,25 @@
 'use client';
 
-import { useState, type ReactNode } from 'react';
-import { Loader2 } from 'lucide-react';
+import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { useTranslations } from 'next-intl';
 
 import {
   useMarkNotificationAsReadMutation,
-  useNotificationsListInfiniteQuery,
+  useNotificationsListQuery,
   type NotificationItem,
   type NotificationType,
 } from '@notifications/api';
 import type { NotificationRecord } from '@home/data/notifications-mock';
+import { Button } from '@/components/ui/button';
+import { Spinner } from '@/components/ui/spinner';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
 
 import { NotificationsCardList } from './notifications-card-list';
 import { NotificationsPageHeading } from './notifications-page-heading';
+import { NotificationsPagination } from './notifications-pagination';
 import { NotificationsSidebar } from './notifications-sidebar';
+import { NotificationsTable } from './notifications-table';
 import { NotificationsToolbar } from './notifications-toolbar';
 
 type NotificationTab = NotificationType;
@@ -43,31 +46,55 @@ function toRecord(item: NotificationItem): NotificationRecord {
   };
 }
 
-/** Figma Notifications #2419:2680 — card list, tabs, load more. */
+/**
+ * Desktop Figma #2424:2076 — table + pagination.
+ * Tablet/mobile Figma #2419:2680 — card list + load more.
+ */
 export function NotificationsPageView({
   accessToken,
 }: NotificationsPageViewProps) {
   const t = useTranslations('notifications');
   const [tab, setTab] = useState<NotificationTab>('manual');
   const [query, setQuery] = useState('');
+  const [page, setPage] = useState(1);
+  const [mobilePages, setMobilePages] = useState<
+    Record<number, NotificationRecord[]>
+  >({});
 
-  const listQuery = useNotificationsListInfiniteQuery({
+  const listQuery = useNotificationsListQuery({
     accessToken,
+    page,
     type: tab,
     search: query.trim() || undefined,
     ordering: '-created_at',
   });
   const markOne = useMarkNotificationAsReadMutation();
 
-  const pageItems = (listQuery.data?.pages ?? []).flatMap((page) =>
-    page.items.map(toRecord)
+  const pageItems = (listQuery.data?.items ?? []).map(toRecord);
+  const totalPages = Math.max(listQuery.data?.totalPages ?? 1, 1);
+  const hasUnreadManual = (listQuery.data?.unreadCounts.manual ?? 0) > 0;
+  const isListLoading = listQuery.isPending || (listQuery.isFetching && pageItems.length === 0);
+  const canLoadMore = page < totalPages;
+  const mobileItems = useMemo(
+    () =>
+      Array.from({ length: page }, (_, index) => index + 1).flatMap(
+        (pageNumber) => mobilePages[pageNumber] ?? []
+      ),
+    [mobilePages, page]
   );
-  const hasUnreadManual =
-    (listQuery.data?.pages[0]?.unreadCounts.manual ?? 0) > 0;
-  const canLoadMore = !!listQuery.hasNextPage;
-  const isListLoading =
-    listQuery.isPending ||
-    (listQuery.isFetching && !listQuery.isFetchingNextPage && pageItems.length === 0);
+
+  useEffect(() => {
+    setPage(1);
+    setMobilePages({});
+  }, [tab, query]);
+
+  useEffect(() => {
+    if (!listQuery.data) return;
+    setMobilePages((prev) => ({
+      ...prev,
+      [page]: listQuery.data.items.map(toRecord),
+    }));
+  }, [listQuery.data, page]);
 
   async function handleRowSelect(item: NotificationRecord) {
     if (item.status !== 'unread') return;
@@ -113,7 +140,10 @@ export function NotificationsPageView({
               >
                 <NotificationsToolbar
                   query={query}
-                  onQueryChange={setQuery}
+                  onQueryChange={(next) => {
+                    setQuery(next);
+                    setPage(1);
+                  }}
                 />
                 {isListLoading ? (
                   <div
@@ -121,10 +151,9 @@ export function NotificationsPageView({
                     aria-live="polite"
                     className="flex min-h-[240px] flex-col items-center justify-center gap-3 py-10 text-neutral-600"
                   >
-                    <Loader2
-                      className="size-8 animate-spin text-primary"
-                      strokeWidth={1.75}
-                      aria-hidden
+                    <Spinner
+                      className="size-9 text-primary"
+                      aria-label={t('loading')}
                     />
                     <span className="text-sm font-medium leading-5">
                       {t('loading')}
@@ -132,27 +161,37 @@ export function NotificationsPageView({
                   </div>
                 ) : (
                   <>
-                    <NotificationsCardList
-                      items={pageItems}
-                      onItemSelect={handleRowSelect}
-                    />
-                    {canLoadMore ? (
-                      <button
-                        type="button"
-                        onClick={() => listQuery.fetchNextPage()}
-                        disabled={listQuery.isFetchingNextPage}
-                        className="inline-flex items-center gap-2 self-start text-sm font-medium leading-5 text-primary transition-opacity hover:opacity-80 disabled:opacity-50"
-                      >
-                        {listQuery.isFetchingNextPage ? (
-                          <Loader2
-                            className="size-4 animate-spin"
-                            strokeWidth={1.75}
-                            aria-hidden
-                          />
-                        ) : null}
-                        {t('loadMore')}
-                      </button>
-                    ) : null}
+                    {/* Desktop #2424:2076 */}
+                    <div className="hidden flex-col gap-3 lg:flex">
+                      <NotificationsTable
+                        items={pageItems}
+                        onItemSelect={handleRowSelect}
+                      />
+                      <NotificationsPagination
+                        page={page}
+                        totalPages={totalPages}
+                        onPageChange={setPage}
+                      />
+                    </div>
+
+                    {/* Tablet / mobile #2419:2680 */}
+                    <div className="flex flex-col gap-3 lg:hidden">
+                      <NotificationsCardList
+                        items={mobileItems}
+                        onItemSelect={handleRowSelect}
+                      />
+                      {canLoadMore ? (
+                        <Button
+                          type="button"
+                          variant="link"
+                          loading={listQuery.isFetching}
+                          onClick={() => setPage((current) => current + 1)}
+                          className="h-auto self-start px-0 text-sm font-medium leading-5"
+                        >
+                          {t('loadMore')}
+                        </Button>
+                      ) : null}
+                    </div>
                   </>
                 )}
               </TabsContent>

@@ -23,6 +23,7 @@ import {
   PopoverTitle,
   PopoverTrigger,
 } from '@/components/ui/popover';
+import { Spinner } from '@/components/ui/spinner';
 import { cn } from '@/lib/utils';
 
 import { NOTIFICATIONS_PATH } from '../data/notifications-mock';
@@ -122,20 +123,23 @@ export function NotificationsPanel({
         </PopoverHeader>
 
         {unreadCount > 0 ? (
-          <button
+          <Button
             type="button"
+            variant="link"
+            loading={markLast5.isPending}
             onClick={handleMarkAllRead}
-            disabled={markLast5.isPending}
-            className="inline-flex items-center gap-2 self-start text-sm font-medium leading-5 text-primary transition-opacity hover:opacity-80 disabled:opacity-50"
+            className="h-auto gap-2 self-start px-0 text-sm font-medium leading-5"
           >
             <MailCheck className="size-5 shrink-0" strokeWidth={1.5} aria-hidden />
-            <span>{t('markAllRead')}</span>
-          </button>
+            {t('markAllRead')}
+          </Button>
         ) : null}
 
         <ul className="flex max-h-[min(60vh,420px)] flex-col gap-2.5 overflow-auto overscroll-contain">
           {last5Query.isLoading ? (
-            <li className="py-6 text-center text-sm text-neutral-600">…</li>
+            <li className="flex justify-center py-6">
+              <Spinner className="size-6 text-primary" aria-label={t('title')} />
+            </li>
           ) : items.length === 0 ? (
             <li className="py-6 text-center text-sm text-neutral-600">
               {last5Query.data === undefined && !accessToken

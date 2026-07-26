@@ -7,6 +7,7 @@
  */
 @theme {
   --font-sans: var(--font-iran-sans), ui-sans-serif, system-ui, sans-serif;
+  --animate-spin: spin 1s linear infinite;
 
   /* ===== Green — brand (Primary/Green) ===== */
   --color-green-50: #fbfdf9;
@@ -572,6 +573,12 @@
 
   .dark .home-hero-image {
     opacity: 0.75;
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
   }
 }
 

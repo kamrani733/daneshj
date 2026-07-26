@@ -16,7 +16,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { CircularProgress } from '@/components/ui/circular-progress';
+import { Spinner } from '@/components/ui/spinner';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import {
   Table,
@@ -445,7 +445,7 @@ export function SessionManagementForm({
               }}
             >
               {busyId !== null ? (
-                <CircularProgress size={20} aria-label={t('confirm')} />
+                <Spinner className="size-5" aria-label={t('confirm')} />
               ) : (
                 t('confirm')
               )}
