@@ -313,6 +313,9 @@
     },
     "statusUnread": "خوانده‌نشده",
     "statusRead": "خوانده‌شده",
+    "readAtLabel": "تاریخ و زمان خوانده شدن",
+    "unreadPlaceholder": "--------------------",
+    "loadMore": "بارگذاری بیشتر",
     "sidebar": {
       "navLabel": "منوی اعلانات",
       "received": "اعلانات دریافتی",

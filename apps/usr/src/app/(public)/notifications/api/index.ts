@@ -18,6 +18,7 @@ export {
   useMarkAllNotificationsAsReadMutation,
   useMarkLast5NotificationsAsReadMutation,
   useMarkNotificationAsReadMutation,
+  useNotificationsListInfiniteQuery,
   useNotificationsListQuery,
   useUnreadCountQuery,
 } from './react-query';

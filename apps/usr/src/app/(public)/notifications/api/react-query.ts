@@ -1,6 +1,11 @@
 'use client';
 
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query';
 
 import { isNotificationApiMocked } from './mock';
 import {
@@ -41,6 +46,28 @@ export function useNotificationsListQuery(
     queryKey: notificationQueryKeys.list(filters),
     queryFn: () =>
       listNotifications({ ...filters, accessToken: accessToken ?? '' }),
+    enabled: enabled && canFetch(accessToken),
+  });
+}
+
+export function useNotificationsListInfiniteQuery(
+  payload: Omit<ListNotificationsPayload, 'accessToken' | 'page'> & {
+    accessToken: string | null | undefined;
+  },
+  enabled = true
+) {
+  const { accessToken, ...filters } = payload;
+  return useInfiniteQuery({
+    queryKey: notificationQueryKeys.list(filters),
+    queryFn: ({ pageParam }) =>
+      listNotifications({
+        ...filters,
+        page: pageParam,
+        accessToken: accessToken ?? '',
+      }),
+    initialPageParam: 1,
+    getNextPageParam: (last) =>
+      last.currentPage < last.totalPages ? last.currentPage + 1 : undefined,
     enabled: enabled && canFetch(accessToken),
   });
 }
