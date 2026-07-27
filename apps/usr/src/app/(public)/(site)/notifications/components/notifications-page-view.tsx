@@ -10,6 +10,12 @@ import {
   type NotificationType,
 } from '@notifications/api';
 import type { NotificationRecord } from '@home/data/notifications-mock';
+import {
+  EMPTY_NOTIFICATION_FILTERS,
+  resolveApiCategoryIds,
+  resolveIsReadFilter,
+  type NotificationsFilterValues,
+} from '@notifications/data/notifications-filter-data';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -55,16 +61,25 @@ export function NotificationsPageView({
   const t = useTranslations('notifications');
   const [tab, setTab] = useState<NotificationTab>('manual');
   const [query, setQuery] = useState('');
+  const [filters, setFilters] = useState<NotificationsFilterValues>(
+    EMPTY_NOTIFICATION_FILTERS
+  );
   const [page, setPage] = useState(1);
   const [mobilePages, setMobilePages] = useState<
     Record<number, NotificationRecord[]>
   >({});
 
+  const categoryIds = resolveApiCategoryIds(filters.categoryIds);
   const listQuery = useNotificationsListQuery({
     accessToken,
     page,
     type: tab,
     search: query.trim() || undefined,
+    isRead: resolveIsReadFilter(filters.statuses),
+    startDate: filters.sentStart || undefined,
+    endDate: filters.sentEnd || undefined,
+    mainCategoryId: categoryIds.mainCategoryId,
+    subCategoryId: categoryIds.subCategoryId,
     ordering: '-created_at',
   });
   const markOne = useMarkNotificationAsReadMutation();
@@ -86,7 +101,7 @@ export function NotificationsPageView({
   useEffect(() => {
     setPage(1);
     setMobilePages({});
-  }, [tab, query]);
+  }, [tab, query, filters]);
 
   useEffect(() => {
     if (!listQuery.data) return;
@@ -136,6 +151,15 @@ export function NotificationsPageView({
               query={query}
               onQueryChange={(next) => {
                 setQuery(next);
+                setPage(1);
+              }}
+              filters={filters}
+              onApplyFilters={(next) => {
+                setFilters(next);
+                setPage(1);
+              }}
+              onClearFilters={() => {
+                setFilters(EMPTY_NOTIFICATION_FILTERS);
                 setPage(1);
               }}
             />
