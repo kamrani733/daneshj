@@ -3,6 +3,8 @@ import { notificationHttpClient } from '@/shared/api/notification-http';
 import { formatApiResponseError } from './errors';
 import {
   isNotificationApiMocked,
+  mockApplyActorSetting,
+  mockGetActorSettings,
   mockGetDetailedStatusReport,
   mockGetLast5Notifications,
   mockGetUnreadCount,
@@ -13,6 +15,7 @@ import {
 } from './mock';
 import {
   mapActorNotification,
+  mapActorSettingsList,
   mapDetailedStatusReportList,
   mapNotificationList,
   mapUnreadCounts,
@@ -22,9 +25,14 @@ import {
 import type {
   ActorNotificationDto,
   ActorNotificationListData,
+  ActorSettingItem,
+  ActorSettingsDto,
   ApiResponse,
+  ApplyActorSettingPayload,
+  ApplyActorSettingsPayload,
   DetailedStatusReportListData,
   DetailedStatusReportResult,
+  GetActorSettingsPayload,
   GetDetailedStatusReportPayload,
   GetLast5NotificationsPayload,
   GetUnreadCountPayload,
@@ -204,4 +212,70 @@ export async function getDetailedStatusReport(
     toDetailedStatusReportQuery(payload)
   );
   return mapDetailedStatusReportList(data, message);
+}
+
+/**
+ * GET /notification/actor-settings/list
+ * OpenAPI tags Admin; used to hydrate actor channel prefs when available.
+ */
+export async function getActorSettings(
+  payload: GetActorSettingsPayload
+): Promise<ActorSettingItem[]> {
+  if (isNotificationApiMocked()) {
+    return mockGetActorSettings();
+  }
+
+  requireAccessToken(payload.accessToken);
+  const { data: response } = await notificationHttpClient.get<
+    ApiResponse<ActorSettingsDto[]> | ActorSettingsDto[]
+  >('/notification/actor-settings/list', {
+    headers: { Authorization: `Bearer ${payload.accessToken}` },
+  });
+
+  if (Array.isArray(response)) {
+    return mapActorSettingsList(response);
+  }
+
+  return mapActorSettingsList(assertApiSuccess(response, false) ?? []);
+}
+
+/** POST /notification/actor-settings/create — USR-Ntf-5N2 */
+export async function applyActorSetting(
+  payload: ApplyActorSettingPayload
+): Promise<ActorSettingItem | null> {
+  if (isNotificationApiMocked()) {
+    return mockApplyActorSetting(payload);
+  }
+
+  requireAccessToken(payload.accessToken);
+  const { data } = await postNotification<ActorSettingsDto[] | ActorSettingsDto>(
+    '/notification/actor-settings/create',
+    payload.accessToken,
+    {
+      category: payload.categoryId,
+      channels: payload.channels,
+    },
+    false
+  );
+
+  if (Array.isArray(data)) {
+    return mapActorSettingsList(data)[0] ?? null;
+  }
+  if (data && typeof data === 'object' && 'category' in data) {
+    return mapActorSettingsList([data])[0] ?? null;
+  }
+  return null;
+}
+
+/** Apply many category settings sequentially (one POST per category). */
+export async function applyActorSettings(
+  payload: ApplyActorSettingsPayload
+): Promise<void> {
+  for (const setting of payload.settings) {
+    await applyActorSetting({
+      accessToken: payload.accessToken,
+      categoryId: setting.categoryId,
+      channels: setting.channels,
+    });
+  }
 }

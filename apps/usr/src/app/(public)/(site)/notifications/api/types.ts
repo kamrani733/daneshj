@@ -201,3 +201,77 @@ export interface GetDetailedStatusReportPayload {
   startDate?: string;
   endDate?: string;
 }
+
+/** YAML: ActorChannelSetting channel enum */
+export type ActorSettingChannel =
+  | 'site'
+  | 'email'
+  | 'sms'
+  | 'telegram'
+  | 'whatsapp';
+
+/** YAML: ActorChannelSetting.receive_period */
+export type ActorReceivePeriod = 'at_moment' | 'specified_time' | 'off';
+
+/** YAML: ActorChannelSetting / ActorChannelSettingRequest */
+export interface ActorChannelSettingDto {
+  channel: ActorSettingChannel;
+  is_enabled?: boolean;
+  receive_period?: ActorReceivePeriod;
+  receive_time?: string | null;
+}
+
+/** YAML: Category (nested in ActorSettings) */
+export interface NotificationCategoryDto {
+  id: number;
+  title: string;
+  parent?: number | null;
+}
+
+/** YAML: ActorSettings */
+export interface ActorSettingsDto {
+  id: number;
+  category: NotificationCategoryDto;
+  channels: ActorChannelSettingDto[];
+}
+
+/** YAML: ActorSettingRequestRequest */
+export interface ActorSettingRequestBody {
+  category: number;
+  channels: ActorChannelSettingDto[];
+}
+
+/** YAML: ActorSettingsResponse */
+export interface ActorSettingsResponseData {
+  data: ActorSettingsDto[] | null;
+  message: string | null;
+  status_code: number;
+  errors: Record<string, string>;
+  success: boolean;
+}
+
+export interface GetActorSettingsPayload {
+  accessToken: string;
+}
+
+export interface ApplyActorSettingPayload {
+  accessToken: string;
+  categoryId: number;
+  channels: ActorChannelSettingDto[];
+}
+
+export interface ApplyActorSettingsPayload {
+  accessToken: string;
+  settings: Array<{
+    categoryId: number;
+    channels: ActorChannelSettingDto[];
+  }>;
+}
+
+/** App-facing actor setting row (one category / event). */
+export interface ActorSettingItem {
+  id: number;
+  categoryId: number;
+  categoryTitle: string;
+  channels: ActorChannelSettingDto[];
+}

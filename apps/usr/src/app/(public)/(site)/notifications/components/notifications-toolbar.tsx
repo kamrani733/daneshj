@@ -1,9 +1,11 @@
 'use client';
 
+import Link from 'next/link';
 import { Mail, Search, Settings } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { FilterAltIcon } from '@home/components/material-icons';
+import { SETTINGS_PATH } from '@notifications/data/settings-mock';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
@@ -43,7 +45,7 @@ export function NotificationsToolbar({
         <ToolbarAction label={t('mail')}>
           <Mail className="size-6" strokeWidth={1.5} />
         </ToolbarAction>
-        <ToolbarAction label={t('settings')}>
+        <ToolbarAction label={t('settings')} href={SETTINGS_PATH}>
           <Settings className="size-6" strokeWidth={1.5} />
         </ToolbarAction>
         <ToolbarAction label={t('filter')}>
@@ -56,18 +58,33 @@ export function NotificationsToolbar({
 
 function ToolbarAction({
   label,
+  href,
   children,
 }: {
   label: string;
+  href?: string;
   children: React.ReactNode;
 }) {
+  const className =
+    'size-11 rounded-full text-content hover:bg-black/5 dark:hover:bg-white/5';
+
+  if (href) {
+    return (
+      <Button asChild variant="ghost" size="icon" className={className}>
+        <Link href={href} aria-label={label}>
+          {children}
+        </Link>
+      </Button>
+    );
+  }
+
   return (
     <Button
       type="button"
       variant="ghost"
       size="icon"
       aria-label={label}
-      className="size-11 rounded-full text-content hover:bg-black/5 dark:hover:bg-white/5"
+      className={className}
     >
       {children}
     </Button>

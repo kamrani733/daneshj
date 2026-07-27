@@ -1,6 +1,11 @@
 import fa from '@messages/fa.json';
 
+import { flattenSettingsEvents } from '@notifications/data/settings-mock';
+
+import { toActorChannelSettingRequest } from './transformers';
 import type {
+  ActorSettingItem,
+  ApplyActorSettingPayload,
   DetailedStatusReportItem,
   DetailedStatusReportResult,
   GetDetailedStatusReportPayload,
@@ -214,4 +219,53 @@ export async function mockGetDetailedStatusReport(
     currentPage: page,
     message: 'success',
   };
+}
+
+/** In-memory actor settings for mock create/list. */
+let mockActorSettingsStore: ActorSettingItem[] = flattenSettingsEvents().map(
+  (eventItem, index) => ({
+    id: index + 1,
+    categoryId: eventItem.categoryId,
+    categoryTitle: eventItem.titleKey,
+    channels: toActorChannelSettingRequest(
+      eventItem.channels.map((channel) => ({ ...channel }))
+    ),
+  })
+);
+
+/** GET /notification/actor-settings/list */
+export async function mockGetActorSettings(): Promise<ActorSettingItem[]> {
+  return mockActorSettingsStore.map((item) => ({
+    ...item,
+    channels: item.channels.map((channel) => ({ ...channel })),
+  }));
+}
+
+/** POST /notification/actor-settings/create — USR-Ntf-5N2 */
+export async function mockApplyActorSetting(
+  payload: ApplyActorSettingPayload
+): Promise<ActorSettingItem> {
+  const existingIndex = mockActorSettingsStore.findIndex(
+    (item) => item.categoryId === payload.categoryId
+  );
+  const next: ActorSettingItem = {
+    id:
+      existingIndex >= 0
+        ? mockActorSettingsStore[existingIndex]!.id
+        : mockActorSettingsStore.length + 1,
+    categoryId: payload.categoryId,
+    categoryTitle:
+      existingIndex >= 0
+        ? mockActorSettingsStore[existingIndex]!.categoryTitle
+        : String(payload.categoryId),
+    channels: payload.channels.map((channel) => ({ ...channel })),
+  };
+
+  if (existingIndex >= 0) {
+    mockActorSettingsStore[existingIndex] = next;
+  } else {
+    mockActorSettingsStore.push(next);
+  }
+
+  return { ...next, channels: next.channels.map((channel) => ({ ...channel })) };
 }

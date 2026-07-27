@@ -12,4 +12,5 @@ export const notificationQueryKeys = {
   detailedStatusReport: (
     filters: Omit<GetDetailedStatusReportPayload, 'accessToken'>
   ) => [...notificationQueryKeys.all, 'detailed-status-report', filters] as const,
+  actorSettings: () => [...notificationQueryKeys.all, 'actor-settings'] as const,
 };

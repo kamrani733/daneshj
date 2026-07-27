@@ -9,6 +9,8 @@ import {
 
 import { isNotificationApiMocked } from './mock';
 import {
+  applyActorSettings,
+  getActorSettings,
   getDetailedStatusReport,
   getLast5Notifications,
   getUnreadCount,
@@ -19,6 +21,7 @@ import {
 } from './notifications';
 import { notificationQueryKeys } from './query-keys';
 import type {
+  ApplyActorSettingsPayload,
   GetDetailedStatusReportPayload,
   ListNotificationsPayload,
 } from './types';
@@ -129,5 +132,29 @@ export function useDetailedStatusReportQuery(
     queryFn: () =>
       getDetailedStatusReport({ ...filters, accessToken: accessToken ?? '' }),
     enabled: enabled && canFetch(accessToken),
+  });
+}
+
+export function useActorSettingsQuery(
+  accessToken: string | null | undefined,
+  enabled = true
+) {
+  return useQuery({
+    queryKey: notificationQueryKeys.actorSettings(),
+    queryFn: () => getActorSettings({ accessToken: accessToken ?? '' }),
+    enabled: enabled && canFetch(accessToken),
+  });
+}
+
+export function useApplyActorSettingsMutation() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (payload: ApplyActorSettingsPayload) =>
+      applyActorSettings(payload),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({
+        queryKey: notificationQueryKeys.actorSettings(),
+      });
+    },
   });
 }
