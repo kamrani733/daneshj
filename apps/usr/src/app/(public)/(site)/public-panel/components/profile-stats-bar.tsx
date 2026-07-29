@@ -1,6 +1,15 @@
 'use client';
 
-import { Share2, ThumbsDown, ThumbsUp } from 'lucide-react';
+import {
+  Heart,
+  HeartPlus,
+  Share2,
+  ThumbsDown,
+  ThumbsUp,
+  User,
+  UserPlus,
+  type LucideIcon,
+} from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
@@ -14,15 +23,18 @@ type ProfileStatsBarProps = {
   engagement: PublicPanelProfile['engagement'];
 };
 
-const STAT_KEYS = [
-  'followers',
-  'following',
-  'likers',
-  'liked',
-] as const;
+const STAT_ITEMS: {
+  key: keyof PublicPanelProfile['stats'];
+  Icon: LucideIcon;
+}[] = [
+  { key: 'followers', Icon: UserPlus },
+  { key: 'following', Icon: User },
+  { key: 'likers', Icon: HeartPlus },
+  { key: 'liked', Icon: Heart },
+];
 
 /**
- * Figma stats strip: counts with dividers · reactions · follow CTA.
+ * Figma stats strip: metric columns with icons · reactions · follow CTA.
  */
 export function ProfileStatsBar({ stats, engagement }: ProfileStatsBarProps) {
   const t = useTranslations('publicPanel');
@@ -31,39 +43,41 @@ export function ProfileStatsBar({ stats, engagement }: ProfileStatsBarProps) {
   return (
     <div
       className={cn(
-        'flex w-full flex-col gap-4 rounded-xl bg-white px-4 py-3 shadow-[0_1px_2px_rgba(0,0,0,0.06)]',
-        'dark:bg-home-search-category min-[900px]:flex-row min-[900px]:items-center min-[900px]:justify-between min-[900px]:gap-6 min-[900px]:px-5'
+        'flex w-full flex-col gap-4 rounded-2xl bg-white px-4 py-4 shadow-[0_1px_2px_rgba(0,0,0,0.06)]',
+        'dark:bg-home-search-category',
+        'min-[960px]:flex-row min-[960px]:items-center min-[960px]:justify-between min-[960px]:gap-6 min-[960px]:px-6'
       )}
     >
       {/* RTL: stats on the right */}
-      <ul className="flex flex-wrap items-stretch justify-end divide-x divide-x-reverse divide-[#D1D5DB] dark:divide-border">
-        {STAT_KEYS.map((key) => (
+      <ul className="flex flex-wrap items-stretch justify-end gap-1">
+        {STAT_ITEMS.map(({ key, Icon }) => (
           <li
             key={key}
-            className="flex min-w-[7.5rem] flex-col items-center justify-center gap-0.5 px-4 py-1 text-center"
+            className="flex min-w-[6.5rem] flex-col items-center justify-center gap-1 px-3 py-1 text-center"
           >
-            <span className="text-base font-bold leading-6 text-content">
+            <span className="text-lg font-bold leading-7 text-content">
               {formatFaNumber(stats[key])}
             </span>
-            <span className="text-xs font-medium leading-4 text-home-filter-muted">
+            <span className="inline-flex items-center gap-1 text-xs font-medium leading-4 text-home-filter-muted">
+              <Icon className="size-3.5 shrink-0" strokeWidth={1.75} aria-hidden />
               {t(`stats.${key}`)}
             </span>
           </li>
         ))}
       </ul>
 
-      <div className="flex flex-wrap items-center justify-between gap-4 min-[900px]:justify-start min-[900px]:gap-6">
+      <div className="flex flex-wrap items-center justify-between gap-4 min-[960px]:justify-start min-[960px]:gap-6">
         <ul className="flex items-center gap-5 text-home-filter-ink">
-          <li className="flex items-center gap-1.5 text-sm font-bold">
-            <ThumbsUp className="size-5 text-primary" strokeWidth={1.5} />
+          <li dir="ltr" className="flex items-center gap-1.5 text-sm font-bold">
+            <ThumbsUp className="size-5" strokeWidth={1.5} aria-hidden />
             <span>{formatFaNumber(engagement.thumbsUp)}</span>
           </li>
-          <li className="flex items-center gap-1.5 text-sm font-bold">
-            <ThumbsDown className="size-5 text-primary" strokeWidth={1.5} />
+          <li dir="ltr" className="flex items-center gap-1.5 text-sm font-bold">
+            <ThumbsDown className="size-5" strokeWidth={1.5} aria-hidden />
             <span>{formatFaNumber(engagement.thumbsDown)}</span>
           </li>
-          <li className="flex items-center gap-1.5 text-sm font-bold">
-            <Share2 className="size-5 text-primary" strokeWidth={1.5} />
+          <li dir="ltr" className="flex items-center gap-1.5 text-sm font-bold">
+            <Share2 className="size-5" strokeWidth={1.5} aria-hidden />
             <span>{formatFaNumber(engagement.shares)}</span>
           </li>
         </ul>
@@ -73,7 +87,7 @@ export function ProfileStatsBar({ stats, engagement }: ProfileStatsBarProps) {
           size="pillSm"
           variant={following ? 'outline' : 'default'}
           onClick={() => setFollowing((v) => !v)}
-          className="h-10 min-w-[120px] rounded-full px-6"
+          className="h-10 min-w-[128px] rounded-full px-7"
         >
           {following ? t('following') : t('follow')}
         </Button>

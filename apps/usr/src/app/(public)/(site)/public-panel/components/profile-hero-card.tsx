@@ -66,10 +66,10 @@ export function ProfileHeroCard({ profile }: ProfileHeroCardProps) {
           </div>
 
           <div className="flex min-w-0 flex-1 flex-col items-start gap-1.5 pt-5">
-            <h2 className="text-xl font-bold leading-7 tracking-[0.0094em] text-content min-[834px]:text-[22px]">
+            <h2 className="text-xl font-bold leading-7 tracking-[0.0094em] text-primary-700 dark:text-primary-100 min-[834px]:text-[22px]">
               {profile.displayName}
             </h2>
-            <p className="text-base font-normal leading-6 text-content">
+            <p className="text-base font-normal leading-6 text-home-filter-muted">
               {profile.username}
             </p>
             <p className="text-sm font-medium leading-5 text-warning">

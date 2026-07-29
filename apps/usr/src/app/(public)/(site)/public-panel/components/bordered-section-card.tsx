@@ -26,11 +26,11 @@ export function BorderedSectionCard({
       <h3 className="absolute -top-2.5 end-4 bg-[#FCFAF7] px-1.5 text-sm font-medium leading-5 text-primary dark:bg-home-search-category">
         {title}
       </h3>
-      <div className="min-h-[72px] text-end text-sm leading-6 tracking-[0.0071em]">
+      <div className="min-h-[72px] text-start text-sm leading-6 tracking-[0.0071em]">
         {children}
       </div>
       {footer ? (
-        <div className="flex justify-start pt-1">{footer}</div>
+        <div className="flex justify-end pt-1">{footer}</div>
       ) : null}
     </section>
   );

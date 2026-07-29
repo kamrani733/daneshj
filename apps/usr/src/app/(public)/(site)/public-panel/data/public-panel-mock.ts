@@ -130,7 +130,7 @@ export const MOCK_PUBLIC_PANEL: PublicPanelProfile = {
   roleLabelKey: 'student',
   providerBadgeKey: 'individualProvider',
   location: 'تهران، دماوند، بخش یا روستا',
-  bio: 'دانشجوی کارشناسی ارشد مهندسی نرم‌افزار با تمرکز بر توسعه محصول و تجربه کاربری. علاقه‌مند به همکاری در پروژه‌های آموزشی و خدمات دانشجویی.',
+  bio: 'دانشجوی کارشناسی ارشد مهندسی نرم‌افزار هستم و به یادگیری مستمر، توسعه مهارت‌های حرفه‌ای و همکاری در پروژه‌های آموزشی علاقه دارم. هدفم ساختن تجربه‌های کاربری بهتر برای جامعه دانشجویی است.',
   avatarSrc: '/public-panel/avatar.png',
   electronicCardHref: '#',
   socialLinks: [
@@ -158,7 +158,7 @@ export const MOCK_PUBLIC_PANEL: PublicPanelProfile = {
   },
   engagement: {
     thumbsUp: 15,
-    thumbsDown: 10,
+    thumbsDown: 15,
     shares: 15,
   },
   academicRecords: [
