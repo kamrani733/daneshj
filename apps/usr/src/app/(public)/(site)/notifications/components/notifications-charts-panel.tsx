@@ -1,18 +1,15 @@
 'use client';
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { ChevronDown } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import {
-  CHARTS_TOTAL_REQUESTS,
-  FIXED_BAR_CHARTS,
-  FIXED_CHART_PERIOD_IDS,
-  FIXED_DONUT_CHARTS,
-} from '@notifications/data/charts-mock';
-import { useChartPeriods } from '@notifications/hooks/use-chart-periods';
+import { useChartsReportQuery } from '@notifications/api';
+import type { ChartPeriod } from '@notifications/data/charts-mock';
+import { chartPeriodToDateRange } from '@notifications/lib/chart-period-range';
 import { formatChartLegendValue } from '@notifications/lib/format-chart-legend';
 import { Button } from '@/components/ui/button';
+import { Spinner } from '@/components/ui/spinner';
 import { formatFaNumber } from '@/lib/format-fa';
 import { cn } from '@/lib/utils';
 
@@ -21,13 +18,32 @@ import { ChartCard } from './chart-card';
 import { NotificationsBarChart } from './notifications-bar-chart';
 import { NotificationsDonutChart } from './notifications-donut-chart';
 
-/** Figma fixed charts block — cream shell + stacked white chart cards. */
-export function NotificationsChartsPanel() {
+type NotificationsChartsPanelProps = {
+  accessToken?: string | null;
+};
+
+/** Figma charts block — wired to GET /notification/report/charts_report. */
+export function NotificationsChartsPanel({
+  accessToken,
+}: NotificationsChartsPanelProps) {
   const t = useTranslations('notifications.charts');
   const [open, setOpen] = useState(true);
-  const { periods, setPeriod } = useChartPeriods(FIXED_CHART_PERIOD_IDS);
+  const [period, setPeriod] = useState<ChartPeriod>('week');
+
+  const dateRange = useMemo(() => chartPeriodToDateRange(period), [period]);
+
+  const chartsQuery = useChartsReportQuery({
+    accessToken,
+    startDate: dateRange.startDate,
+    endDate: dateRange.endDate,
+  });
+
+  const data = chartsQuery.data;
+  const isLoading =
+    chartsQuery.isPending || (chartsQuery.isFetching && !chartsQuery.data);
+
   const totalLabel = t('totalRequests', {
-    count: formatFaNumber(CHARTS_TOTAL_REQUESTS),
+    count: formatFaNumber(data?.receivedByCategory.totalCount ?? 0),
   });
 
   return (
@@ -61,47 +77,108 @@ export function NotificationsChartsPanel() {
 
       {open ? (
         <div className="flex flex-col gap-4 px-3 pb-4 min-[720px]:gap-5 min-[720px]:px-5 min-[720px]:pb-5">
-          {FIXED_BAR_CHARTS.map((chart) => (
-            <ChartCard
-              key={chart.id}
-              title={t(chart.titleKey)}
-              period={periods[chart.id]}
-              onPeriodChange={(period) => setPeriod(chart.id, period)}
-              headerLayout="split"
-            >
-              <NotificationsBarChart
-                data={chart.getSeries(periods[chart.id])}
-                barColor={chart.barColor}
-                showValueLabels={chart.showValueLabels}
-              />
-            </ChartCard>
-          ))}
-
-          <div className="grid grid-cols-1 gap-4 min-[960px]:grid-cols-2 min-[960px]:gap-5">
-            {FIXED_DONUT_CHARTS.map((chart) => (
+          {isLoading ? (
+            <div className="flex min-h-[220px] items-center justify-center rounded-xl bg-white dark:bg-white/5">
+              <Spinner className="size-8 text-primary" />
+            </div>
+          ) : (
+            <>
               <ChartCard
-                key={chart.id}
-                title={t(chart.titleKey)}
-                period={periods[chart.id]}
-                onPeriodChange={(period) => setPeriod(chart.id, period)}
-                footer={chart.showTotal ? totalLabel : undefined}
-                className="min-w-0"
+                title={t('reactionTime')}
+                period={period}
+                onPeriodChange={setPeriod}
+                headerLayout="split"
               >
-                <NotificationsDonutChart
-                  data={chart.getSlices()}
-                  primaryColor={chart.primaryColor}
-                  otherColor={chart.otherColor}
-                  centerPercent={chart.centerPercent}
-                  centerLabel={t(chart.centerLabelKey)}
-                  legend={chart.legend.map((item) => ({
-                    label: t(item.labelKey),
-                    value: formatChartLegendValue(item.display),
-                    color: item.color,
-                  }))}
+                <NotificationsBarChart
+                  data={data?.reactionTimeSeries ?? []}
+                  barColor="var(--color-warning-400)"
                 />
               </ChartCard>
-            ))}
-          </div>
+
+              <ChartCard
+                title={t('conversionRate')}
+                period={period}
+                onPeriodChange={setPeriod}
+                headerLayout="split"
+              >
+                <NotificationsBarChart
+                  data={data?.conversionRateSeries ?? []}
+                  barColor="var(--color-primary)"
+                  showValueLabels
+                />
+              </ChartCard>
+
+              <div className="grid grid-cols-1 gap-4 min-[960px]:grid-cols-2 min-[960px]:gap-5">
+                {data?.readVsUnread ? (
+                  <ChartCard
+                    title={t('readVsUnread')}
+                    period={period}
+                    onPeriodChange={setPeriod}
+                    footer={totalLabel}
+                    className="min-w-0"
+                  >
+                    <NotificationsDonutChart
+                      data={data.readVsUnread.slices}
+                      primaryColor={data.readVsUnread.primaryColor}
+                      otherColor={data.readVsUnread.otherColor}
+                      centerPercent={data.readVsUnread.centerPercent}
+                      centerLabel={data.readVsUnread.centerLabel}
+                      legend={data.readVsUnread.legend.map((item) => ({
+                        label: item.label,
+                        value: formatChartLegendValue(item.display),
+                        color: item.color,
+                      }))}
+                    />
+                  </ChartCard>
+                ) : null}
+
+                {data?.categoryReadRate ? (
+                  <ChartCard
+                    title={t('categoryReadRate')}
+                    period={period}
+                    onPeriodChange={setPeriod}
+                    className="min-w-0"
+                  >
+                    <NotificationsDonutChart
+                      data={data.categoryReadRate.slices}
+                      primaryColor={data.categoryReadRate.primaryColor}
+                      otherColor={data.categoryReadRate.otherColor}
+                      centerPercent={data.categoryReadRate.centerPercent}
+                      centerLabel={data.categoryReadRate.centerLabel}
+                      legend={data.categoryReadRate.legend.map((item) => ({
+                        label: item.label,
+                        value: formatChartLegendValue(item.display),
+                        color: item.color,
+                      }))}
+                    />
+                  </ChartCard>
+                ) : null}
+
+                {data?.receivedByCategory ? (
+                  <ChartCard
+                    title={t('receivedByCategory')}
+                    period={period}
+                    onPeriodChange={setPeriod}
+                    footer={totalLabel}
+                    className="min-w-0 min-[960px]:col-span-2 min-[960px]:max-w-[50%]"
+                  >
+                    <NotificationsDonutChart
+                      data={data.receivedByCategory.slices}
+                      primaryColor={data.receivedByCategory.primaryColor}
+                      otherColor={data.receivedByCategory.otherColor}
+                      centerPercent={data.receivedByCategory.centerPercent}
+                      centerLabel={data.receivedByCategory.centerLabel}
+                      legend={data.receivedByCategory.legend.map((item) => ({
+                        label: item.label,
+                        value: formatChartLegendValue(item.display),
+                        color: item.color,
+                      }))}
+                    />
+                  </ChartCard>
+                ) : null}
+              </div>
+            </>
+          )}
         </div>
       ) : null}
     </section>

@@ -5,6 +5,7 @@ import {
   isNotificationApiMocked,
   mockApplyActorSetting,
   mockGetActorSettings,
+  mockGetChartsReport,
   mockGetDetailedStatusReport,
   mockGetLast5Notifications,
   mockGetUnreadCount,
@@ -16,9 +17,11 @@ import {
 import {
   mapActorNotification,
   mapActorSettingsList,
+  mapChartsReport,
   mapDetailedStatusReportList,
   mapNotificationList,
   mapUnreadCounts,
+  toChartsReportQuery,
   toDetailedStatusReportQuery,
   toListNotificationsQuery,
 } from './transformers';
@@ -30,9 +33,11 @@ import type {
   ApiResponse,
   ApplyActorSettingPayload,
   ApplyActorSettingsPayload,
+  ChartsReportResult,
   DetailedStatusReportListData,
   DetailedStatusReportResult,
   GetActorSettingsPayload,
+  GetChartsReportPayload,
   GetDetailedStatusReportPayload,
   GetLast5NotificationsPayload,
   GetUnreadCountPayload,
@@ -41,6 +46,7 @@ import type {
   MarkLast5NotificationsAsReadPayload,
   MarkNotificationAsReadData,
   MarkNotificationAsReadPayload,
+  NotificationChartsDataDto,
   NotificationItem,
   NotificationListResult,
   UnreadCountData,
@@ -212,6 +218,23 @@ export async function getDetailedStatusReport(
     toDetailedStatusReportQuery(payload)
   );
   return mapDetailedStatusReportList(data, message);
+}
+
+/** GET /notification/report/charts_report — Adm-Ntf-6N11 */
+export async function getChartsReport(
+  payload: GetChartsReportPayload
+): Promise<ChartsReportResult> {
+  if (isNotificationApiMocked()) {
+    return mockGetChartsReport(payload);
+  }
+
+  requireAccessToken(payload.accessToken);
+  const { data, message } = await getNotification<NotificationChartsDataDto>(
+    '/notification/report/charts_report',
+    payload.accessToken,
+    toChartsReportQuery(payload)
+  );
+  return mapChartsReport(data, message);
 }
 
 /**

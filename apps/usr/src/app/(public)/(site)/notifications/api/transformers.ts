@@ -18,12 +18,17 @@ import type {
   ActorSettingChannel,
   ActorSettingItem,
   ActorSettingsDto,
+  ChartsBarPoint,
+  ChartsDonutView,
+  ChartsReportResult,
   DetailedStatusReportDto,
   DetailedStatusReportItem,
   DetailedStatusReportListData,
   DetailedStatusReportResult,
+  GetChartsReportPayload,
   GetDetailedStatusReportPayload,
   ListNotificationsPayload,
+  NotificationChartsDataDto,
   NotificationItem,
   NotificationListResult,
   NotificationType,
@@ -32,6 +37,7 @@ import type {
   UnreadCountData,
   UnreadCounts,
 } from './types';
+import { formatChartDateLabel } from '../lib/chart-period-range';
 
 function splitSentAt(sentAt: string | null): { date: string; time: string } {
   if (!sentAt?.trim()) return { date: '', time: '' };
@@ -223,6 +229,174 @@ export function toDetailedStatusReportQuery(
     start_date: payload.startDate,
     end_date: payload.endDate,
   });
+}
+
+/** YAML query for /notification/report/charts_report */
+export function toChartsReportQuery(payload: GetChartsReportPayload) {
+  return toRequestQuery({
+    actor_type: payload.actorType,
+    start_date: payload.startDate,
+    end_date: payload.endDate,
+  });
+}
+
+const CHART_PRIMARY = 'var(--color-warning-400)';
+const CHART_TEAL = 'var(--color-primary)';
+const CHART_OTHER = 'var(--color-neutral-300)';
+
+function toPrimaryOtherDonut(
+  items: Array<{ label: string; value: number; percent?: number }>,
+  primaryColor: string,
+  mode: 'percent' | 'count'
+): ChartsDonutView {
+  const sorted = [...items].sort((a, b) => b.value - a.value);
+  const primary = sorted[0];
+  const rest = sorted.slice(1);
+  const otherValue = rest.reduce((sum, item) => sum + item.value, 0);
+  const total = Math.max(
+    items.reduce((sum, item) => sum + item.value, 0),
+    0.0001
+  );
+
+  if (!primary) {
+    return {
+      slices: [
+        { key: 'primary', value: 0 },
+        { key: 'other', value: 100 },
+      ],
+      centerPercent: 0,
+      centerLabel: '—',
+      primaryColor,
+      otherColor: CHART_OTHER,
+      legend: [],
+      totalCount: 0,
+    };
+  }
+
+  const primaryPercent =
+    primary.percent ?? Math.round((primary.value / total) * 1000) / 10;
+  const otherPercent =
+    Math.round((otherValue / total) * 1000) / 10 ||
+    Math.max(0, Math.round((100 - primaryPercent) * 10) / 10);
+
+  return {
+    slices: [
+      { key: 'primary', value: Math.max(primary.value, 0.01) },
+      { key: 'other', value: Math.max(otherValue, 0.01) },
+    ],
+    centerPercent: primaryPercent,
+    centerLabel: primary.label,
+    primaryColor,
+    otherColor: CHART_OTHER,
+    legend: [
+      {
+        label: primary.label,
+        color: primaryColor,
+        display:
+          mode === 'percent'
+            ? { kind: 'percent', value: primaryPercent }
+            : { kind: 'count', value: Math.round(primary.value) },
+      },
+      {
+        label: rest.length > 0 ? 'سایر' : '—',
+        color: CHART_OTHER,
+        display:
+          mode === 'percent'
+            ? { kind: 'percent', value: otherPercent }
+            : { kind: 'count', value: Math.round(otherValue) },
+      },
+    ],
+    totalCount: Math.round(total),
+  };
+}
+
+/** Map YAML NotificationChartsData → UI chart models. */
+export function mapChartsReport(
+  data: NotificationChartsDataDto | null | undefined,
+  message: string | null = null
+): ChartsReportResult {
+  const reactionTimeSeries: ChartsBarPoint[] = (
+    data?.user_reaction_time_chart?.series ?? []
+  ).map((point) => ({
+    label: formatChartDateLabel(point.date),
+    value: Math.round(point.average_reaction_time_seconds / 60),
+  }));
+
+  const conversionRateSeries: ChartsBarPoint[] = (
+    data?.unread_to_read_conversion_rate_chart?.series ?? []
+  ).map((point) => ({
+    label: formatChartDateLabel(point.date),
+    value: Math.round(point.conversion_rate * 10) / 10,
+  }));
+
+  const readSeries = data?.read_vs_unread_distribution_chart?.series ?? [];
+  const readPoint =
+    readSeries.find((item) => /خوانده\s*شده/.test(item.status_label)) ??
+    readSeries[0];
+  const unreadPoint =
+    readSeries.find((item) => /خوانده\s*نشده/.test(item.status_label)) ??
+    readSeries[1];
+
+  const readVsUnread: ChartsDonutView = {
+    slices: [
+      { key: 'primary', value: Math.max(readPoint?.percentage ?? 0, 0.01) },
+      { key: 'other', value: Math.max(unreadPoint?.percentage ?? 0, 0.01) },
+    ],
+    centerPercent: Math.round(readPoint?.percentage ?? 0),
+    centerLabel: readPoint?.status_label ?? 'خوانده شده',
+    primaryColor: CHART_TEAL,
+    otherColor: CHART_OTHER,
+    legend: [
+      {
+        label: readPoint?.status_label ?? 'خوانده شده',
+        color: CHART_TEAL,
+        display: {
+          kind: 'percent',
+          value: Math.round((readPoint?.percentage ?? 0) * 10) / 10,
+        },
+      },
+      {
+        label: unreadPoint?.status_label ?? 'خوانده نشده',
+        color: CHART_OTHER,
+        display: {
+          kind: 'percent',
+          value: Math.round((unreadPoint?.percentage ?? 0) * 10) / 10,
+        },
+      },
+    ],
+    totalCount: readSeries.reduce((sum, item) => sum + item.count, 0),
+  };
+
+  const categoryReadRate = toPrimaryOtherDonut(
+    (data?.main_category_read_rate_chart?.series ?? []).map((item) => ({
+      label: item.main_category_name || 'بدون دسته',
+      value: item.read_percentage,
+      percent: item.read_percentage,
+    })),
+    CHART_PRIMARY,
+    'percent'
+  );
+
+  const receivedByCategory = toPrimaryOtherDonut(
+    (data?.received_notifications_by_main_category_chart?.series ?? []).map(
+      (item) => ({
+        label: item.main_category_name || 'بدون دسته',
+        value: item.count,
+        percent: item.percentage,
+      })
+    ),
+    CHART_TEAL,
+    'count'
+  );
+
+  return {
+    reactionTimeSeries,
+    conversionRateSeries,
+    readVsUnread,
+    categoryReadRate,
+    receivedByCategory,
+    message,
+  };
 }
 
 const UI_CHANNELS: NotificationChannel[] = [

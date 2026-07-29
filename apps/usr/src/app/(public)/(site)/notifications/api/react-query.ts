@@ -11,6 +11,7 @@ import { isNotificationApiMocked } from './mock';
 import {
   applyActorSettings,
   getActorSettings,
+  getChartsReport,
   getDetailedStatusReport,
   getLast5Notifications,
   getUnreadCount,
@@ -22,6 +23,7 @@ import {
 import { notificationQueryKeys } from './query-keys';
 import type {
   ApplyActorSettingsPayload,
+  GetChartsReportPayload,
   GetDetailedStatusReportPayload,
   ListNotificationsPayload,
 } from './types';
@@ -131,6 +133,21 @@ export function useDetailedStatusReportQuery(
     queryKey: notificationQueryKeys.detailedStatusReport(filters),
     queryFn: () =>
       getDetailedStatusReport({ ...filters, accessToken: accessToken ?? '' }),
+    enabled: enabled && canFetch(accessToken),
+  });
+}
+
+export function useChartsReportQuery(
+  payload: Omit<GetChartsReportPayload, 'accessToken'> & {
+    accessToken: string | null | undefined;
+  },
+  enabled = true
+) {
+  const { accessToken, ...filters } = payload;
+  return useQuery({
+    queryKey: notificationQueryKeys.chartsReport(filters),
+    queryFn: () =>
+      getChartsReport({ ...filters, accessToken: accessToken ?? '' }),
     enabled: enabled && canFetch(accessToken),
   });
 }

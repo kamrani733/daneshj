@@ -3,14 +3,20 @@
 import { NotificationsChartsPanel } from './notifications-charts-panel';
 import { NotificationsPageShell } from './notifications-page-shell';
 
-/** Notifications charts page — Figma نمودارهای ثابت. */
-export function NotificationsChartsView() {
+type NotificationsChartsViewProps = {
+  accessToken?: string | null;
+};
+
+/** Notifications charts page — Figma نمودار + charts_report API. */
+export function NotificationsChartsView({
+  accessToken,
+}: NotificationsChartsViewProps) {
   return (
     <NotificationsPageShell
       titleKey="charts.title"
       breadcrumbCurrentKey="charts.breadcrumbCurrent"
     >
-      <NotificationsChartsPanel />
+      <NotificationsChartsPanel accessToken={accessToken} />
     </NotificationsPageShell>
   );
 }

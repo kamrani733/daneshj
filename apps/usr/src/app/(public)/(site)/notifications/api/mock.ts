@@ -6,15 +6,19 @@ import { toActorChannelSettingRequest } from './transformers';
 import type {
   ActorSettingItem,
   ApplyActorSettingPayload,
+  ChartsReportResult,
   DetailedStatusReportItem,
   DetailedStatusReportResult,
+  GetChartsReportPayload,
   GetDetailedStatusReportPayload,
   ListNotificationsPayload,
   MarkNotificationAsReadData,
+  NotificationChartsDataDto,
   NotificationItem,
   NotificationListResult,
   UnreadCounts,
 } from './types';
+import { mapChartsReport } from './transformers';
 
 /** Live calls only when a Notification MS base URL is configured. */
 export function isNotificationApiMocked() {
@@ -268,4 +272,93 @@ export async function mockApplyActorSetting(
   }
 
   return { ...next, channels: next.channels.map((channel) => ({ ...channel })) };
+}
+
+/** OpenAPI NotificationChartsReportExample — GET charts_report */
+const MOCK_CHARTS_DATA: NotificationChartsDataDto = {
+  user_reaction_time_chart: {
+    chart_type: 'line',
+    series: [
+      {
+        date: '2026-07-25',
+        average_reaction_time_seconds: 8167.06,
+        average_reaction_time_formatted: '2 ساعت و 16 دقیقه و 7 ثانیه',
+      },
+      {
+        date: '2026-07-26',
+        average_reaction_time_seconds: 3443.79,
+        average_reaction_time_formatted: '57 دقیقه و 23 ثانیه',
+      },
+      {
+        date: '2026-07-27',
+        average_reaction_time_seconds: 8609.52,
+        average_reaction_time_formatted: '2 ساعت و 23 دقیقه و 29 ثانیه',
+      },
+    ],
+  },
+  main_category_read_rate_chart: {
+    chart_type: 'pie',
+    series: [
+      {
+        main_category_id: 14,
+        main_category_name: 'مالی',
+        read_percentage: 65,
+      },
+      {
+        main_category_id: 25,
+        main_category_name: 'دیدگاه',
+        read_percentage: 68,
+      },
+      {
+        main_category_id: 58,
+        main_category_name: 'سرویس-رخدادهای تقویمی',
+        read_percentage: 85.71,
+      },
+    ],
+  },
+  unread_to_read_conversion_rate_chart: {
+    chart_type: 'line',
+    series: [
+      { date: '2026-07-25', conversion_rate: 66.67 },
+      { date: '2026-07-26', conversion_rate: 75 },
+      { date: '2026-07-27', conversion_rate: 85.71 },
+    ],
+  },
+  read_vs_unread_distribution_chart: {
+    chart_type: 'pie',
+    series: [
+      { status_label: 'خوانده شده', count: 102, percentage: 64.15 },
+      { status_label: 'خوانده نشده', count: 57, percentage: 35.85 },
+    ],
+  },
+  received_notifications_by_main_category_chart: {
+    chart_type: 'pie',
+    series: [
+      {
+        main_category_id: 58,
+        main_category_name: 'سرویس-رخدادهای تقویمی',
+        count: 35,
+        percentage: 22.01,
+      },
+      {
+        main_category_id: 25,
+        main_category_name: 'دیدگاه',
+        count: 25,
+        percentage: 15.72,
+      },
+      {
+        main_category_id: 14,
+        main_category_name: 'مالی',
+        count: 20,
+        percentage: 12.58,
+      },
+    ],
+  },
+};
+
+/** GET /notification/report/charts_report — Adm-Ntf-6N11 */
+export async function mockGetChartsReport(
+  _payload: GetChartsReportPayload
+): Promise<ChartsReportResult> {
+  return mapChartsReport(MOCK_CHARTS_DATA, 'executed');
 }

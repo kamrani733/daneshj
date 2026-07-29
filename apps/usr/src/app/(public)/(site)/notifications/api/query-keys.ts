@@ -1,4 +1,5 @@
 import type {
+  GetChartsReportPayload,
   GetDetailedStatusReportPayload,
   ListNotificationsPayload,
 } from './types';
@@ -12,5 +13,7 @@ export const notificationQueryKeys = {
   detailedStatusReport: (
     filters: Omit<GetDetailedStatusReportPayload, 'accessToken'>
   ) => [...notificationQueryKeys.all, 'detailed-status-report', filters] as const,
+  chartsReport: (filters: Omit<GetChartsReportPayload, 'accessToken'>) =>
+    [...notificationQueryKeys.all, 'charts-report', filters] as const,
   actorSettings: () => [...notificationQueryKeys.all, 'actor-settings'] as const,
 };

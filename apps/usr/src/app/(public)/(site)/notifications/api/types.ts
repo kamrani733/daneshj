@@ -275,3 +275,131 @@ export interface ActorSettingItem {
   categoryTitle: string;
   channels: ActorChannelSettingDto[];
 }
+
+/** YAML: UserReactionTimePoint */
+export interface UserReactionTimePointDto {
+  date: string;
+  average_reaction_time_seconds: number;
+  average_reaction_time_formatted: string;
+}
+
+/** YAML: UserReactionTimeChart */
+export interface UserReactionTimeChartDto {
+  chart_type?: string;
+  series: UserReactionTimePointDto[];
+}
+
+/** YAML: MainCategoryReadRatePoint */
+export interface MainCategoryReadRatePointDto {
+  main_category_id: number | null;
+  main_category_name: string;
+  read_percentage: number;
+}
+
+/** YAML: MainCategoryReadRateChart */
+export interface MainCategoryReadRateChartDto {
+  chart_type?: string;
+  series: MainCategoryReadRatePointDto[];
+}
+
+/** YAML: UnreadToReadConversionPoint */
+export interface UnreadToReadConversionPointDto {
+  date: string;
+  conversion_rate: number;
+}
+
+/** YAML: UnreadToReadConversionChart */
+export interface UnreadToReadConversionChartDto {
+  chart_type?: string;
+  series: UnreadToReadConversionPointDto[];
+}
+
+/** YAML: ReadVsUnreadDistributionPoint */
+export interface ReadVsUnreadDistributionPointDto {
+  status_label: string;
+  count: number;
+  percentage: number;
+}
+
+/** YAML: ReadVsUnreadDistributionChart */
+export interface ReadVsUnreadDistributionChartDto {
+  chart_type?: string;
+  series: ReadVsUnreadDistributionPointDto[];
+}
+
+/** YAML: ReceivedNotificationsByMainCategoryPoint */
+export interface ReceivedByCategoryPointDto {
+  main_category_id: number | null;
+  main_category_name: string;
+  count: number;
+  percentage: number;
+}
+
+/** YAML: ReceivedNotificationsByMainCategoryChart */
+export interface ReceivedByCategoryChartDto {
+  chart_type?: string;
+  series: ReceivedByCategoryPointDto[];
+}
+
+/** YAML: NotificationChartsData */
+export interface NotificationChartsDataDto {
+  user_reaction_time_chart: UserReactionTimeChartDto;
+  main_category_read_rate_chart: MainCategoryReadRateChartDto;
+  unread_to_read_conversion_rate_chart: UnreadToReadConversionChartDto;
+  read_vs_unread_distribution_chart: ReadVsUnreadDistributionChartDto;
+  received_notifications_by_main_category_chart: ReceivedByCategoryChartDto;
+}
+
+export type ChartsReportActorType =
+  | 'user'
+  | 'admin'
+  | 'business'
+  | 'university'
+  | 'industry'
+  | 'organizer'
+  | 'all';
+
+export interface GetChartsReportPayload {
+  accessToken: string;
+  actorType?: ChartsReportActorType | string;
+  startDate?: string;
+  endDate?: string;
+}
+
+export type ChartsBarPoint = {
+  label: string;
+  value: number;
+};
+
+export type ChartsDonutSlice = {
+  key: 'primary' | 'other';
+  value: number;
+};
+
+export type ChartsDonutLegendItem = {
+  label: string;
+  color: string;
+  display:
+    | { kind: 'percent'; value: number }
+    | { kind: 'count'; value: number };
+};
+
+export type ChartsDonutView = {
+  slices: ChartsDonutSlice[];
+  centerPercent: number;
+  centerLabel: string;
+  primaryColor: string;
+  otherColor: string;
+  legend: ChartsDonutLegendItem[];
+  totalCount: number;
+};
+
+/** App-facing charts report for UI. */
+export interface ChartsReportResult {
+  reactionTimeSeries: ChartsBarPoint[];
+  conversionRateSeries: ChartsBarPoint[];
+  readVsUnread: ChartsDonutView;
+  categoryReadRate: ChartsDonutView;
+  receivedByCategory: ChartsDonutView;
+  message: string | null;
+}
