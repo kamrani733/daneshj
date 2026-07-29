@@ -592,5 +592,88 @@
       "financeBody": "برای افزایش موجودی حساب خود هرچه زود تر اقدام کنید",
       "financeSubCategory": "افزایش وجه به کیف پول"
     }
+  },
+  "publicPanel": {
+    "breadcrumb": {
+      "label": "مسیر صفحه",
+      "home": "خانه",
+      "account": "حساب کاربری",
+      "current": "پنل عمومی"
+    },
+    "title": "پنل عمومی {name}",
+    "providerBadge": {
+      "individualProvider": "سرویس دهنده انفرادی"
+    },
+    "role": {
+      "student": "دانشجو"
+    },
+    "viewElectronicCard": "مشاهده کارت الکترونیک",
+    "aboutMe": "درباره من",
+    "seeMore": "مشاهده بیشتر",
+    "seeLess": "مشاهده کمتر",
+    "follow": "دنبال کردن",
+    "following": "دنبال می‌کنید",
+    "stats": {
+      "followers": "دنبال کننده",
+      "following": "دنبال شونده",
+      "likers": "پسند کننده",
+      "liked": "پسند شونده"
+    },
+    "academicRecords": "سوابق تحصیلی \"{username}\" ({count})",
+    "serviceInfo": "اطلاعات سرویس دهندگی",
+    "tabs": {
+      "services": "سرویس‌های من ({count})",
+      "other": "سایر اطلاعات"
+    },
+    "catalog": {
+      "discounts": "تخفیف کالا و خدمات",
+      "news": "خبر",
+      "newsletters": "خبرنامه"
+    },
+    "viewAll": "مشاهده همه",
+    "emptyServices": "هیچ سرویسی ارائه نشده است",
+    "emptyOther": "اطلاعات دیگری ثبت نشده است",
+    "comments": {
+      "title": "دیدگاه‌ها",
+      "placeholder": "نظر خود را بنویسید...",
+      "submit": "ارسال",
+      "cancel": "انصراف",
+      "charCount": "{count} کاراکتر",
+      "transferred": "دیدگاه‌های منتقل‌شده",
+      "registered": "دیدگاه‌های ثبت‌شده",
+      "transferredBadge": "{count} انتقال",
+      "registeredBadge": "{count} دیدگاه",
+      "searchTransferred": "جستجوی دیدگاه های منتقل شده",
+      "searchRegistered": "جستجوی دیدگاه های ثبت شده",
+      "sortLabel": "مرتب‌سازی",
+      "sort": {
+        "newest": "جدیدترین",
+        "oldest": "قدیمی‌ترین",
+        "mostLiked": "بیشترین پسند"
+      },
+      "badgeTransferred": "منتقل شد",
+      "badgeFeatured": "برگزیده شده",
+      "inReplyTo": "در پاسخ به {name}",
+      "like": "پسندیدن",
+      "dislike": "نپسندیدن",
+      "share": "اشتراک‌گذاری",
+      "reply": "پاسخ",
+      "report": "گزارش",
+      "showReplies": "نمایش {count} پاسخ",
+      "hideReplies": "عدم نمایش {count} پاسخ",
+      "emptyTransferred": "شما تاکنون دیدگاهی به پنل عمومی خود منتقل نکرده اید",
+      "emptyRegistered": "دیدگاهی ثبت نشده است"
+    },
+    "social": {
+      "email": "ایمیل",
+      "telegram": "تلگرام",
+      "instagram": "اینستاگرام",
+      "x": "ایکس",
+      "whatsapp": "واتس‌اپ",
+      "linkedin": "لینکدین",
+      "website": "وب‌سایت"
+    },
+    "servicePrice": "قیمت",
+    "copied": "محتوا کپی شد"
   }
 }
