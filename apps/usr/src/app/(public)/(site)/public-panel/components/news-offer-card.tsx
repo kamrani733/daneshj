@@ -18,19 +18,20 @@ export function NewsOfferCard({ item, className }: NewsOfferCardProps) {
         className
       )}
     >
-      <div className="relative aspect-[16/9] w-full overflow-hidden">
+      <div className="relative h-[160px] w-full shrink-0 overflow-hidden bg-neutral-200">
         <Image
           src={item.imageSrc}
           alt={item.title}
           fill
+          unoptimized
           sizes="(max-width: 720px) 100vw, 33vw"
           className="object-cover"
         />
-        <span className="absolute start-2.5 top-2.5 inline-flex items-center gap-1 rounded-md bg-[#F8D7C8] px-2 py-1 text-[11px] font-medium text-[#7A3E2B] dark:bg-warning/30 dark:text-warning-50">
+        <span className="absolute start-2.5 top-2.5 z-10 inline-flex items-center gap-1 rounded-md bg-[#F8D7C8] px-2 py-1 text-[11px] font-medium text-[#7A3E2B] dark:bg-warning/30 dark:text-warning-50">
           <Eye className="size-3.5" aria-hidden />
           {item.viewCount}
         </span>
-        <span className="absolute end-2.5 bottom-2.5 rounded-md bg-[#D6EAF8] px-2 py-1 text-[11px] font-medium text-[#1A5276] dark:bg-sky-900/60 dark:text-sky-100">
+        <span className="absolute end-2.5 bottom-2.5 z-10 rounded-md bg-[#D6EAF8] px-2 py-1 text-[11px] font-medium text-[#1A5276] dark:bg-sky-900/60 dark:text-sky-100">
           {item.scopeLabel}
         </span>
       </div>

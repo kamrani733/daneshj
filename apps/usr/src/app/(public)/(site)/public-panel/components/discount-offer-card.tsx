@@ -22,15 +22,16 @@ export function DiscountOfferCard({ offer, className }: DiscountOfferCardProps) 
         className
       )}
     >
-      <div className="relative aspect-[16/10] w-full overflow-hidden">
+      <div className="relative h-[148px] w-full shrink-0 overflow-hidden bg-neutral-200">
         <Image
           src={offer.imageSrc}
           alt={offer.title}
           fill
+          unoptimized
           sizes="(max-width: 720px) 100vw, 25vw"
           className="object-cover"
         />
-        <span className="absolute end-2.5 top-2.5 rounded-md bg-[#E8F5E9] px-2 py-1 text-[11px] font-medium text-[#2E7D32] dark:bg-primary/20 dark:text-primary-100">
+        <span className="absolute end-2.5 top-2.5 z-10 rounded-md bg-[#E8F5E9] px-2 py-1 text-[11px] font-medium text-[#2E7D32] dark:bg-primary/20 dark:text-primary-100">
           {offer.postedAgo}
         </span>
       </div>

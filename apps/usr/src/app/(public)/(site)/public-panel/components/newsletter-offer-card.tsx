@@ -33,11 +33,12 @@ export function NewsletterOfferCard({ item, className }: NewsletterOfferCardProp
         </div>
       </div>
 
-      <div className="relative mx-3 mt-3 aspect-square overflow-hidden rounded-lg">
+      <div className="relative mx-3 mt-3 h-[140px] shrink-0 overflow-hidden rounded-lg bg-neutral-200">
         <Image
           src={item.imageSrc}
           alt={item.title}
           fill
+          unoptimized
           sizes="(max-width: 720px) 100vw, 25vw"
           className="object-cover"
         />

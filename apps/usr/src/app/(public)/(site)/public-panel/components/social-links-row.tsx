@@ -12,6 +12,8 @@ type SocialLinksRowProps = {
   size?: 'sm' | 'lg';
   /** Hero uses outline; service-info uses filled (Figma). */
   variant?: 'outline' | 'filled';
+  /** Override list direction (hero socials are LTR icon order). */
+  dir?: 'ltr' | 'rtl';
 };
 
 type IconProps = SVGProps<SVGSVGElement>;
@@ -105,13 +107,14 @@ export function SocialLinksRow({
   className,
   size = 'sm',
   variant = 'filled',
+  dir,
 }: SocialLinksRowProps) {
   const t = useTranslations('publicPanel.social');
-  const box = size === 'lg' ? 'size-14' : 'size-11';
-  const iconSize = size === 'lg' ? 'size-6' : 'size-5';
+  const box = size === 'lg' ? 'size-14' : 'size-10';
+  const iconSize = size === 'lg' ? 'size-6' : 'size-[18px]';
 
   return (
-    <ul className={cn('flex flex-wrap items-center gap-3', className)}>
+    <ul dir={dir} className={cn('flex flex-wrap items-center gap-3', className)}>
       {links.map((link) => {
         const Icon = ICONS[link.network];
         return (
