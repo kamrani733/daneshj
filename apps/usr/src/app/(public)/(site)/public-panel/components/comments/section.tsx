@@ -9,14 +9,14 @@ import {
   type CommentKind,
   type CommentSort,
   type PanelComment,
-} from '@public-panel/data/public-panel-mock';
+} from '@public-panel/data/public-panel-ui';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { formatFaNumber } from '@/lib/format-fa';
 import { cn } from '@/lib/utils';
 
-import { CommentCard } from './comment-card';
-import { EmptyState } from './empty-state';
+import { CommentCard } from './card';
+import { EmptyState } from '../shared/empty-state';
 
 type CommentsSectionProps = {
   comments: PanelComment[];

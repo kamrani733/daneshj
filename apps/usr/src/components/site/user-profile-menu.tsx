@@ -15,7 +15,7 @@ import { createPortal } from 'react-dom';
 
 import { clearSession } from '@auth/lib/auth-actions';
 import { AUTH_ROUTES } from '@auth/lib/auth-routes';
-import { PUBLIC_PANEL_PATH } from '@public-panel/data/public-panel-mock';
+import { PUBLIC_PANEL_PATH } from '@public-panel/data/public-panel-ui';
 import { Button } from '@/components/ui/button';
 import { useDismissible } from '@/hooks/use-dismissible';
 import { cn } from '@/lib/utils';

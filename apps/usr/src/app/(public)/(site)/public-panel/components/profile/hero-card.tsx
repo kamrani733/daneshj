@@ -7,12 +7,12 @@ import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
 import { SITE_IMAGES } from '@/components/site/site-assets';
-import type { PublicPanelProfile } from '@public-panel/data/public-panel-mock';
+import type { PublicPanelProfile } from '@public-panel/data/public-panel-ui';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
-import { BorderedSectionCard } from './bordered-section-card';
+import { BorderedSectionCard } from '../shared/bordered-section-card';
 import { SocialLinksRow } from './social-links-row';
 
 type ProfileHeroCardProps = {

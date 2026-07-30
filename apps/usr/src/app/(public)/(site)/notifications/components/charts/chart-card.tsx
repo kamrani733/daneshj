@@ -5,7 +5,7 @@ import type { ReactNode } from 'react';
 import type { ChartPeriod } from '@notifications/data/charts-mock';
 import { cn } from '@/lib/utils';
 
-import { ChartPeriodToggle } from './chart-period-toggle';
+import { ChartPeriodToggle } from './period-toggle';
 
 export type ChartCardHeaderLayout = 'stack' | 'split';
 

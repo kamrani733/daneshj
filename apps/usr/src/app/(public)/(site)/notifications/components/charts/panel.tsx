@@ -17,10 +17,10 @@ import { Spinner } from '@/components/ui/spinner';
 import { formatFaNumber } from '@/lib/format-fa';
 import { cn } from '@/lib/utils';
 
-import { AccentMark } from './accent-mark';
+import { AccentMark } from '@/components/site/accent-mark';
 import { ChartCard } from './chart-card';
-import { NotificationsBarChart } from './notifications-bar-chart';
-import { NotificationsDonutChart } from './notifications-donut-chart';
+import { NotificationsBarChart } from './bar-chart';
+import { NotificationsDonutChart } from './donut-chart';
 
 type NotificationsChartsPanelProps = {
   accessToken?: string | null;

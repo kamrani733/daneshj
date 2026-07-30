@@ -1,6 +1,6 @@
 import { getSession } from '@daneshjoam/auth';
 
-import { NotificationsPageView } from './components/notifications-page-view';
+import { NotificationsPageView } from './components/inbox/page-view';
 
 /** Figma Notifications #2392:4782 / #2419:2680 */
 export default async function NotificationsPage() {

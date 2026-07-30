@@ -1,4 +1,4 @@
-import { NotificationsStatsView } from '../components/notifications-stats-view';
+import { NotificationsStatsView } from '../components/stats/view';
 
 /** Notifications stats — Figma سکشن آمار */
 export default function NotificationsStatsPage() {

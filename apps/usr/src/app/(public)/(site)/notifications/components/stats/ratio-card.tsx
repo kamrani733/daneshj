@@ -7,8 +7,8 @@ import { Progress } from '@/components/ui/progress';
 import { formatFaNumber } from '@/lib/format-fa';
 import { cn } from '@/lib/utils';
 
-import { StatIconTile } from './stat-icon-tile';
-import { StatTrend } from './stat-trend';
+import { StatIconTile } from './icon-tile';
+import { StatTrend } from './trend';
 
 type StatRatioCardProps = {
   stat: RatioStatConfig;

@@ -4,8 +4,8 @@ import type { ReactNode } from 'react';
 
 import { cn } from '@/lib/utils';
 
-import { NotificationsNav } from './notifications-nav';
-import { NotificationsPageHeading } from './notifications-page-heading';
+import { NotificationsNav } from './nav';
+import { NotificationsPageHeading } from './page-heading';
 
 type NotificationsPageShellProps = {
   children: ReactNode;

@@ -1,7 +1,7 @@
 import { Eye } from 'lucide-react';
 import Image from 'next/image';
 
-import type { NewsItem } from '@public-panel/data/public-panel-mock';
+import type { NewsItem } from '@public-panel/data/public-panel-ui';
 import { cn } from '@/lib/utils';
 
 type NewsOfferCardProps = {

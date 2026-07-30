@@ -1,6 +1,6 @@
 import { MOCK_PUBLIC_PANEL } from '@public-panel/data/public-panel-mock';
 
-import { PublicPanelView } from './components/public-panel-view';
+import { PublicPanelView } from './components/view';
 
 /** Public panel — Figma #731:60779 (content) / #713:5441 (empty fallbacks). */
 export default function PublicPanelPage() {

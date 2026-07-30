@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { ChevronLeft } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import { AccentMark } from './accent-mark';
+import { AccentMark } from '@/components/site/accent-mark';
 
 type NotificationsPageHeadingProps = {
   titleKey?: string;

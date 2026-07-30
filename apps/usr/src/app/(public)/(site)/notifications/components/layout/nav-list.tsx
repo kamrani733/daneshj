@@ -6,7 +6,7 @@ import { useTranslations } from 'next-intl';
 
 import { cn } from '@/lib/utils';
 
-import { NOTIFICATIONS_NAV_ITEMS } from './notifications-nav-items';
+import { NOTIFICATIONS_NAV_ITEMS } from './nav-items';
 
 type NotificationsNavListProps = {
   onNavigate?: () => void;

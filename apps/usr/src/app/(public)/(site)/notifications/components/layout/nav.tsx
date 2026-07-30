@@ -1,7 +1,7 @@
 'use client';
 
-import { NotificationsSidebar } from './notifications-sidebar';
-import { OperationalPanelMobileMenu } from './operational-panel-mobile-menu';
+import { NotificationsSidebar } from './sidebar';
+import { OperationalPanelMobileMenu } from './mobile-menu';
 
 /**
  * Responsive operational-panel navigation:

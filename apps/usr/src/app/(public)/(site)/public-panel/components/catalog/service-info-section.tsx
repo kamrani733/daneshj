@@ -5,11 +5,11 @@ import { useTranslations } from 'next-intl';
 import type {
   PublicPanelSocialLink,
   ServiceCatalog,
-} from '@public-panel/data/public-panel-mock';
+} from '@public-panel/data/public-panel-ui';
 
-import { PublicPanelTabs } from './public-panel-tabs';
-import { SectionTitle } from './section-title';
-import { SocialLinksRow } from './social-links-row';
+import { PublicPanelTabs } from './tabs';
+import { SectionTitle } from '../shared/section-title';
+import { SocialLinksRow } from '../profile/social-links-row';
 
 type ServiceInfoSectionProps = {
   links: PublicPanelSocialLink[];

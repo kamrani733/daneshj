@@ -13,7 +13,7 @@ import {
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
-import type { PublicPanelProfile } from '@public-panel/data/public-panel-mock';
+import type { PublicPanelProfile } from '@public-panel/data/public-panel-ui';
 import { Button } from '@/components/ui/button';
 import { formatFaNumber } from '@/lib/format-fa';
 import { cn } from '@/lib/utils';

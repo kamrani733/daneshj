@@ -3,12 +3,12 @@
 import { Info, ShoppingCart } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import type { ServiceCatalog } from '@public-panel/data/public-panel-mock';
+import type { ServiceCatalog } from '@public-panel/data/public-panel-ui';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
-import { CatalogSection } from './catalog-section';
+import { CatalogSection } from './section';
 import { DiscountOfferCard } from './discount-offer-card';
-import { EmptyState } from './empty-state';
+import { EmptyState } from '../shared/empty-state';
 import { NewsOfferCard } from './news-offer-card';
 import { NewsletterOfferCard } from './newsletter-offer-card';
 

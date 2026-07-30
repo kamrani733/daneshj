@@ -4,7 +4,7 @@ import { ChevronDown } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
-import type { AcademicRecord } from '@public-panel/data/public-panel-mock';
+import type { AcademicRecord } from '@public-panel/data/public-panel-ui';
 import { formatFaNumber } from '@/lib/format-fa';
 import { cn } from '@/lib/utils';
 

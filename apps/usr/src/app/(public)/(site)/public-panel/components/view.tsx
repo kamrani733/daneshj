@@ -1,14 +1,14 @@
 'use client';
 
-import type { PublicPanelProfile } from '@public-panel/data/public-panel-mock';
+import type { PublicPanelProfile } from '@public-panel/data/public-panel-ui';
 
-import { CommentsSection } from './comments-section';
-import { PanelInfoBanner } from './panel-info-banner';
-import { ProfileHeroCard } from './profile-hero-card';
-import { ProfileStatsBar } from './profile-stats-bar';
-import { PublicPanelHeading } from './public-panel-heading';
-import { RecordsAccordion } from './records-accordion';
-import { ServiceInfoSection } from './service-info-section';
+import { CommentsSection } from './comments/section';
+import { PanelInfoBanner } from './profile/info-banner';
+import { ProfileHeroCard } from './profile/hero-card';
+import { ProfileStatsBar } from './profile/stats-bar';
+import { PublicPanelHeading } from './shared/heading';
+import { RecordsAccordion } from './profile/records-accordion';
+import { ServiceInfoSection } from './catalog/service-info-section';
 
 type PublicPanelViewProps = {
   profile: PublicPanelProfile;

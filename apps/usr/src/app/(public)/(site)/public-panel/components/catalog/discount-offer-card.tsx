@@ -1,7 +1,7 @@
 import { Star } from 'lucide-react';
 import Image from 'next/image';
 
-import type { DiscountOffer } from '@public-panel/data/public-panel-mock';
+import type { DiscountOffer } from '@public-panel/data/public-panel-ui';
 import { cn } from '@/lib/utils';
 
 type DiscountOfferCardProps = {

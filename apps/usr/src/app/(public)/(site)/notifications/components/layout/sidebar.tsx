@@ -2,7 +2,7 @@
 
 import { cn } from '@/lib/utils';
 
-import { NotificationsNavList } from './notifications-nav-list';
+import { NotificationsNavList } from './nav-list';
 
 /** Figma Navigation Drawer #2392:4854 — desktop/tablet sidebar. */
 export function NotificationsSidebar({ className }: { className?: string }) {

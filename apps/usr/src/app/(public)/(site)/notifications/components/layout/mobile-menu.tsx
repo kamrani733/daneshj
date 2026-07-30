@@ -11,7 +11,7 @@ import {
 } from '@/components/ui/dialog';
 import { cn } from '@/lib/utils';
 
-import { NotificationsNavList } from './notifications-nav-list';
+import { NotificationsNavList } from './nav-list';
 
 type OperationalPanelMobileMenuProps = {
   className?: string;

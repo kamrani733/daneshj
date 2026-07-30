@@ -1,6 +1,6 @@
 import { getSession } from '@daneshjoam/auth';
 
-import { NotificationsSettingsView } from '../components/notifications-settings-view';
+import { NotificationsSettingsView } from '../components/settings/view';
 
 /** Notification channel preference settings — Figma تنظیمات اعلانات */
 export default async function NotificationsSettingsPage() {

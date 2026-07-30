@@ -12,7 +12,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 
-import { NotificationsFilterPanel } from './notifications-filter-panel';
+import { NotificationsFilterPanel } from './filter-panel';
 
 type NotificationsToolbarProps = {
   query: string;

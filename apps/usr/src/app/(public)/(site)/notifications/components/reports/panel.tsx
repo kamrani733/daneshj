@@ -14,15 +14,15 @@ import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
 import { cn } from '@/lib/utils';
 
-import { AccentMark } from './accent-mark';
-import { NotificationsPagination } from './notifications-pagination';
-import { ReportsCardList } from './reports-card-list';
+import { AccentMark } from '@/components/site/accent-mark';
+import { NotificationsPagination } from '../layout/pagination';
+import { ReportsCardList } from './card-list';
 import {
   EMPTY_REPORTS_FILTERS,
   ReportsToolbar,
   type ReportsFilterValues,
-} from './reports-toolbar';
-import { ReportsTable } from './reports-table';
+} from './toolbar';
+import { ReportsTable } from './table';
 
 type NotificationsReportsPanelProps = {
   accessToken?: string | null;

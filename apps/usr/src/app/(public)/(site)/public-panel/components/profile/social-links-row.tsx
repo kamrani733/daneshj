@@ -3,7 +3,7 @@
 import { useTranslations } from 'next-intl';
 import type { SVGProps } from 'react';
 
-import type { PublicPanelSocialLink } from '@public-panel/data/public-panel-mock';
+import type { PublicPanelSocialLink } from '@public-panel/data/public-panel-ui';
 import { cn } from '@/lib/utils';
 
 type SocialLinksRowProps = {

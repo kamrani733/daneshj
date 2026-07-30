@@ -2,9 +2,9 @@
 
 import { COUNT_STATS, RATIO_STATS } from '@notifications/data/stats-mock';
 
-import { NotificationsPageShell } from './notifications-page-shell';
-import { StatCountCard } from './stat-count-card';
-import { StatRatioCard } from './stat-ratio-card';
+import { NotificationsPageShell } from '../layout/page-shell';
+import { StatCountCard } from './count-card';
+import { StatRatioCard } from './ratio-card';
 
 /** Notifications stats page — Figma سکشن آمار (2×2 KPI grid). */
 export function NotificationsStatsView() {

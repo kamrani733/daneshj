@@ -6,8 +6,8 @@ import type { CountStatConfig } from '@notifications/data/stats-mock';
 import { formatFaNumber } from '@/lib/format-fa';
 import { cn } from '@/lib/utils';
 
-import { StatIconTile } from './stat-icon-tile';
-import { StatTrend } from './stat-trend';
+import { StatIconTile } from './icon-tile';
+import { StatTrend } from './trend';
 
 type StatCountCardProps = {
   stat: CountStatConfig;

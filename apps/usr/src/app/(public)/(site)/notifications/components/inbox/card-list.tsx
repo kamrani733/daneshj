@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 
-import { NotificationStatusIcon } from './notification-status-icon';
+import { NotificationStatusIcon } from './status-icon';
 
 type NotificationsCardListProps = {
   items: NotificationRecord[];

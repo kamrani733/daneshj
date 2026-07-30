@@ -1,7 +1,7 @@
 'use client';
 
-import { NotificationsPageShell } from './notifications-page-shell';
-import { NotificationsReportsPanel } from './notifications-reports-panel';
+import { NotificationsPageShell } from '../layout/page-shell';
+import { NotificationsReportsPanel } from './panel';
 
 type NotificationsReportsViewProps = {
   accessToken?: string | null;

@@ -23,9 +23,9 @@ import {
 } from '@notifications/data/settings-mock';
 import { Spinner } from '@/components/ui/spinner';
 
-import { AccentMark } from './accent-mark';
-import { SettingsCategoryAccordion } from './settings-category-accordion';
-import { SettingsFloatingActions } from './settings-floating-actions';
+import { AccentMark } from '@/components/site/accent-mark';
+import { SettingsCategoryAccordion } from './category-accordion';
+import { SettingsFloatingActions } from './floating-actions';
 
 function cloneState(state: Record<string, ChannelSettingState[]>) {
   const next: Record<string, ChannelSettingState[]> = {};

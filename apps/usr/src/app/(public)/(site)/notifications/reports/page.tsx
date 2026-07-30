@@ -1,6 +1,6 @@
 import { getSession } from '@daneshjoam/auth';
 
-import { NotificationsReportsView } from '../components/notifications-reports-view';
+import { NotificationsReportsView } from '../components/reports/view';
 
 /** Notifications reports — Figma گزارش اعلان‌های دریافتی و وضعیت آنها */
 export default async function NotificationsReportsPage() {
