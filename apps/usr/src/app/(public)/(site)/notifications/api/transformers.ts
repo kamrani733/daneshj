@@ -38,12 +38,7 @@ import type {
   UnreadCounts,
 } from './types';
 import { formatChartDateLabel } from '../lib/chart-period-range';
-
-function splitSentAt(sentAt: string | null): { date: string; time: string } {
-  if (!sentAt?.trim()) return { date: '', time: '' };
-  const [datePart = '', timePart = ''] = sentAt.trim().split(/\s+/);
-  return { date: datePart, time: timePart };
-}
+import { splitSentAt } from '../lib/format-notification-datetime';
 
 function toNotificationType(value: string): NotificationType {
   return value === 'manual' ? 'manual' : 'system';
@@ -106,13 +101,22 @@ export function mapNotificationList(
 }
 
 export function mapUnreadCounts(data: UnreadCountData | null): UnreadCounts {
+  if (typeof data === 'number' && Number.isFinite(data)) {
+    return { total: data, manual: data, system: 0 };
+  }
   if (!data || typeof data !== 'object') {
     return { total: 0, manual: 0, system: 0 };
   }
-  const manual = data.manual_count ?? 0;
-  const system = data.system_count ?? 0;
-  const total = data.count ?? manual + system;
-  return { total, manual, system };
+  const manual = Number(data.manual_count ?? data.manual ?? 0);
+  const system = Number(data.system_count ?? data.system ?? 0);
+  const total = Number(
+    data.count ?? data.total ?? data.unread_count ?? manual + system
+  );
+  return {
+    total: Number.isFinite(total) ? total : 0,
+    manual: Number.isFinite(manual) ? manual : 0,
+    system: Number.isFinite(system) ? system : 0,
+  };
 }
 
 /** YAML query for /notification/actor-notifications/list */
@@ -226,9 +230,24 @@ export function toDetailedStatusReportQuery(
     status: payload.status,
     main_category_id: payload.mainCategoryId,
     sub_category_id: payload.subCategoryId,
-    start_date: payload.startDate,
-    end_date: payload.endDate,
+    start_date: toDateTimeParam(payload.startDate, 'start'),
+    end_date: toDateTimeParam(payload.endDate, 'end'),
   });
+}
+
+/** API expects date-time; accept `YYYY-MM-DD` from the Jalali picker. */
+function toDateTimeParam(
+  value: string | undefined,
+  bound: 'start' | 'end'
+): string | undefined {
+  if (!value?.trim()) return undefined;
+  const trimmed = value.trim();
+  if (/^\d{4}-\d{2}-\d{2}$/.test(trimmed)) {
+    return bound === 'start'
+      ? `${trimmed}T00:00:00.000Z`
+      : `${trimmed}T23:59:59.999Z`;
+  }
+  return trimmed;
 }
 
 /** YAML query for /notification/report/charts_report */
@@ -240,9 +259,9 @@ export function toChartsReportQuery(payload: GetChartsReportPayload) {
   });
 }
 
-const CHART_PRIMARY = 'var(--color-warning-400)';
-const CHART_TEAL = 'var(--color-primary)';
-const CHART_OTHER = 'var(--color-neutral-300)';
+const CHART_PRIMARY = 'var(--color-chart-series-b)';
+const CHART_TEAL = 'var(--color-chart-series-a)';
+const CHART_OTHER = 'var(--color-chart-other)';
 
 function toPrimaryOtherDonut(
   items: Array<{ label: string; value: number; percent?: number }>,

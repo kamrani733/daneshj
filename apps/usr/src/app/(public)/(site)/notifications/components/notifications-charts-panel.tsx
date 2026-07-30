@@ -89,15 +89,15 @@ export function NotificationsChartsPanel({
       {open ? (
         <div className="flex flex-col gap-4 px-3 pb-4 min-[720px]:gap-5 min-[720px]:px-5 min-[720px]:pb-5">
           {!canQuery ? (
-            <div className="flex min-h-[160px] items-center justify-center rounded-xl bg-white px-4 text-center text-sm text-home-filter-muted dark:bg-white/5">
+            <div className="flex min-h-[160px] items-center justify-center rounded-xl bg-white px-4 text-center text-sm text-home-filter-muted dark:bg-home-search-category">
               {t('authRequired')}
             </div>
           ) : isLoading ? (
-            <div className="flex min-h-[220px] items-center justify-center rounded-xl bg-white dark:bg-white/5">
+            <div className="flex min-h-[220px] items-center justify-center rounded-xl bg-white dark:bg-home-search-category">
               <Spinner className="size-8 text-primary" />
             </div>
           ) : errorMessage ? (
-            <div className="flex min-h-[160px] flex-col items-center justify-center gap-3 rounded-xl bg-white px-4 text-center dark:bg-white/5">
+            <div className="flex min-h-[160px] flex-col items-center justify-center gap-3 rounded-xl bg-white px-4 text-center dark:bg-home-search-category">
               <p className="text-sm text-home-filter-muted">{errorMessage}</p>
               <Button
                 type="button"
@@ -118,7 +118,7 @@ export function NotificationsChartsPanel({
               >
                 <NotificationsBarChart
                   data={data?.reactionTimeSeries ?? []}
-                  barColor="var(--color-warning-400)"
+                  barColor="var(--color-chart-series-b)"
                 />
               </ChartCard>
 
@@ -130,7 +130,7 @@ export function NotificationsChartsPanel({
               >
                 <NotificationsBarChart
                   data={data?.conversionRateSeries ?? []}
-                  barColor="var(--color-primary)"
+                  barColor="var(--color-chart-series-a)"
                   showValueLabels
                 />
               </ChartCard>

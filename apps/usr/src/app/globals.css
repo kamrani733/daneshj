@@ -154,6 +154,12 @@
   --color-home-card: #fafaf5;
   --color-home-search-fill: #f8f8f0;
   --color-home-search-category: #efede6;
+  /* Stats KPI cards — light white · dark forest (Figma #062C22) */
+  --color-home-stat-card: #ffffff;
+  /* Notification charts — series flip in .dark (mint / peach) */
+  --color-chart-series-a: #008d63;
+  --color-chart-series-b: #e06333;
+  --color-chart-other: #c5c7c3;
   /* Filter bar — Figma Login-logout report Filter / Temp #75:1065 */
   --color-home-filter-bar: #f5f8f5;
   --color-home-filter-search: #f5f3ec;
@@ -244,6 +250,10 @@
   --color-home-card: #0f1511;
   --color-home-search-fill: #171d19;
   --color-home-search-category: #1b211d;
+  --color-home-stat-card: #062c22;
+  --color-chart-series-a: #a9f2cd;
+  --color-chart-series-b: #ffb59b;
+  --color-chart-other: #404943;
   --color-home-filter-bar: #1b211d;
   --color-home-filter-search: #171d19;
   --color-home-filter-border: #404943;
@@ -446,6 +456,10 @@
 
   .bg-home-search-category {
     background-color: var(--color-home-search-category);
+  }
+
+  .bg-home-stat-card {
+    background-color: var(--color-home-stat-card);
   }
 
   .bg-home-filter-bar {

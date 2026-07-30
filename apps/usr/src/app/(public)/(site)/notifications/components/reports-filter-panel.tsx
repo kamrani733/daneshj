@@ -5,42 +5,70 @@ import { useTranslations } from 'next-intl';
 import { useEffect, useState, type ReactNode } from 'react';
 
 import {
-  EMPTY_NOTIFICATION_FILTERS,
   FILTER_CATEGORY_TREE,
   type FilterCategoryOption,
-  type NotificationFilterStatus,
-  type NotificationsFilterValues,
 } from '@notifications/data/notifications-filter-data';
+import type {
+  ReportChannel,
+  ReportPriority,
+  ReportReadStatus,
+} from '@notifications/api';
 import { Button } from '@/components/ui/button';
 import { JalaliDatePicker } from '@/components/ui/jalali-date-picker';
 import { cn } from '@/lib/utils';
 
-type NotificationsFilterPanelProps = {
-  filters: NotificationsFilterValues;
-  onApply: (filters: NotificationsFilterValues) => void;
+export type ReportsFilterValues = {
+  sentStart: string;
+  sentEnd: string;
+  priority?: ReportPriority;
+  status?: ReportReadStatus;
+  channel?: ReportChannel;
+  categoryIds: string[];
+};
+
+export const EMPTY_REPORTS_FILTERS: ReportsFilterValues = {
+  sentStart: '',
+  sentEnd: '',
+  categoryIds: [],
+};
+
+type ReportsFilterPanelProps = {
+  filters: ReportsFilterValues;
+  onApply: (filters: ReportsFilterValues) => void;
   onClear: () => void;
 };
 
+const PRIORITIES: ReportPriority[] = ['high', 'medium', 'low'];
+const STATUSES: ReportReadStatus[] = ['read', 'unread'];
+const CHANNELS: ReportChannel[] = [
+  'site',
+  'email',
+  'sms',
+  'telegram',
+  'whatsapp',
+];
+
 /**
- * Figma Notification filter — accordion fields inside toolbar expand.
- * Desktop: 2-col (sent/status/categories | read). Mobile: stacked.
+ * Figma گزارشات — فیلترها (desktop 2-col · mobile stacked accordion).
+ * API: start_date, end_date, priority, status, channel, main/sub_category_id
  */
-export function NotificationsFilterPanel({
+export function ReportsFilterPanel({
   filters,
   onApply,
   onClear,
-}: NotificationsFilterPanelProps) {
-  const t = useTranslations('notifications.filter');
+}: ReportsFilterPanelProps) {
+  const t = useTranslations('notifications.reports');
+  const tFilter = useTranslations('notifications.filter');
   const [draft, setDraft] = useState(filters);
   const [openFields, setOpenFields] = useState<Set<string>>(
-    () => new Set(['sent', 'status'])
+    () => new Set(['sent', 'status', 'priority'])
   );
 
   useEffect(() => {
     setDraft(filters);
   }, [filters]);
 
-  const patchDraft = (patch: Partial<NotificationsFilterValues>) => {
+  const patchDraft = (patch: Partial<ReportsFilterValues>) => {
     setDraft((prev) => ({ ...prev, ...patch }));
   };
 
@@ -50,18 +78,6 @@ export function NotificationsFilterPanel({
       if (next.has(id)) next.delete(id);
       else next.add(id);
       return next;
-    });
-  };
-
-  const toggleStatus = (status: NotificationFilterStatus) => {
-    setDraft((prev) => {
-      const has = prev.statuses.includes(status);
-      return {
-        ...prev,
-        statuses: has
-          ? prev.statuses.filter((s) => s !== status)
-          : [...prev.statuses, status],
-      };
     });
   };
 
@@ -78,20 +94,20 @@ export function NotificationsFilterPanel({
   };
 
   return (
-    <div dir="rtl" className="flex flex-col">
-      <div className="flex w-full flex-col gap-0 lg:flex-row lg:items-start">
+    <div dir="rtl" className="flex flex-col border-t border-border/60">
+      <div className="flex w-full flex-col gap-0 min-[834px]:flex-row min-[834px]:items-start">
         <div className="flex min-w-0 flex-1 flex-col">
           <FilterField
             id="sent"
-            label={t('fields.sentRange')}
+            label={tFilter('fields.sentRange')}
             open={openFields.has('sent')}
             onToggle={() => toggleField('sent')}
           >
             <DateRangeInputs
-              startLabel={t('fields.rangeStart')}
-              endLabel={t('fields.rangeEnd')}
-              placeholder={t('fields.datePlaceholder')}
-              hint={t('fields.dateHint')}
+              startLabel={tFilter('fields.rangeStart')}
+              endLabel={tFilter('fields.rangeEnd')}
+              placeholder={tFilter('fields.datePlaceholder')}
+              hint={tFilter('fields.dateHint')}
               startValue={draft.sentStart}
               endValue={draft.sentEnd}
               onStartChange={(sentStart) => patchDraft({ sentStart })}
@@ -101,27 +117,29 @@ export function NotificationsFilterPanel({
 
           <FilterField
             id="status"
-            label={t('fields.status')}
+            label={t('columns.status')}
             open={openFields.has('status')}
             onToggle={() => toggleField('status')}
           >
             <div className="flex flex-wrap items-center gap-6 px-3 pb-3">
-              <FilterCheckbox
-                checked={draft.statuses.includes('read')}
-                label={t('status.read')}
-                onChange={() => toggleStatus('read')}
-              />
-              <FilterCheckbox
-                checked={draft.statuses.includes('unread')}
-                label={t('status.unread')}
-                onChange={() => toggleStatus('unread')}
-              />
+              {STATUSES.map((status) => (
+                <FilterCheckbox
+                  key={status}
+                  checked={draft.status === status}
+                  label={t(`status.${status}`)}
+                  onChange={() =>
+                    patchDraft({
+                      status: draft.status === status ? undefined : status,
+                    })
+                  }
+                />
+              ))}
             </div>
           </FilterField>
 
           <FilterField
             id="categories"
-            label={t('fields.categories')}
+            label={tFilter('fields.categories')}
             open={openFields.has('categories')}
             onToggle={() => toggleField('categories')}
           >
@@ -135,43 +153,66 @@ export function NotificationsFilterPanel({
 
         <div className="flex min-w-0 flex-1 flex-col">
           <FilterField
-            id="read"
-            label={t('fields.readRange')}
-            open={openFields.has('read')}
-            onToggle={() => toggleField('read')}
+            id="priority"
+            label={t('columns.priority')}
+            open={openFields.has('priority')}
+            onToggle={() => toggleField('priority')}
           >
-            <DateRangeInputs
-              startLabel={t('fields.rangeStart')}
-              endLabel={t('fields.rangeEnd')}
-              placeholder={t('fields.datePlaceholder')}
-              hint={t('fields.dateHint')}
-              startValue={draft.readStart}
-              endValue={draft.readEnd}
-              onStartChange={(readStart) => patchDraft({ readStart })}
-              onEndChange={(readEnd) => patchDraft({ readEnd })}
-            />
+            <div className="flex flex-wrap items-center gap-6 px-3 pb-3">
+              {PRIORITIES.map((priority) => (
+                <FilterCheckbox
+                  key={priority}
+                  checked={draft.priority === priority}
+                  label={t(`priority.${priority}`)}
+                  onChange={() =>
+                    patchDraft({
+                      priority:
+                        draft.priority === priority ? undefined : priority,
+                    })
+                  }
+                />
+              ))}
+            </div>
+          </FilterField>
+
+          <FilterField
+            id="channel"
+            label={t('columns.channel')}
+            open={openFields.has('channel')}
+            onToggle={() => toggleField('channel')}
+          >
+            <div className="flex flex-wrap items-center gap-4 px-3 pb-3">
+              {CHANNELS.map((channel) => (
+                <FilterCheckbox
+                  key={channel}
+                  checked={draft.channel === channel}
+                  label={t(`channel.${channel}`)}
+                  onChange={() =>
+                    patchDraft({
+                      channel: draft.channel === channel ? undefined : channel,
+                    })
+                  }
+                />
+              ))}
+            </div>
           </FilterField>
         </div>
       </div>
 
-      <div dir="ltr" className="flex items-center gap-2 px-4 py-5 pe-6 ps-4">
-        <Button
-          type="button"
-          size="pillSm"
-          onClick={() => onApply(draft)}
-        >
-          {t('apply')}
+      <div dir="ltr" className="flex items-center gap-3 px-4 py-5 pe-6 ps-4">
+        <Button type="button" size="pillSm" onClick={() => onApply(draft)}>
+          {t('applyFilters')}
         </Button>
         <Button
           type="button"
-          variant="soft"
-          size="pillSm"
+          variant="link"
           onClick={() => {
-            setDraft(EMPTY_NOTIFICATION_FILTERS);
+            setDraft(EMPTY_REPORTS_FILTERS);
             onClear();
           }}
+          className="h-auto px-0 text-sm font-medium text-primary"
         >
-          {t('clear')}
+          {t('clearFilters')}
         </Button>
       </div>
     </div>
@@ -199,7 +240,7 @@ function FilterField({
         size="field"
         dir="ltr"
         aria-expanded={open}
-        aria-controls={`notifications-filter-${id}`}
+        aria-controls={`reports-filter-${id}`}
         onClick={onToggle}
         className="justify-between gap-3 text-home-filter-ink hover:bg-black/[0.04] dark:hover:bg-white/5"
       >
@@ -215,7 +256,7 @@ function FilterField({
         </span>
       </Button>
       {open ? (
-        <div id={`notifications-filter-${id}`} className="px-1 pb-2">
+        <div id={`reports-filter-${id}`} className="px-1 pb-2">
           {children}
         </div>
       ) : null}
@@ -317,7 +358,6 @@ function FilterCheckbox({
         className
       )}
     >
-      {/* RTL: checkbox first → sits on the right (start) */}
       <input
         type="checkbox"
         checked={checked}
@@ -369,7 +409,6 @@ function CategoryTree({
               className="flex min-h-11 items-center gap-2"
               style={{ paddingInlineStart: depth * 16 }}
             >
-              {/* RTL: checkbox+label first (right), chevron last (left) */}
               <FilterCheckbox
                 checked={selected.includes(option.id)}
                 label={t(option.labelKey)}

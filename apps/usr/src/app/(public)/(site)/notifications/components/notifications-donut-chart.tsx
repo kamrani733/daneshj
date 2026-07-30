@@ -27,7 +27,7 @@ type NotificationsDonutChartProps = {
 export function NotificationsDonutChart({
   data,
   primaryColor,
-  otherColor = 'var(--color-neutral-300)',
+  otherColor = 'var(--color-chart-other)',
   centerPercent,
   centerLabel,
   centerColor,
@@ -51,7 +51,7 @@ export function NotificationsDonutChart({
     >
       <ul
         dir="rtl"
-        className="flex min-w-[120px] flex-col gap-3 text-xs font-medium text-neutral-600"
+        className="flex min-w-[120px] flex-col gap-3 text-xs font-medium text-neutral-600 dark:text-muted-foreground"
       >
         {legend.map((item) => (
           <li
@@ -98,7 +98,7 @@ export function NotificationsDonutChart({
             {showPlus ? '+ ' : ''}
             {formatFaNumber(centerPercent)}٪
           </span>
-          <span className="text-xs font-medium text-neutral-500">
+          <span className="text-xs font-medium text-neutral-500 dark:text-muted-foreground">
             {centerLabel}
           </span>
         </div>

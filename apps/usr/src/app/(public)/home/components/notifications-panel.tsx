@@ -59,9 +59,12 @@ export function NotificationsPanel({
   const markLast5 = useMarkLast5NotificationsAsReadMutation();
 
   const items = last5Query.data ?? [];
-  const unreadCount =
-    unreadQuery.data?.total ??
-    items.reduce((n, item) => (item.status === 'unread' ? n + 1 : n), 0);
+  const listUnreadCount = items.reduce(
+    (n, item) => (item.status === 'unread' ? n + 1 : n),
+    0
+  );
+  /** Prefer list unread when unread-count API is 0/mismatched (common schema drift). */
+  const unreadCount = Math.max(unreadQuery.data?.total ?? 0, listUnreadCount);
 
   async function handleMarkAllRead() {
     try {
@@ -122,13 +125,13 @@ export function NotificationsPanel({
           </PopoverClose>
         </PopoverHeader>
 
-        {unreadCount > 0 ? (
+        {listUnreadCount > 0 ? (
           <Button
             type="button"
             variant="link"
             loading={markLast5.isPending}
             onClick={handleMarkAllRead}
-            className="h-auto gap-2 self-start px-0 text-sm font-medium leading-5"
+            className="h-auto gap-2 self-end px-0 text-sm font-medium leading-5 text-primary"
           >
             <MailCheck className="size-5 shrink-0" strokeWidth={1.5} aria-hidden />
             {t('markAllRead')}
@@ -195,13 +198,16 @@ function NotificationCard({
       type="button"
       onClick={() => onSelect?.(item)}
       className={cn(
-        'flex w-full items-center gap-3 rounded-xl border border-green-400 bg-white px-4 py-3 text-start',
+        'flex w-full items-center gap-3 rounded-xl border border-[#E0E0E0] bg-white px-3 py-3 text-start',
         'transition-opacity hover:opacity-95 dark:border-border dark:bg-home-search-category'
       )}
     >
-      <span className="flex w-[72px] shrink-0 flex-col items-center justify-center gap-0.5 text-center text-xs font-medium leading-4 text-content">
-        <span>{item.date.trim()}</span>
-        <span>{item.time}</span>
+      <span
+        dir="ltr"
+        className="flex w-[76px] shrink-0 flex-col items-center justify-center gap-0.5 text-center text-xs font-medium leading-4 text-content"
+      >
+        <span className="whitespace-nowrap">{item.date.trim()}</span>
+        <span className="whitespace-nowrap">{item.time}</span>
       </span>
 
       <span className="min-w-0 flex-1">
@@ -221,12 +227,14 @@ function NotificationCard({
         </span>
       </span>
 
-      <NotificationStatusIcon
-        status={item.status}
-        unreadLabel={unreadLabel}
-        readLabel={readLabel}
-        className="shrink-0 text-content"
-      />
+      <span className="inline-flex size-8 shrink-0 items-center justify-center rounded-md border border-[#BDBDBD] text-content dark:border-border">
+        <NotificationStatusIcon
+          status={item.status}
+          unreadLabel={unreadLabel}
+          readLabel={readLabel}
+          className="size-5 text-content [&_svg]:size-5"
+        />
+      </span>
     </button>
   );
 }

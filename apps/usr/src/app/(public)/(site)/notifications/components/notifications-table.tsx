@@ -150,7 +150,7 @@ function NotificationRow({
       className={cn(
         'border-0 text-sm font-medium leading-5 tracking-[0.0071em] text-green-700 hover:bg-transparent dark:text-muted-foreground',
         unread
-          ? 'bg-home-search-fill'
+          ? 'bg-home-search-fill font-bold dark:bg-home-search-fill dark:text-content'
           : 'bg-white dark:bg-home-search-category',
         onSelect && 'cursor-pointer'
       )}

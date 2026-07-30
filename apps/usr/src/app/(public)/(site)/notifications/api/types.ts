@@ -51,11 +51,17 @@ export interface MarkNotificationAsReadData {
 }
 
 /** Best-effort unread-count payload (OpenAPI response schema is incomplete). */
-export interface UnreadCountData {
-  count?: number;
-  manual_count?: number;
-  system_count?: number;
-}
+export type UnreadCountData =
+  | number
+  | {
+      count?: number;
+      total?: number;
+      unread_count?: number;
+      manual_count?: number;
+      system_count?: number;
+      manual?: number;
+      system?: number;
+    };
 
 /** App-facing notification (bell popover + shared UI). */
 export interface NotificationItem {

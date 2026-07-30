@@ -1,6 +1,6 @@
 import axios, { type AxiosInstance, type AxiosError } from 'axios';
 
-import { ApiError } from './errors.js';
+import { ApiError } from './errors';
 
 export type HttpClient = AxiosInstance;
 

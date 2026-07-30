@@ -13,7 +13,7 @@ export function StatIconTile({ icon: Icon, className }: StatIconTileProps) {
     <span
       aria-hidden
       className={cn(
-        'inline-flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary-subtle text-primary-700',
+        'inline-flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary-subtle text-primary-700 dark:bg-primary-800 dark:text-primary-100',
         className
       )}
     >

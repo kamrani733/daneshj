@@ -8,6 +8,13 @@
     "themeLight": "حالت روشن",
     "themeDark": "حالت تاریک"
   },
+  "datePicker": {
+    "confirm": "تایید",
+    "cancel": "انصراف",
+    "placeholder": "روز/ماه/سال",
+    "prev": "قبلی",
+    "next": "بعدی"
+  },
   "home": {
     "title": "دانشجو",
     "subtitle": "به اپلیکیشن دانشجو خوش آمدید",
@@ -540,6 +547,13 @@
         "-main_category": "دسته اصلی (نزولی)",
         "sub_category": "دسته فرعی (صعودی)",
         "-sub_category": "دسته فرعی (نزولی)"
+      },
+      "orderingMenu": {
+        "sentNewest": "زمان ارسال (جدیدترین)",
+        "mainCategory": "نام دسته‌بندی اصلی",
+        "subCategory": "نام دسته‌بندی فرعی",
+        "priorityHighest": "اولویت (بیشترین)",
+        "status": "وضعیت"
       }
     },
     "charts": {

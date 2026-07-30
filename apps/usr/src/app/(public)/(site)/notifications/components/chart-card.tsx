@@ -35,7 +35,7 @@ export function ChartCard({
   return (
     <article
       className={cn(
-        '@container/chart flex h-full flex-col gap-4 rounded-xl bg-white px-4 py-5 shadow-sm ring-1 ring-border/30 dark:bg-white/5 dark:ring-white/10 min-[720px]:gap-5 min-[720px]:px-5 min-[720px]:py-6',
+        '@container/chart flex h-full flex-col gap-4 rounded-xl bg-white px-4 py-5 shadow-sm ring-1 ring-border/30 dark:bg-home-search-category dark:ring-border/50 min-[720px]:gap-5 min-[720px]:px-5 min-[720px]:py-6',
         className
       )}
     >

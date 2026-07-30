@@ -144,13 +144,13 @@ export const FIXED_BAR_CHARTS: FixedBarChartConfig[] = [
   {
     id: 'system',
     titleKey: 'systemReceived',
-    barColor: 'var(--color-warning-400)',
+    barColor: 'var(--color-chart-series-b)',
     getSeries: (period) => SYSTEM_SERIES[period],
   },
   {
     id: 'manual',
     titleKey: 'manualReceived',
-    barColor: 'var(--color-primary)',
+    barColor: 'var(--color-chart-series-a)',
     showValueLabels: true,
     getSeries: (period) => MANUAL_SERIES[period],
   },
@@ -160,19 +160,19 @@ export const FIXED_DONUT_CHARTS: FixedDonutChartConfig[] = [
   {
     id: 'read',
     titleKey: 'readRatio',
-    primaryColor: 'var(--color-warning-400)',
+    primaryColor: 'var(--color-chart-series-b)',
     centerPercent: 18,
     centerLabelKey: 'rejected',
     getSlices: () => donutSlices(18),
     legend: [
       {
         labelKey: 'rejected',
-        color: 'var(--color-warning-400)',
+        color: 'var(--color-chart-series-b)',
         display: { kind: 'percent', value: 18 },
       },
       {
         labelKey: 'other',
-        color: 'var(--color-neutral-300)',
+        color: 'var(--color-chart-other)',
         display: { kind: 'percent', value: 82 },
       },
     ],
@@ -181,19 +181,19 @@ export const FIXED_DONUT_CHARTS: FixedDonutChartConfig[] = [
   {
     id: 'link',
     titleKey: 'linkClickRatio',
-    primaryColor: 'var(--color-primary)',
+    primaryColor: 'var(--color-chart-series-a)',
     centerPercent: 74,
     centerLabelKey: 'confirmed',
     getSlices: () => donutSlices(74),
     legend: [
       {
         labelKey: 'confirmed',
-        color: 'var(--color-primary)',
+        color: 'var(--color-chart-series-a)',
         display: { kind: 'count', value: 743 },
       },
       {
         labelKey: 'other',
-        color: 'var(--color-neutral-300)',
+        color: 'var(--color-chart-other)',
         display: { kind: 'count', value: 262 },
       },
     ],

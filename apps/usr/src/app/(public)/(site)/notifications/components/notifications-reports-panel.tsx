@@ -9,6 +9,7 @@ import {
   type DetailedStatusReportItem,
   type ReportOrdering,
 } from '@notifications/api';
+import { resolveApiCategoryIds } from '@notifications/data/notifications-filter-data';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
 import { cn } from '@/lib/utils';
@@ -17,8 +18,9 @@ import { AccentMark } from './accent-mark';
 import { NotificationsPagination } from './notifications-pagination';
 import { ReportsCardList } from './reports-card-list';
 import {
+  EMPTY_REPORTS_FILTERS,
   ReportsToolbar,
-  type ReportsFilters,
+  type ReportsFilterValues,
 } from './reports-toolbar';
 import { ReportsTable } from './reports-table';
 
@@ -33,12 +35,15 @@ export function NotificationsReportsPanel({
   const [open, setOpen] = useState(true);
   const [query, setQuery] = useState('');
   const [ordering, setOrdering] = useState<ReportOrdering>('-sent_at');
-  const [filters, setFilters] = useState<ReportsFilters>({});
-  const [filterOpen, setFilterOpen] = useState(false);
+  const [filters, setFilters] = useState<ReportsFilterValues>(
+    EMPTY_REPORTS_FILTERS
+  );
   const [page, setPage] = useState(1);
   const [mobilePages, setMobilePages] = useState<
     Record<number, DetailedStatusReportItem[]>
   >({});
+
+  const categoryIds = resolveApiCategoryIds(filters.categoryIds);
 
   const reportQuery = useDetailedStatusReportQuery({
     accessToken,
@@ -48,6 +53,10 @@ export function NotificationsReportsPanel({
     priority: filters.priority,
     status: filters.status,
     channel: filters.channel,
+    startDate: filters.sentStart || undefined,
+    endDate: filters.sentEnd || undefined,
+    mainCategoryId: categoryIds.mainCategoryId,
+    subCategoryId: categoryIds.subCategoryId,
   });
 
   const pageItems = reportQuery.data?.items ?? [];
@@ -68,7 +77,16 @@ export function NotificationsReportsPanel({
   useEffect(() => {
     setPage(1);
     setMobilePages({});
-  }, [query, ordering, filters.priority, filters.status, filters.channel]);
+  }, [
+    query,
+    ordering,
+    filters.priority,
+    filters.status,
+    filters.channel,
+    filters.sentStart,
+    filters.sentEnd,
+    filters.categoryIds,
+  ]);
 
   useEffect(() => {
     if (!reportQuery.data) return;
@@ -116,13 +134,8 @@ export function NotificationsReportsPanel({
               ordering={ordering}
               onOrderingChange={setOrdering}
               filters={filters}
-              onFiltersChange={setFilters}
-              filterOpen={filterOpen}
-              onFilterOpenChange={setFilterOpen}
-            />
-            <div
-              aria-hidden
-              className="mt-4 hidden h-1 rounded-full bg-primary lg:block"
+              onApplyFilters={setFilters}
+              onClearFilters={() => setFilters(EMPTY_REPORTS_FILTERS)}
             />
           </div>
 

@@ -62,7 +62,7 @@ export function ReportsTable({ items }: ReportsTableProps) {
         {items.map((item) => (
           <TableRow
             key={item.id}
-            className="border-0 bg-white shadow-sm hover:bg-white dark:bg-home-search-category dark:hover:bg-home-search-category"
+            className="border-0 bg-white shadow-sm hover:bg-white odd:dark:bg-home-search-fill even:dark:bg-home-search-category dark:hover:bg-inherit"
           >
             {COLUMNS.map((col, index) => (
               <TableCell
