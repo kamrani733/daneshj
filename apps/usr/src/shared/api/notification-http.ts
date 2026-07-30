@@ -13,4 +13,6 @@ const isExternalApi = baseURL.startsWith('http');
 export const notificationHttpClient: HttpClient = createApiClient({
   baseURL,
   withCredentials: !isExternalApi,
+  /** Avoid infinite spinners when Stella is unreachable from local/dev. */
+  timeout: 20_000,
 });

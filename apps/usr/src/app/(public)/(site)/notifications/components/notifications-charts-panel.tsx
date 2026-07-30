@@ -4,7 +4,11 @@ import { useMemo, useState } from 'react';
 import { ChevronDown } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import { useChartsReportQuery } from '@notifications/api';
+import {
+  getNotificationApiErrorMessage,
+  isNotificationApiMocked,
+  useChartsReportQuery,
+} from '@notifications/api';
 import type { ChartPeriod } from '@notifications/data/charts-mock';
 import { chartPeriodToDateRange } from '@notifications/lib/chart-period-range';
 import { formatChartLegendValue } from '@notifications/lib/format-chart-legend';
@@ -31,16 +35,23 @@ export function NotificationsChartsPanel({
   const [period, setPeriod] = useState<ChartPeriod>('week');
 
   const dateRange = useMemo(() => chartPeriodToDateRange(period), [period]);
+  const canQuery = !!accessToken || isNotificationApiMocked();
 
-  const chartsQuery = useChartsReportQuery({
-    accessToken,
-    startDate: dateRange.startDate,
-    endDate: dateRange.endDate,
-  });
+  const chartsQuery = useChartsReportQuery(
+    {
+      accessToken,
+      startDate: dateRange.startDate,
+      endDate: dateRange.endDate,
+    },
+    canQuery
+  );
 
   const data = chartsQuery.data;
-  const isLoading =
-    chartsQuery.isPending || (chartsQuery.isFetching && !chartsQuery.data);
+  /** Disabled queries stay `isPending` in RQ v5 — only treat real fetches as loading. */
+  const isLoading = chartsQuery.isFetching && !data;
+  const errorMessage = chartsQuery.isError
+    ? getNotificationApiErrorMessage(chartsQuery.error, t('loadError'))
+    : null;
 
   const totalLabel = t('totalRequests', {
     count: formatFaNumber(data?.receivedByCategory.totalCount ?? 0),
@@ -77,9 +88,25 @@ export function NotificationsChartsPanel({
 
       {open ? (
         <div className="flex flex-col gap-4 px-3 pb-4 min-[720px]:gap-5 min-[720px]:px-5 min-[720px]:pb-5">
-          {isLoading ? (
+          {!canQuery ? (
+            <div className="flex min-h-[160px] items-center justify-center rounded-xl bg-white px-4 text-center text-sm text-home-filter-muted dark:bg-white/5">
+              {t('authRequired')}
+            </div>
+          ) : isLoading ? (
             <div className="flex min-h-[220px] items-center justify-center rounded-xl bg-white dark:bg-white/5">
               <Spinner className="size-8 text-primary" />
+            </div>
+          ) : errorMessage ? (
+            <div className="flex min-h-[160px] flex-col items-center justify-center gap-3 rounded-xl bg-white px-4 text-center dark:bg-white/5">
+              <p className="text-sm text-home-filter-muted">{errorMessage}</p>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => void chartsQuery.refetch()}
+              >
+                {t('retry')}
+              </Button>
             </div>
           ) : (
             <>

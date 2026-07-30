@@ -1,6 +1,6 @@
 import axios, { type AxiosInstance, type AxiosError } from 'axios';
 
-import { ApiError } from './errors';
+import { ApiError } from './errors.js';
 
 export type HttpClient = AxiosInstance;
 
@@ -8,6 +8,8 @@ export interface CreateApiClientOptions {
   baseURL?: string;
   withCredentials?: boolean;
   getAccessToken?: () => string | null | undefined;
+  /** Axios request timeout in ms. */
+  timeout?: number;
 }
 
 type ErrorBody = {
@@ -19,6 +21,7 @@ export function createApiClient(options: CreateApiClientOptions): HttpClient {
   const client = axios.create({
     baseURL: options.baseURL,
     withCredentials: options.withCredentials ?? true,
+    timeout: options.timeout,
     headers: { 'Content-Type': 'application/json' },
   });
 
