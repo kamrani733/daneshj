@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { MailCheck, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { useState, type ReactNode } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 
 import {
   getNotificationApiErrorMessage,
@@ -16,17 +16,23 @@ import {
 import { NotificationStatusIcon } from '@notifications/components/notification-status-icon';
 import { Button } from '@/components/ui/button';
 import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import {
   Popover,
-  PopoverClose,
   PopoverContent,
-  PopoverHeader,
-  PopoverTitle,
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { Spinner } from '@/components/ui/spinner';
 import { cn } from '@/lib/utils';
 
 import { NOTIFICATIONS_PATH } from '../data/notifications-mock';
+
+/** Matches site-header: desktop chrome from `lg` (1024px). */
+const DESKTOP_MQ = '(min-width: 1024px)';
 
 export type NotificationsPanelProps = {
   triggerLabel: string;
@@ -38,8 +44,23 @@ export type NotificationsPanelProps = {
   }) => ReactNode;
 };
 
+function useIsDesktop() {
+  const [isDesktop, setIsDesktop] = useState(false);
+
+  useEffect(() => {
+    const mq = window.matchMedia(DESKTOP_MQ);
+    const update = () => setIsDesktop(mq.matches);
+    update();
+    mq.addEventListener('change', update);
+    return () => mq.removeEventListener('change', update);
+  }, []);
+
+  return isDesktop;
+}
+
 /**
- * Figma bell modal #2411:1097 — recent notifications popover.
+ * Figma bell modal #2411:1097 —
+ * desktop: popover · mobile: bottom sheet.
  * APIs: last5 · read · read-last-5 · unread-count
  */
 export function NotificationsPanel({
@@ -52,6 +73,7 @@ export function NotificationsPanel({
   const tPage = useTranslations('notifications');
   const tErrors = useTranslations('notifications.apiErrors');
   const [open, setOpen] = useState(false);
+  const isDesktop = useIsDesktop();
 
   const last5Query = useLast5NotificationsQuery(accessToken, open);
   const unreadQuery = useUnreadCountQuery(accessToken);
@@ -96,85 +118,189 @@ export function NotificationsPanel({
     }
   }
 
+  const panelBody = (
+    <NotificationsPanelBody
+      title={t('title')}
+      closeLabel={t('close')}
+      markAllLabel={t('markAllRead')}
+      viewAllLabel={t('viewAll')}
+      emptyLabel={t('empty')}
+      unreadLabel={t('statusUnread')}
+      readLabel={t('statusRead')}
+      fallbackSubject={tPage('fallbackSubject')}
+      items={items}
+      listUnreadCount={listUnreadCount}
+      isLoading={last5Query.isLoading}
+      showAuthHint={last5Query.data === undefined && !accessToken}
+      markAllPending={markLast5.isPending}
+      onMarkAllRead={handleMarkAllRead}
+      onSelect={handleSelect}
+      onClose={() => setOpen(false)}
+    />
+  );
+
+  if (isDesktop) {
+    return (
+      <Popover open={open} onOpenChange={setOpen}>
+        <PopoverTrigger asChild>
+          {trigger({ open, unreadCount })}
+        </PopoverTrigger>
+        <PopoverContent
+          align="start"
+          sideOffset={8}
+          aria-label={triggerLabel}
+          className={cn(
+            'w-[min(420px,calc(100vw-16px))] gap-4 rounded-3xl border-0',
+            'bg-home-header p-5 text-content shadow-home-elevation-2 ring-0'
+          )}
+        >
+          {panelBody}
+        </PopoverContent>
+      </Popover>
+    );
+  }
+
   return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>{trigger({ open, unreadCount })}</PopoverTrigger>
-      <PopoverContent
-        align="start"
-        sideOffset={8}
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>{trigger({ open, unreadCount })}</DialogTrigger>
+      <DialogContent
+        showCloseButton={false}
         aria-label={triggerLabel}
         className={cn(
-          'w-[min(420px,calc(100vw-16px))] gap-4 rounded-3xl border-0',
-          'bg-home-header p-5 text-content shadow-home-elevation-2 ring-0'
+          'top-auto right-0 bottom-0 left-0 flex w-full max-w-none translate-x-0 translate-y-0 flex-col gap-4',
+          'max-h-[min(85vh,720px)] rounded-t-3xl rounded-b-none border-0 bg-home-header p-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] text-content',
+          'ring-0 shadow-home-elevation-3 sm:max-w-none',
+          'data-open:zoom-in-100 data-closed:zoom-out-100',
+          'data-open:slide-in-from-bottom-4 data-closed:slide-out-to-bottom-4'
         )}
       >
-        <PopoverHeader className="flex flex-row items-center justify-between gap-3 p-0">
-          <PopoverTitle className="text-lg font-bold leading-6 text-content">
-            {t('title')}
-          </PopoverTitle>
-          <PopoverClose asChild>
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              aria-label={t('close')}
-              className="size-8 shrink-0 rounded-full text-content hover:bg-muted"
-            >
-              <X className="size-5" strokeWidth={1.75} />
-            </Button>
-          </PopoverClose>
-        </PopoverHeader>
-
-        {listUnreadCount > 0 ? (
-          <Button
-            type="button"
-            variant="link"
-            loading={markLast5.isPending}
-            onClick={handleMarkAllRead}
-            className="h-auto gap-2 self-end px-0 text-sm font-medium leading-5 text-primary"
-          >
-            <MailCheck className="size-5 shrink-0" strokeWidth={1.5} aria-hidden />
-            {t('markAllRead')}
-          </Button>
-        ) : null}
-
-        <ul className="flex max-h-[min(60vh,420px)] flex-col gap-2.5 overflow-auto overscroll-contain">
-          {last5Query.isLoading ? (
-            <li className="flex justify-center py-6">
-              <Spinner className="size-6 text-primary" aria-label={t('title')} />
-            </li>
-          ) : items.length === 0 ? (
-            <li className="py-6 text-center text-sm text-neutral-600">
-              {last5Query.data === undefined && !accessToken
-                ? t('title')
-                : t('empty')}
-            </li>
-          ) : (
-            items.map((item) => (
-              <li key={item.id}>
-                <NotificationCard
-                  item={item}
-                  unreadLabel={t('statusUnread')}
-                  readLabel={t('statusRead')}
-                  fallbackSubject={tPage('fallbackSubject')}
-                  onSelect={handleSelect}
-                />
-              </li>
-            ))
-          )}
-        </ul>
-
-        <div className="flex justify-end">
-          <Link
-            href={NOTIFICATIONS_PATH}
-            onClick={() => setOpen(false)}
-            className="text-sm font-medium leading-5 text-primary transition-opacity hover:opacity-80"
-          >
-            {t('viewAll')}
-          </Link>
+        <div className="flex flex-col items-center">
+          <span
+            aria-hidden
+            className="mb-1 h-1 w-10 rounded-full bg-neutral-300 dark:bg-neutral-600"
+          />
+          <DialogTitle className="sr-only">{t('title')}</DialogTitle>
         </div>
-      </PopoverContent>
-    </Popover>
+        {panelBody}
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function CloseButton({
+  label,
+  onClick,
+}: {
+  label: string;
+  onClick: () => void;
+}) {
+  return (
+    <Button
+      type="button"
+      variant="ghost"
+      size="icon"
+      aria-label={label}
+      onClick={(event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        onClick();
+      }}
+      className="relative z-10 size-8 shrink-0 rounded-full text-content hover:bg-muted"
+    >
+      <X className="size-5" strokeWidth={1.75} />
+    </Button>
+  );
+}
+
+function NotificationsPanelBody({
+  title,
+  closeLabel,
+  markAllLabel,
+  viewAllLabel,
+  emptyLabel,
+  unreadLabel,
+  readLabel,
+  fallbackSubject,
+  items,
+  listUnreadCount,
+  isLoading,
+  showAuthHint,
+  markAllPending,
+  onMarkAllRead,
+  onSelect,
+  onClose,
+}: {
+  title: string;
+  closeLabel: string;
+  markAllLabel: string;
+  viewAllLabel: string;
+  emptyLabel: string;
+  unreadLabel: string;
+  readLabel: string;
+  fallbackSubject: string;
+  items: NotificationItem[];
+  listUnreadCount: number;
+  isLoading: boolean;
+  showAuthHint: boolean;
+  markAllPending: boolean;
+  onMarkAllRead: () => void;
+  onSelect: (item: NotificationItem) => void;
+  onClose: () => void;
+}) {
+  return (
+    <>
+      <div className="flex flex-row items-center justify-between gap-3">
+        <h2 className="text-lg font-bold leading-6 text-content">{title}</h2>
+        <CloseButton label={closeLabel} onClick={onClose} />
+      </div>
+
+      {listUnreadCount > 0 ? (
+        <Button
+          type="button"
+          variant="link"
+          loading={markAllPending}
+          onClick={onMarkAllRead}
+          className="h-auto gap-2 self-end px-0 text-sm font-medium leading-5 text-primary"
+        >
+          <MailCheck className="size-5 shrink-0" strokeWidth={1.5} aria-hidden />
+          {markAllLabel}
+        </Button>
+      ) : null}
+
+      <ul className="flex max-h-[min(55vh,420px)] flex-col gap-2.5 overflow-auto overscroll-contain">
+        {isLoading ? (
+          <li className="flex justify-center py-6">
+            <Spinner className="size-6 text-primary" aria-label={title} />
+          </li>
+        ) : items.length === 0 ? (
+          <li className="py-6 text-center text-sm text-neutral-600 dark:text-muted-foreground">
+            {showAuthHint ? title : emptyLabel}
+          </li>
+        ) : (
+          items.map((item) => (
+            <li key={item.id}>
+              <NotificationCard
+                item={item}
+                unreadLabel={unreadLabel}
+                readLabel={readLabel}
+                fallbackSubject={fallbackSubject}
+                onSelect={onSelect}
+              />
+            </li>
+          ))
+        )}
+      </ul>
+
+      <div className="flex justify-end">
+        <Link
+          href={NOTIFICATIONS_PATH}
+          onClick={onClose}
+          className="text-sm font-medium leading-5 text-primary transition-opacity hover:opacity-80"
+        >
+          {viewAllLabel}
+        </Link>
+      </div>
+    </>
   );
 }
 
@@ -222,7 +348,7 @@ function NotificationCard({
             {item.subject || fallbackSubject}
           </span>
         </span>
-        <span className="mt-1 line-clamp-2 text-xs font-medium leading-4 text-neutral-600">
+        <span className="mt-1 line-clamp-2 text-xs font-medium leading-4 text-neutral-600 dark:text-muted-foreground">
           {item.body}
         </span>
       </span>
