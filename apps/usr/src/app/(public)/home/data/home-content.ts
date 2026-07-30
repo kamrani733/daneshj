@@ -21,14 +21,3 @@ export const BUSINESS_ITEMS: BusinessItem[] = Array.from({ length: 7 }, (_, inde
   id: `business-${index + 1}`,
   imageSrc: '/images/home/discount-card.png',
 }));
-
-export const FOOTER_QUICK_LINKS = ['quickHome', 'quickCooperation', 'quickSupport'] as const;
-
-export const FOOTER_LEGAL_LINKS = [
-  'about',
-  'terms',
-  'privacy',
-  'faq',
-  'guide',
-  'contact',
-] as const;

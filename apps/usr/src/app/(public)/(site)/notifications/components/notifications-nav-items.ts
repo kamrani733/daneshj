@@ -6,7 +6,7 @@ import {
   type LucideIcon,
 } from 'lucide-react';
 
-import { NOTIFICATIONS_PATH } from '@home/data/notifications-mock';
+import { NOTIFICATIONS_PATH } from '@notifications/data/notifications-ui';
 
 export const CHARTS_PATH = `${NOTIFICATIONS_PATH}/charts`;
 export const STATS_PATH = `${NOTIFICATIONS_PATH}/stats`;

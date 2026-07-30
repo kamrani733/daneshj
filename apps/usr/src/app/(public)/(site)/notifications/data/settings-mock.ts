@@ -1,4 +1,4 @@
-import { NOTIFICATIONS_PATH } from '@home/data/notifications-mock';
+import { NOTIFICATIONS_PATH } from '@notifications/data/notifications-ui';
 
 export const SETTINGS_PATH = `${NOTIFICATIONS_PATH}/settings`;
 

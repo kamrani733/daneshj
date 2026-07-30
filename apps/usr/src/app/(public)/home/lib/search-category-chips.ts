@@ -1,4 +1,4 @@
-import { CATEGORY_MENU_ITEMS } from '../data/home-menu-data';
+import { CATEGORY_MENU_ITEMS } from '@/components/site/nav-data';
 
 export type SearchCategoryChip = {
   id: string;

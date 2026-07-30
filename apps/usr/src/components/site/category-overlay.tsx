@@ -6,9 +6,9 @@ import { useEffect } from 'react';
 
 import { cn } from '@/lib/utils';
 
-import { CATEGORY_GRID_ITEMS, CATEGORY_MENU_ITEMS } from '../data/home-menu-data';
-import { HOME_IMAGES } from '../home-assets';
-import { HomeMenuPanel, HomeMenuStackList } from './home-menu-panel';
+import { CATEGORY_GRID_ITEMS, CATEGORY_MENU_ITEMS } from './nav-data';
+import { HomeMenuPanel, HomeMenuStackList } from './menu-panel';
+import { SITE_IMAGES } from './site-assets';
 
 type HomeCategoryOverlayProps = {
   open: boolean;
@@ -64,7 +64,7 @@ export function HomeCategoryOverlay({ open, onClose, onSelect }: HomeCategoryOve
           <div className="flex flex-col items-center gap-2">
             <h2 className="text-2xl font-bold leading-9 text-primary">دسته بندی تخفیف ها </h2>
             <Image
-              src={HOME_IMAGES.sectionTitleAccent}
+              src={SITE_IMAGES.sectionTitleAccent}
               alt=""
               width={140}
               height={4}
@@ -87,7 +87,7 @@ export function HomeCategoryOverlay({ open, onClose, onSelect }: HomeCategoryOve
               >
                 <span className="flex size-[135px] items-center justify-center overflow-hidden rounded-full bg-home-header shadow-home-elevation-1 transition-transform group-hover:scale-[1.02] dark:bg-home-search-fill">
                   <Image
-                    src={HOME_IMAGES.discountCard}
+                    src={SITE_IMAGES.discountCard}
                     alt=""
                     width={90}
                     height={90}

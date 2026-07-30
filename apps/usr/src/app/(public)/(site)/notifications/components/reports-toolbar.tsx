@@ -8,7 +8,7 @@ import {
   CheckIcon,
   FilterAltIcon,
   SortIcon,
-} from '@home/components/material-icons';
+} from '@/components/icons/material-icons';
 import type { ReportOrdering } from '@notifications/api';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';

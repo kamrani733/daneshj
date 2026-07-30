@@ -21,20 +21,20 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 
-import { NAV_MENUS } from '@home/data/home-menu-data';
-import type { HomeMenuItem } from '@home/data/home-menu-data';
-import { HOME_IMAGES } from '@home/home-assets';
+import { NAV_MENUS } from '@/components/site/nav-data';
+import type { HomeMenuItem } from '@/components/site/nav-data';
+import { SITE_IMAGES } from '@/components/site/site-assets';
 import {
   CategoryMenuDropdown,
   CategoryTriggerChevron,
   HomeCategoryOverlay,
-} from '@home/components/home-category-overlay';
+} from '@/components/site/category-overlay';
 import {
   HomeMenuDropdown,
   HomeMenuStackList,
-} from '@home/components/home-menu-panel';
-import { NotificationsPanel } from '@home/components/notifications-panel';
-import { UserProfileMenu } from '@home/components/user-profile-menu';
+} from '@/components/site/menu-panel';
+import { NotificationsPanel } from '@/components/site/notifications-panel';
+import { UserProfileMenu } from '@/components/site/user-profile-menu';
 
 /** Figma menu order (LTR, logo last on the right edge) */
 type NavLink =
@@ -181,7 +181,7 @@ function HeaderLogo({ alt, size, className }: HeaderLogoProps) {
   return (
     <Link href="/" className={cn('inline-flex shrink-0', className)}>
       <Image
-        src={HOME_IMAGES.logo}
+        src={SITE_IMAGES.logo}
         alt={alt}
         width={isDesktop ? 142 : 98}
         height={isDesktop ? 56 : 40}

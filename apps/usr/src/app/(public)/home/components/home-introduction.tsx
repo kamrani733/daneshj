@@ -3,7 +3,7 @@ import { getTranslations } from 'next-intl/server';
 
 import { cn } from '@/lib/utils';
 
-import { HOME_IMAGES } from '../home-assets';
+import { SITE_IMAGES } from '@/components/site/site-assets';
 
 function IntroSidePattern({
   side,
@@ -13,7 +13,7 @@ function IntroSidePattern({
   className?: string;
 }) {
   const src =
-    side === 'left' ? HOME_IMAGES.introPatternLeft : HOME_IMAGES.introPatternRight;
+    side === 'left' ? SITE_IMAGES.introPatternLeft : SITE_IMAGES.introPatternRight;
 
   return (
     <Image
@@ -52,7 +52,7 @@ export async function HomeIntroduction() {
           className="relative z-10 flex w-full max-w-[1078px] flex-col items-center gap-2 px-8 py-10"
         >
           <Image
-            src={HOME_IMAGES.logo}
+            src={SITE_IMAGES.logo}
             alt={t('logoAlt')}
             width={159}
             height={63}

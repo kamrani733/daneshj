@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { ChevronLeft } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import { NOTIFICATIONS_PATH } from '@home/data/notifications-mock';
+import { NOTIFICATIONS_PATH } from '@notifications/data/notifications-ui';
 import {
   useActorSettingsQuery,
   useApplyActorSettingsMutation,

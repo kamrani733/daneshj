@@ -5,7 +5,7 @@ import { Mail, Search, Settings } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
-import { FilterAltIcon } from '@home/components/material-icons';
+import { FilterAltIcon } from '@/components/icons/material-icons';
 import type { NotificationsFilterValues } from '@notifications/data/notifications-filter-data';
 import { SETTINGS_PATH } from '@notifications/data/settings-mock';
 import { Button } from '@/components/ui/button';

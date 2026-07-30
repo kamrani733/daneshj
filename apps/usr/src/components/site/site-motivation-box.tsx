@@ -6,7 +6,7 @@ import { AUTH_ROUTES } from '@auth/lib/auth-routes';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
-import { HOME_IMAGES } from '@home/home-assets';
+import { SITE_IMAGES } from '@/components/site/site-assets';
 
 /** Figma Motivation box #28:1412 — logo, text, orange CTA; 1512×362, padding 48px 576px, gap 24px. */
 export async function SiteMotivationBox() {
@@ -19,7 +19,7 @@ export async function SiteMotivationBox() {
     <section
       className="relative h-[362px] w-full overflow-hidden bg-repeat"
       style={{
-        backgroundImage: `url(${HOME_IMAGES.motivationBg})`,
+        backgroundImage: `url(${SITE_IMAGES.motivationBg})`,
         backgroundSize: '20%',
       }}
     >
@@ -32,7 +32,7 @@ export async function SiteMotivationBox() {
         )}
       >
         <Image
-          src={HOME_IMAGES.logo}
+          src={SITE_IMAGES.logo}
           alt={tIntro('logoAlt')}
           width={167}
           height={66}

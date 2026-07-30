@@ -16,7 +16,7 @@ import {
 } from '../data/search-filter-data';
 import { FilterControlButton } from './filter-control-button';
 import { HomeSearchSortMenu } from './home-search-sort-menu';
-import { FilterAltIcon, SortIcon } from './material-icons';
+import { FilterAltIcon, SortIcon } from '@/components/icons/material-icons';
 
 type HomeSearchFilterBarProps = {
   filters: SearchFilterValues;

@@ -1,16 +1,15 @@
+/** Shared notifications UI types/paths (bell panel + list page). */
+
 export type NotificationStatus = 'unread' | 'read';
 
-export type NotificationItem = {
+/** Full page row — Figma Notifications #100:5489 */
+export type NotificationRecord = {
   id: string;
   subject: string;
   body: string;
   date: string;
   time: string;
   status: NotificationStatus;
-};
-
-/** Full page row — Figma Notifications #100:5489 */
-export type NotificationRecord = NotificationItem & {
   kind: 'manual' | 'system';
   mainCategory: string;
   subCategory: string;
@@ -21,6 +20,11 @@ export type NotificationRecord = NotificationItem & {
 
 export const NOTIFICATIONS_PATH = '/notifications';
 
-export function countUnreadNotifications(items: NotificationItem[]) {
-  return items.reduce((total, item) => (item.status === 'unread' ? total + 1 : total), 0);
+export function countUnreadNotifications(
+  items: Array<{ status: NotificationStatus }>
+) {
+  return items.reduce(
+    (total, item) => (item.status === 'unread' ? total + 1 : total),
+    0
+  );
 }

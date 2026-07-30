@@ -9,7 +9,7 @@ import {
   type NotificationItem,
   type NotificationType,
 } from '@notifications/api';
-import type { NotificationRecord } from '@home/data/notifications-mock';
+import type { NotificationRecord } from '@notifications/data/notifications-ui';
 import {
   EMPTY_NOTIFICATION_FILTERS,
   resolveApiCategoryIds,

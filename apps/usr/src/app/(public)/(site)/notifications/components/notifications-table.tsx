@@ -3,7 +3,7 @@
 import type { ReactNode } from 'react';
 import { useTranslations } from 'next-intl';
 
-import type { NotificationRecord } from '@home/data/notifications-mock';
+import type { NotificationRecord } from '@notifications/data/notifications-ui';
 import {
   Table,
   TableBody,

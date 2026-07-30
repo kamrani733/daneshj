@@ -2,7 +2,7 @@ import Image from 'next/image';
 
 import { cn } from '@/lib/utils';
 
-import { HOME_IMAGES } from '../home-assets';
+import { SITE_IMAGES } from '@/components/site/site-assets';
 
 export type SectionTitleProps = {
   title: string;
@@ -24,7 +24,7 @@ export function SectionTitle({ title, variant = 'wide', className }: SectionTitl
       )}
     >
       <Image
-        src={HOME_IMAGES.sectionTitleAccent}
+        src={SITE_IMAGES.sectionTitleAccent}
         alt=""
         width={isNarrow ? 215 : 336}
         height={63}

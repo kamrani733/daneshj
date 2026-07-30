@@ -17,7 +17,7 @@ import {
   surfaceStyle,
   type PromoSlideConfig,
 } from '../data/promo-banner';
-import { HOME_IMAGES } from '../home-assets';
+import { SITE_IMAGES } from '@/components/site/site-assets';
 import { CarouselDots } from './home-hero-banner';
 import { SectionTitle } from './section-title';
 
@@ -151,7 +151,7 @@ function PromoDesktopSlide({
         style={{ height: `${(PROMO_SURFACE.height / PROMO_FRAME.height) * 100}%` }}
       >
         <Image
-          src={HOME_IMAGES.bgPattern}
+          src={SITE_IMAGES.bgPattern}
           alt=""
           width={516}
           height={258}

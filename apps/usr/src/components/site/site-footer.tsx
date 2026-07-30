@@ -2,8 +2,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
 
-import { FOOTER_LEGAL_LINKS, FOOTER_QUICK_LINKS } from '@home/data/home-content';
-import { HOME_IMAGES } from '@home/home-assets';
+import { FOOTER_LEGAL_LINKS, FOOTER_QUICK_LINKS } from '@/components/site/footer-data';
+import { SITE_IMAGES } from '@/components/site/site-assets';
 
 /** Figma Footer #5847:169219 — quick access | brand | logo group. */
 export async function SiteFooter() {
@@ -15,7 +15,7 @@ export async function SiteFooter() {
         aria-hidden
         className="home-footer-pattern pointer-events-none absolute inset-0 opacity-30"
         style={{
-          backgroundImage: `url(${HOME_IMAGES.bgPattern})`,
+          backgroundImage: `url(${SITE_IMAGES.bgPattern})`,
           backgroundSize: 'cover',
           backgroundPosition: 'center top',
         }}
@@ -61,16 +61,16 @@ export async function SiteFooter() {
               {t('description')}
             </p>
             <div className="flex items-center gap-[29px] pt-2">
-              <SocialIcon label="X" src={HOME_IMAGES.socialX} />
-              <SocialIcon label="LinkedIn" src={HOME_IMAGES.socialLinkedIn} />
-              <SocialIcon label="Instagram" src={HOME_IMAGES.socialInstagram} />
+              <SocialIcon label="X" src={SITE_IMAGES.socialX} />
+              <SocialIcon label="LinkedIn" src={SITE_IMAGES.socialLinkedIn} />
+              <SocialIcon label="Instagram" src={SITE_IMAGES.socialInstagram} />
             </div>
           </div>
 
           {/* Logo group — physical right */}
           <div className="flex flex-col items-center gap-8 py-8 text-center min-[834px]:w-[330px]">
             <Image
-              src={HOME_IMAGES.logo}
+              src={SITE_IMAGES.logo}
               alt={t('logoAlt')}
               width={285}
               height={113}
@@ -78,7 +78,7 @@ export async function SiteFooter() {
             />
             <div className="flex items-end gap-4">
               <Image
-                src={HOME_IMAGES.footerDeco1}
+                src={SITE_IMAGES.footerDeco1}
                 alt=""
                 width={150}
                 height={150}
@@ -86,7 +86,7 @@ export async function SiteFooter() {
                 className="size-[150px] rounded-full object-cover"
               />
               <Image
-                src={HOME_IMAGES.footerDeco2}
+                src={SITE_IMAGES.footerDeco2}
                 alt=""
                 width={125}
                 height={136}

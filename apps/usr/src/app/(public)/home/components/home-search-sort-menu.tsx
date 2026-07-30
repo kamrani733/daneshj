@@ -11,7 +11,7 @@ import {
   SEARCH_SORT_OPTIONS,
   type SearchSortId,
 } from '../data/search-filter-data';
-import { CheckIcon } from './material-icons';
+import { CheckIcon } from '@/components/icons/material-icons';
 
 type HomeSearchSortMenuProps = {
   open: boolean;

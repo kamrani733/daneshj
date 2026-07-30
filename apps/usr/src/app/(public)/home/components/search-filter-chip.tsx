@@ -2,7 +2,7 @@
 
 import { cn } from '@/lib/utils';
 
-import { ChipCheckIcon } from './material-icons';
+import { ChipCheckIcon } from '@/components/icons/material-icons';
 
 type SearchFilterChipProps = {
   label: string;

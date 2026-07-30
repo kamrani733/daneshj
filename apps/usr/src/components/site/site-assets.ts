@@ -1,4 +1,6 @@
-export const HOME_IMAGES = {
+/** Brand / chrome image paths shared across site shell, home, and panels. */
+
+export const SITE_IMAGES = {
   heroBg: '/images/home/hero-bg.png',
   heroBg1: '/images/home/hero-bg-1.png',
   heroBg2: '/images/home/hero-bg-2.png',
@@ -22,3 +24,6 @@ export const HOME_IMAGES = {
   socialLinkedIn: '/images/home/akar-icons_linkedin-fill.png',
   socialInstagram: '/images/home/mdi_instagram.png',
 } as const;
+
+/** @deprecated Prefer `SITE_IMAGES` — kept for gradual migration. */
+export const HOME_IMAGES = SITE_IMAGES;

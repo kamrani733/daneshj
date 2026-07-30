@@ -29,7 +29,7 @@ import {
 import { Spinner } from '@/components/ui/spinner';
 import { cn } from '@/lib/utils';
 
-import { NOTIFICATIONS_PATH } from '../data/notifications-mock';
+import { NOTIFICATIONS_PATH } from '@notifications/data/notifications-ui';
 
 /** Matches site-header: desktop chrome from `lg` (1024px). */
 const DESKTOP_MQ = '(min-width: 1024px)';
@@ -365,4 +365,3 @@ function NotificationCard({
   );
 }
 
-export { countUnreadNotifications } from '../data/notifications-mock';

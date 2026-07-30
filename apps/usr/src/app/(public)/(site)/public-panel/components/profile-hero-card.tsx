@@ -6,7 +6,7 @@ import { MapPin } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
-import { HOME_IMAGES } from '@home/home-assets';
+import { SITE_IMAGES } from '@/components/site/site-assets';
 import type { PublicPanelProfile } from '@public-panel/data/public-panel-mock';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -45,7 +45,7 @@ export function ProfileHeroCard({ profile }: ProfileHeroCardProps) {
         className="pointer-events-none absolute inset-0 opacity-[0.22] dark:opacity-15"
       >
         <Image
-          src={HOME_IMAGES.bgPattern}
+          src={SITE_IMAGES.bgPattern}
           alt=""
           fill
           sizes="1152px"
