@@ -2,7 +2,7 @@
 
 import type { ReactNode } from 'react';
 
-import type { ChartPeriod } from '@notifications/data/charts-mock';
+import type { ChartPeriod } from '@notifications/data/charts';
 import { cn } from '@/lib/utils';
 
 import { ChartPeriodToggle } from './period-toggle';

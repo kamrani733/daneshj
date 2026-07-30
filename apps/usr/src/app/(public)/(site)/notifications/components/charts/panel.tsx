@@ -6,10 +6,9 @@ import { useTranslations } from 'next-intl';
 
 import {
   getNotificationApiErrorMessage,
-  isNotificationApiMocked,
   useChartsReportQuery,
 } from '@notifications/api';
-import type { ChartPeriod } from '@notifications/data/charts-mock';
+import type { ChartPeriod } from '@notifications/data/charts';
 import { chartPeriodToDateRange } from '@notifications/lib/chart-period-range';
 import { formatChartLegendValue } from '@notifications/lib/format-chart-legend';
 import { Button } from '@/components/ui/button';
@@ -35,7 +34,7 @@ export function NotificationsChartsPanel({
   const [period, setPeriod] = useState<ChartPeriod>('week');
 
   const dateRange = useMemo(() => chartPeriodToDateRange(period), [period]);
-  const canQuery = !!accessToken || isNotificationApiMocked();
+  const canQuery = !!accessToken;
 
   const chartsQuery = useChartsReportQuery(
     {

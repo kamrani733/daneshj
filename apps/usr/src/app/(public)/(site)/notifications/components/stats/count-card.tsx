@@ -2,7 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 
-import type { CountStatConfig } from '@notifications/data/stats-mock';
+import type { CountStatConfig } from '@notifications/data/stats';
 import { formatFaNumber } from '@/lib/format-fa';
 import { cn } from '@/lib/utils';
 
@@ -34,7 +34,9 @@ export function StatCountCard({ stat, className }: StatCountCardProps) {
       <p className="text-sm font-medium leading-6 text-content dark:text-primary-100/80">
         {t(stat.titleKey)}
       </p>
-      <StatTrend percent={stat.trendPercent} className="mt-auto" />
+      {stat.trendPercent != null ? (
+        <StatTrend percent={stat.trendPercent} className="mt-auto" />
+      ) : null}
     </article>
   );
 }

@@ -5,6 +5,7 @@ export {
   getChartsReport,
   getDetailedStatusReport,
   getLast5Notifications,
+  getStatisticsReport,
   getUnreadCount,
   listNotifications,
   markAllNotificationsAsRead,
@@ -16,7 +17,6 @@ export {
   getNotificationApiErrorMessage,
 } from './errors';
 export type { NotificationKnownErrorKey } from './errors';
-export { isNotificationApiMocked } from './mock';
 export { notificationQueryKeys } from './query-keys';
 export {
   mergeActorSettingsIntoEventStates,
@@ -33,6 +33,7 @@ export {
   useMarkNotificationAsReadMutation,
   useNotificationsListInfiniteQuery,
   useNotificationsListQuery,
+  useStatisticsReportQuery,
   useUnreadCountQuery,
 } from './react-query';
 export type {
@@ -49,6 +50,7 @@ export type {
   GetChartsReportPayload,
   GetDetailedStatusReportPayload,
   GetLast5NotificationsPayload,
+  GetStatisticsReportPayload,
   GetUnreadCountPayload,
   ListNotificationsPayload,
   MarkAllNotificationsAsReadPayload,
@@ -63,5 +65,8 @@ export type {
   ReportOrdering,
   ReportPriority,
   ReportReadStatus,
+  StatisticsCountStat,
+  StatisticsRatioStat,
+  StatisticsReportResult,
   UnreadCounts,
 } from './types';

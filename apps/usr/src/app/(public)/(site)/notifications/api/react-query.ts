@@ -7,13 +7,13 @@ import {
   useQueryClient,
 } from '@tanstack/react-query';
 
-import { isNotificationApiMocked } from './mock';
 import {
   applyActorSettings,
   getActorSettings,
   getChartsReport,
   getDetailedStatusReport,
   getLast5Notifications,
+  getStatisticsReport,
   getUnreadCount,
   listNotifications,
   markAllNotificationsAsRead,
@@ -25,11 +25,12 @@ import type {
   ApplyActorSettingsPayload,
   GetChartsReportPayload,
   GetDetailedStatusReportPayload,
+  GetStatisticsReportPayload,
   ListNotificationsPayload,
 } from './types';
 
 function canFetch(accessToken: string | null | undefined) {
-  return !!accessToken || isNotificationApiMocked();
+  return !!accessToken;
 }
 
 export function useLast5NotificationsQuery(
@@ -148,6 +149,21 @@ export function useChartsReportQuery(
     queryKey: notificationQueryKeys.chartsReport(filters),
     queryFn: () =>
       getChartsReport({ ...filters, accessToken: accessToken ?? '' }),
+    enabled: enabled && canFetch(accessToken),
+  });
+}
+
+export function useStatisticsReportQuery(
+  payload: Omit<GetStatisticsReportPayload, 'accessToken'> & {
+    accessToken: string | null | undefined;
+  },
+  enabled = true
+) {
+  const { accessToken, ...filters } = payload;
+  return useQuery({
+    queryKey: notificationQueryKeys.statisticsReport(filters),
+    queryFn: () =>
+      getStatisticsReport({ ...filters, accessToken: accessToken ?? '' }),
     enabled: enabled && canFetch(accessToken),
   });
 }

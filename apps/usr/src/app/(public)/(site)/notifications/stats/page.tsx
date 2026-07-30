@@ -1,10 +1,14 @@
+import { getSession } from '@daneshjoam/auth';
+
 import { NotificationsStatsView } from '../components/stats/view';
 
-/** Notifications stats — Figma سکشن آمار */
-export default function NotificationsStatsPage() {
+/** Notifications stats — Figma سکشن آمار + Adm-Ntf-6N10 */
+export default async function NotificationsStatsPage() {
+  const session = await getSession();
+
   return (
     <main>
-      <NotificationsStatsView />
+      <NotificationsStatsView accessToken={session?.accessToken} />
     </main>
   );
 }

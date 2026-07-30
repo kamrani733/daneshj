@@ -27,13 +27,16 @@ import type {
   DetailedStatusReportResult,
   GetChartsReportPayload,
   GetDetailedStatusReportPayload,
+  GetStatisticsReportPayload,
   ListNotificationsPayload,
   NotificationChartsDataDto,
   NotificationItem,
   NotificationListResult,
+  NotificationStatisticsDto,
   NotificationType,
   ReportChannel,
   ReportPriority,
+  StatisticsReportResult,
   UnreadCountData,
   UnreadCounts,
 } from './types';
@@ -257,6 +260,73 @@ export function toChartsReportQuery(payload: GetChartsReportPayload) {
     start_date: payload.startDate,
     end_date: payload.endDate,
   });
+}
+
+/** YAML query for /notification/report/statistics_report */
+export function toStatisticsReportQuery(payload: GetStatisticsReportPayload) {
+  return toRequestQuery({
+    actor_type: payload.actorType,
+    channel: payload.channel,
+    notification_type: payload.notificationType,
+    start_date: payload.startDate,
+    end_date: payload.endDate,
+  });
+}
+
+/** Normalize API rate that may be 0–1 or 0–100 into a display percent. */
+function toDisplayPercent(value: number): number {
+  if (!Number.isFinite(value)) return 0;
+  const asPercent = value >= 0 && value <= 1 ? value * 100 : value;
+  return Math.round(asPercent * 10) / 10;
+}
+
+/** Map YAML NotificationStatistics → UI KPI models. */
+export function mapStatisticsReport(
+  data: NotificationStatisticsDto | null | undefined,
+  message: string | null = null
+): StatisticsReportResult {
+  const delivery = data?.delivery_stats;
+  const engagement = data?.engagement_stats;
+  const actorStats = engagement?.actor_unread_stats ?? [];
+
+  const unreadTotal = actorStats.reduce(
+    (sum, row) => sum + (row.total_unread ?? 0),
+    0
+  );
+  const sentTotal = actorStats.reduce(
+    (sum, row) => sum + (row.total_sent ?? 0),
+    0
+  );
+
+  return {
+    countStats: [
+      {
+        id: 'manual',
+        titleKey: 'manualReceived',
+        value: delivery?.manual_sent_count ?? 0,
+      },
+      {
+        id: 'system',
+        titleKey: 'systemReceived',
+        value: delivery?.system_sent_count ?? 0,
+      },
+    ],
+    ratioStats: [
+      {
+        id: 'unread',
+        titleKey: 'readRatio',
+        value: unreadTotal,
+        total: sentTotal,
+        percent: toDisplayPercent(engagement?.unread_percentage ?? 0),
+      },
+      {
+        id: 'linkClick',
+        titleKey: 'linkClickRatio',
+        percent: toDisplayPercent(engagement?.link_click_rate ?? 0),
+      },
+    ],
+    message,
+  };
 }
 
 const CHART_PRIMARY = 'var(--color-chart-series-b)';

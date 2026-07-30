@@ -2,28 +2,17 @@ import { notificationHttpClient } from '@/shared/api/notification-http';
 
 import { formatApiResponseError } from './errors';
 import {
-  isNotificationApiMocked,
-  mockApplyActorSetting,
-  mockGetActorSettings,
-  mockGetChartsReport,
-  mockGetDetailedStatusReport,
-  mockGetLast5Notifications,
-  mockGetUnreadCount,
-  mockListNotifications,
-  mockMarkAllNotificationsAsRead,
-  mockMarkLast5NotificationsAsRead,
-  mockMarkNotificationAsRead,
-} from './mock';
-import {
   mapActorNotification,
   mapActorSettingsList,
   mapChartsReport,
   mapDetailedStatusReportList,
   mapNotificationList,
+  mapStatisticsReport,
   mapUnreadCounts,
   toChartsReportQuery,
   toDetailedStatusReportQuery,
   toListNotificationsQuery,
+  toStatisticsReportQuery,
 } from './transformers';
 import type {
   ActorNotificationDto,
@@ -40,6 +29,7 @@ import type {
   GetChartsReportPayload,
   GetDetailedStatusReportPayload,
   GetLast5NotificationsPayload,
+  GetStatisticsReportPayload,
   GetUnreadCountPayload,
   ListNotificationsPayload,
   MarkAllNotificationsAsReadPayload,
@@ -49,6 +39,8 @@ import type {
   NotificationChartsDataDto,
   NotificationItem,
   NotificationListResult,
+  NotificationStatisticsDto,
+  StatisticsReportResult,
   UnreadCountData,
   UnreadCounts,
 } from './types';
@@ -108,10 +100,6 @@ function requireAccessToken(accessToken: string) {
 export async function getLast5Notifications(
   payload: GetLast5NotificationsPayload
 ): Promise<NotificationItem[]> {
-  if (isNotificationApiMocked()) {
-    return mockGetLast5Notifications();
-  }
-
   requireAccessToken(payload.accessToken);
   const { data } = await getNotification<ActorNotificationDto[]>(
     '/notification/actor-notifications/last5',
@@ -124,10 +112,6 @@ export async function getLast5Notifications(
 export async function listNotifications(
   payload: ListNotificationsPayload
 ): Promise<NotificationListResult> {
-  if (isNotificationApiMocked()) {
-    return mockListNotifications(payload);
-  }
-
   requireAccessToken(payload.accessToken);
   const { data, message } = await getNotification<ActorNotificationListData>(
     '/notification/actor-notifications/list',
@@ -141,10 +125,6 @@ export async function listNotifications(
 export async function markNotificationAsRead(
   payload: MarkNotificationAsReadPayload
 ): Promise<MarkNotificationAsReadData> {
-  if (isNotificationApiMocked()) {
-    return mockMarkNotificationAsRead(payload.sentNotificationId);
-  }
-
   requireAccessToken(payload.accessToken);
   const { data } = await postNotification<MarkNotificationAsReadData>(
     `/notification/actor-notifications/${payload.sentNotificationId}/read`,
@@ -157,10 +137,6 @@ export async function markNotificationAsRead(
 export async function markAllNotificationsAsRead(
   payload: MarkAllNotificationsAsReadPayload
 ): Promise<void> {
-  if (isNotificationApiMocked()) {
-    return mockMarkAllNotificationsAsRead();
-  }
-
   requireAccessToken(payload.accessToken);
   await postNotification<Record<string, never>>(
     '/notification/actor-notifications/read-all',
@@ -174,10 +150,6 @@ export async function markAllNotificationsAsRead(
 export async function markLast5NotificationsAsRead(
   payload: MarkLast5NotificationsAsReadPayload
 ): Promise<void> {
-  if (isNotificationApiMocked()) {
-    return mockMarkLast5NotificationsAsRead();
-  }
-
   requireAccessToken(payload.accessToken);
   await postNotification<unknown>(
     '/notification/actor-notifications/read-last-5',
@@ -191,10 +163,6 @@ export async function markLast5NotificationsAsRead(
 export async function getUnreadCount(
   payload: GetUnreadCountPayload
 ): Promise<UnreadCounts> {
-  if (isNotificationApiMocked()) {
-    return mockGetUnreadCount();
-  }
-
   requireAccessToken(payload.accessToken);
   const { data } = await getNotification<UnreadCountData>(
     '/notification/actor-notifications/unread-count',
@@ -207,10 +175,6 @@ export async function getUnreadCount(
 export async function getDetailedStatusReport(
   payload: GetDetailedStatusReportPayload
 ): Promise<DetailedStatusReportResult> {
-  if (isNotificationApiMocked()) {
-    return mockGetDetailedStatusReport(payload);
-  }
-
   requireAccessToken(payload.accessToken);
   const { data, message } = await getNotification<DetailedStatusReportListData>(
     '/notification/report/detailed_status_report',
@@ -224,10 +188,6 @@ export async function getDetailedStatusReport(
 export async function getChartsReport(
   payload: GetChartsReportPayload
 ): Promise<ChartsReportResult> {
-  if (isNotificationApiMocked()) {
-    return mockGetChartsReport(payload);
-  }
-
   requireAccessToken(payload.accessToken);
   const { data, message } = await getNotification<NotificationChartsDataDto>(
     '/notification/report/charts_report',
@@ -237,6 +197,19 @@ export async function getChartsReport(
   return mapChartsReport(data, message);
 }
 
+/** GET /notification/report/statistics_report — Adm-Ntf-6N10 */
+export async function getStatisticsReport(
+  payload: GetStatisticsReportPayload
+): Promise<StatisticsReportResult> {
+  requireAccessToken(payload.accessToken);
+  const { data, message } = await getNotification<NotificationStatisticsDto>(
+    '/notification/report/statistics_report',
+    payload.accessToken,
+    toStatisticsReportQuery(payload)
+  );
+  return mapStatisticsReport(data, message);
+}
+
 /**
  * GET /notification/actor-settings/list
  * OpenAPI tags Admin; used to hydrate actor channel prefs when available.
@@ -244,10 +217,6 @@ export async function getChartsReport(
 export async function getActorSettings(
   payload: GetActorSettingsPayload
 ): Promise<ActorSettingItem[]> {
-  if (isNotificationApiMocked()) {
-    return mockGetActorSettings();
-  }
-
   requireAccessToken(payload.accessToken);
   const { data: response } = await notificationHttpClient.get<
     ApiResponse<ActorSettingsDto[]> | ActorSettingsDto[]
@@ -266,10 +235,6 @@ export async function getActorSettings(
 export async function applyActorSetting(
   payload: ApplyActorSettingPayload
 ): Promise<ActorSettingItem | null> {
-  if (isNotificationApiMocked()) {
-    return mockApplyActorSetting(payload);
-  }
-
   requireAccessToken(payload.accessToken);
   const { data } = await postNotification<ActorSettingsDto[] | ActorSettingsDto>(
     '/notification/actor-settings/create',

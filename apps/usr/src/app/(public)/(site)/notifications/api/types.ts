@@ -409,3 +409,82 @@ export interface ChartsReportResult {
   receivedByCategory: ChartsDonutView;
   message: string | null;
 }
+
+/** YAML: ActorUnreadStat */
+export interface ActorUnreadStatDto {
+  actor_type: string;
+  total_sent: number;
+  total_read: number;
+  total_unread: number;
+  unread_percentage: number;
+}
+
+/** YAML: EngagementStats */
+export interface EngagementStatsDto {
+  view_percentage: number;
+  average_read_time_seconds: number;
+  average_read_time_formatted: string;
+  unread_percentage: number;
+  read_rate: number;
+  link_click_rate: number;
+  actor_unread_stats: ActorUnreadStatDto[];
+}
+
+/** YAML: DeliveryStats */
+export interface DeliveryStatsDto {
+  manual_sent_count: number;
+  system_sent_count: number;
+  delivery_success_rate: number;
+}
+
+/** YAML: SystemNotificationAuditStats */
+export interface SystemNotificationAuditStatsDto {
+  system_notifications_created_count: number;
+  system_notifications_edited_count: number;
+  system_notifications_deleted_count: number;
+}
+
+/** YAML: NotificationStatistics */
+export interface NotificationStatisticsDto {
+  engagement_stats: EngagementStatsDto;
+  delivery_stats: DeliveryStatsDto;
+  system_audit_stats: SystemNotificationAuditStatsDto;
+}
+
+export type StatisticsReportChannel =
+  | 'site'
+  | 'email'
+  | 'sms'
+  | 'telegram'
+  | 'whatsapp';
+
+export interface GetStatisticsReportPayload {
+  accessToken: string;
+  actorType?: string;
+  channel?: StatisticsReportChannel | string;
+  notificationType?: NotificationType;
+  startDate?: string;
+  endDate?: string;
+}
+
+export type StatisticsCountStat = {
+  id: 'system' | 'manual';
+  titleKey: 'systemReceived' | 'manualReceived';
+  value: number;
+};
+
+export type StatisticsRatioStat = {
+  id: 'unread' | 'linkClick';
+  titleKey: 'readRatio' | 'linkClickRatio';
+  /** Numerator for «value of total» (optional when API only returns a rate). */
+  value?: number;
+  total?: number;
+  percent: number;
+};
+
+/** App-facing statistics report for UI — GET statistics_report (Adm-Ntf-6N10). */
+export interface StatisticsReportResult {
+  countStats: StatisticsCountStat[];
+  ratioStats: StatisticsRatioStat[];
+  message: string | null;
+}

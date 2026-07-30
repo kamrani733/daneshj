@@ -11,7 +11,7 @@ import {
   YAxis,
 } from 'recharts';
 
-import type { BarPoint } from '@notifications/data/charts-mock';
+import type { BarPoint } from '@notifications/data/charts';
 import { formatFaNumber } from '@/lib/format-fa';
 import { cn } from '@/lib/utils';
 

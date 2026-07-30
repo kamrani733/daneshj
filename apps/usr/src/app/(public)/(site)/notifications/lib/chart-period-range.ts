@@ -1,4 +1,4 @@
-import type { ChartPeriod } from '@notifications/data/charts-mock';
+import type { ChartPeriod } from '@notifications/data/charts';
 
 /** Map UI chart period to ISO start/end for charts_report query. */
 export function chartPeriodToDateRange(period: ChartPeriod): {

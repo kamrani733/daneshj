@@ -5,7 +5,7 @@ import { useTranslations } from 'next-intl';
 import {
   CHART_PERIODS,
   type ChartPeriod,
-} from '@notifications/data/charts-mock';
+} from '@notifications/data/charts';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { cn } from '@/lib/utils';
 

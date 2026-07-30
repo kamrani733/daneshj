@@ -2,7 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 
-import type { RatioStatConfig } from '@notifications/data/stats-mock';
+import type { RatioStatConfig } from '@notifications/data/stats';
 import { Progress } from '@/components/ui/progress';
 import { formatFaNumber } from '@/lib/format-fa';
 import { cn } from '@/lib/utils';
@@ -37,12 +37,16 @@ export function StatRatioCard({ stat, className }: StatRatioCardProps) {
       <div aria-hidden className="h-px w-full bg-border/60" />
 
       <div className="flex items-end justify-between gap-3">
-        <p className="text-xs font-medium leading-5 text-primary dark:text-primary-100">
-          {tStats('ofTotal', {
-            value: formatFaNumber(stat.value),
-            total: formatFaNumber(stat.total),
-          })}
-        </p>
+        {stat.value != null && stat.total != null ? (
+          <p className="text-xs font-medium leading-5 text-primary dark:text-primary-100">
+            {tStats('ofTotal', {
+              value: formatFaNumber(stat.value),
+              total: formatFaNumber(stat.total),
+            })}
+          </p>
+        ) : (
+          <span />
+        )}
         <p className="text-3xl font-bold leading-9 text-primary tabular-nums dark:text-primary-100 min-[720px]:text-4xl min-[720px]:leading-10">
           {formatFaNumber(stat.percent)}٪
         </p>
@@ -54,7 +58,9 @@ export function StatRatioCard({ stat, className }: StatRatioCardProps) {
         className="h-2 bg-neutral-100 dark:bg-primary-800/80 *:data-[slot=progress-indicator]:bg-primary dark:*:data-[slot=progress-indicator]:bg-primary-100"
       />
 
-      <StatTrend percent={stat.trendPercent} className="mt-auto" />
+      {stat.trendPercent != null ? (
+        <StatTrend percent={stat.trendPercent} className="mt-auto" />
+      ) : null}
     </article>
   );
 }

@@ -2,7 +2,7 @@
 
 import { Cell, Pie, PieChart, ResponsiveContainer } from 'recharts';
 
-import type { DonutSlice } from '@notifications/data/charts-mock';
+import type { DonutSlice } from '@notifications/data/charts';
 import { formatFaNumber } from '@/lib/format-fa';
 import { cn } from '@/lib/utils';
 
