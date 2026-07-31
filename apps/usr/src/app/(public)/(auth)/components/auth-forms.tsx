@@ -158,7 +158,7 @@ export function IdentifierForm({
       router.push(authOtpPath(purpose));
     } catch (err) {
       if (err instanceof Error && err.message === 'Already authenticated.') {
-        window.location.assign(AUTH_ROUTES.dashboard);
+        window.location.assign(AUTH_ROUTES.afterLogin);
         return;
       }
       setError(getAuthApiErrorMessage(err, auth('sendOtpFailed')));
@@ -207,7 +207,7 @@ type OtpFormProps = {
 
 export function OtpForm({
   purpose,
-  successPath = AUTH_ROUTES.dashboard,
+  successPath = AUTH_ROUTES.afterLogin,
 }: OtpFormProps) {
   const t = useTranslations('otp');
   const auth = useTranslations('auth');
@@ -316,7 +316,7 @@ export function OtpForm({
       setError(t('verifyFailed'));
     } catch (err) {
       if (err instanceof Error && err.message === 'Already authenticated.') {
-        window.location.assign(AUTH_ROUTES.dashboard);
+        window.location.assign(AUTH_ROUTES.afterLogin);
         return;
       }
       setError(getAuthApiErrorMessage(err, t('verifyFailed')));
@@ -407,7 +407,7 @@ type TotpFormProps = {
   successPath?: string;
 };
 
-export function TotpForm({ successPath = AUTH_ROUTES.dashboard }: TotpFormProps) {
+export function TotpForm({ successPath = AUTH_ROUTES.afterLogin }: TotpFormProps) {
   const t = useTranslations('totp');
   const auth = useTranslations('auth');
   const router = useRouter();
@@ -464,7 +464,7 @@ export function TotpForm({ successPath = AUTH_ROUTES.dashboard }: TotpFormProps)
       await finishAuthAndRedirect(result.session, successPath, clearFlow);
     } catch (err) {
       if (err instanceof Error && err.message === 'Already authenticated.') {
-        window.location.assign(AUTH_ROUTES.dashboard);
+        window.location.assign(AUTH_ROUTES.afterLogin);
         return;
       }
       setError(getAuthApiErrorMessage(err, t('verifyFailed')));
@@ -505,7 +505,7 @@ type PasswordLoginFormProps = {
 
 /** One-step password login + two-step verify_password after OTP (Figma + Aut-1). */
 export function PasswordLoginForm({
-  successPath = AUTH_ROUTES.dashboard,
+  successPath = AUTH_ROUTES.afterLogin,
 }: PasswordLoginFormProps) {
   const t = useTranslations('login');
   const auth = useTranslations('auth');
@@ -586,7 +586,7 @@ export function PasswordLoginForm({
       setError(t('loginFailed'));
     } catch (err) {
       if (err instanceof Error && err.message === 'Already authenticated.') {
-        window.location.assign(AUTH_ROUTES.dashboard);
+        window.location.assign(AUTH_ROUTES.afterLogin);
         return;
       }
       setError(getAuthApiErrorMessage(err, t('loginFailed')));
@@ -724,7 +724,7 @@ export function ResetPasswordForm({
       window.location.assign(successPath);
     } catch (err) {
       if (err instanceof Error && err.message === 'Already authenticated.') {
-        window.location.assign(AUTH_ROUTES.dashboard);
+        window.location.assign(AUTH_ROUTES.afterLogin);
         return;
       }
       setError(getAuthApiErrorMessage(err, t('resetFailed')));
@@ -841,7 +841,7 @@ export function ChangePasswordForm({ accessToken }: ChangePasswordFormProps) {
         confirmNewPassword,
         accessToken,
       });
-      router.push(AUTH_ROUTES.dashboard);
+      router.push(AUTH_ROUTES.afterLogin);
     } catch (err) {
       setError(getAuthApiErrorMessage(err, t('changeFailed')));
     }

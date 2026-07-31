@@ -30,7 +30,7 @@ export default function middleware(request: NextRequest) {
   const authenticated = hasValidSession(request);
 
   if (authenticated && matchesPath(pathname, guestAuthPaths)) {
-    return NextResponse.redirect(new URL('/dashboard', request.url));
+    return NextResponse.redirect(new URL('/public-panel', request.url));
   }
 
   if (matchesPath(pathname, protectedPaths) && !authenticated) {

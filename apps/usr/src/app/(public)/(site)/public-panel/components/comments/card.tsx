@@ -12,6 +12,14 @@ import {
 import { useTranslations } from 'next-intl';
 import { useState, type ReactNode } from 'react';
 
+import {
+  ACTOR_TYPE,
+  LIKE_STATUS,
+  SHARE_PLATFORM,
+  TARGET_TYPE,
+  useLikeMutation,
+  useShareMutation,
+} from '@public-panel/api';
 import type { PanelComment } from '@public-panel/data/public-panel-ui';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -22,6 +30,8 @@ type CommentCardProps = {
   comment: PanelComment;
   className?: string;
   nested?: boolean;
+  accessToken?: string | null;
+  viewerActorId?: number | null;
 };
 
 /** Figma comment thread item — avatar, body box, actions, nested replies. */
@@ -29,12 +39,89 @@ export function CommentCard({
   comment,
   className,
   nested = false,
+  accessToken,
+  viewerActorId,
 }: CommentCardProps) {
   const t = useTranslations('publicPanel.comments');
   const replies = comment.replies ?? [];
   const [showReplies, setShowReplies] = useState(replies.length > 0 && !nested);
+  const [likes, setLikes] = useState(comment.likes);
+  const [dislikes, setDislikes] = useState(comment.dislikes);
+  const [shares, setShares] = useState(comment.shares);
+  const [reaction, setReaction] = useState<'like' | 'dislike' | 'none'>('none');
   const isTransferred = comment.kind === 'transferred';
   const featured = Boolean(comment.featured);
+
+  const likeMutation = useLikeMutation();
+  const shareMutation = useShareMutation();
+
+  const targetId = Number.parseInt(comment.id, 10);
+  const canInteract =
+    !!accessToken &&
+    viewerActorId != null &&
+    viewerActorId > 0 &&
+    Number.isFinite(targetId);
+
+  async function handleReaction(next: 'like' | 'dislike') {
+    if (!canInteract || !viewerActorId) return;
+    const previous = reaction;
+    const previousLikes = likes;
+    const previousDislikes = dislikes;
+
+    const likeStatus =
+      reaction === next
+        ? LIKE_STATUS.none
+        : next === 'like'
+          ? LIKE_STATUS.like
+          : LIKE_STATUS.dislike;
+
+    setReaction(
+      likeStatus === LIKE_STATUS.none
+        ? 'none'
+        : likeStatus === LIKE_STATUS.like
+          ? 'like'
+          : 'dislike'
+    );
+
+    if (previous === 'like') setLikes((value) => Math.max(0, value - 1));
+    if (previous === 'dislike') setDislikes((value) => Math.max(0, value - 1));
+    if (likeStatus === LIKE_STATUS.like) setLikes((value) => value + 1);
+    if (likeStatus === LIKE_STATUS.dislike) setDislikes((value) => value + 1);
+
+    try {
+      await likeMutation.mutateAsync({
+        accessToken,
+        actorType: ACTOR_TYPE.user,
+        actorId: viewerActorId,
+        targetType: TARGET_TYPE.comment,
+        targetId,
+        likeStatus,
+      });
+    } catch {
+      setReaction(previous);
+      setLikes(previousLikes);
+      setDislikes(previousDislikes);
+    }
+  }
+
+  async function handleShare() {
+    if (!canInteract || !viewerActorId) return;
+    try {
+      await shareMutation.mutateAsync({
+        accessToken,
+        actorType: ACTOR_TYPE.user,
+        actorId: viewerActorId,
+        targetType: TARGET_TYPE.comment,
+        targetId,
+        platform: SHARE_PLATFORM.inSite,
+        url:
+          typeof window !== 'undefined' ? window.location.href : '/public-panel',
+      });
+      setShares((value) => value + 1);
+    } catch {
+      /* keep prior count */
+    }
+  }
 
   return (
     <article
@@ -104,17 +191,25 @@ export function CommentCard({
       <div className="flex flex-wrap items-center gap-1 text-home-filter-muted">
         <ActionButton
           label={t('like')}
-          count={comment.likes}
+          count={likes}
+          active={reaction === 'like'}
+          disabled={!canInteract || likeMutation.isPending}
+          onClick={() => void handleReaction('like')}
           icon={<Heart className="size-4" strokeWidth={1.5} />}
         />
         <ActionButton
           label={t('dislike')}
-          count={comment.dislikes}
+          count={dislikes}
+          active={reaction === 'dislike'}
+          disabled={!canInteract || likeMutation.isPending}
+          onClick={() => void handleReaction('dislike')}
           icon={<ThumbsDown className="size-4" strokeWidth={1.5} />}
         />
         <ActionButton
           label={t('share')}
-          count={comment.shares}
+          count={shares}
+          disabled={!canInteract || shareMutation.isPending}
+          onClick={() => void handleShare()}
           icon={<Share2 className="size-4" strokeWidth={1.5} />}
         />
         <ActionButton
@@ -154,7 +249,13 @@ export function CommentCard({
           </Button>
           {showReplies
             ? replies.map((reply) => (
-                <CommentCard key={reply.id} comment={reply} nested />
+                <CommentCard
+                  key={reply.id}
+                  comment={reply}
+                  nested
+                  accessToken={accessToken}
+                  viewerActorId={viewerActorId}
+                />
               ))
             : null}
         </div>
@@ -167,16 +268,28 @@ function ActionButton({
   label,
   count,
   icon,
+  active,
+  disabled,
+  onClick,
 }: {
   label: string;
   count?: number;
   icon: ReactNode;
+  active?: boolean;
+  disabled?: boolean;
+  onClick?: () => void;
 }) {
   return (
     <button
       type="button"
       aria-label={label}
-      className="inline-flex h-8 items-center gap-1 rounded-full px-2 text-xs hover:bg-black/5 dark:hover:bg-white/10"
+      aria-pressed={active}
+      disabled={disabled}
+      onClick={onClick}
+      className={cn(
+        'inline-flex h-8 items-center gap-1 rounded-full px-2 text-xs hover:bg-black/5 disabled:opacity-50 dark:hover:bg-white/10',
+        active && 'text-primary'
+      )}
     >
       {icon}
       {count != null && count > 0 ? (

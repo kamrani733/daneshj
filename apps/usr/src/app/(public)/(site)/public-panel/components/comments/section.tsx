@@ -20,13 +20,19 @@ import { EmptyState } from '../shared/empty-state';
 
 type CommentsSectionProps = {
   comments: PanelComment[];
+  accessToken?: string | null;
+  viewerActorId?: number | null;
 };
 
 /**
  * Figma #732:63099 — دیدگاه‌ها
  * Composer + transferred / registered panels with search, sort, threads.
  */
-export function CommentsSection({ comments }: CommentsSectionProps) {
+export function CommentsSection({
+  comments,
+  accessToken,
+  viewerActorId,
+}: CommentsSectionProps) {
   const t = useTranslations('publicPanel.comments');
   const [draft, setDraft] = useState('');
   const remaining = COMMENT_MAX_LENGTH - draft.length;
@@ -94,6 +100,8 @@ export function CommentsSection({ comments }: CommentsSectionProps) {
         searchPlaceholder={t('searchTransferred')}
         emptyMessage={t('emptyTransferred')}
         comments={transferred}
+        accessToken={accessToken}
+        viewerActorId={viewerActorId}
       />
 
       <CommentListPanel
@@ -105,6 +113,8 @@ export function CommentsSection({ comments }: CommentsSectionProps) {
         searchPlaceholder={t('searchRegistered')}
         emptyMessage={t('emptyRegistered')}
         comments={registered}
+        accessToken={accessToken}
+        viewerActorId={viewerActorId}
       />
     </section>
   );
@@ -125,6 +135,8 @@ function CommentListPanel({
   searchPlaceholder,
   emptyMessage,
   comments,
+  accessToken,
+  viewerActorId,
 }: {
   kind: CommentKind;
   title: string;
@@ -132,6 +144,8 @@ function CommentListPanel({
   searchPlaceholder: string;
   emptyMessage: string;
   comments: PanelComment[];
+  accessToken?: string | null;
+  viewerActorId?: number | null;
 }) {
   const t = useTranslations('publicPanel.comments');
   const [query, setQuery] = useState('');
@@ -212,7 +226,11 @@ function CommentListPanel({
         <ul className="flex flex-col gap-3" data-kind={kind}>
           {filtered.map((comment) => (
             <li key={comment.id}>
-              <CommentCard comment={comment} />
+              <CommentCard
+                comment={comment}
+                accessToken={accessToken}
+                viewerActorId={viewerActorId}
+              />
             </li>
           ))}
         </ul>

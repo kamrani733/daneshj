@@ -94,6 +94,10 @@ export type PanelComment = {
 };
 
 export type PublicPanelProfile = {
+  /** Interactive Ops actor/target id for this panel owner. */
+  actorId: number;
+  /** Interactive Ops actor/target type (1 = user). */
+  actorType: 1 | 2 | 3 | 4;
   displayName: string;
   username: string;
   roleLabelKey: 'student';

@@ -48,6 +48,15 @@ const nextConfig = {
       });
     }
 
+    const interactiveOpsBackend = process.env.INTERACTIVE_OPS_API_URL;
+    if (interactiveOpsBackend) {
+      const base = interactiveOpsBackend.replace(/\/$/, '');
+      rules.push({
+        source: '/api/interactive-ops/:path*',
+        destination: `${base}/interactive-ops/:path*`,
+      });
+    }
+
     return rules;
   },
 };

@@ -12,13 +12,19 @@ import { ServiceInfoSection } from './catalog/service-info-section';
 
 type PublicPanelViewProps = {
   profile: PublicPanelProfile;
+  accessToken?: string | null;
+  viewerActorId?: number | null;
 };
 
 /**
  * Public panel composition — Figma content frame (filled mock).
  * SiteShell still renders the footer motivation box separately.
  */
-export function PublicPanelView({ profile }: PublicPanelViewProps) {
+export function PublicPanelView({
+  profile,
+  accessToken,
+  viewerActorId,
+}: PublicPanelViewProps) {
   return (
     <main
       dir="rtl"
@@ -27,8 +33,9 @@ export function PublicPanelView({ profile }: PublicPanelViewProps) {
       <PublicPanelHeading displayName={profile.displayName} />
       <ProfileHeroCard profile={profile} />
       <ProfileStatsBar
-        stats={profile.stats}
-        engagement={profile.engagement}
+        profile={profile}
+        accessToken={accessToken}
+        viewerActorId={viewerActorId}
       />
       <PanelInfoBanner />
       <RecordsAccordion
@@ -40,7 +47,11 @@ export function PublicPanelView({ profile }: PublicPanelViewProps) {
         catalog={profile.serviceCatalog}
         otherInfo={profile.otherInfo}
       />
-      <CommentsSection comments={profile.comments} />
+      <CommentsSection
+        comments={profile.comments}
+        accessToken={accessToken}
+        viewerActorId={viewerActorId}
+      />
     </main>
   );
 }

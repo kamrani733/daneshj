@@ -19,6 +19,8 @@ export type {
 export { COMMENT_MAX_LENGTH, PUBLIC_PANEL_PATH } from './public-panel-ui';
 
 export const MOCK_PUBLIC_PANEL: PublicPanelProfile = {
+  actorId: 46,
+  actorType: 1,
   displayName: 'سعید سعیدی راد',
   username: 'saeedusername',
   roleLabelKey: 'student',

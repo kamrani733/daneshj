@@ -14,7 +14,7 @@ export default async function AuthFlowLayout({
 }) {
   const session = await getSession();
   if (session?.accessToken) {
-    redirect('/dashboard');
+    redirect('/public-panel');
   }
 
   return <AuthFlowClientLayout>{children}</AuthFlowClientLayout>;

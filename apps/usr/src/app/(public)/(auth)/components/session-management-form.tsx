@@ -204,7 +204,7 @@ type SessionManagementFormProps = {
 
 export function SessionManagementForm({
   purpose,
-  successPath = AUTH_ROUTES.dashboard,
+  successPath = AUTH_ROUTES.afterLogin,
 }: SessionManagementFormProps) {
   const t = useTranslations('sessions');
   const clearFlow = useAuthFlowStore((s) => s.clear);

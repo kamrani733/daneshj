@@ -10,6 +10,8 @@ export const AUTH_ROUTES = {
   forgotOtp: '/forgot-password/otp',
   forgotReset: '/forgot-password/reset',
   dashboard: '/dashboard',
+  /** Default landing after successful login / when already authenticated. */
+  afterLogin: '/public-panel',
   home: '/',
 } as const;
 

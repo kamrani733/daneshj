@@ -7,7 +7,7 @@ export default function LoginSessionsPage() {
   return (
     <SessionManagementForm
       purpose="login"
-      successPath={AUTH_ROUTES.dashboard}
+      successPath={AUTH_ROUTES.afterLogin}
     />
   );
 }
