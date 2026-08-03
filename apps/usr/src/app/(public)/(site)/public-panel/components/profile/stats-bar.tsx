@@ -34,16 +34,15 @@ type ProfileStatsBarProps = {
   viewerActorId?: number | null;
 };
 
-/** Heart with check — Figma «پسند شونده». */
 function HeartCheckIcon({ className }: { className?: string }) {
   return (
-    <span className={cn('relative inline-flex size-3.5', className)} aria-hidden>
-      <Heart className="size-3.5" strokeWidth={1.75} />
+    <span className={cn('relative inline-flex size-5', className)} aria-hidden>
+      <Heart className="size-5" strokeWidth={1.75} />
       <svg
         viewBox="0 0 8 8"
         className="absolute -bottom-px -end-px size-2.5"
       >
-        <circle cx="4" cy="4" r="4" fill="#FAFBF6" />
+        <circle cx="4" cy="4" r="4" fill="#FAFAF7" />
         <path
           d="M2.1 4.1 3.3 5.3 5.9 2.6"
           fill="none"
@@ -67,10 +66,7 @@ const STAT_ITEMS: {
   { key: 'liked', Icon: 'heartCheck' },
 ];
 
-/**
- * Figma Interaction box — metrics · reactions · follow CTA.
- * Wired to Interactive Ops MS (follow / like / share + list counts).
- */
+/** Stats, reactions, and follow action row. */
 export function ProfileStatsBar({
   profile,
   accessToken,
@@ -117,9 +113,9 @@ export function ProfileStatsBar({
   };
 
   async function handleFollow() {
-    if (!canInteract || !viewerActorId) return;
     const next = !following;
     setFollowing(next);
+    if (!canInteract || !viewerActorId || !accessToken) return;
     try {
       const result = await followMutation.mutateAsync({
         accessToken,
@@ -136,7 +132,6 @@ export function ProfileStatsBar({
   }
 
   async function handleReaction(next: 'like' | 'dislike') {
-    if (!canInteract || !viewerActorId) return;
     const likeStatus =
       reaction === next
         ? LIKE_STATUS.none
@@ -151,6 +146,7 @@ export function ProfileStatsBar({
           ? 'like'
           : 'dislike'
     );
+    if (!canInteract || !viewerActorId || !accessToken) return;
     try {
       const result = await likeMutation.mutateAsync({
         accessToken,
@@ -173,7 +169,8 @@ export function ProfileStatsBar({
   }
 
   async function handleShare() {
-    if (!canInteract || !viewerActorId) return;
+    setShares((value) => value + 1);
+    if (!canInteract || !viewerActorId || !accessToken) return;
     try {
       await shareMutation.mutateAsync({
         accessToken,
@@ -185,80 +182,100 @@ export function ProfileStatsBar({
         url:
           typeof window !== 'undefined' ? window.location.href : '/public-panel',
       });
-      setShares((value) => value + 1);
     } catch {
-      /* keep prior count */
+      setShares((value) => Math.max(0, value - 1));
     }
   }
 
   return (
     <div
       className={cn(
-        'flex w-full flex-col gap-4 rounded-[20px] border border-[#C6D9CF] bg-[#FAFBF6] px-4 py-3.5',
+        'flex w-full flex-col items-stretch gap-5 rounded-[24px] border-2 border-[#D3F4E1] bg-[#FAFAF7] px-5 py-5',
         'dark:border-border dark:bg-home-search-category',
-        'min-[960px]:h-[72px] min-[960px]:flex-row min-[960px]:items-center min-[960px]:justify-between min-[960px]:gap-4 min-[960px]:px-5 min-[960px]:py-0'
+        'min-[1100px]:h-auto min-[1100px]:flex-row min-[1100px]:items-center min-[1100px]:justify-between min-[1100px]:gap-6 min-[1100px]:px-[38px] min-[1100px]:py-6'
       )}
     >
-      <ul className="flex flex-wrap items-center justify-end gap-1 min-[960px]:gap-0">
-        {STAT_ITEMS.map(({ key, Icon }) => (
-          <li
-            key={key}
-            className="flex w-[88px] flex-col items-center justify-center gap-0.5 px-1 text-center min-[960px]:w-[100px]"
-          >
-            <span className="text-[22px] font-bold leading-7 tracking-[0.0094em] text-[#171D19] dark:text-content">
-              {formatFaNumber(displayStats[key])}
-            </span>
-            <span className="inline-flex items-center gap-1 text-[11px] font-medium leading-4 text-[#171D19] dark:text-content">
-              {Icon === 'heartCheck' ? (
-                <HeartCheckIcon />
-              ) : (
-                <Icon className="size-3.5 shrink-0" strokeWidth={1.75} aria-hidden />
-              )}
-              {t(`stats.${key}`)}
-            </span>
+      <ul className="flex flex-wrap items-center justify-center gap-x-3 gap-y-3 min-[1100px]:flex-nowrap min-[1100px]:gap-x-5">
+        {STAT_ITEMS.map(({ key, Icon }, index) => (
+          <li key={key} className="flex items-center gap-3 min-[1100px]:gap-5">
+            <div className="flex w-[72px] flex-col items-center gap-1 text-center min-[1100px]:w-[88px]">
+              <span className="text-[26px] font-bold leading-9 text-[#171D19] dark:text-content min-[1100px]:text-[34px] min-[1100px]:leading-[49px]">
+                {formatFaNumber(displayStats[key])}
+              </span>
+              <span className="inline-flex items-center gap-1.5 whitespace-nowrap text-xs font-semibold leading-5 text-[#404943] dark:text-content min-[1100px]:gap-2 min-[1100px]:text-[17px] min-[1100px]:leading-6">
+                {Icon === 'heartCheck' ? (
+                  <HeartCheckIcon />
+                ) : (
+                  <Icon
+                    className="size-4 shrink-0 min-[1100px]:size-5"
+                    strokeWidth={1.75}
+                    aria-hidden
+                  />
+                )}
+                {t(`stats.${key}`)}
+              </span>
+            </div>
+            {index < STAT_ITEMS.length - 1 ? (
+              <span
+                aria-hidden
+                className="hidden h-[74px] w-px shrink-0 bg-[#404943]/15 min-[1100px]:block"
+              />
+            ) : null}
           </li>
         ))}
       </ul>
 
-      <div className="flex flex-wrap items-center justify-between gap-4 min-[960px]:justify-start min-[960px]:gap-6">
-        <ul className="flex items-center gap-5 text-[#171D19] dark:text-content">
+      <div className="flex flex-wrap items-center justify-center gap-6 min-[1100px]:flex-nowrap min-[1100px]:gap-12">
+        <ul className="flex items-center gap-6 text-[#404943] dark:text-content min-[1100px]:gap-8">
           <li>
             <button
               type="button"
-              disabled={!canInteract || likeMutation.isPending}
+              disabled={likeMutation.isPending}
               onClick={() => void handleReaction('like')}
               className={cn(
-                'flex items-center gap-1.5 text-sm font-bold leading-5 disabled:opacity-50',
+                'flex h-12 items-center gap-1 px-1 text-base font-bold leading-6 text-[#404943] disabled:opacity-100 min-[1100px]:h-14',
                 reaction === 'like' && 'text-primary'
               )}
               aria-pressed={reaction === 'like'}
             >
-              <ThumbsUp className="size-5 shrink-0" strokeWidth={1.5} aria-hidden />
+              <ThumbsUp
+                className="size-7 shrink-0 min-[1100px]:size-8"
+                strokeWidth={1.5}
+                aria-hidden
+              />
               <span>{formatFaNumber(stats.thumbsUp)}</span>
             </button>
           </li>
           <li>
             <button
               type="button"
-              disabled={!canInteract || likeMutation.isPending}
+              disabled={likeMutation.isPending}
               onClick={() => void handleReaction('dislike')}
               className={cn(
-                'flex items-center gap-1.5 text-sm font-bold leading-5 disabled:opacity-50',
+                'flex h-12 items-center gap-1 px-1 text-base font-bold leading-6 text-[#404943] disabled:opacity-100 min-[1100px]:h-14',
                 reaction === 'dislike' && 'text-warning'
               )}
             >
-              <ThumbsDown className="size-5 shrink-0" strokeWidth={1.5} aria-hidden />
+              <ThumbsDown
+                className="size-7 shrink-0 min-[1100px]:size-8"
+                strokeWidth={1.5}
+                aria-hidden
+              />
               <span>{formatFaNumber(stats.thumbsDown)}</span>
             </button>
           </li>
           <li>
             <button
               type="button"
-              disabled={!canInteract || shareMutation.isPending}
+              disabled={shareMutation.isPending}
               onClick={() => void handleShare()}
-              className="flex items-center gap-1.5 text-sm font-bold leading-5 disabled:opacity-50"
+              className="flex h-12 items-center gap-1 px-1 text-base font-bold leading-6 text-[#404943] disabled:opacity-100 min-[1100px]:h-14"
             >
-              <Share2 className="size-5 shrink-0" strokeWidth={1.5} aria-hidden />
+              <Share2
+                className="size-7 shrink-0 min-[1100px]:size-8"
+                strokeWidth={1.5}
+                aria-hidden
+              />
               <span>{formatFaNumber(shares)}</span>
             </button>
           </li>
@@ -268,11 +285,14 @@ export function ProfileStatsBar({
           type="button"
           size="pillSm"
           variant={following ? 'outline' : 'default'}
-          disabled={!canInteract || followMutation.isPending}
+          disabled={followMutation.isPending}
           onClick={() => void handleFollow()}
           className={cn(
-            'h-10 min-w-[120px] rounded-full px-6 text-sm font-medium',
-            !following && 'bg-primary hover:bg-primary-hover'
+            'h-auto shrink-0 rounded-full px-6 py-4 text-base font-medium leading-6',
+            'min-w-[140px] min-[1100px]:min-w-[153px] disabled:opacity-100',
+            following
+              ? 'border-[#008D63] text-[#008D63]'
+              : 'bg-[#008D63] text-white hover:bg-[#007A56] disabled:bg-[#008D63]'
           )}
         >
           {following ? t('following') : t('follow')}

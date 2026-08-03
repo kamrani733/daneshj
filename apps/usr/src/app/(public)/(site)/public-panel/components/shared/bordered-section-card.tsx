@@ -11,30 +11,28 @@ type BorderedSectionCardProps = {
   titleBg?: string;
 };
 
-/** Figma «درباره من» — floating title on top border. */
+/** Card with floating title on the top border. */
 export function BorderedSectionCard({
   title,
   children,
   footer,
   className,
-  titleBg = '#F9FAF4',
+  titleBg = '#FAFAF7',
 }: BorderedSectionCardProps) {
   return (
     <section
       className={cn(
-        'relative flex w-full flex-col gap-2 rounded-[12px] border px-4 pb-3 pt-5',
+        'relative flex w-full flex-col gap-2 rounded-2xl border px-6 pb-6 pt-6',
         className
       )}
     >
       <h3
-        className="absolute -top-2.5 end-4 px-1.5 text-sm font-medium leading-5 text-primary dark:!bg-home-search-category"
+        className="absolute -top-2.5 start-4 px-1 text-sm font-bold leading-5 tracking-[0.0071em] text-[#008D63] dark:!bg-home-search-category"
         style={{ backgroundColor: titleBg }}
       >
         {title}
       </h3>
-      <div className="min-h-[64px] flex-1 text-start text-sm leading-6 tracking-[0.0071em]">
-        {children}
-      </div>
+      <div className="min-h-[64px] flex-1 text-start">{children}</div>
       {footer ? (
         <div className="flex justify-end pt-0.5">{footer}</div>
       ) : null}

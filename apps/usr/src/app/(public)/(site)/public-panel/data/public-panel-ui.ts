@@ -91,6 +91,14 @@ export type PanelComment = {
   shares: number;
   replyToName?: string;
   replies?: PanelComment[];
+  /** Owner note shown above quoted body (transferred). */
+  quoteNote?: string;
+  /** Original author inside quote box (transferred). */
+  originalAuthorName?: string;
+  originalAuthorHandle?: string;
+  /** Status label e.g. منتقل شد / بررسی شد. */
+  statusLabel?: string;
+  timeLabel?: string;
 };
 
 export type PublicPanelProfile = {

@@ -2,9 +2,10 @@
 
 import {
   ChevronDown,
-  Flag,
   Heart,
   MessageCircle,
+  MoreVertical,
+  Pin,
   Share2,
   Star,
   ThumbsDown,
@@ -22,7 +23,6 @@ import {
 } from '@public-panel/api';
 import type { PanelComment } from '@public-panel/data/public-panel-ui';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Button } from '@/components/ui/button';
 import { formatFaNumber } from '@/lib/format-fa';
 import { cn } from '@/lib/utils';
 
@@ -34,7 +34,7 @@ type CommentCardProps = {
   viewerActorId?: number | null;
 };
 
-/** Figma comment thread item — avatar, body box, actions, nested replies. */
+/** Comment thread item with actions and nested replies. */
 export function CommentCard({
   comment,
   className,
@@ -44,7 +44,7 @@ export function CommentCard({
 }: CommentCardProps) {
   const t = useTranslations('publicPanel.comments');
   const replies = comment.replies ?? [];
-  const [showReplies, setShowReplies] = useState(replies.length > 0 && !nested);
+  const [showReplies, setShowReplies] = useState(false);
   const [likes, setLikes] = useState(comment.likes);
   const [dislikes, setDislikes] = useState(comment.dislikes);
   const [shares, setShares] = useState(comment.shares);
@@ -55,7 +55,7 @@ export function CommentCard({
   const likeMutation = useLikeMutation();
   const shareMutation = useShareMutation();
 
-  const targetId = Number.parseInt(comment.id, 10);
+  const targetId = Number.parseInt(comment.id.replace(/\D/g, ''), 10);
   const canInteract =
     !!accessToken &&
     viewerActorId != null &&
@@ -123,144 +123,271 @@ export function CommentCard({
     }
   }
 
+  const interaction = (
+    <InteractionRow
+      likes={likes}
+      dislikes={dislikes}
+      shares={shares}
+      reaction={reaction}
+      disabled={!canInteract || likeMutation.isPending}
+      shareDisabled={!canInteract || shareMutation.isPending}
+      onLike={() => void handleReaction('like')}
+      onDislike={() => void handleReaction('dislike')}
+      onShare={() => void handleShare()}
+      labels={{
+        pin: t('pin'),
+        reply: t('reply'),
+        share: t('share'),
+        dislike: t('dislike'),
+        like: t('like'),
+        more: t('more'),
+      }}
+    />
+  );
+
+  if (isTransferred && !nested) {
+    return (
+      <article
+        className={cn(
+          'relative flex flex-col items-stretch gap-3 rounded-xl bg-white p-4 shadow-[0_2px_4px_0_rgba(0,0,0,0.05)]',
+          className
+        )}
+      >
+        <button
+          type="button"
+          aria-label={t('more')}
+          className="absolute end-3 top-3 text-[#707973] hover:text-[#171D19]"
+        >
+          <MoreVertical className="size-5" strokeWidth={1.5} />
+        </button>
+
+        <header className="flex items-center gap-3 pe-6">
+          <Avatar className="size-12 shrink-0 ring-2 ring-[#008D63]">
+            {comment.authorAvatar ? (
+              <AvatarImage src={comment.authorAvatar} alt={comment.authorName} />
+            ) : null}
+            <AvatarFallback className="bg-white text-base font-bold text-[#171D19]">
+              {comment.authorName.slice(0, 2)}
+            </AvatarFallback>
+          </Avatar>
+
+          <div className="flex min-w-0 flex-col items-start gap-0.5">
+            <div className="flex flex-wrap items-center gap-2">
+              <h4 className="text-sm font-bold text-[#171D19]">
+                {comment.authorName}
+              </h4>
+              <span className="text-xs text-[#707973]">
+                @{comment.authorHandle}
+              </span>
+            </div>
+            <div className="flex flex-wrap items-center gap-2 text-xs text-[#707973]">
+              {comment.timeLabel ? <span>{comment.timeLabel}</span> : null}
+              <span>{comment.createdAt}</span>
+              <span aria-hidden>•</span>
+              {comment.statusLabel ? <span>{comment.statusLabel}</span> : null}
+            </div>
+          </div>
+        </header>
+
+        {comment.quoteNote ? (
+          <p className="w-full text-start text-sm leading-normal text-[#171D19]">
+            &quot;{comment.quoteNote}&quot;
+          </p>
+        ) : null}
+
+        <div className="w-full rounded-xl border border-[#008D63] bg-[rgba(0,141,99,0.1)] p-4">
+          <div className="flex flex-col items-stretch gap-3">
+            <div className="flex items-center gap-2.5">
+              <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-[#707973] text-[12.8px] font-bold text-white">
+                {(comment.originalAuthorName ?? comment.authorName).slice(0, 2)}
+              </div>
+              <span className="text-sm font-bold text-[#171D19]">
+                {comment.originalAuthorName ?? comment.authorName} @
+                {comment.originalAuthorHandle ?? comment.authorHandle}
+              </span>
+            </div>
+            <p className="w-full text-start text-sm leading-[1.5] text-[#171D19]">
+              {comment.body}
+            </p>
+          </div>
+        </div>
+
+        {interaction}
+      </article>
+    );
+  }
+
   return (
     <article
       className={cn(
-        'relative flex flex-col gap-3 rounded-xl p-4',
+        'relative rounded-xl p-4 shadow-[0_2px_4px_0_rgba(0,0,0,0.05)]',
         featured
-          ? 'bg-warning-10 ring-1 ring-warning/30'
-          : 'bg-white dark:bg-home-search-category',
-        !nested &&
-          (isTransferred
-            ? 'border-s-4 border-s-primary'
-            : featured
-              ? 'border-s-4 border-s-warning'
-              : 'border-s-4 border-s-[#D1D5DB] dark:border-s-border'),
-        nested && 'bg-primary-subtle/60 ring-1 ring-primary/25 dark:bg-primary/10',
+          ? 'border-s-[3px] border-s-[#F59E0B] bg-[#FFF5EB]'
+          : 'bg-white',
+        nested && 'bg-[#F8F8F0]',
         className
       )}
     >
-      <header className="flex items-start gap-3">
-        <Avatar className="size-10 shrink-0 ring-1 ring-[#F3D0C4]">
+      <div className="flex items-start gap-3">
+        <Avatar className="size-12 shrink-0 bg-[#BFC9C1]">
           {comment.authorAvatar ? (
             <AvatarImage src={comment.authorAvatar} alt={comment.authorName} />
           ) : null}
-          <AvatarFallback>{comment.authorName.slice(0, 1)}</AvatarFallback>
+          <AvatarFallback className="bg-[#BFC9C1] text-base font-bold text-white">
+            {comment.authorName.slice(0, 2)}
+          </AvatarFallback>
         </Avatar>
 
-        <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-          <div className="flex flex-wrap items-center gap-2">
-            <h4 className="text-sm font-bold text-content">{comment.authorName}</h4>
-            <span className="text-xs text-home-filter-muted">
-              @{comment.authorHandle}
-            </span>
-            <span className="text-xs text-home-filter-muted">
-              · {comment.createdAt}
-            </span>
-            {isTransferred && !nested ? (
-              <span className="rounded-full bg-primary-subtle px-2 py-0.5 text-[11px] font-medium text-primary">
-                {t('badgeTransferred')}
+        <div className="flex min-w-0 flex-1 flex-col gap-3">
+          <header className="flex w-full items-center justify-between gap-2">
+            <div className="flex flex-wrap items-center gap-2">
+              <h4 className="text-sm font-bold text-[#171D19]">
+                {comment.authorName}
+              </h4>
+              <span className="text-xs font-medium text-[#707973]">
+                @{comment.authorHandle}
               </span>
-            ) : null}
-            {featured ? (
-              <span className="inline-flex items-center gap-1 rounded-full bg-warning-50 px-2 py-0.5 text-[11px] font-medium text-warning">
-                <Star className="size-3 fill-warning text-warning" />
-                {t('badgeFeatured')}
+              <span className="text-xs font-medium text-[#707973]">
+                {comment.createdAt}
               </span>
-            ) : null}
-          </div>
-          {comment.replyToName ? (
-            <p className="text-xs text-home-filter-muted">
-              {t('inReplyTo', { name: comment.replyToName })}
-            </p>
+              <span className="text-[#707973]" aria-hidden>
+                •
+              </span>
+              {comment.timeLabel ? (
+                <span className="text-xs font-medium text-[#707973]">
+                  {comment.timeLabel}
+                </span>
+              ) : null}
+              {featured ? (
+                <span className="inline-flex items-center gap-1 text-xs font-bold text-[#F59E0B]">
+                  <Star className="size-3.5 fill-[#F59E0B] text-[#F59E0B]" />
+                  {t('badgeFeatured')}
+                </span>
+              ) : null}
+            </div>
+            <button
+              type="button"
+              aria-label={t('more')}
+              className="shrink-0 text-[#707973] hover:text-[#171D19]"
+            >
+              <MoreVertical className="size-5" strokeWidth={1.5} />
+            </button>
+          </header>
+
+          <p className="w-full text-start text-sm font-medium leading-5 text-[#171D19]">
+            {comment.body}
+          </p>
+
+          <div className="h-px w-full bg-[#F1EFE9]" aria-hidden />
+
+          {interaction}
+
+          {!nested && replies.length > 0 ? (
+            <div className="flex flex-col items-start gap-3">
+              <button
+                type="button"
+                onClick={() => setShowReplies((v) => !v)}
+                className="inline-flex h-9 w-fit items-center gap-1 rounded-full border border-[#BFC9C1] px-3 text-sm font-medium text-[#404943]"
+              >
+                <ChevronDown
+                  className={cn(
+                    'size-4 transition-transform',
+                    showReplies && 'rotate-180'
+                  )}
+                  aria-hidden
+                />
+                {showReplies
+                  ? t('hideReplies', { count: formatFaNumber(replies.length) })
+                  : t('showReplies', { count: formatFaNumber(replies.length) })}
+              </button>
+              {showReplies
+                ? replies.map((reply) => (
+                    <CommentCard
+                      key={reply.id}
+                      comment={reply}
+                      nested
+                      accessToken={accessToken}
+                      viewerActorId={viewerActorId}
+                    />
+                  ))
+                : null}
+            </div>
           ) : null}
         </div>
-      </header>
-
-      <div
-        className={cn(
-          'rounded-lg px-3 py-2.5 text-sm leading-6 text-content',
-          nested || isTransferred
-            ? 'border border-primary/30 bg-primary-subtle/80 dark:bg-primary/15'
-            : 'border border-border/60 bg-home-search-fill dark:bg-home-card/40'
-        )}
-      >
-        {comment.body}
       </div>
+    </article>
+  );
+}
 
-      <div className="flex flex-wrap items-center gap-1 text-home-filter-muted">
+function InteractionRow({
+  likes,
+  dislikes,
+  shares,
+  reaction,
+  disabled,
+  shareDisabled,
+  onLike,
+  onDislike,
+  onShare,
+  labels,
+}: {
+  likes: number;
+  dislikes: number;
+  shares: number;
+  reaction: 'like' | 'dislike' | 'none';
+  disabled?: boolean;
+  shareDisabled?: boolean;
+  onLike: () => void;
+  onDislike: () => void;
+  onShare: () => void;
+  labels: {
+    pin: string;
+    reply: string;
+    share: string;
+    dislike: string;
+    like: string;
+    more: string;
+  };
+}) {
+  return (
+    <div className="flex w-full justify-end">
+      <div
+        dir="ltr"
+        className="flex flex-wrap items-center gap-1 text-[#707973]"
+      >
         <ActionButton
-          label={t('like')}
-          count={likes}
-          active={reaction === 'like'}
-          disabled={!canInteract || likeMutation.isPending}
-          onClick={() => void handleReaction('like')}
-          icon={<Heart className="size-4" strokeWidth={1.5} />}
+          label={labels.pin}
+          icon={<Pin className="size-5" strokeWidth={1.5} />}
         />
         <ActionButton
-          label={t('dislike')}
+          label={labels.reply}
+          icon={<MessageCircle className="size-5" strokeWidth={1.5} />}
+        />
+        <ActionButton
+          label={labels.share}
+          count={shares}
+          disabled={shareDisabled}
+          onClick={onShare}
+          icon={<Share2 className="size-5" strokeWidth={1.5} />}
+        />
+        <ActionButton
+          label={labels.dislike}
           count={dislikes}
           active={reaction === 'dislike'}
-          disabled={!canInteract || likeMutation.isPending}
-          onClick={() => void handleReaction('dislike')}
-          icon={<ThumbsDown className="size-4" strokeWidth={1.5} />}
+          disabled={disabled}
+          onClick={onDislike}
+          icon={<ThumbsDown className="size-5" strokeWidth={1.5} />}
         />
         <ActionButton
-          label={t('share')}
-          count={shares}
-          disabled={!canInteract || shareMutation.isPending}
-          onClick={() => void handleShare()}
-          icon={<Share2 className="size-4" strokeWidth={1.5} />}
+          label={labels.like}
+          count={likes}
+          active={reaction === 'like'}
+          disabled={disabled}
+          onClick={onLike}
+          icon={<Heart className="size-5" strokeWidth={1.5} />}
         />
-        <ActionButton
-          label={t('reply')}
-          icon={<MessageCircle className="size-4" strokeWidth={1.5} />}
-        />
-        <ActionButton
-          label={t('report')}
-          icon={<Flag className="size-4" strokeWidth={1.5} />}
-        />
-        {featured ? (
-          <span className="ms-auto inline-flex items-center text-warning">
-            <Star className="size-4 fill-warning" aria-hidden />
-          </span>
-        ) : null}
       </div>
-
-      {!nested && replies.length > 0 ? (
-        <div className="flex flex-col gap-3 border-s border-primary/30 ps-4">
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            onClick={() => setShowReplies((v) => !v)}
-            className="h-8 w-fit gap-1 px-2 text-sm font-medium text-primary"
-          >
-            <ChevronDown
-              className={cn(
-                'size-4 transition-transform',
-                showReplies && 'rotate-180'
-              )}
-              aria-hidden
-            />
-            {showReplies
-              ? t('hideReplies', { count: formatFaNumber(replies.length) })
-              : t('showReplies', { count: formatFaNumber(replies.length) })}
-          </Button>
-          {showReplies
-            ? replies.map((reply) => (
-                <CommentCard
-                  key={reply.id}
-                  comment={reply}
-                  nested
-                  accessToken={accessToken}
-                  viewerActorId={viewerActorId}
-                />
-              ))
-            : null}
-        </div>
-      ) : null}
-    </article>
+    </div>
   );
 }
 
@@ -287,7 +414,7 @@ function ActionButton({
       disabled={disabled}
       onClick={onClick}
       className={cn(
-        'inline-flex h-8 items-center gap-1 rounded-full px-2 text-xs hover:bg-black/5 disabled:opacity-50 dark:hover:bg-white/10',
+        'inline-flex items-center gap-1 rounded-lg px-2 py-1 text-sm hover:bg-black/5 disabled:opacity-50',
         active && 'text-primary'
       )}
     >

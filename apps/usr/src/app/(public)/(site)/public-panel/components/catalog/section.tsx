@@ -13,7 +13,7 @@ type CatalogSectionProps = {
   gridClassName?: string;
 };
 
-/** Horizontal catalog block with title count + «مشاهده همه». */
+/** Catalog block with title, count, and view-all link. */
 export function CatalogSection({
   title,
   count,
@@ -24,14 +24,26 @@ export function CatalogSection({
   const t = useTranslations('publicPanel');
 
   return (
-    <section className={cn('flex w-full flex-col gap-4', className)}>
-      <h3 className="text-base font-bold leading-6 text-primary">
-        {title} ({count})
-      </h3>
+    <section
+      className={cn('flex w-full flex-col items-stretch gap-8', className)}
+    >
+      <div className="flex w-full flex-col items-end">
+        <div className="flex w-fit flex-col items-stretch gap-2 px-4">
+          <h3 className="px-2 text-end text-lg font-bold leading-6 text-[#005138]">
+            {title} ({count})
+          </h3>
+          <span
+            aria-hidden
+            className="h-0 w-full border-b-2 border-[#008D63]"
+          />
+        </div>
+      </div>
 
-      <div className={cn('grid gap-4', gridClassName)}>{children}</div>
+      <div className={cn('grid gap-4', gridClassName)} dir="ltr">
+        {children}
+      </div>
 
-      <div className="flex justify-end">
+      <div className="flex w-full justify-start" dir="ltr">
         <button
           type="button"
           className="text-sm font-medium text-warning hover:underline"

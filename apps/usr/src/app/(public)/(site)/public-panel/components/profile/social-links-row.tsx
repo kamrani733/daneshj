@@ -9,10 +9,11 @@ import { cn } from '@/lib/utils';
 type SocialLinksRowProps = {
   links: PublicPanelSocialLink[];
   className?: string;
-  size?: 'sm' | 'lg';
-  /** Hero uses outline; service-info uses filled (Figma). */
+  /** sm=40, md=48, lg=56. */
+  size?: 'sm' | 'md' | 'lg';
+  /** Outline for hero; filled for service info. */
   variant?: 'outline' | 'filled';
-  /** Override list direction (hero socials are LTR icon order). */
+  /** Override list direction. */
   dir?: 'ltr' | 'rtl';
 };
 
@@ -110,8 +111,10 @@ export function SocialLinksRow({
   dir,
 }: SocialLinksRowProps) {
   const t = useTranslations('publicPanel.social');
-  const box = size === 'lg' ? 'size-14' : 'size-10';
-  const iconSize = size === 'lg' ? 'size-6' : 'size-[18px]';
+  const box =
+    size === 'lg' ? 'size-14' : size === 'md' ? 'size-12' : 'size-10';
+  const iconSize =
+    size === 'lg' ? 'size-6' : size === 'md' ? 'size-6' : 'size-[18px]';
 
   return (
     <ul dir={dir} className={cn('flex flex-wrap items-center gap-3', className)}>
@@ -129,7 +132,7 @@ export function SocialLinksRow({
                 box,
                 variant === 'filled'
                   ? 'bg-primary text-primary-foreground'
-                  : 'border border-primary bg-transparent text-primary'
+                  : 'border border-[#008D63] bg-transparent text-[#008D63]'
               )}
             >
               <Icon className={iconSize} aria-hidden />

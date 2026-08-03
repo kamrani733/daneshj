@@ -17,7 +17,7 @@ type PublicPanelTabsProps = {
   otherInfo: string[];
 };
 
-/** Figma tabs under service-info — my services catalog / other info. */
+/** Service catalog / other-info tabs. */
 export function PublicPanelTabs({ catalog, otherInfo }: PublicPanelTabsProps) {
   const t = useTranslations('publicPanel');
   const servicesCount =

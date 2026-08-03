@@ -1,12 +1,10 @@
 'use client';
 
-import Image from 'next/image';
 import Link from 'next/link';
 import { MapPin } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
-import { SITE_IMAGES } from '@/components/site/site-assets';
 import type { PublicPanelProfile } from '@public-panel/data/public-panel-ui';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -19,129 +17,129 @@ type ProfileHeroCardProps = {
   profile: PublicPanelProfile;
 };
 
-const HERO_SURFACE = '#F9FAF4';
+const HERO_SURFACE = '#FAFAF5';
+const ABOUT_TITLE_BG = '#FAFAF7';
 
-/**
- * Figma main top frame — identity · درباره من · socials.
- * Flat cream surface, no elevation shadow.
- */
+/** Profile identity, about section, and personal social links. */
 export function ProfileHeroCard({ profile }: ProfileHeroCardProps) {
   const t = useTranslations('publicPanel');
   const [expanded, setExpanded] = useState(false);
-  const bioLong = profile.bio.length > 140;
+  const bioLong = profile.bio.length > 180;
   const bioText =
-    !expanded && bioLong ? `${profile.bio.slice(0, 140)}…` : profile.bio;
+    !expanded && bioLong ? `${profile.bio.slice(0, 180)}…` : profile.bio;
 
   return (
     <article
       className={cn(
-        'relative overflow-hidden rounded-[20px]',
+        'relative w-full overflow-hidden rounded-[24px]',
+        'shadow-[0px_2px_6px_2px_rgba(0,0,0,0.15),0px_1px_2px_0px_rgba(0,0,0,0.3)]',
         'dark:bg-home-search-category'
       )}
       style={{ backgroundColor: HERO_SURFACE }}
     >
       <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 opacity-[0.22] dark:opacity-15"
+        className={cn(
+          'absolute start-0 top-[15px] z-20 flex h-[55px] items-center',
+          'rounded-e-[10px] bg-[#E06333] pe-4 ps-5',
+          'shadow-[0px_1.23px_3.7px_0px_rgba(0,0,0,0.3),0px_4.94px_9.87px_3.7px_rgba(0,0,0,0.15)]'
+        )}
       >
-        <Image
-          src={SITE_IMAGES.bgPattern}
-          alt=""
-          fill
-          sizes="1152px"
-          className="object-cover object-left-top [filter:sepia(0.35)_hue-rotate(-12deg)_saturate(1.1)]"
-        />
+        <span className="text-base font-semibold leading-6 tracking-[0.0094em] text-white">
+          {t(`providerBadge.${profile.providerBadgeKey}`)}
+        </span>
       </div>
 
       <div
         className={cn(
-          'relative flex flex-col gap-5 px-5 py-5',
-          'min-[834px]:flex-row min-[834px]:items-stretch min-[834px]:gap-7 min-[834px]:px-7 min-[834px]:py-6'
+          'relative flex flex-col gap-4 px-4 py-4',
+          'min-[834px]:gap-4 min-[834px]:px-[54px] min-[834px]:py-[17px]'
         )}
       >
-        {/* Identity — Figma right */}
-        <div className="flex min-w-0 shrink-0 items-start gap-4 min-[834px]:w-[332px] min-[834px]:gap-5">
-          <div className="relative mt-1 shrink-0">
-            <span
-              className={cn(
-                'absolute -top-1 end-0 z-10 whitespace-nowrap rounded-[4px] bg-warning',
-                'px-2 py-[3px] text-[11px] font-medium leading-4 tracking-[0.0091em] text-white'
-              )}
-            >
-              {t(`providerBadge.${profile.providerBadgeKey}`)}
-            </span>
-            <Avatar className="size-[112px] ring-[3px] ring-[#F3D0C4] min-[834px]:size-[128px]">
-              <AvatarImage src={profile.avatarSrc} alt={profile.displayName} />
-              <AvatarFallback className="text-2xl">
-                {profile.displayName.slice(0, 1)}
-              </AvatarFallback>
-            </Avatar>
+        <div
+          className={cn(
+            'flex flex-col gap-6',
+            'min-[834px]:flex-row min-[834px]:items-center min-[834px]:justify-between min-[834px]:gap-7'
+          )}
+        >
+          <div className="flex min-w-0 shrink-0 items-center gap-5 min-[834px]:gap-14">
+            <div className="relative shrink-0">
+              <Avatar className="size-[140px] ring-4 ring-[#FFDBCF] min-[834px]:size-[200px]">
+                <AvatarImage src={profile.avatarSrc} alt={profile.displayName} />
+                <AvatarFallback className="text-3xl">
+                  {profile.displayName.slice(0, 1)}
+                </AvatarFallback>
+              </Avatar>
+            </div>
+
+            <div className="flex min-w-0 flex-1 flex-col items-center gap-3 text-center">
+              <div className="flex flex-col items-center gap-3">
+                <h2 className="text-[22px] font-bold leading-8 tracking-[0.0094em] text-[#171D19] dark:text-primary-100 min-[834px]:text-[28px] min-[834px]:leading-10">
+                  {profile.displayName}
+                </h2>
+                <p className="text-base font-bold leading-6 text-[#171D19] dark:text-content min-[834px]:text-lg min-[834px]:leading-6">
+                  {profile.username}
+                </p>
+                <span className="inline-flex h-[34px] min-w-[118px] items-center justify-center rounded-full px-3 text-[17px] font-medium leading-[27px] tracking-[0.0094em] text-[#E06333]">
+                  {t(`role.${profile.roleLabelKey}`)}
+                </span>
+              </div>
+
+              <div className="flex flex-col items-center gap-4">
+                <p className="flex items-center gap-2 px-2 text-base font-medium leading-6 text-[#404943] dark:text-content">
+                  <span>{profile.location}</span>
+                  <MapPin
+                    className="size-6 shrink-0 text-[#404943]"
+                    strokeWidth={1.5}
+                    aria-hidden
+                  />
+                </p>
+                <Button
+                  asChild
+                  variant="outline"
+                  className={cn(
+                    'h-12 w-[169px] rounded-full border-[#BFC9C1] bg-[#FAFAF7] px-4',
+                    'text-sm font-medium text-[#404943] shadow-none',
+                    'hover:bg-[#FAFAF7] dark:border-home-filter-border dark:bg-transparent dark:text-content'
+                  )}
+                >
+                  <Link href={profile.electronicCardHref}>
+                    {t('viewElectronicCard')}
+                  </Link>
+                </Button>
+              </div>
+            </div>
           </div>
 
-          <div className="flex min-w-0 flex-1 flex-col items-start gap-1 pt-4">
-            <h2 className="text-[20px] font-bold leading-7 tracking-[0.0094em] text-[#171D19] dark:text-primary-100 min-[834px]:text-[22px] min-[834px]:leading-8">
-              {profile.displayName}
-            </h2>
-            <p className="text-[15px] font-normal leading-6 text-[#171D19] dark:text-content">
-              {profile.username}
-            </p>
-            <p className="text-sm font-medium leading-5 text-warning">
-              {t(`role.${profile.roleLabelKey}`)}
-            </p>
-            <p className="mt-0.5 flex items-center gap-1 text-xs leading-4 text-[#171D19] dark:text-content">
-              <MapPin
-                className="size-3.5 shrink-0 text-[#171D19]"
-                strokeWidth={1.75}
-                aria-hidden
-              />
-              <span>{profile.location}</span>
-            </p>
-            <Button
-              asChild
-              variant="outline"
-              className={cn(
-                'mt-3 h-9 rounded-full border-[#C5CDC6] bg-white px-4',
-                'text-sm font-medium text-[#171D19] shadow-none',
-                'hover:bg-white dark:border-home-filter-border dark:bg-transparent dark:text-content'
-              )}
-            >
-              <Link href={profile.electronicCardHref}>
-                {t('viewElectronicCard')}
-              </Link>
-            </Button>
-          </div>
-        </div>
-
-        {/* About + socials — Figma left */}
-        <div className="flex min-w-0 flex-1 flex-col justify-between gap-3">
           <BorderedSectionCard
             title={t('aboutMe')}
-            titleBg={HERO_SURFACE}
-            className="min-h-[148px] border-[#7AA898]/70 bg-transparent dark:border-primary/40"
+            titleBg={ABOUT_TITLE_BG}
+            className={cn(
+              'min-h-[148px] w-full border-[rgba(141,213,178,0.7)] bg-[#FAFAF5] p-6 dark:border-primary/40',
+              'min-[834px]:max-w-[590px] min-[834px]:flex-1'
+            )}
             footer={
               <button
                 type="button"
                 onClick={() => bioLong && setExpanded((v) => !v)}
-                className="text-sm font-medium text-warning hover:underline"
+                className="text-xs font-medium leading-5 tracking-[0.0083em] text-[#E06333] hover:underline"
               >
                 {expanded ? t('seeLess') : t('seeMore')}
               </button>
             }
           >
-            <p className="text-sm leading-6 text-[#171D19] dark:text-content">
+            <p className="text-justify text-sm font-medium leading-5 tracking-[0.0071em] text-[#171D19] dark:text-content">
               {bioText}
             </p>
           </BorderedSectionCard>
-
-          {/* Figma: social cluster bottom-left, LTR icon order */}
-          <SocialLinksRow
-            links={profile.socialLinks}
-            variant="outline"
-            size="sm"
-            className="justify-end gap-2.5"
-            dir="ltr"
-          />
         </div>
+
+        <SocialLinksRow
+          links={profile.socialLinks}
+          variant="outline"
+          size="md"
+          className="justify-start gap-8"
+          dir="ltr"
+        />
       </div>
     </article>
   );

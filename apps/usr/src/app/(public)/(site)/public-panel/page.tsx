@@ -4,7 +4,6 @@ import { MOCK_PUBLIC_PANEL } from '@public-panel/data/public-panel-mock';
 
 import { PublicPanelView } from './components/view';
 
-/** Public panel — Figma #731:60779 + Interactive Ops follow/like/share. */
 export default async function PublicPanelPage() {
   const session = await getSession();
   const viewerActorId = session?.user.id

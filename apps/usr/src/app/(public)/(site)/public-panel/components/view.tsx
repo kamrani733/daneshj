@@ -16,10 +16,7 @@ type PublicPanelViewProps = {
   viewerActorId?: number | null;
 };
 
-/**
- * Public panel composition — Figma content frame (filled mock).
- * SiteShell still renders the footer motivation box separately.
- */
+/** Public panel page composition. */
 export function PublicPanelView({
   profile,
   accessToken,
@@ -28,26 +25,31 @@ export function PublicPanelView({
   return (
     <main
       dir="rtl"
-      className="mx-auto flex w-full max-w-[1152px] flex-col gap-5 bg-transparent px-4 py-6 min-[834px]:gap-6 min-[834px]:px-8 min-[834px]:py-8"
+      className="mx-auto flex w-full max-w-[1322px] flex-col gap-8 bg-transparent px-4 py-6 min-[834px]:gap-12 min-[834px]:px-[95px] min-[834px]:py-8"
     >
       <PublicPanelHeading displayName={profile.displayName} />
-      <ProfileHeroCard profile={profile} />
-      <ProfileStatsBar
-        profile={profile}
-        accessToken={accessToken}
-        viewerActorId={viewerActorId}
-      />
-      <PanelInfoBanner />
-      <RecordsAccordion
-        username={profile.displayName}
-        records={profile.academicRecords}
-      />
+
+      <div className="flex w-full flex-col gap-8 min-[834px]:gap-12">
+        <ProfileHeroCard profile={profile} />
+        <ProfileStatsBar
+          profile={profile}
+          accessToken={accessToken}
+          viewerActorId={viewerActorId}
+        />
+        <PanelInfoBanner />
+        <RecordsAccordion
+          username={profile.username}
+          records={profile.academicRecords}
+        />
+      </div>
+
       <ServiceInfoSection
         links={profile.serviceSocialLinks}
         catalog={profile.serviceCatalog}
         otherInfo={profile.otherInfo}
       />
       <CommentsSection
+        username={profile.username}
         comments={profile.comments}
         accessToken={accessToken}
         viewerActorId={viewerActorId}

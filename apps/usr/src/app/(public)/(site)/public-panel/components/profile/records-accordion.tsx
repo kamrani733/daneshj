@@ -13,36 +13,40 @@ type RecordsAccordionProps = {
   records: AcademicRecord[];
 };
 
-/** Figma Records header — teal underline, chevron beside label. */
+/** Collapsible academic records section. */
 export function RecordsAccordion({ username, records }: RecordsAccordionProps) {
   const t = useTranslations('publicPanel');
   const [open, setOpen] = useState(false);
 
   return (
-    <section className="flex w-full flex-col">
+    <section className="flex w-full flex-col items-start py-4">
       <button
         type="button"
         aria-expanded={open}
         onClick={() => setOpen((v) => !v)}
-        className="flex w-full items-center justify-center gap-2 border-b-2 border-primary py-3 text-base font-medium text-primary"
+        className="flex w-fit flex-col items-start gap-2 px-8 py-2"
       >
-        <ChevronDown
-          className={cn(
-            'size-5 shrink-0 transition-transform',
-            open && 'rotate-180'
-          )}
-          aria-hidden
-        />
-        <span>
+        <span className="inline-flex items-center gap-2 px-2 text-lg font-bold leading-6 text-[#005138]">
+          <ChevronDown
+            className={cn(
+              'size-6 shrink-0 transition-transform',
+              open && 'rotate-180'
+            )}
+            aria-hidden
+          />
           {t('academicRecords', {
             username,
             count: formatFaNumber(records.length),
           })}
         </span>
+        <span
+          aria-hidden
+          className="h-0 w-full border-b-2 border-[#008D63]"
+        />
       </button>
 
       {open ? (
-        <ul className="mt-3 flex flex-col gap-3">
+        <ul className="mt-6 flex flex-col gap-3">
           {records.map((record) => (
             <li
               key={record.id}

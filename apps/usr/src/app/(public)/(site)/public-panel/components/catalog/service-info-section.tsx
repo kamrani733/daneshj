@@ -17,7 +17,7 @@ type ServiceInfoSectionProps = {
   otherInfo: string[];
 };
 
-/** Figma «اطلاعات سرویس دهندگی» — title, filled socials, catalog tabs. */
+/** Service info: title, socials, and catalog tabs. */
 export function ServiceInfoSection({
   links,
   catalog,
@@ -27,7 +27,7 @@ export function ServiceInfoSection({
 
   return (
     <section className="flex w-full flex-col items-center gap-6">
-      <SectionTitle title={t('serviceInfo')} className="justify-center" />
+      <SectionTitle title={t('serviceInfo')} className="mx-auto" />
       <SocialLinksRow
         links={links}
         size="lg"
