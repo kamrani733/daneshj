@@ -5,6 +5,8 @@ import type { ReactNode } from 'react';
 
 import { cn } from '@/lib/utils';
 
+import { TitleUnderline } from '../shared/title-underline';
+
 type CatalogSectionProps = {
   title: string;
   count: number;
@@ -32,10 +34,7 @@ export function CatalogSection({
           <h3 className="px-2 text-end text-lg font-bold leading-6 text-[#005138]">
             {title} ({count})
           </h3>
-          <span
-            aria-hidden
-            className="h-0 w-full border-b-2 border-[#008D63]"
-          />
+          <TitleUnderline />
         </div>
       </div>
 

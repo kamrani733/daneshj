@@ -4,6 +4,8 @@ import Image from 'next/image';
 import type { DiscountOffer } from '@public-panel/data/public-panel-ui';
 import { cn } from '@/lib/utils';
 
+import { CatalogOfferCardShell } from './offer-card-shell';
+
 type DiscountOfferCardProps = {
   offer: DiscountOffer;
   className?: string;
@@ -16,13 +18,7 @@ export function DiscountOfferCard({ offer, className }: DiscountOfferCardProps) 
     !offer.discountBadge.includes('تومان');
 
   return (
-    <article
-      dir="rtl"
-      className={cn(
-        'flex h-full flex-col overflow-hidden rounded-xl border border-border/40 bg-home-card shadow-[0_1px_2px_rgba(0,0,0,0.06)] dark:bg-home-search-category',
-        className
-      )}
-    >
+    <CatalogOfferCardShell className={className}>
       <div className="relative h-[148px] w-full shrink-0 overflow-hidden bg-neutral-200">
         <Image
           src={offer.imageSrc}
@@ -73,6 +69,6 @@ export function DiscountOfferCard({ offer, className }: DiscountOfferCardProps) 
           </div>
         </div>
       </div>
-    </article>
+    </CatalogOfferCardShell>
   );
 }

@@ -5,6 +5,8 @@ import Link from 'next/link';
 import { ChevronLeft } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
+import { TitleUnderline } from './title-underline';
+
 type PublicPanelHeadingProps = {
   displayName: string;
 };
@@ -73,10 +75,7 @@ export function PublicPanelHeading({ displayName }: PublicPanelHeadingProps) {
               {displayName}
             </span>
           </h1>
-          <span
-            aria-hidden
-            className="h-0 w-full border-b-[2px] border-[#008D63]"
-          />
+          <TitleUnderline />
         </div>
       </div>
     </header>

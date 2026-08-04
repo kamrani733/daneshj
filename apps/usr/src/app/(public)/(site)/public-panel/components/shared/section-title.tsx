@@ -1,5 +1,7 @@
 import { cn } from '@/lib/utils';
 
+import { TitleUnderline } from './title-underline';
+
 type SectionTitleProps = {
   title: string;
   className?: string;
@@ -19,10 +21,7 @@ export function SectionTitle({ title, className }: SectionTitleProps) {
       <h2 className="px-2 text-center text-[28px] font-bold leading-10 text-[#005138]">
         {title}
       </h2>
-      <span
-        aria-hidden
-        className="h-0 w-full border-b-[2px] border-[#008D63]"
-      />
+      <TitleUnderline />
     </div>
   );
 }

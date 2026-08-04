@@ -8,6 +8,8 @@ import type { AcademicRecord } from '@public-panel/data/public-panel-ui';
 import { formatFaNumber } from '@/lib/format-fa';
 import { cn } from '@/lib/utils';
 
+import { TitleUnderline } from '../shared/title-underline';
+
 type RecordsAccordionProps = {
   username: string;
   records: AcademicRecord[];
@@ -39,10 +41,7 @@ export function RecordsAccordion({ username, records }: RecordsAccordionProps) {
             count: formatFaNumber(records.length),
           })}
         </span>
-        <span
-          aria-hidden
-          className="h-0 w-full border-b-2 border-[#008D63]"
-        />
+        <TitleUnderline />
       </button>
 
       {open ? (

@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils';
 
 import { DISCOUNT_ITEMS } from '../data/home-content';
 import { ContentCard } from './content-card';
-import { SectionTitle } from './section-title';
+import { HomeCarouselSectionHeader } from './home-carousel-section-header';
 import { ViewAllLink } from './view-all-link';
 
 /** Figma #1:8912 Title Box + #1:9041 content — 4×2 grid, title right, view-all left. */
@@ -13,22 +13,10 @@ export async function HomeDiscountsSection() {
 
   return (
     <section className="flex w-full flex-col gap-6 min-[834px]:gap-12">
-      {/* Desktop / tablet — Title Box #1:8912 (239×89), aligned right */}
-      <SectionTitle
+      <HomeCarouselSectionHeader
         title={t('title')}
-        variant="narrow"
-        className="hidden w-[239px] shrink-0 self-start min-[834px]:inline-flex"
+        viewAllLabel={t('viewAll')}
       />
-
-      {/* Mobile — title right + view-all left on one row */}
-      <div className="flex items-center justify-between min-[834px]:hidden">
-        <ViewAllLink label={t('viewAll')} className="px-2" />
-        <SectionTitle
-          title={t('title')}
-          variant="narrow"
-          className="!min-h-[49px] !w-auto !max-w-[139px] [&_h2]:pt-0 [&_h2]:text-base [&_h2]:leading-5 [&_img]:bottom-0 [&_img]:h-[38px] [&_img]:w-[123px]"
-        />
-      </div>
 
       {/* Content frame #1:9041 — column gap 16px */}
       <div className="flex w-full flex-col gap-4">

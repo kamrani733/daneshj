@@ -2,7 +2,7 @@ import { getTranslations } from 'next-intl/server';
 
 import { BUSINESS_ITEMS } from '../data/home-content';
 import { ContentCard } from './content-card';
-import { SectionTitle } from './section-title';
+import { HomeCarouselSectionHeader } from './home-carousel-section-header';
 import { ViewAllLink } from './view-all-link';
 
 /** Figma #5847:169349 — title right, view-all left, horizontal scroll 344px cards. */
@@ -11,20 +11,11 @@ export async function HomeBusinessesSection() {
 
   return (
     <section className="flex w-full flex-col gap-6 min-[834px]:gap-12">
-      <SectionTitle
+      <HomeCarouselSectionHeader
         title={t('title')}
-        variant="narrow"
-        className="hidden w-[257px] shrink-0 self-start min-[834px]:inline-flex [&_img]:w-[233px]"
+        viewAllLabel={t('viewAll')}
+        desktopTitleClassName="w-[257px] [&_img]:w-[233px]"
       />
-
-      <div className="flex items-center justify-between min-[834px]:hidden">
-        <ViewAllLink label={t('viewAll')} className="px-2" />
-        <SectionTitle
-          title={t('title')}
-          variant="narrow"
-          className="!min-h-[49px] !w-auto !max-w-[139px] [&_h2]:pt-0 [&_h2]:text-base [&_h2]:leading-5 [&_img]:bottom-0 [&_img]:h-[38px] [&_img]:w-[123px]"
-        />
-      </div>
 
       <div className="flex w-full flex-col gap-4">
         <ViewAllLink label={t('viewAll')} className="hidden self-end px-2 min-[834px]:inline-flex" />
