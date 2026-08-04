@@ -8,7 +8,7 @@ type BorderedSectionCardProps = {
   footer?: ReactNode;
   className?: string;
   /** Matches parent surface so the floating title punches a hole in the border. */
-  titleBg?: string;
+  titleBgClassName?: string;
 };
 
 /** Card with floating title on the top border. */
@@ -17,7 +17,7 @@ export function BorderedSectionCard({
   children,
   footer,
   className,
-  titleBg = '#FAFAF7',
+  titleBgClassName = 'bg-home-scene',
 }: BorderedSectionCardProps) {
   return (
     <section
@@ -27,8 +27,11 @@ export function BorderedSectionCard({
       )}
     >
       <h3
-        className="absolute -top-2.5 start-4 px-1 text-sm font-bold leading-5 tracking-[0.0071em] text-[#008D63] dark:!bg-home-search-category"
-        style={{ backgroundColor: titleBg }}
+        className={cn(
+          'absolute -top-2.5 start-4 px-1 text-sm font-bold leading-5 tracking-[0.0071em] text-primary',
+          'dark:!bg-home-search-category',
+          titleBgClassName
+        )}
       >
         {title}
       </h3>

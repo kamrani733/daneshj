@@ -17,9 +17,6 @@ type ProfileHeroCardProps = {
   profile: PublicPanelProfile;
 };
 
-const HERO_SURFACE = '#FAFAF5';
-const ABOUT_TITLE_BG = '#FAFAF7';
-
 /** Profile identity, about section, and personal social links. */
 export function ProfileHeroCard({ profile }: ProfileHeroCardProps) {
   const t = useTranslations('publicPanel');
@@ -31,17 +28,15 @@ export function ProfileHeroCard({ profile }: ProfileHeroCardProps) {
   return (
     <article
       className={cn(
-        'relative w-full overflow-hidden rounded-[24px]',
-        'shadow-[0px_2px_6px_2px_rgba(0,0,0,0.15),0px_1px_2px_0px_rgba(0,0,0,0.3)]',
-        'dark:bg-home-search-category'
+        'relative w-full overflow-hidden rounded-[24px] bg-home-card',
+        'shadow-home-elevation-2 dark:bg-home-search-category'
       )}
-      style={{ backgroundColor: HERO_SURFACE }}
     >
       <div
         className={cn(
           'absolute start-0 top-[15px] z-20 flex h-[55px] items-center',
-          'rounded-e-[10px] bg-[#E06333] pe-4 ps-5',
-          'shadow-[0px_1.23px_3.7px_0px_rgba(0,0,0,0.3),0px_4.94px_9.87px_3.7px_rgba(0,0,0,0.15)]'
+          'rounded-e-[10px] bg-warning pe-4 ps-5',
+          'shadow-home-elevation-3'
         )}
       >
         <span className="text-base font-semibold leading-6 tracking-[0.0094em] text-white">
@@ -63,7 +58,7 @@ export function ProfileHeroCard({ profile }: ProfileHeroCardProps) {
         >
           <div className="flex min-w-0 shrink-0 items-center gap-5 min-[834px]:gap-14">
             <div className="relative shrink-0">
-              <Avatar className="size-[140px] ring-4 ring-[#FFDBCF] min-[834px]:size-[200px]">
+              <Avatar className="size-[140px] ring-4 ring-warning-50 min-[834px]:size-[200px]">
                 <AvatarImage src={profile.avatarSrc} alt={profile.displayName} />
                 <AvatarFallback className="text-3xl">
                   {profile.displayName.slice(0, 1)}
@@ -73,22 +68,22 @@ export function ProfileHeroCard({ profile }: ProfileHeroCardProps) {
 
             <div className="flex min-w-0 flex-1 flex-col items-center gap-3 text-center">
               <div className="flex flex-col items-center gap-3">
-                <h2 className="text-[22px] font-bold leading-8 tracking-[0.0094em] text-[#171D19] dark:text-primary-100 min-[834px]:text-[28px] min-[834px]:leading-10">
+                <h2 className="text-[22px] font-bold leading-8 tracking-[0.0094em] text-content dark:text-primary-100 min-[834px]:text-[28px] min-[834px]:leading-10">
                   {profile.displayName}
                 </h2>
-                <p className="text-base font-bold leading-6 text-[#171D19] dark:text-content min-[834px]:text-lg min-[834px]:leading-6">
+                <p className="text-base font-bold leading-6 text-content min-[834px]:text-lg min-[834px]:leading-6">
                   {profile.username}
                 </p>
-                <span className="inline-flex h-[34px] min-w-[118px] items-center justify-center rounded-full px-3 text-[17px] font-medium leading-[27px] tracking-[0.0094em] text-[#E06333]">
+                <span className="inline-flex h-[34px] min-w-[118px] items-center justify-center rounded-full px-3 text-[17px] font-medium leading-[27px] tracking-[0.0094em] text-warning">
                   {t(`role.${profile.roleLabelKey}`)}
                 </span>
               </div>
 
               <div className="flex flex-col items-center gap-4">
-                <p className="flex items-center gap-2 px-2 text-base font-medium leading-6 text-[#404943] dark:text-content">
+                <p className="flex items-center gap-2 px-2 text-base font-medium leading-6 text-home-filter-muted dark:text-content">
                   <span>{profile.location}</span>
                   <MapPin
-                    className="size-6 shrink-0 text-[#404943]"
+                    className="size-6 shrink-0 text-home-filter-muted"
                     strokeWidth={1.5}
                     aria-hidden
                   />
@@ -97,9 +92,9 @@ export function ProfileHeroCard({ profile }: ProfileHeroCardProps) {
                   asChild
                   variant="outline"
                   className={cn(
-                    'h-12 w-[169px] rounded-full border-[#BFC9C1] bg-[#FAFAF7] px-4',
-                    'text-sm font-medium text-[#404943] shadow-none',
-                    'hover:bg-[#FAFAF7] dark:border-home-filter-border dark:bg-transparent dark:text-content'
+                    'h-12 w-[169px] rounded-full border-border bg-home-scene px-4',
+                    'text-sm font-medium text-home-filter-muted shadow-none',
+                    'hover:bg-home-scene dark:border-home-filter-border dark:bg-transparent dark:text-content'
                   )}
                 >
                   <Link href={profile.electronicCardHref}>
@@ -112,22 +107,22 @@ export function ProfileHeroCard({ profile }: ProfileHeroCardProps) {
 
           <BorderedSectionCard
             title={t('aboutMe')}
-            titleBg={ABOUT_TITLE_BG}
+            titleBgClassName="bg-home-scene"
             className={cn(
-              'min-h-[148px] w-full border-[rgba(141,213,178,0.7)] bg-[#FAFAF5] p-6 dark:border-primary/40',
+              'min-h-[148px] w-full border-primary-200/70 bg-home-card p-6 dark:border-primary/40',
               'min-[834px]:max-w-[590px] min-[834px]:flex-1'
             )}
             footer={
               <button
                 type="button"
                 onClick={() => bioLong && setExpanded((v) => !v)}
-                className="text-xs font-medium leading-5 tracking-[0.0083em] text-[#E06333] hover:underline"
+                className="text-xs font-medium leading-5 tracking-[0.0083em] text-warning hover:underline"
               >
                 {expanded ? t('seeLess') : t('seeMore')}
               </button>
             }
           >
-            <p className="text-justify text-sm font-medium leading-5 tracking-[0.0071em] text-[#171D19] dark:text-content">
+            <p className="text-justify text-sm font-medium leading-5 tracking-[0.0071em] text-content">
               {bioText}
             </p>
           </BorderedSectionCard>

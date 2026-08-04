@@ -132,7 +132,7 @@ export function SocialLinksRow({
                 box,
                 variant === 'filled'
                   ? 'bg-primary text-primary-foreground'
-                  : 'border border-[#008D63] bg-transparent text-[#008D63]'
+                  : '  bg-transparent text-primary'
               )}
             >
               <Icon className={iconSize} aria-hidden />
