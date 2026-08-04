@@ -23,7 +23,7 @@ export function PanelInfoBanner({ className }: PanelInfoBannerProps) {
       )}
     >
       <Image
-        src="/public-panel/info-banner-art.png"
+        src="/images/public-panel/info-banner-art.png"
         alt=""
         fill
         sizes="(max-width: 1322px) 100vw, 1322px"

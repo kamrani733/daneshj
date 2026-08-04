@@ -97,7 +97,7 @@ export function PublicPanelTabs({ catalog, otherInfo }: PublicPanelTabsProps) {
         {otherInfo.length === 0 ? (
           <EmptyState
             message={t('emptyOther')}
-            imageSrc="/public-panel/empty-state-alt.png"
+            imageSrc="/images/public-panel/empty-state-alt.png"
             className="rounded-2xl bg-white shadow-[0_1px_2px_rgba(0,0,0,0.06)] dark:bg-home-search-category"
           />
         ) : (

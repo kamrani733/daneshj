@@ -200,7 +200,7 @@ function CommentListPanel({
       {filtered.length === 0 ? (
         <EmptyState
           message={emptyMessage}
-          imageSrc="/public-panel/empty-state-alt.png"
+          imageSrc="/images/public-panel/empty-state-alt.png"
           className="min-h-[180px] bg-transparent shadow-none"
         />
       ) : (

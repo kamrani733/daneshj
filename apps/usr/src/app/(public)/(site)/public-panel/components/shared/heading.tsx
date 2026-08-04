@@ -45,7 +45,7 @@ export function PublicPanelHeading({ displayName }: PublicPanelHeadingProps) {
 
       <div className="relative flex min-h-[70px] w-full max-w-[374px] items-center justify-center gap-2 pb-4">
         <Image
-          src="/public-panel/title-deco-start.svg"
+          src="/images/public-panel/title-deco-start.svg"
           alt=""
           width={54}
           height={40}
@@ -53,7 +53,7 @@ export function PublicPanelHeading({ displayName }: PublicPanelHeadingProps) {
           className="pointer-events-none absolute bottom-[6px] start-0 h-[40px] w-[54px]"
         />
         <Image
-          src="/public-panel/title-deco-end.svg"
+          src="/images/public-panel/title-deco-end.svg"
           alt=""
           width={54}
           height={40}

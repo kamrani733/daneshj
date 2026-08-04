@@ -11,7 +11,7 @@ type EmptyStateProps = {
 /** Shared empty illustration + message. */
 export function EmptyState({
   message,
-  imageSrc = '/public-panel/empty-state-box.png',
+  imageSrc = '/images/public-panel/empty-state-box.png',
   className,
 }: EmptyStateProps) {
   return (
