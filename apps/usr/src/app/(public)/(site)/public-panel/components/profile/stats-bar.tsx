@@ -11,7 +11,7 @@ import {
   type LucideIcon,
 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import {
   ACTOR_TYPE,
@@ -27,6 +27,12 @@ import type { PublicPanelProfile } from '@public-panel/data/public-panel-ui';
 import { Button } from '@/components/ui/button';
 import { formatFaNumber } from '@/lib/format-fa';
 import { cn } from '@/lib/utils';
+
+import {
+  StatsPeopleDialog,
+  StatsShareDialog,
+  type StatsPeopleKind,
+} from './stats-dialogs';
 
 type ProfileStatsBarProps = {
   profile: PublicPanelProfile;
@@ -79,6 +85,15 @@ export function ProfileStatsBar({
   const [following, setFollowing] = useState(false);
   const [reaction, setReaction] = useState<'like' | 'dislike' | 'none'>('none');
   const [shares, setShares] = useState(profile.engagement.shares);
+  const [peopleKind, setPeopleKind] = useState<StatsPeopleKind | null>(null);
+  const [shareOpen, setShareOpen] = useState(false);
+  const [shareUrl, setShareUrl] = useState(
+    'https://www.daneshjooam.com/publicpanel/name&surname'
+  );
+
+  useEffect(() => {
+    setShareUrl(window.location.href);
+  }, []);
 
   const { stats } = usePanelInteractiveStatsQuery(
     {
@@ -171,7 +186,7 @@ export function ProfileStatsBar({
     }
   }
 
-  async function handleShare() {
+  async function handleShareConfirm() {
     setShares((value) => value + 1);
     if (!canInteract || !viewerActorId || !accessToken) return;
     try {
@@ -182,8 +197,7 @@ export function ProfileStatsBar({
         targetType: profile.actorType as typeof TARGET_TYPE.user,
         targetId: profile.actorId,
         platform: SHARE_PLATFORM.inSite,
-        url:
-          typeof window !== 'undefined' ? window.location.href : '/public-panel',
+        url: shareUrl,
       });
     } catch {
       setShares((value) => Math.max(0, value - 1));
@@ -206,7 +220,11 @@ export function ProfileStatsBar({
       <ul className="flex w-full items-start justify-between gap-1 min-[834px]:justify-center min-[834px]:gap-6 min-[1100px]:w-auto min-[1100px]:justify-start min-[1100px]:gap-8">
         {STAT_ITEMS.map(({ key, Icon }) => (
           <li key={key}>
-            <div className="flex min-w-0 flex-col items-center gap-1 text-center min-[834px]:w-[88px]">
+            <button
+              type="button"
+              onClick={() => setPeopleKind(key)}
+              className="flex min-w-0 flex-col items-center gap-1 rounded-xl text-center transition-colors hover:bg-black/[0.03] min-[834px]:w-[88px]"
+            >
               <span className="text-xl font-bold leading-7 text-[#171D19] dark:text-content min-[834px]:text-[28px] min-[834px]:leading-9 min-[1100px]:text-[34px] min-[1100px]:leading-[49px]">
                 {formatFaNumber(displayStats[key])}
               </span>
@@ -222,7 +240,7 @@ export function ProfileStatsBar({
                 )}
                 {t(`stats.${key}`)}
               </span>
-            </div>
+            </button>
           </li>
         ))}
       </ul>
@@ -282,7 +300,7 @@ export function ProfileStatsBar({
               <button
                 type="button"
                 disabled={shareMutation.isPending}
-                onClick={() => void handleShare()}
+                onClick={() => setShareOpen(true)}
                 className={cn(
                   'flex h-11 items-center gap-1 px-1 text-sm font-bold leading-6 text-[#404943] disabled:opacity-100',
                   'min-[834px]:h-12 min-[834px]:text-base min-[1100px]:h-14'
@@ -317,6 +335,21 @@ export function ProfileStatsBar({
           </Button>
         </div>
       ) : null}
+
+      <StatsPeopleDialog
+        kind={peopleKind}
+        open={peopleKind != null}
+        onOpenChange={(next) => {
+          if (!next) setPeopleKind(null);
+        }}
+      />
+
+      <StatsShareDialog
+        open={shareOpen}
+        onOpenChange={setShareOpen}
+        shareUrl={shareUrl}
+        onShared={() => void handleShareConfirm()}
+      />
     </div>
   );
 }

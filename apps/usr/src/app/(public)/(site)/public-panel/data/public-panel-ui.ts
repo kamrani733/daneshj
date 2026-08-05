@@ -125,8 +125,10 @@ export type PublicPanelProfile = {
   displayName: string;
   username: string;
   roleLabelKey: 'student';
-  providerBadgeKey: 'individualProvider';
+  /** Omit / null when the owner is not a service provider. */
+  providerBadgeKey?: 'individualProvider' | null;
   location: string;
+  /** Empty string hides the about-me card. */
   bio: string;
   avatarSrc: string;
   electronicCardHref: string;
