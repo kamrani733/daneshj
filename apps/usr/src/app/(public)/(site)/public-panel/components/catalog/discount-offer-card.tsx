@@ -2,6 +2,7 @@ import { Star } from 'lucide-react';
 import Image from 'next/image';
 
 import type { DiscountOffer } from '@public-panel/data/public-panel-ui';
+import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 
 import { CatalogOfferCardShell } from './offer-card-shell';
@@ -28,9 +29,9 @@ export function DiscountOfferCard({ offer, className }: DiscountOfferCardProps) 
           sizes="(max-width: 720px) 100vw, 25vw"
           className="object-cover"
         />
-        <span className="absolute end-2.5 top-2.5 z-10 rounded-md bg-[#E8F5E9] px-2 py-1 text-[11px] font-medium text-[#2E7D32] dark:bg-primary/20 dark:text-primary-100">
+        <Badge className="absolute end-2.5 top-2.5 z-10 h-auto rounded-md border-0 bg-[#E8F5E9] px-2 py-1 text-[11px] font-medium text-[#2E7D32] dark:bg-primary/20 dark:text-primary-100">
           {offer.postedAgo}
-        </span>
+        </Badge>
       </div>
 
       <div className="flex flex-1 flex-col gap-3 p-3">
@@ -44,27 +45,28 @@ export function DiscountOfferCard({ offer, className }: DiscountOfferCardProps) 
         </div>
 
         <div className="mt-auto flex items-end justify-between gap-2">
+          <div className="flex items-center gap-1 text-xs text-home-filter-ink">
+            <Star className="size-3.5 fill-[#FFC107] text-[#FFC107]" aria-hidden />
+            <span>
+              {offer.rating} ({offer.reviewCount} نظر)
+            </span>
+          </div>
+
           <div className="flex flex-col items-start gap-1">
-            <span
+            <Badge
+              variant="warning"
               className={cn(
-                'rounded px-1.5 py-0.5 text-[11px] font-bold leading-4 text-white',
-                isPercentBadge ? 'bg-[#8B5E3C]' : 'bg-warning'
+                'h-auto rounded px-1.5 py-0.5 text-[11px] font-bold leading-4',
+                isPercentBadge && 'bg-[#8B5E3C]'
               )}
             >
               {offer.discountBadge}
-            </span>
+            </Badge>
             <span className="text-[11px] leading-4 text-home-filter-muted line-through">
               {offer.originalPrice}
             </span>
             <span className="text-sm font-bold leading-5 text-primary">
               {offer.finalPrice}
-            </span>
-          </div>
-
-          <div className="flex items-center gap-1 text-xs text-home-filter-ink">
-            <Star className="size-3.5 fill-warning text-warning" aria-hidden />
-            <span>
-              {offer.rating} ({offer.reviewCount} نظر)
             </span>
           </div>
         </div>

@@ -48,8 +48,8 @@ export function NewsletterOfferCard({ item, className }: NewsletterOfferCardProp
           {item.description}
         </p>
 
-        <div className="mt-auto flex items-center justify-center gap-1 pt-2 text-xs text-home-filter-ink">
-          <Star className="size-3.5 fill-warning text-warning" aria-hidden />
+        <div className="mt-auto flex items-center justify-start gap-1 pt-2 text-xs text-home-filter-ink">
+          <Star className="size-3.5 fill-[#FFC107] text-[#FFC107]" aria-hidden />
           <span>
             {item.rating} ({item.reviewCount} نظر)
           </span>

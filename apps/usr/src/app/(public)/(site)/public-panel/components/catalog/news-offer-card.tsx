@@ -2,6 +2,7 @@ import { Eye } from 'lucide-react';
 import Image from 'next/image';
 
 import type { NewsItem } from '@public-panel/data/public-panel-ui';
+import { Badge } from '@/components/ui/badge';
 
 import { CatalogOfferCardShell } from './offer-card-shell';
 
@@ -23,13 +24,13 @@ export function NewsOfferCard({ item, className }: NewsOfferCardProps) {
           sizes="(max-width: 720px) 100vw, 33vw"
           className="object-cover"
         />
-        <span className="absolute start-2.5 top-2.5 z-10 inline-flex items-center gap-1 rounded-md bg-[#F8D7C8] px-2 py-1 text-[11px] font-medium text-[#7A3E2B] dark:bg-warning/30 dark:text-warning-50">
+        <Badge className="absolute start-2.5 top-2.5 z-10 h-auto gap-1 rounded-md border-0 bg-[#F8D7C8] px-2 py-1 text-[11px] font-medium text-[#7A3E2B] dark:bg-warning/30 dark:text-warning-50">
           <Eye className="size-3.5" aria-hidden />
           {item.viewCount}
-        </span>
-        <span className="absolute end-2.5 bottom-2.5 z-10 rounded-md bg-[#D6EAF8] px-2 py-1 text-[11px] font-medium text-[#1A5276] dark:bg-sky-900/60 dark:text-sky-100">
+        </Badge>
+        <Badge className="absolute end-2.5 bottom-2.5 z-10 h-auto rounded-md border-0 bg-[#D6EAF8] px-2 py-1 text-[11px] font-medium text-[#1A5276] dark:bg-sky-900/60 dark:text-sky-100">
           {item.scopeLabel}
-        </span>
+        </Badge>
       </div>
 
       <div className="flex flex-1 flex-col gap-2.5 p-3">
@@ -43,12 +44,12 @@ export function NewsOfferCard({ item, className }: NewsOfferCardProps) {
         </div>
 
         <div className="flex flex-wrap gap-1.5">
-          <span className="rounded-full bg-primary/10 px-2.5 py-1 text-[11px] font-medium text-primary">
+          <Badge className="h-auto rounded-full border-0 bg-primary/10 px-2.5 py-1 text-[11px] font-medium text-primary">
             {item.mainCategory}
-          </span>
-          <span className="rounded-full bg-primary/10 px-2.5 py-1 text-[11px] font-medium text-primary">
+          </Badge>
+          <Badge className="h-auto rounded-full border-0 bg-primary/10 px-2.5 py-1 text-[11px] font-medium text-primary">
             {item.subCategory}
-          </span>
+          </Badge>
         </div>
 
         <p className="line-clamp-3 text-xs leading-5 text-home-filter-muted">

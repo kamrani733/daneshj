@@ -3,10 +3,9 @@
 import {
   ChevronDown,
   Heart,
-  MessageCircle,
   MoreVertical,
-  Pin,
-  Share2,
+  Repeat2,
+  Reply,
   Star,
   ThumbsDown,
 } from 'lucide-react';
@@ -23,15 +22,27 @@ import {
 } from '@public-panel/api';
 import type { PanelComment } from '@public-panel/data/public-panel-ui';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 import { formatFaNumber } from '@/lib/format-fa';
 import { cn } from '@/lib/utils';
+
+import { CommentTransferFlow, CommentConfirmDialog } from './transfer-flow';
 
 type CommentCardProps = {
   comment: PanelComment;
   className?: string;
   nested?: boolean;
+  transferredCount?: number;
   accessToken?: string | null;
   viewerActorId?: number | null;
+  onTransfer?: (commentId: string, note: string) => void;
+  onDelete?: (commentId: string) => void;
+  onEditNote?: (commentId: string, note: string) => void;
 };
 
 /** Comment thread item with actions and nested replies. */
@@ -39,18 +50,28 @@ export function CommentCard({
   comment,
   className,
   nested = false,
+  transferredCount = 0,
   accessToken,
   viewerActorId,
+  onTransfer,
+  onDelete,
+  onEditNote,
 }: CommentCardProps) {
   const t = useTranslations('publicPanel.comments');
+  const tFlow = useTranslations('publicPanel.comments.transferFlow');
   const replies = comment.replies ?? [];
   const [showReplies, setShowReplies] = useState(false);
   const [likes, setLikes] = useState(comment.likes);
   const [dislikes, setDislikes] = useState(comment.dislikes);
   const [shares, setShares] = useState(comment.shares);
   const [reaction, setReaction] = useState<'like' | 'dislike' | 'none'>('none');
+  const [featured, setFeatured] = useState(Boolean(comment.featured));
+  const [transferOpen, setTransferOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [deleteSuccessOpen, setDeleteSuccessOpen] = useState(false);
+  const [editOpen, setEditOpen] = useState(false);
   const isTransferred = comment.kind === 'transferred';
-  const featured = Boolean(comment.featured);
 
   const likeMutation = useLikeMutation();
   const shareMutation = useShareMutation();
@@ -63,7 +84,6 @@ export function CommentCard({
     Number.isFinite(targetId);
 
   async function handleReaction(next: 'like' | 'dislike') {
-    if (!canInteract || !viewerActorId) return;
     const previous = reaction;
     const previousLikes = likes;
     const previousDislikes = dislikes;
@@ -87,6 +107,8 @@ export function CommentCard({
     if (previous === 'dislike') setDislikes((value) => Math.max(0, value - 1));
     if (likeStatus === LIKE_STATUS.like) setLikes((value) => value + 1);
     if (likeStatus === LIKE_STATUS.dislike) setDislikes((value) => value + 1);
+
+    if (!canInteract || !viewerActorId || !accessToken) return;
 
     try {
       await likeMutation.mutateAsync({
@@ -129,15 +151,18 @@ export function CommentCard({
       dislikes={dislikes}
       shares={shares}
       reaction={reaction}
-      disabled={!canInteract || likeMutation.isPending}
+      featured={featured}
+      disabled={likeMutation.isPending}
       shareDisabled={!canInteract || shareMutation.isPending}
       onLike={() => void handleReaction('like')}
       onDislike={() => void handleReaction('dislike')}
       onShare={() => void handleShare()}
+      onToggleFeature={() => setFeatured((value) => !value)}
       labels={{
-        pin: t('pin'),
+        feature: t('feature'),
+        unfeature: t('unfeature'),
         reply: t('reply'),
-        share: t('share'),
+        transfer: t('transfer'),
         dislike: t('dislike'),
         like: t('like'),
         more: t('more'),
@@ -153,13 +178,96 @@ export function CommentCard({
           className
         )}
       >
-        <button
-          type="button"
-          aria-label={t('more')}
-          className="absolute end-3 top-3 text-[#707973] hover:text-[#171D19]"
-        >
-          <MoreVertical className="size-5" strokeWidth={1.5} />
-        </button>
+        <div className="absolute end-3 top-3">
+          <Popover open={menuOpen} onOpenChange={setMenuOpen}>
+            <PopoverTrigger asChild>
+              <button
+                type="button"
+                aria-label={t('more')}
+                className="text-[#707973] hover:text-[#171D19]"
+              >
+                <MoreVertical className="size-5" strokeWidth={1.5} />
+              </button>
+            </PopoverTrigger>
+            <PopoverContent
+              align="end"
+              sideOffset={6}
+              dir="rtl"
+              className="w-[240px] gap-0 rounded-xl border-0 bg-[#F8F8F0] p-1 shadow-home-elevation-2 ring-0"
+            >
+              <ul className="flex flex-col py-1">
+                <li>
+                  <button
+                    type="button"
+                    className="flex h-11 w-full items-center px-3 text-start text-sm font-medium text-[#171D19] hover:bg-black/[0.04]"
+                    onClick={() => {
+                      setMenuOpen(false);
+                      setDeleteOpen(true);
+                    }}
+                  >
+                    {tFlow('menuDelete')}
+                  </button>
+                </li>
+                <li>
+                  <button
+                    type="button"
+                    className="flex h-11 w-full items-center px-3 text-start text-sm font-medium text-[#171D19] hover:bg-black/[0.04]"
+                    onClick={() => {
+                      setMenuOpen(false);
+                      setEditOpen(true);
+                    }}
+                  >
+                    {tFlow('menuEditNote')}
+                  </button>
+                </li>
+                <li>
+                  <button
+                    type="button"
+                    className="flex h-11 w-full items-center px-3 text-start text-sm font-medium text-[#171D19] hover:bg-black/[0.04]"
+                    onClick={() => setMenuOpen(false)}
+                  >
+                    {tFlow('menuReport')}
+                  </button>
+                </li>
+              </ul>
+            </PopoverContent>
+          </Popover>
+        </div>
+
+        <CommentConfirmDialog
+          open={deleteOpen}
+          title={tFlow('revertTitle')}
+          primaryLabel={tFlow('yes')}
+          secondaryLabel={tFlow('no')}
+          textActions
+          onPrimary={() => {
+            onDelete?.(comment.id);
+            setDeleteOpen(false);
+            setDeleteSuccessOpen(true);
+          }}
+          onSecondary={() => setDeleteOpen(false)}
+        />
+
+        <CommentConfirmDialog
+          open={deleteSuccessOpen}
+          title={tFlow('deleteSuccess')}
+          primaryLabel={tFlow('close')}
+          textActions
+          singleAction
+          onPrimary={() => setDeleteSuccessOpen(false)}
+        />
+
+        <CommentTransferFlow
+          comment={comment}
+          transferredCount={transferredCount}
+          open={editOpen}
+          initialNote={comment.quoteNote ?? ''}
+          mode="edit"
+          onOpenChange={setEditOpen}
+          onConfirmTransfer={(note) => {
+            onEditNote?.(comment.id, note);
+          }}
+        />
 
         <header className="flex items-center gap-3 pe-6">
           <Avatar className="size-12 shrink-0 ring-2 ring-[#008D63]">
@@ -259,19 +367,65 @@ export function CommentCard({
                 </span>
               ) : null}
               {featured ? (
-                <span className="inline-flex items-center gap-1 text-xs font-bold text-[#F59E0B]">
+                <Badge className="h-auto gap-1 border-0 bg-transparent px-0 text-xs font-bold text-[#F59E0B]">
                   <Star className="size-3.5 fill-[#F59E0B] text-[#F59E0B]" />
                   {t('badgeFeatured')}
-                </span>
+                </Badge>
               ) : null}
             </div>
-            <button
-              type="button"
-              aria-label={t('more')}
-              className="shrink-0 text-[#707973] hover:text-[#171D19]"
-            >
-              <MoreVertical className="size-5" strokeWidth={1.5} />
-            </button>
+            <Popover open={menuOpen} onOpenChange={setMenuOpen}>
+              <PopoverTrigger asChild>
+                <button
+                  type="button"
+                  aria-label={t('more')}
+                  className="shrink-0 text-[#707973] hover:text-[#171D19]"
+                >
+                  <MoreVertical className="size-5" strokeWidth={1.5} />
+                </button>
+              </PopoverTrigger>
+              <PopoverContent
+                align="end"
+                sideOffset={6}
+                dir="rtl"
+                className="w-[240px] gap-0 rounded-xl border-0 bg-[#F8F8F0] p-1 shadow-home-elevation-2 ring-0"
+              >
+                <ul className="flex flex-col py-1">
+                  <li>
+                    <button
+                      type="button"
+                      className="flex h-11 w-full items-center px-3 text-start text-sm font-medium text-[#171D19] hover:bg-black/[0.04]"
+                      onClick={() => {
+                        setMenuOpen(false);
+                        setDeleteOpen(true);
+                      }}
+                    >
+                      {tFlow('menuDeleteRegistered')}
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      type="button"
+                      className="flex h-11 w-full items-center px-3 text-start text-sm font-medium text-[#171D19] hover:bg-black/[0.04]"
+                      onClick={() => {
+                        setMenuOpen(false);
+                        setTransferOpen(true);
+                      }}
+                    >
+                      {tFlow('menuEditNote')}
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      type="button"
+                      className="flex h-11 w-full items-center px-3 text-start text-sm font-medium text-[#171D19] hover:bg-black/[0.04]"
+                      onClick={() => setMenuOpen(false)}
+                    >
+                      {tFlow('menuReport')}
+                    </button>
+                  </li>
+                </ul>
+              </PopoverContent>
+            </Popover>
           </header>
 
           <p className="w-full text-start text-sm font-medium leading-5 text-[#171D19]">
@@ -306,8 +460,12 @@ export function CommentCard({
                       key={reply.id}
                       comment={reply}
                       nested
+                      transferredCount={transferredCount}
                       accessToken={accessToken}
                       viewerActorId={viewerActorId}
+                      onTransfer={onTransfer}
+                      onDelete={onDelete}
+                      onEditNote={onEditNote}
                     />
                   ))
                 : null}
@@ -315,6 +473,39 @@ export function CommentCard({
           ) : null}
         </div>
       </div>
+
+      <CommentConfirmDialog
+        open={deleteOpen}
+        title={tFlow('deleteTitle')}
+        primaryLabel={tFlow('yes')}
+        secondaryLabel={tFlow('no')}
+        textActions
+        onPrimary={() => {
+          onDelete?.(comment.id);
+          setDeleteOpen(false);
+          setDeleteSuccessOpen(true);
+        }}
+        onSecondary={() => setDeleteOpen(false)}
+      />
+
+      <CommentConfirmDialog
+        open={deleteSuccessOpen}
+        title={tFlow('deleteSuccess')}
+        primaryLabel={tFlow('close')}
+        textActions
+        singleAction
+        onPrimary={() => setDeleteSuccessOpen(false)}
+      />
+
+      <CommentTransferFlow
+        comment={comment}
+        transferredCount={transferredCount}
+        open={transferOpen}
+        onOpenChange={setTransferOpen}
+        onConfirmTransfer={(note) => {
+          onTransfer?.(comment.id, note);
+        }}
+      />
     </article>
   );
 }
@@ -324,51 +515,58 @@ function InteractionRow({
   dislikes,
   shares,
   reaction,
+  featured,
   disabled,
   shareDisabled,
   onLike,
   onDislike,
   onShare,
+  onToggleFeature,
   labels,
 }: {
   likes: number;
   dislikes: number;
   shares: number;
   reaction: 'like' | 'dislike' | 'none';
+  featured: boolean;
   disabled?: boolean;
   shareDisabled?: boolean;
   onLike: () => void;
   onDislike: () => void;
   onShare: () => void;
+  onToggleFeature: () => void;
   labels: {
-    pin: string;
+    feature: string;
+    unfeature: string;
     reply: string;
-    share: string;
+    transfer: string;
     dislike: string;
     like: string;
     more: string;
   };
 }) {
+  const liked = reaction === 'like';
+
   return (
     <div className="flex w-full justify-end">
       <div
-        dir="ltr"
+        dir="rtl"
         className="flex flex-wrap items-center gap-1 text-[#707973]"
       >
         <ActionButton
-          label={labels.pin}
-          icon={<Pin className="size-5" strokeWidth={1.5} />}
-        />
-        <ActionButton
-          label={labels.reply}
-          icon={<MessageCircle className="size-5" strokeWidth={1.5} />}
-        />
-        <ActionButton
-          label={labels.share}
-          count={shares}
-          disabled={shareDisabled}
-          onClick={onShare}
-          icon={<Share2 className="size-5" strokeWidth={1.5} />}
+          label={labels.like}
+          count={likes}
+          active={liked}
+          activeClassName="text-[#F66060]"
+          disabled={disabled}
+          onClick={onLike}
+          icon={
+            <Heart
+              className="size-5"
+              fill="none"
+              strokeWidth={1.5}
+            />
+          }
         />
         <ActionButton
           label={labels.dislike}
@@ -379,12 +577,27 @@ function InteractionRow({
           icon={<ThumbsDown className="size-5" strokeWidth={1.5} />}
         />
         <ActionButton
-          label={labels.like}
-          count={likes}
-          active={reaction === 'like'}
-          disabled={disabled}
-          onClick={onLike}
-          icon={<Heart className="size-5" strokeWidth={1.5} />}
+          label={labels.transfer}
+          count={shares}
+          disabled={shareDisabled}
+          onClick={onShare}
+          icon={<Repeat2 className="size-5" strokeWidth={1.5} />}
+        />
+        <ActionButton
+          label={labels.reply}
+          icon={<Reply className="size-5" strokeWidth={1.5} />}
+        />
+        <ActionButton
+          label={featured ? labels.unfeature : labels.feature}
+          active={featured}
+          activeClassName="text-warning"
+          onClick={onToggleFeature}
+          icon={
+            <Star
+              className={cn('size-5', featured && 'text-warning')}
+              strokeWidth={1.5}
+            />
+          }
         />
       </div>
     </div>
@@ -396,6 +609,8 @@ function ActionButton({
   count,
   icon,
   active,
+  className,
+  activeClassName = 'text-primary',
   disabled,
   onClick,
 }: {
@@ -403,6 +618,8 @@ function ActionButton({
   count?: number;
   icon: ReactNode;
   active?: boolean;
+  className?: string;
+  activeClassName?: string;
   disabled?: boolean;
   onClick?: () => void;
 }) {
@@ -415,13 +632,12 @@ function ActionButton({
       onClick={onClick}
       className={cn(
         'inline-flex items-center gap-1 rounded-lg px-2 py-1 text-sm hover:bg-black/5 disabled:opacity-50',
-        active && 'text-primary'
+        className,
+        active && activeClassName
       )}
     >
       {icon}
-      {count != null && count > 0 ? (
-        <span>{formatFaNumber(count)}</span>
-      ) : null}
+      {count != null ? <span>{formatFaNumber(count)}</span> : null}
     </button>
   );
 }

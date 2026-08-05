@@ -7,6 +7,7 @@ import { useState } from 'react';
 
 import type { PublicPanelProfile } from '@public-panel/data/public-panel-ui';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
@@ -32,17 +33,16 @@ export function ProfileHeroCard({ profile }: ProfileHeroCardProps) {
         'shadow-home-elevation-2 dark:bg-home-search-category'
       )}
     >
-      <div
+      <Badge
+        variant="warning"
         className={cn(
-          'absolute start-0 top-[15px] z-20 flex h-[55px] items-center',
-          'rounded-e-[10px] bg-warning pe-4 ps-5',
+          'absolute start-0 top-[15px] z-20 h-[55px] rounded-none rounded-e-[10px]',
+          'px-5 text-base font-semibold leading-6 tracking-[0.0094em]',
           'shadow-home-elevation-3'
         )}
       >
-        <span className="text-base font-semibold leading-6 tracking-[0.0094em] text-white">
-          {t(`providerBadge.${profile.providerBadgeKey}`)}
-        </span>
-      </div>
+        {t(`providerBadge.${profile.providerBadgeKey}`)}
+      </Badge>
 
       <div
         className={cn(
@@ -74,9 +74,9 @@ export function ProfileHeroCard({ profile }: ProfileHeroCardProps) {
                 <p className="text-base font-bold leading-6 text-content min-[834px]:text-lg min-[834px]:leading-6">
                   {profile.username}
                 </p>
-                <span className="inline-flex h-[34px] min-w-[118px] items-center justify-center rounded-full px-3 text-[17px] font-medium leading-[27px] tracking-[0.0094em] text-warning">
+                <Badge className="h-[34px] min-w-[118px] justify-center rounded-full border-0 bg-transparent px-3 text-[17px] font-medium leading-[27px] tracking-[0.0094em] text-warning">
                   {t(`role.${profile.roleLabelKey}`)}
-                </span>
+                </Badge>
               </div>
 
               <div className="flex flex-col items-center gap-4">
