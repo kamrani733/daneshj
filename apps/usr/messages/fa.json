@@ -638,7 +638,26 @@
       "bodyLine1": "اکوسیستمی از سرویس‌ها برای زندگی دانشجویی:",
       "bodyLine2": "خبرنامه، رویداد، معرفی برنامه‌های دانشگاهی"
     },
-    "academicRecords": "سوابق تحصیلی \"{username}\" ({count})",
+    "academicRecords": "سوابق تحصیلی «{username}» ({count})",
+    "educationAddress": {
+      "title": "آدرس محل تحصیل/شغل",
+      "country": "کشور:",
+      "province": "استان:",
+      "city": "شهر/شهرستان:",
+      "district": "منطقه/روستا:"
+    },
+    "academicRecord": {
+      "fieldGroup": "حوزه / گروه: {value}",
+      "endDate": "تاریخ پایان تحصیل : {date}",
+      "status": {
+        "verified": "تایید شده",
+        "declared": "اظهاری"
+      },
+      "role": {
+        "graduate": "فارغ‌التحصیل",
+        "student": "دانشجو"
+      }
+    },
     "serviceInfo": "اطلاعات سرویس دهندگی",
     "tabs": {
       "services": "سرویس‌های من ({count})",

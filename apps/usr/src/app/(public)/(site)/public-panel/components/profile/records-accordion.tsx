@@ -1,37 +1,47 @@
 'use client';
 
-import { ChevronDown } from 'lucide-react';
+import { Check, ChevronDown } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
-import type { AcademicRecord } from '@public-panel/data/public-panel-ui';
+import type {
+  AcademicRecord,
+  EducationAddress,
+} from '@public-panel/data/public-panel-ui';
+import { Badge } from '@/components/ui/badge';
 import { formatFaNumber } from '@/lib/format-fa';
 import { cn } from '@/lib/utils';
 
+import { BorderedSectionCard } from '../shared/bordered-section-card';
 import { TitleUnderline } from '../shared/title-underline';
 
 type RecordsAccordionProps = {
   username: string;
   records: AcademicRecord[];
+  address: EducationAddress;
 };
 
 /** Collapsible academic records section. */
-export function RecordsAccordion({ username, records }: RecordsAccordionProps) {
+export function RecordsAccordion({
+  username,
+  records,
+  address,
+}: RecordsAccordionProps) {
   const t = useTranslations('publicPanel');
   const [open, setOpen] = useState(false);
 
   return (
-    <section className="flex w-full flex-col items-start py-4">
+    <section className="flex w-full flex-col items-start gap-5 py-2">
       <button
         type="button"
         aria-expanded={open}
         onClick={() => setOpen((v) => !v)}
-        className="flex w-fit flex-col items-start gap-2 px-8 py-2"
+        className="flex w-fit flex-col items-start gap-1.5 px-2"
       >
-        <span className="inline-flex items-center gap-2 px-2 text-lg font-bold leading-6 text-[#005138]">
+        <span className="inline-flex items-center gap-1.5 text-lg font-bold leading-6 text-[#005138]">
           <ChevronDown
             className={cn(
-              'size-6 shrink-0 transition-transform',
+              'size-5 shrink-0 transition-transform',
               open && 'rotate-180'
             )}
             aria-hidden
@@ -41,32 +51,132 @@ export function RecordsAccordion({ username, records }: RecordsAccordionProps) {
             count: formatFaNumber(records.length),
           })}
         </span>
-        <TitleUnderline />
+        <TitleUnderline className="w-full" />
       </button>
 
       {open ? (
-        <ul className="mt-6 flex flex-col gap-3">
-          {records.map((record) => (
-            <li
-              key={record.id}
-              className="rounded-xl border border-border/50 bg-white px-4 py-3 dark:bg-home-search-category"
-            >
-              <div className="flex flex-col gap-1 text-sm leading-5 text-home-filter-ink min-[720px]:flex-row min-[720px]:items-center min-[720px]:justify-between">
-                <div className="flex flex-col gap-0.5 text-end min-[720px]:text-start">
-                  <span className="font-bold">{record.degree}</span>
-                  <span className="text-home-filter-muted">{record.field}</span>
-                  <span className="text-home-filter-muted">
-                    {record.university}
-                  </span>
-                </div>
-                <span className="shrink-0 text-home-filter-muted">
-                  {record.years}
-                </span>
-              </div>
-            </li>
-          ))}
-        </ul>
+        <div className="flex w-full flex-col gap-5">
+          <BorderedSectionCard
+            title={t('educationAddress.title')}
+            titleBgClassName="bg-home-scene"
+            titleClassName="text-sm font-medium text-[#404943]"
+            className="rounded-xl border-[#C4C7C0] bg-[#F8F8F0] px-6 py-5 dark:border-border"
+          >
+            <dl className="grid grid-cols-2 gap-x-4 gap-y-4 min-[720px]:grid-cols-4">
+              <AddressField
+                label={t('educationAddress.country')}
+                value={address.country}
+              />
+              <AddressField
+                label={t('educationAddress.province')}
+                value={address.province}
+              />
+              <AddressField
+                label={t('educationAddress.city')}
+                value={address.city}
+              />
+              <AddressField
+                label={t('educationAddress.district')}
+                value={address.district}
+              />
+            </dl>
+          </BorderedSectionCard>
+
+          <ul className="flex w-full flex-col gap-5">
+            {records.map((record) => (
+              <li key={record.id}>
+                <AcademicRecordCard record={record} />
+              </li>
+            ))}
+          </ul>
+        </div>
       ) : null}
     </section>
+  );
+}
+
+function AddressField({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex flex-col items-center gap-1 text-center">
+      <dt className="text-xs font-medium leading-5 text-[#707973]">{label}</dt>
+      <dd className="text-sm font-bold leading-5 text-[#171D19]">{value}</dd>
+    </div>
+  );
+}
+
+function AcademicRecordCard({ record }: { record: AcademicRecord }) {
+  const t = useTranslations('publicPanel.academicRecord');
+
+  return (
+    <article className="flex w-full flex-col gap-3 rounded-2xl border border-[#E8E8E6] bg-white px-6 py-5 shadow-[0_1px_3px_0_rgba(0,0,0,0.06)]">
+      <div className="flex flex-wrap items-center gap-2">
+        <h4 className="text-base font-bold leading-6 text-[#171D19]">
+          {record.degree}
+        </h4>
+        <RoleBadge role={record.role} />
+        <StatusBadge status={record.status} />
+      </div>
+
+      <div className="flex flex-col gap-2 min-[720px]:flex-row min-[720px]:items-start min-[720px]:justify-between min-[720px]:gap-10">
+        <div className="flex min-w-0 flex-col items-start gap-1 text-start">
+          <p className="text-sm font-medium leading-5 text-[#404943]">
+            {record.university}
+          </p>
+          <p className="text-sm leading-5 text-[#707973]">
+            {t('fieldGroup', { value: record.fieldGroup })}
+          </p>
+        </div>
+
+        <div className="flex min-w-0 flex-col items-start gap-1 text-start min-[720px]:max-w-[320px] min-[720px]:shrink-0">
+          <p className="text-sm leading-5 text-[#404943]">{record.description}</p>
+          <p className="text-sm leading-5 text-[#707973]">
+            {t('endDate', { date: record.endDate })}
+          </p>
+        </div>
+      </div>
+    </article>
+  );
+}
+
+function RoleBadge({ role }: { role: AcademicRecord['role'] }) {
+  const t = useTranslations('publicPanel.academicRecord.role');
+
+  return (
+    <Badge
+      variant="outline"
+      className={cn(
+        'h-7 rounded-full bg-transparent px-2.5 text-xs font-medium leading-4',
+        role === 'graduate'
+          ? 'border-[#008D63] text-[#008D63]'
+          : 'border-[#C45C3E] text-[#C45C3E]'
+      )}
+    >
+      {t(role)}
+    </Badge>
+  );
+}
+
+function StatusBadge({ status }: { status: AcademicRecord['status'] }) {
+  const t = useTranslations('publicPanel.academicRecord.status');
+
+  if (status === 'verified') {
+    return (
+      <Badge
+        variant="secondary"
+        className="h-7 gap-1 rounded-full border-0 bg-[#D3F4E1] px-2.5 text-xs font-medium leading-4 text-[#005138]"
+      >
+        <Check className="size-3.5" strokeWidth={2.5} aria-hidden />
+        {t('verified')}
+      </Badge>
+    );
+  }
+
+  return (
+    <Badge
+      variant="secondary"
+      className="h-7 rounded-full border-0 bg-[#C1E9FB] px-2.5 text-xs font-medium leading-4 text-[#244C5B]"
+    >
+      {t('declared')}
+    </Badge>
   );
 }

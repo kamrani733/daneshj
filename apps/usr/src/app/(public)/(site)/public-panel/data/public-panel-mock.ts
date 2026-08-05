@@ -60,26 +60,44 @@ export const MOCK_PUBLIC_PANEL: PublicPanelProfile = {
   academicRecords: [
     {
       id: '1',
-      degree: 'کارشناسی ارشد',
-      field: 'مهندسی نرم‌افزار',
-      university: 'دانشگاه تهران',
-      years: '۱۴۰۱ — ۱۴۰۳',
+      degree: 'کارشناسی حقوق',
+      university: 'دانشگاه علامه طباطبایی، دانشکده حقوق',
+      fieldGroup: 'علوم انسانی',
+      description:
+        'توضیح مقطع تحصیلی اگر وجود دارد در این قسمت نوشته می‌شود',
+      endDate: '۱۳۹۲/۰۷/۱۲',
+      status: 'verified',
+      role: 'graduate',
     },
     {
       id: '2',
-      degree: 'کارشناسی',
-      field: 'مهندسی کامپیوتر',
-      university: 'دانشگاه صنعتی شریف',
-      years: '۱۳۹۷ — ۱۴۰۱',
+      degree: 'کارشناسی حقوق',
+      university: 'دانشگاه علامه طباطبایی، دانشکده حقوق',
+      fieldGroup: 'علوم انسانی',
+      description:
+        'توضیح مقطع تحصیلی اگر وجود دارد در این قسمت نوشته می‌شود',
+      endDate: '۱۳۹۲/۰۷/۱۲',
+      status: 'declared',
+      role: 'student',
     },
     {
       id: '3',
-      degree: 'دیپلم',
-      field: 'ریاضی فیزیک',
-      university: 'دبیرستان نمونه دولتی',
-      years: '۱۳۹۳ — ۱۳۹۷',
+      degree: 'کارشناسی حقوق',
+      university: 'دانشگاه علامه طباطبایی، دانشکده حقوق',
+      fieldGroup: 'علوم انسانی',
+      description:
+        'توضیح مقطع تحصیلی اگر وجود دارد در این قسمت نوشته می‌شود',
+      endDate: '۱۳۹۲/۰۷/۱۲',
+      status: 'declared',
+      role: 'graduate',
     },
   ],
+  educationAddress: {
+    country: 'ایران',
+    province: 'تهران',
+    city: 'تهران',
+    district: 'دو',
+  },
   serviceCatalog: {
     totals: {
       discounts: 6,

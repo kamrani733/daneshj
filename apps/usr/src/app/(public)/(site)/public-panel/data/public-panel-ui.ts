@@ -14,12 +14,28 @@ export type PublicPanelSocialLink = {
   href: string;
 };
 
+export type AcademicRecordStatus = 'verified' | 'declared';
+export type AcademicRecordRole = 'graduate' | 'student';
+
+export type EducationAddress = {
+  country: string;
+  province: string;
+  city: string;
+  district: string;
+};
+
 export type AcademicRecord = {
   id: string;
+  /** e.g. کارشناسی حقوق */
   degree: string;
-  field: string;
+  /** e.g. دانشگاه علامه طباطبایی، دانشکده حقوق */
   university: string;
-  years: string;
+  /** e.g. علوم انسانی */
+  fieldGroup: string;
+  description: string;
+  endDate: string;
+  status: AcademicRecordStatus;
+  role: AcademicRecordRole;
 };
 
 export type DiscountOffer = {
@@ -128,6 +144,7 @@ export type PublicPanelProfile = {
     shares: number;
   };
   academicRecords: AcademicRecord[];
+  educationAddress: EducationAddress;
   serviceCatalog: ServiceCatalog;
   otherInfo: string[];
   comments: PanelComment[];

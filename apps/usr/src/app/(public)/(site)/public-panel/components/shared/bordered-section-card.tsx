@@ -9,6 +9,7 @@ type BorderedSectionCardProps = {
   className?: string;
   /** Matches parent surface so the floating title punches a hole in the border. */
   titleBgClassName?: string;
+  titleClassName?: string;
 };
 
 /** Card with floating title on the top border. */
@@ -18,6 +19,7 @@ export function BorderedSectionCard({
   footer,
   className,
   titleBgClassName = 'bg-home-scene',
+  titleClassName,
 }: BorderedSectionCardProps) {
   return (
     <section
@@ -30,7 +32,8 @@ export function BorderedSectionCard({
         className={cn(
           'absolute -top-2.5 start-4 px-1 text-sm font-bold leading-5 tracking-[0.0071em] text-primary',
           'dark:!bg-home-search-category',
-          titleBgClassName
+          titleBgClassName,
+          titleClassName
         )}
       >
         {title}

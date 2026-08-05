@@ -40,6 +40,7 @@ export function PublicPanelView({
         <RecordsAccordion
           username={profile.username}
           records={profile.academicRecords}
+          address={profile.educationAddress}
         />
       </div>
 
