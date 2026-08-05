@@ -31,7 +31,7 @@ export function CatalogSection({
     >
       <div className="flex w-full flex-col items-end">
         <div className="flex w-fit flex-col items-stretch gap-2 px-4">
-          <h3 className="px-2 text-end text-lg font-bold leading-6 text-[#005138]">
+          <h3 className="px-2 text-end text-lg font-bold leading-6 text-primary-700 dark:text-primary-100">
             {title} ({count})
           </h3>
           <TitleUnderline />

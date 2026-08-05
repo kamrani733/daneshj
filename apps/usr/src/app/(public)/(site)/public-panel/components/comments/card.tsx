@@ -21,10 +21,8 @@ import {
 import {
   ACTOR_TYPE,
   LIKE_STATUS,
-  SHARE_PLATFORM,
   TARGET_TYPE,
   useLikeMutation,
-  useShareMutation,
 } from '@public-panel/api';
 import type { PanelComment } from '@public-panel/data/public-panel-ui';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -77,7 +75,7 @@ export function CommentCard({
   const replyRef = useRef<HTMLTextAreaElement>(null);
   const [likes, setLikes] = useState(comment.likes);
   const [dislikes, setDislikes] = useState(comment.dislikes);
-  const [shares, setShares] = useState(comment.shares);
+  const shares = comment.shares;
   const [reaction, setReaction] = useState<'like' | 'dislike' | 'none'>('none');
   const [featured, setFeatured] = useState(Boolean(comment.featured));
   const [transferOpen, setTransferOpen] = useState(false);
@@ -92,7 +90,6 @@ export function CommentCard({
   }, [replying]);
 
   const likeMutation = useLikeMutation();
-  const shareMutation = useShareMutation();
 
   const targetId = Number.parseInt(comment.id.replace(/\D/g, ''), 10);
   const canInteract =
@@ -144,25 +141,6 @@ export function CommentCard({
     }
   }
 
-  async function handleShare() {
-    if (!canInteract || !viewerActorId) return;
-    try {
-      await shareMutation.mutateAsync({
-        accessToken,
-        actorType: ACTOR_TYPE.user,
-        actorId: viewerActorId,
-        targetType: TARGET_TYPE.comment,
-        targetId,
-        platform: SHARE_PLATFORM.inSite,
-        url:
-          typeof window !== 'undefined' ? window.location.href : '/public-panel',
-      });
-      setShares((value) => value + 1);
-    } catch {
-      /* keep prior count */
-    }
-  }
-
   const closeReply = () => {
     setReplyDraft('');
     setReplying(false);
@@ -204,10 +182,10 @@ export function CommentCard({
       reaction={reaction}
       featured={featured}
       disabled={likeMutation.isPending}
-      shareDisabled={!canInteract || shareMutation.isPending}
+      transferDisabled={isTransferred}
       onLike={() => void handleReaction('like')}
       onDislike={() => void handleReaction('dislike')}
-      onShare={() => void handleShare()}
+      onTransfer={() => setTransferOpen(true)}
       onReply={() => setReplying((value) => !value)}
       onToggleFeature={() => setFeatured((value) => !value)}
       labels={{
@@ -226,7 +204,7 @@ export function CommentCard({
     return (
       <article
         className={cn(
-          'relative flex flex-col items-stretch gap-3 rounded-xl bg-white p-4 shadow-[0_2px_4px_0_rgba(0,0,0,0.05)]',
+          'relative flex flex-col items-stretch gap-3 rounded-xl bg-home-stat-card p-4 shadow-[0_2px_4px_0_rgba(0,0,0,0.05)]',
           className
         )}
       >
@@ -236,7 +214,7 @@ export function CommentCard({
               <button
                 type="button"
                 aria-label={t('more')}
-                className="text-[#707973] hover:text-[#171D19]"
+                className="text-neutral-600 hover:text-home-filter-ink dark:text-home-filter-muted dark:hover:text-home-filter-ink"
               >
                 <MoreVertical className="size-5" strokeWidth={1.5} />
               </button>
@@ -245,13 +223,13 @@ export function CommentCard({
               align="end"
               sideOffset={6}
               dir="rtl"
-              className="w-[240px] gap-0 rounded-xl border-0 bg-[#F8F8F0] p-1 shadow-home-elevation-2 ring-0"
+              className="w-[240px] gap-0 rounded-xl border-0 bg-home-search-fill p-1 shadow-home-elevation-2 ring-0 dark:bg-home-search-category"
             >
               <ul className="flex flex-col py-1">
                 <li>
                   <button
                     type="button"
-                    className="flex h-11 w-full items-center px-3 text-start text-sm font-medium text-[#171D19] hover:bg-black/[0.04]"
+                    className="flex h-11 w-full items-center px-3 text-start text-sm font-medium text-home-filter-ink hover:bg-black/[0.04] dark:hover:bg-white/10"
                     onClick={() => {
                       setMenuOpen(false);
                       setDeleteOpen(true);
@@ -263,7 +241,7 @@ export function CommentCard({
                 <li>
                   <button
                     type="button"
-                    className="flex h-11 w-full items-center px-3 text-start text-sm font-medium text-[#171D19] hover:bg-black/[0.04]"
+                    className="flex h-11 w-full items-center px-3 text-start text-sm font-medium text-home-filter-ink hover:bg-black/[0.04] dark:hover:bg-white/10"
                     onClick={() => {
                       setMenuOpen(false);
                       setEditOpen(true);
@@ -275,7 +253,7 @@ export function CommentCard({
                 <li>
                   <button
                     type="button"
-                    className="flex h-11 w-full items-center px-3 text-start text-sm font-medium text-[#171D19] hover:bg-black/[0.04]"
+                    className="flex h-11 w-full items-center px-3 text-start text-sm font-medium text-home-filter-ink hover:bg-black/[0.04] dark:hover:bg-white/10"
                     onClick={() => setMenuOpen(false)}
                   >
                     {tFlow('menuReport')}
@@ -322,25 +300,25 @@ export function CommentCard({
         />
 
         <header className="flex items-center gap-3 pe-6">
-          <Avatar className="size-12 shrink-0 ring-2 ring-[#008D63]">
+          <Avatar className="size-12 shrink-0 ring-2 ring-primary dark:ring-primary-100">
             {comment.authorAvatar ? (
               <AvatarImage src={comment.authorAvatar} alt={comment.authorName} />
             ) : null}
-            <AvatarFallback className="bg-white text-base font-bold text-[#171D19]">
+            <AvatarFallback className="bg-home-stat-card text-base font-bold text-home-filter-ink dark:bg-home-search-category">
               {comment.authorName.slice(0, 2)}
             </AvatarFallback>
           </Avatar>
 
           <div className="flex min-w-0 flex-col items-start gap-0.5">
             <div className="flex flex-wrap items-center gap-2">
-              <h4 className="text-sm font-bold text-[#171D19]">
+              <h4 className="text-sm font-bold text-home-filter-ink">
                 {comment.authorName}
               </h4>
-              <span className="text-xs text-[#707973]">
+              <span className="text-xs text-neutral-600 dark:text-home-filter-muted">
                 @{comment.authorHandle}
               </span>
             </div>
-            <div className="flex flex-wrap items-center gap-2 text-xs text-[#707973]">
+            <div className="flex flex-wrap items-center gap-2 text-xs text-neutral-600 dark:text-home-filter-muted">
               {comment.timeLabel ? <span>{comment.timeLabel}</span> : null}
               <span>{comment.createdAt}</span>
               <span aria-hidden>•</span>
@@ -350,23 +328,23 @@ export function CommentCard({
         </header>
 
         {comment.quoteNote ? (
-          <p className="w-full text-start text-sm leading-normal text-[#171D19]">
+          <p className="w-full text-start text-sm leading-normal text-home-filter-ink">
             &quot;{comment.quoteNote}&quot;
           </p>
         ) : null}
 
-        <div className="w-full rounded-xl border border-[#008D63] bg-[rgba(0,141,99,0.1)] p-4">
+        <div className="w-full rounded-xl border border-primary bg-primary/10 p-4 dark:border-primary-100">
           <div className="flex flex-col items-stretch gap-3">
             <div className="flex items-center gap-2.5">
-              <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-[#707973] text-[12.8px] font-bold text-white">
+              <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-neutral-600 text-[12.8px] font-bold text-white">
                 {(comment.originalAuthorName ?? comment.authorName).slice(0, 2)}
               </div>
-              <span className="text-sm font-bold text-[#171D19]">
+              <span className="text-sm font-bold text-home-filter-ink">
                 {comment.originalAuthorName ?? comment.authorName} @
                 {comment.originalAuthorHandle ?? comment.authorHandle}
               </span>
             </div>
-            <p className="w-full text-start text-sm leading-[1.5] text-[#171D19]">
+            <p className="w-full text-start text-sm leading-[1.5] text-home-filter-ink">
               {comment.body}
             </p>
           </div>
@@ -383,18 +361,18 @@ export function CommentCard({
       className={cn(
         'relative rounded-xl p-4 shadow-[0_2px_4px_0_rgba(0,0,0,0.05)]',
         featured
-          ? 'border-s-[3px] border-s-[#F59E0B] bg-[#FFF5EB]'
-          : 'bg-white',
-        nested && 'bg-[#F8F8F0]',
+          ? 'border-s-[3px] border-s-warning bg-warning-10 dark:bg-home-stat-card'
+          : 'bg-home-stat-card',
+        nested && 'bg-home-search-fill dark:bg-home-search-category',
         className
       )}
     >
       <div className="flex items-start gap-3">
-        <Avatar className="size-12 shrink-0 bg-[#BFC9C1]">
+        <Avatar className="size-12 shrink-0 bg-border">
           {comment.authorAvatar ? (
             <AvatarImage src={comment.authorAvatar} alt={comment.authorName} />
           ) : null}
-          <AvatarFallback className="bg-[#BFC9C1] text-base font-bold text-white">
+          <AvatarFallback className="bg-border text-base font-bold text-white">
             {comment.authorName.slice(0, 2)}
           </AvatarFallback>
         </Avatar>
@@ -402,26 +380,26 @@ export function CommentCard({
         <div className="flex min-w-0 flex-1 flex-col gap-3">
           <header className="flex w-full items-center justify-between gap-2">
             <div className="flex flex-wrap items-center gap-2">
-              <h4 className="text-sm font-bold text-[#171D19]">
+              <h4 className="text-sm font-bold text-home-filter-ink">
                 {comment.authorName}
               </h4>
-              <span className="text-xs font-medium text-[#707973]">
+              <span className="text-xs font-medium text-neutral-600 dark:text-home-filter-muted">
                 @{comment.authorHandle}
               </span>
-              <span className="text-xs font-medium text-[#707973]">
+              <span className="text-xs font-medium text-neutral-600 dark:text-home-filter-muted">
                 {comment.createdAt}
               </span>
-              <span className="text-[#707973]" aria-hidden>
+              <span className="text-neutral-600 dark:text-home-filter-muted" aria-hidden>
                 •
               </span>
               {comment.timeLabel ? (
-                <span className="text-xs font-medium text-[#707973]">
+                <span className="text-xs font-medium text-neutral-600 dark:text-home-filter-muted">
                   {comment.timeLabel}
                 </span>
               ) : null}
               {featured ? (
-                <Badge className="h-auto gap-1 border-0 bg-transparent px-0 text-xs font-bold text-[#F59E0B]">
-                  <Star className="size-3.5 fill-[#F59E0B] text-[#F59E0B]" />
+                <Badge className="h-auto gap-1 border-0 bg-transparent px-0 text-xs font-bold text-warning">
+                  <Star className="size-3.5 fill-warning text-warning" />
                   {t('badgeFeatured')}
                 </Badge>
               ) : null}
@@ -431,7 +409,7 @@ export function CommentCard({
                 <button
                   type="button"
                   aria-label={t('more')}
-                  className="shrink-0 text-[#707973] hover:text-[#171D19]"
+                  className="shrink-0 text-neutral-600 hover:text-home-filter-ink dark:text-home-filter-muted dark:hover:text-home-filter-ink"
                 >
                   <MoreVertical className="size-5" strokeWidth={1.5} />
                 </button>
@@ -440,13 +418,13 @@ export function CommentCard({
                 align="end"
                 sideOffset={6}
                 dir="rtl"
-                className="w-[240px] gap-0 rounded-xl border-0 bg-[#F8F8F0] p-1 shadow-home-elevation-2 ring-0"
+                className="w-[240px] gap-0 rounded-xl border-0 bg-home-search-fill p-1 shadow-home-elevation-2 ring-0 dark:bg-home-search-category"
               >
                 <ul className="flex flex-col py-1">
                   <li>
                     <button
                       type="button"
-                      className="flex h-11 w-full items-center px-3 text-start text-sm font-medium text-[#171D19] hover:bg-black/[0.04]"
+                      className="flex h-11 w-full items-center px-3 text-start text-sm font-medium text-home-filter-ink hover:bg-black/[0.04] dark:hover:bg-white/10"
                       onClick={() => {
                         setMenuOpen(false);
                         setDeleteOpen(true);
@@ -458,7 +436,7 @@ export function CommentCard({
                   <li>
                     <button
                       type="button"
-                      className="flex h-11 w-full items-center px-3 text-start text-sm font-medium text-[#171D19] hover:bg-black/[0.04]"
+                      className="flex h-11 w-full items-center px-3 text-start text-sm font-medium text-home-filter-ink hover:bg-black/[0.04] dark:hover:bg-white/10"
                       onClick={() => {
                         setMenuOpen(false);
                         setTransferOpen(true);
@@ -470,7 +448,7 @@ export function CommentCard({
                   <li>
                     <button
                       type="button"
-                      className="flex h-11 w-full items-center px-3 text-start text-sm font-medium text-[#171D19] hover:bg-black/[0.04]"
+                      className="flex h-11 w-full items-center px-3 text-start text-sm font-medium text-home-filter-ink hover:bg-black/[0.04] dark:hover:bg-white/10"
                       onClick={() => setMenuOpen(false)}
                     >
                       {tFlow('menuReport')}
@@ -481,11 +459,11 @@ export function CommentCard({
             </Popover>
           </header>
 
-          <p className="w-full text-start text-sm font-medium leading-5 text-[#171D19]">
+          <p className="w-full text-start text-sm font-medium leading-5 text-home-filter-ink">
             {comment.body}
           </p>
 
-          <div className="h-px w-full bg-[#F1EFE9]" aria-hidden />
+          <div className="h-px w-full bg-home-search-category dark:bg-border" aria-hidden />
 
           {interaction}
 
@@ -493,7 +471,7 @@ export function CommentCard({
             <button
               type="button"
               onClick={() => setShowReplies((v) => !v)}
-              className="inline-flex h-9 w-fit items-center gap-1 rounded-full border border-[#BFC9C1] px-3 text-sm font-medium text-[#404943]"
+              className="inline-flex h-9 w-fit items-center gap-1 rounded-full border border-border px-3 text-sm font-medium text-home-filter-muted dark:border-border dark:text-home-filter-ink"
             >
               <ChevronDown
                 className={cn(
@@ -574,10 +552,10 @@ function InteractionRow({
   reaction,
   featured,
   disabled,
-  shareDisabled,
+  transferDisabled,
   onLike,
   onDislike,
-  onShare,
+  onTransfer,
   onReply,
   onToggleFeature,
   labels,
@@ -588,10 +566,10 @@ function InteractionRow({
   reaction: 'like' | 'dislike' | 'none';
   featured: boolean;
   disabled?: boolean;
-  shareDisabled?: boolean;
+  transferDisabled?: boolean;
   onLike: () => void;
   onDislike: () => void;
-  onShare: () => void;
+  onTransfer: () => void;
   onReply: () => void;
   onToggleFeature: () => void;
   labels: {
@@ -610,13 +588,13 @@ function InteractionRow({
     <div className="flex w-full justify-end">
       <div
         dir="rtl"
-        className="flex flex-wrap items-center gap-1 text-[#707973]"
+        className="flex flex-wrap items-center gap-1 text-neutral-600 dark:text-home-filter-muted"
       >
         <ActionButton
           label={labels.like}
           count={likes}
           active={liked}
-          activeClassName="text-[#F66060]"
+          activeClassName="text-destructive"
           disabled={disabled}
           onClick={onLike}
           icon={
@@ -638,8 +616,8 @@ function InteractionRow({
         <ActionButton
           label={labels.transfer}
           count={shares}
-          disabled={shareDisabled}
-          onClick={onShare}
+          disabled={transferDisabled}
+          onClick={onTransfer}
           icon={<Repeat2 className="size-5" strokeWidth={1.5} />}
         />
         <ActionButton
@@ -688,7 +666,7 @@ function ReplyComposer({
 }) {
   return (
     <div className="flex w-full items-start gap-3">
-      <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-[#BFC9C1] text-xs font-bold text-white">
+      <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-border text-xs font-bold text-white">
         s
       </div>
 
@@ -703,12 +681,14 @@ function ReplyComposer({
             placeholder={labels.placeholder}
             rows={4}
             className={cn(
-              'w-full resize-none rounded-xl border border-[#BFC9C1] bg-white px-3 pb-8 pt-3',
-              'text-start text-xs font-medium leading-5 text-[#171D19]',
-              'placeholder:text-[#707973] focus-visible:border-primary focus-visible:outline-none'
+              'w-full resize-none rounded-xl border border-border bg-home-stat-card px-3 pb-8 pt-3',
+              'text-start text-xs font-medium leading-5 text-home-filter-ink',
+              'placeholder:text-neutral-600 focus-visible:border-primary focus-visible:outline-none',
+              'dark:border-border dark:bg-home-search-category dark:text-home-filter-ink',
+              'dark:placeholder:text-home-filter-muted dark:focus-visible:border-primary-100'
             )}
           />
-          <span className="pointer-events-none absolute bottom-3 end-3 text-[11px] leading-4 text-[#707973]">
+          <span className="pointer-events-none absolute bottom-3 end-3 text-[11px] leading-4 text-neutral-600 dark:text-home-filter-muted">
             {labels.charCount}
           </span>
         </label>
@@ -719,7 +699,7 @@ function ReplyComposer({
             size="pillSm"
             disabled={!draft.trim()}
             onClick={onSubmit}
-            className="rounded-lg"
+            className="rounded-lg dark:bg-primary-100 dark:text-primary-900 dark:hover:bg-primary-100/90"
           >
             {labels.submit}
           </Button>
@@ -727,7 +707,7 @@ function ReplyComposer({
             type="button"
             variant="link"
             onClick={onCancel}
-            className="h-auto px-0 text-sm font-medium text-primary"
+            className="h-auto px-0 text-sm font-medium text-primary dark:text-primary-100"
           >
             {labels.cancel}
           </Button>
@@ -743,7 +723,7 @@ function ActionButton({
   icon,
   active,
   className,
-  activeClassName = 'text-primary',
+  activeClassName = 'text-primary dark:text-primary-100',
   disabled,
   onClick,
 }: {
@@ -764,7 +744,7 @@ function ActionButton({
       disabled={disabled}
       onClick={onClick}
       className={cn(
-        'inline-flex items-center gap-1 rounded-lg px-2 py-1 text-sm hover:bg-black/5 disabled:opacity-50',
+        'inline-flex items-center gap-1 rounded-lg px-2 py-1 text-sm hover:bg-black/5 disabled:opacity-50 dark:hover:bg-white/10',
         className,
         active && activeClassName
       )}

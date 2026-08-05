@@ -108,17 +108,17 @@ const ICONS = {
 } as const;
 
 const BRAND_STYLES: Record<SocialNetwork, string> = {
-  email: 'bg-[#00A0DC] text-white',
-  telegram: 'bg-[#2AABEE] text-white',
+  email: 'bg-info text-primary-foreground',
+  telegram: 'bg-[#2AABEE] text-primary-foreground',
   instagram:
-    'bg-[linear-gradient(45deg,#F58529_0%,#DD2A7B_50%,#8134AF_100%)] text-white',
-  x: 'bg-black text-white',
-  whatsapp: 'bg-[#25D366] text-white',
-  linkedin: 'bg-[#0A66C2] text-white',
-  website: 'bg-[#2563EB] text-white',
+    'bg-[linear-gradient(45deg,#F58529_0%,#DD2A7B_50%,#8134AF_100%)] text-primary-foreground',
+  x: 'bg-neutral-black text-primary-foreground',
+  whatsapp: 'bg-[#25D366] text-primary-foreground',
+  linkedin: 'bg-info-700 text-primary-foreground',
+  website: 'bg-info-600 text-primary-foreground',
 };
 
-const PILL_BG = 'bg-[#F0EDE6]';
+const PILL_BG = 'bg-home-search-category dark:bg-home-stat-card';
 
 function getCopyValue(link: PublicPanelSocialLink): string {
   const { network, href } = link;
@@ -198,15 +198,15 @@ export function SocialLinksRow({
                     copied && BRAND_STYLES[link.network],
                     /* Open copy prompt: white + green */
                     showCopyPrompt &&
-                      'bg-white text-[#008D63] shadow-[0_1px_2px_rgba(0,0,0,0.06)]',
+                      'bg-home-stat-card text-primary shadow-[0_1px_2px_rgba(0,0,0,0.06)] dark:text-primary-100',
                     /* Idle outline (hero) */
                     !open &&
                       variant === 'outline' &&
-                      'bg-white text-[#008D63] shadow-[0_1px_2px_rgba(0,0,0,0.06)] hover:opacity-90',
+                      'bg-home-stat-card text-primary shadow-[0_1px_2px_rgba(0,0,0,0.06)] hover:opacity-90 dark:text-primary-100',
                     /* Idle filled (service info) — primary green */
                     !open &&
                       variant === 'filled' &&
-                      'bg-primary text-primary-foreground hover:opacity-90'
+                      'bg-primary text-primary-foreground hover:opacity-90 dark:bg-primary-100 dark:text-primary-900'
                   )}
                 >
                   <Icon className={iconSize} aria-hidden />
@@ -226,18 +226,18 @@ export function SocialLinksRow({
                 )}
               >
                 {copied ? (
-                  <span className="text-sm font-medium text-[#171D19]">
+                  <span className="text-sm font-medium text-home-filter-ink">
                     {t('copied')}
                   </span>
                 ) : (
                   <>
-                    <span className="max-w-[220px] truncate text-sm font-medium text-[#171D19]">
+                    <span className="max-w-[220px] truncate text-sm font-medium text-home-filter-ink">
                       {copyValue}
                     </span>
                     <button
                       type="button"
                       onClick={() => void handleCopy(link)}
-                      className="shrink-0 text-sm font-medium text-[#008D63] hover:underline"
+                      className="shrink-0 text-sm font-medium text-primary hover:underline dark:text-primary-100"
                     >
                       {tSocial('copy')}
                     </button>

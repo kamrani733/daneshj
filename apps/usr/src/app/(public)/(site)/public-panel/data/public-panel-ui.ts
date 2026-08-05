@@ -148,8 +148,38 @@ export type PublicPanelProfile = {
   academicRecords: AcademicRecord[];
   educationAddress: EducationAddress;
   serviceCatalog: ServiceCatalog;
-  otherInfo: string[];
+  otherInfo: OtherInfoContent;
   comments: PanelComment[];
+};
+
+export type ResumeFile = {
+  fileName: string;
+  sizeLabel: string;
+  updatedAt: string;
+  href: string;
+  previewHref?: string;
+};
+
+export type PortfolioItem = {
+  id: string;
+  title: string;
+  description: string;
+  imageSrc: string;
+  href?: string;
+};
+
+export type CertificateItem = {
+  id: string;
+  title: string;
+  issuer: string;
+  issuedAt: string;
+  href?: string;
+};
+
+export type OtherInfoContent = {
+  resume?: ResumeFile | null;
+  portfolio: PortfolioItem[];
+  certificates: CertificateItem[];
 };
 
 export const PUBLIC_PANEL_PATH = '/public-panel';

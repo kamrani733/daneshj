@@ -16,7 +16,7 @@ export function CatalogOfferCardShell({
     <article
       dir="rtl"
       className={cn(
-        'flex h-full flex-col overflow-hidden rounded-xl border border-border/40 bg-home-card shadow-[0_1px_2px_rgba(0,0,0,0.06)] dark:bg-home-search-category',
+        'group flex h-full cursor-pointer flex-col overflow-hidden rounded-xl border border-border/40 bg-home-card shadow-[0_1px_2px_rgba(0,0,0,0.06)] transition-[background-color,box-shadow,border-color] duration-200 dark:bg-home-stat-card',
         className
       )}
     >

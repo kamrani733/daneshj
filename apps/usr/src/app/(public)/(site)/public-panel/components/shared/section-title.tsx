@@ -18,7 +18,7 @@ export function SectionTitle({ title, className }: SectionTitleProps) {
         className
       )}
     >
-      <h2 className="px-2 text-center text-[28px] font-bold leading-10 text-[#005138]">
+      <h2 className="px-2 text-center text-[28px] font-bold leading-10 text-primary-700 dark:text-primary-100">
         {title}
       </h2>
       <TitleUnderline />

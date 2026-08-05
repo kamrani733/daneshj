@@ -89,7 +89,7 @@ export function ProfileHeroCard({ profile }: ProfileHeroCardProps) {
                 <h2 className="text-xl font-bold leading-8 tracking-[0.0094em] text-content dark:text-primary-100 min-[834px]:text-[28px] min-[834px]:leading-10">
                   {profile.displayName}
                 </h2>
-                <p className="text-sm font-medium leading-6 text-content min-[834px]:text-lg min-[834px]:font-bold">
+                <p className="text-sm font-medium leading-6 text-content dark:text-home-filter-ink min-[834px]:text-lg min-[834px]:font-bold">
                   {profile.username}
                 </p>
                 <span className="text-base font-medium leading-6 text-warning min-[834px]:text-[17px]">
@@ -98,7 +98,7 @@ export function ProfileHeroCard({ profile }: ProfileHeroCardProps) {
               </div>
 
               {showLocation ? (
-                <p className="flex items-center justify-center gap-2 px-2 text-sm font-medium leading-6 text-home-filter-muted dark:text-content min-[834px]:text-base">
+                <p className="flex items-center justify-center gap-2 px-2 text-sm font-medium leading-6 text-home-filter-muted min-[834px]:text-base">
                   <span>{profile.location}</span>
                   <MapPin
                     className="size-5 shrink-0 text-home-filter-muted min-[834px]:size-6"
@@ -130,7 +130,7 @@ export function ProfileHeroCard({ profile }: ProfileHeroCardProps) {
               title={t('aboutMe')}
               titleBgClassName="bg-home-card"
               className={cn(
-                'min-h-[120px] w-full border-primary-200/70 bg-home-card p-4 dark:border-primary/40',
+                'min-h-[120px] w-full border-primary-200/70 bg-home-card p-4 dark:border-primary/40 dark:bg-home-search-category',
                 'min-[834px]:min-h-[148px] min-[834px]:max-w-[590px] min-[834px]:flex-1 min-[834px]:p-6'
               )}
               footer={
@@ -145,7 +145,7 @@ export function ProfileHeroCard({ profile }: ProfileHeroCardProps) {
                 ) : null
               }
             >
-              <p className="text-justify text-sm font-medium leading-5 tracking-[0.0071em] text-content">
+              <p className="text-justify text-sm font-medium leading-5 tracking-[0.0071em] text-content dark:text-home-filter-ink">
                 {bioText}
               </p>
             </BorderedSectionCard>

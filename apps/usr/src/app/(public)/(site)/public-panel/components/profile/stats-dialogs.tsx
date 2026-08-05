@@ -1,8 +1,8 @@
 'use client';
 
-import { Copy, X } from 'lucide-react';
+import { Copy, Search, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -12,6 +12,7 @@ import {
   DialogDescription,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 
 export type StatsPeopleKind = 'followers' | 'following' | 'likers' | 'liked';
@@ -85,10 +86,24 @@ export function StatsPeopleDialog({
   const t = useTranslations('publicPanel');
   const tDialog = useTranslations('publicPanel.statsDialog');
   const [items, setItems] = useState(people);
+  const [query, setQuery] = useState('');
 
   useEffect(() => {
-    if (open) setItems(people);
+    if (open) {
+      setItems(people);
+      setQuery('');
+    }
   }, [open, people, kind]);
+
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return items;
+    return items.filter(
+      (person) =>
+        person.username.toLowerCase().includes(q) ||
+        person.displayName.toLowerCase().includes(q)
+    );
+  }, [items, query]);
 
   if (!kind) return null;
 
@@ -111,10 +126,10 @@ export function StatsPeopleDialog({
         dir="rtl"
         className={cn(
           'flex max-h-[85vh] w-full max-w-[420px] flex-col gap-4 overflow-hidden rounded-2xl border-0',
-          'bg-[#F8F8F0] p-4 shadow-home-elevation-2 sm:max-w-[480px]'
+          'bg-home-search-fill p-4 shadow-home-elevation-2 dark:bg-home-search-category sm:max-w-[480px]'
         )}
       >
-        <DialogTitle className="ps-10 text-start text-base font-bold leading-7 text-[#171D19]">
+        <DialogTitle className="ps-10 text-start text-base font-bold leading-7 text-home-filter-ink">
           {tDialog(TITLE_KEY[kind])}
         </DialogTitle>
         <DialogDescription className="sr-only">
@@ -125,51 +140,81 @@ export function StatsPeopleDialog({
           type="button"
           aria-label={tDialog('close')}
           onClick={() => onOpenChange(false)}
-          className="absolute end-3 top-3 inline-flex size-9 items-center justify-center rounded-full text-[#404943] hover:bg-black/5"
+          className="absolute end-3 top-3 inline-flex size-9 items-center justify-center rounded-full text-home-filter-muted hover:bg-black/5 dark:text-home-filter-ink dark:hover:bg-white/5"
         >
           <X className="size-5" strokeWidth={1.75} />
         </button>
 
-        <ul className="flex max-h-[min(60vh,480px)] flex-col gap-3 overflow-y-auto pe-1">
-          {items.map((person) => (
-            <li
-              key={person.id}
-              className={cn(
-                'flex items-center gap-3 rounded-2xl bg-white p-3',
-                'shadow-[0_1px_2px_rgba(0,0,0,0.06)]'
-              )}
-            >
-              <Avatar className="size-12 shrink-0 bg-[#BFC9C1]">
-                {person.avatarSrc ? (
-                  <AvatarImage src={person.avatarSrc} alt={person.displayName} />
-                ) : null}
-                <AvatarFallback className="bg-[#BFC9C1] text-sm font-bold text-white">
-                  {person.displayName.slice(0, 1)}
-                </AvatarFallback>
-              </Avatar>
+        <label className="relative block w-full">
+          <span className="sr-only">{tDialog('searchPlaceholder')}</span>
+          <Search
+            className="pointer-events-none absolute start-3 top-1/2 size-5 -translate-y-1/2 text-home-filter-muted"
+            strokeWidth={1.5}
+            aria-hidden
+          />
+          <Input
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+            placeholder={tDialog('searchPlaceholder')}
+            className={cn(
+              'h-10 rounded-full border border-home-filter-ink bg-home-stat-card pe-4 ps-10',
+              'text-start text-sm font-medium text-home-filter-muted shadow-none',
+              'placeholder:text-home-filter-muted focus-visible:border-home-filter-ink focus-visible:ring-0',
+              'dark:border-border dark:bg-home-stat-card dark:text-home-filter-ink',
+              'dark:placeholder:text-home-filter-muted dark:focus-visible:border-border'
+            )}
+          />
+        </label>
 
-              <div className="flex min-w-0 flex-1 flex-col items-start gap-0.5 text-start">
-                <span className="truncate text-sm font-bold text-[#171D19]">
-                  {person.username}
-                </span>
-                <span className="truncate text-xs font-medium text-[#707973]">
-                  {person.displayName}
-                </span>
-              </div>
+        {filtered.length === 0 ? (
+          <p className="py-8 text-center text-sm font-medium text-neutral-600 dark:text-home-filter-muted">
+            {tDialog('emptySearch')}
+          </p>
+        ) : (
+          <ul className="flex max-h-[min(60vh,480px)] flex-col gap-3 overflow-y-auto pe-1">
+            {filtered.map((person) => (
+              <li
+                key={person.id}
+                className={cn(
+                  'flex items-center gap-3 rounded-2xl bg-home-stat-card p-3',
+                  'shadow-[0_1px_2px_rgba(0,0,0,0.06)]'
+                )}
+              >
+                <Avatar className="size-12 shrink-0 bg-border">
+                  {person.avatarSrc ? (
+                    <AvatarImage
+                      src={person.avatarSrc}
+                      alt={person.displayName}
+                    />
+                  ) : null}
+                  <AvatarFallback className="bg-border text-sm font-bold text-primary-foreground">
+                    {person.displayName.slice(0, 1)}
+                  </AvatarFallback>
+                </Avatar>
 
-              <PeopleActionButton
-                kind={kind}
-                person={person}
-                labels={{
-                  follow: t('follow'),
-                  unfollow: t('unfollow'),
-                  remove: t('remove'),
-                }}
-                onClick={() => handleAction(person)}
-              />
-            </li>
-          ))}
-        </ul>
+                <div className="flex min-w-0 flex-1 flex-col items-start gap-0.5 text-start">
+                  <span className="truncate text-sm font-bold text-home-filter-ink">
+                    {person.username}
+                  </span>
+                  <span className="truncate text-xs font-medium text-neutral-600 dark:text-home-filter-muted">
+                    {person.displayName}
+                  </span>
+                </div>
+
+                <PeopleActionButton
+                  kind={kind}
+                  person={person}
+                  labels={{
+                    follow: t('follow'),
+                    unfollow: t('unfollow'),
+                    remove: t('remove'),
+                  }}
+                  onClick={() => handleAction(person)}
+                />
+              </li>
+            ))}
+          </ul>
+        )}
       </DialogContent>
     </Dialog>
   );
@@ -192,7 +237,7 @@ function PeopleActionButton({
         type="button"
         variant="outline"
         onClick={onClick}
-        className="h-9 shrink-0 rounded-full border-[#B3261E] px-4 text-sm font-medium text-[#B3261E] shadow-none hover:bg-[#B3261E]/5 hover:text-[#B3261E]"
+        className="h-9 shrink-0 rounded-full border-destructive px-4 text-sm font-medium text-destructive shadow-none hover:bg-destructive/5 hover:text-destructive"
       >
         {labels.remove}
       </Button>
@@ -209,8 +254,8 @@ function PeopleActionButton({
         className={cn(
           'h-9 shrink-0 rounded-full px-3 text-sm font-medium shadow-none',
           following
-            ? 'border-[#BFC9C1] text-[#171D19] hover:bg-black/5'
-            : 'bg-[#008D63] text-white hover:bg-[#007A56]'
+            ? 'border-border text-home-filter-ink hover:bg-black/5 dark:hover:bg-white/5'
+            : 'bg-primary text-primary-foreground hover:bg-primary-hover dark:bg-primary-100 dark:text-primary-900 dark:hover:bg-primary-100/90'
         )}
       >
         {following ? labels.unfollow : labels.follow}
@@ -223,7 +268,7 @@ function PeopleActionButton({
       type="button"
       variant="outline"
       onClick={onClick}
-      className="h-9 shrink-0 rounded-full border-[#BFC9C1] px-3 text-sm font-medium text-[#171D19] shadow-none hover:bg-black/5"
+      className="h-9 shrink-0 rounded-full border-border px-3 text-sm font-medium text-home-filter-ink shadow-none hover:bg-black/5 dark:hover:bg-white/5"
     >
       {labels.unfollow}
     </Button>
@@ -275,16 +320,16 @@ export function StatsShareDialog({
         dir="rtl"
         className={cn(
           'flex w-full max-w-[420px] flex-col gap-5 rounded-2xl border-0',
-          'bg-[#F8F8F0] p-5 shadow-home-elevation-2 sm:max-w-[480px]'
+          'bg-home-search-fill p-5 shadow-home-elevation-2 dark:bg-home-search-category sm:max-w-[480px]'
         )}
       >
-        <DialogTitle className="text-start text-base font-bold text-[#171D19]">
+        <DialogTitle className="text-start text-base font-bold text-home-filter-ink">
           {t('shareTitle')}
         </DialogTitle>
         <DialogDescription className="sr-only">{t('shareTitle')}</DialogDescription>
 
         <label className="relative block w-full">
-          <span className="absolute -top-2.5 start-3 bg-[#F8F8F0] px-1 text-xs font-medium text-primary">
+          <span className="absolute -top-2.5 start-3 bg-home-search-fill px-1 text-xs font-medium text-primary dark:bg-home-search-category dark:text-primary-100">
             {t('shareReason')}
           </span>
           <textarea
@@ -293,8 +338,9 @@ export function StatsShareDialog({
             placeholder={t('sharePlaceholder')}
             rows={3}
             className={cn(
-              'w-full resize-none rounded-xl border border-[#404943] bg-transparent px-3 py-3',
-              'text-start text-sm text-[#171D19] placeholder:text-[#707973]',
+              'w-full resize-none rounded-xl border border-home-filter-muted bg-transparent px-3 py-3',
+              'text-start text-sm text-home-filter-ink placeholder:text-neutral-600',
+              'dark:border-border dark:placeholder:text-home-filter-muted',
               'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30'
             )}
           />
@@ -305,16 +351,16 @@ export function StatsShareDialog({
             type="button"
             aria-label={t('copyLink')}
             onClick={() => void handleCopy()}
-            className="inline-flex size-9 shrink-0 items-center justify-center rounded-lg text-[#404943] hover:bg-black/5"
+            className="inline-flex size-9 shrink-0 items-center justify-center rounded-lg text-home-filter-muted hover:bg-black/5 dark:text-home-filter-ink dark:hover:bg-white/5"
           >
             <Copy className="size-5" strokeWidth={1.5} />
           </button>
-          <p className="min-w-0 flex-1 truncate text-sm text-[#404943]" dir="ltr">
+          <p className="min-w-0 flex-1 truncate text-sm text-home-filter-muted" dir="ltr">
             {copied ? t('copied') : shareUrl}
           </p>
         </div>
 
-        <div className="h-px w-full bg-[#E3E0DA]" aria-hidden />
+        <div className="h-px w-full bg-home-carousel-inactive dark:bg-border" aria-hidden />
 
         <ul className="mx-auto grid grid-cols-4 gap-4">
           {SHARE_TARGETS.map((target) => (
@@ -372,7 +418,7 @@ const SHARE_TARGETS = [
   },
   {
     id: 'repost',
-    className: 'bg-[#3B82F6]',
+    className: 'bg-info',
     href: (url: string) => url,
     icon: (
       <svg viewBox="0 0 24 24" className="size-6" fill="none" aria-hidden>
@@ -412,7 +458,8 @@ const SHARE_TARGETS = [
   },
   {
     id: 'drive',
-    className: 'bg-white text-[#404943] ring-1 ring-[#E3E0DA]',
+    className:
+      'bg-home-stat-card text-home-filter-muted ring-1 ring-home-carousel-inactive dark:text-home-filter-ink dark:ring-border',
     href: (url: string) => url,
     icon: (
       <svg viewBox="0 0 24 24" className="size-6" aria-hidden>

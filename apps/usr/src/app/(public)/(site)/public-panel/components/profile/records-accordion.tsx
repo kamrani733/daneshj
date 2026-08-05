@@ -38,7 +38,7 @@ export function RecordsAccordion({
         onClick={() => setOpen((v) => !v)}
         className="flex w-fit flex-col items-start gap-1.5 px-2"
       >
-        <span className="inline-flex items-center gap-1.5 text-lg font-bold leading-6 text-[#005138]">
+        <span className="inline-flex items-center gap-1.5 text-lg font-bold leading-6 text-primary-700 dark:text-primary-100">
           <ChevronDown
             className={cn(
               'size-5 shrink-0 transition-transform',
@@ -59,8 +59,8 @@ export function RecordsAccordion({
           <BorderedSectionCard
             title={t('educationAddress.title')}
             titleBgClassName="bg-home-scene"
-            titleClassName="text-sm font-medium text-[#404943]"
-            className="rounded-xl border-[#C4C7C0] bg-[#F8F8F0] px-6 py-5 dark:border-border"
+            titleClassName="text-sm font-medium text-home-filter-muted dark:text-home-filter-ink"
+            className="rounded-xl border-border bg-home-search-fill px-6 py-5 dark:bg-home-search-category"
           >
             <dl className="grid grid-cols-2 gap-x-4 gap-y-4 min-[720px]:grid-cols-4">
               <AddressField
@@ -98,8 +98,12 @@ export function RecordsAccordion({
 function AddressField({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex flex-col items-center gap-1 text-center">
-      <dt className="text-xs font-medium leading-5 text-[#707973]">{label}</dt>
-      <dd className="text-sm font-bold leading-5 text-[#171D19]">{value}</dd>
+      <dt className="text-xs font-medium leading-5 text-neutral-600 dark:text-home-filter-muted">
+        {label}
+      </dt>
+      <dd className="text-sm font-bold leading-5 text-home-filter-ink">
+        {value}
+      </dd>
     </div>
   );
 }
@@ -108,9 +112,9 @@ function AcademicRecordCard({ record }: { record: AcademicRecord }) {
   const t = useTranslations('publicPanel.academicRecord');
 
   return (
-    <article className="flex w-full flex-col gap-3 rounded-2xl border border-[#E8E8E6] bg-white px-6 py-5 shadow-[0_1px_3px_0_rgba(0,0,0,0.06)]">
+    <article className="flex w-full flex-col gap-3 rounded-2xl border border-border bg-home-stat-card px-6 py-5 shadow-[0_1px_3px_0_rgba(0,0,0,0.06)]">
       <div className="flex flex-wrap items-center gap-2">
-        <h4 className="text-base font-bold leading-6 text-[#171D19]">
+        <h4 className="text-base font-bold leading-6 text-home-filter-ink">
           {record.degree}
         </h4>
         <RoleBadge role={record.role} />
@@ -119,17 +123,19 @@ function AcademicRecordCard({ record }: { record: AcademicRecord }) {
 
       <div className="flex flex-col gap-2 min-[720px]:flex-row min-[720px]:items-start min-[720px]:justify-between min-[720px]:gap-10">
         <div className="flex min-w-0 flex-col items-start gap-1 text-start">
-          <p className="text-sm font-medium leading-5 text-[#404943]">
+          <p className="text-sm font-medium leading-5 text-home-filter-muted dark:text-home-filter-ink">
             {record.university}
           </p>
-          <p className="text-sm leading-5 text-[#707973]">
+          <p className="text-sm leading-5 text-neutral-600 dark:text-home-filter-muted">
             {t('fieldGroup', { value: record.fieldGroup })}
           </p>
         </div>
 
         <div className="flex min-w-0 flex-col items-start gap-1 text-start min-[720px]:max-w-[320px] min-[720px]:shrink-0">
-          <p className="text-sm leading-5 text-[#404943]">{record.description}</p>
-          <p className="text-sm leading-5 text-[#707973]">
+          <p className="text-sm leading-5 text-home-filter-muted dark:text-home-filter-ink">
+            {record.description}
+          </p>
+          <p className="text-sm leading-5 text-neutral-600 dark:text-home-filter-muted">
             {t('endDate', { date: record.endDate })}
           </p>
         </div>
@@ -147,8 +153,8 @@ function RoleBadge({ role }: { role: AcademicRecord['role'] }) {
       className={cn(
         'h-7 rounded-full bg-transparent px-2.5 text-xs font-medium leading-4',
         role === 'graduate'
-          ? 'border-[#008D63] text-[#008D63]'
-          : 'border-[#C45C3E] text-[#C45C3E]'
+          ? 'border-primary text-primary dark:border-primary-100 dark:text-primary-100'
+          : 'border-warning text-warning'
       )}
     >
       {t(role)}
@@ -163,7 +169,7 @@ function StatusBadge({ status }: { status: AcademicRecord['status'] }) {
     return (
       <Badge
         variant="secondary"
-        className="h-7 gap-1 rounded-full border-0 bg-[#D3F4E1] px-2.5 text-xs font-medium leading-4 text-[#005138]"
+        className="h-7 gap-1 rounded-full border-0 bg-primary-subtle px-2.5 text-xs font-medium leading-4 text-primary-700 dark:bg-primary/20 dark:text-primary-100"
       >
         <Check className="size-3.5" strokeWidth={2.5} aria-hidden />
         {t('verified')}
@@ -174,7 +180,7 @@ function StatusBadge({ status }: { status: AcademicRecord['status'] }) {
   return (
     <Badge
       variant="secondary"
-      className="h-7 rounded-full border-0 bg-[#C1E9FB] px-2.5 text-xs font-medium leading-4 text-[#244C5B]"
+      className="h-7 rounded-full border-0 bg-home-promo-invite px-2.5 text-xs font-medium leading-4 text-home-promo-invite"
     >
       {t('declared')}
     </Badge>

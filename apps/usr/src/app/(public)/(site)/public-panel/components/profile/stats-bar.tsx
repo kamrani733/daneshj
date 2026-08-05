@@ -51,7 +51,7 @@ function HeartCheckIcon({ className }: { className?: string }) {
         viewBox="0 0 8 8"
         className="absolute -bottom-px -end-px size-[40%] min-w-2"
       >
-        <circle cx="4" cy="4" r="4" fill="#FAFAF7" />
+        <circle cx="4" cy="4" r="4" className="fill-home-scene dark:fill-home-search-category" />
         <path
           d="M2.1 4.1 3.3 5.3 5.9 2.6"
           fill="none"
@@ -211,7 +211,7 @@ export function ProfileStatsBar({
   return (
     <div
       className={cn(
-        'flex w-full flex-col items-stretch gap-5 rounded-[24px] border-2 border-[#D3F4E1] bg-[#FAFAF7] px-4 py-5',
+        'flex w-full flex-col items-stretch gap-5 rounded-[24px] border-2 border-primary-subtle bg-home-scene px-4 py-5',
         'dark:border-border dark:bg-home-search-category',
         'min-[834px]:gap-6 min-[834px]:px-6 min-[834px]:py-6',
         'min-[1100px]:flex-row min-[1100px]:items-center min-[1100px]:justify-between min-[1100px]:gap-8 min-[1100px]:px-[38px]'
@@ -223,12 +223,12 @@ export function ProfileStatsBar({
             <button
               type="button"
               onClick={() => setPeopleKind(key)}
-              className="flex min-w-0 flex-col items-center gap-1 rounded-xl text-center transition-colors hover:bg-black/[0.03] min-[834px]:w-[88px]"
+              className="flex min-w-0 flex-col items-center gap-1 rounded-xl text-center transition-colors hover:bg-black/[0.03] dark:hover:bg-white/[0.04] min-[834px]:w-[88px]"
             >
-              <span className="text-xl font-bold leading-7 text-[#171D19] dark:text-content min-[834px]:text-[28px] min-[834px]:leading-9 min-[1100px]:text-[34px] min-[1100px]:leading-[49px]">
+              <span className="text-xl font-bold leading-7 text-home-filter-ink min-[834px]:text-[28px] min-[834px]:leading-9 min-[1100px]:text-[34px] min-[1100px]:leading-[49px]">
                 {formatFaNumber(displayStats[key])}
               </span>
-              <span className="inline-flex items-center gap-1 whitespace-nowrap text-[10px] font-semibold leading-4 text-[#404943] dark:text-content min-[834px]:gap-1.5 min-[834px]:text-sm min-[834px]:leading-5 min-[1100px]:gap-2 min-[1100px]:text-[17px] min-[1100px]:leading-6">
+              <span className="inline-flex items-center gap-1 whitespace-nowrap text-[10px] font-semibold leading-4 text-home-filter-muted dark:text-home-filter-ink min-[834px]:gap-1.5 min-[834px]:text-sm min-[834px]:leading-5 min-[1100px]:gap-2 min-[1100px]:text-[17px] min-[1100px]:leading-6">
                 {Icon === 'heartCheck' ? (
                   <HeartCheckIcon className="size-3.5 min-[834px]:size-5" />
                 ) : (
@@ -256,16 +256,16 @@ export function ProfileStatsBar({
             'min-[1100px]:w-auto min-[1100px]:shrink-0 min-[1100px]:justify-end min-[1100px]:gap-12'
           )}
         >
-          <ul className="flex items-center justify-center gap-5 text-[#404943] dark:text-content min-[834px]:gap-6 min-[1100px]:gap-8">
+          <ul className="flex items-center justify-center gap-5 text-home-filter-muted dark:text-home-filter-ink min-[834px]:gap-6 min-[1100px]:gap-8">
             <li>
               <button
                 type="button"
                 disabled={likeMutation.isPending}
                 onClick={() => void handleReaction('like')}
                 className={cn(
-                  'flex h-11 items-center gap-1 px-1 text-sm font-bold leading-6 text-[#404943] disabled:opacity-100',
+                  'flex h-11 items-center gap-1 px-1 text-sm font-bold leading-6 text-home-filter-muted dark:text-home-filter-ink disabled:opacity-100',
                   'min-[834px]:h-12 min-[834px]:text-base min-[1100px]:h-14',
-                  reaction === 'like' && 'text-primary'
+                  reaction === 'like' && 'text-primary dark:text-primary-100'
                 )}
                 aria-pressed={reaction === 'like'}
               >
@@ -283,7 +283,7 @@ export function ProfileStatsBar({
                 disabled={likeMutation.isPending}
                 onClick={() => void handleReaction('dislike')}
                 className={cn(
-                  'flex h-11 items-center gap-1 px-1 text-sm font-bold leading-6 text-[#404943] disabled:opacity-100',
+                  'flex h-11 items-center gap-1 px-1 text-sm font-bold leading-6 text-home-filter-muted dark:text-home-filter-ink disabled:opacity-100',
                   'min-[834px]:h-12 min-[834px]:text-base min-[1100px]:h-14',
                   reaction === 'dislike' && 'text-warning'
                 )}
@@ -302,7 +302,7 @@ export function ProfileStatsBar({
                 disabled={shareMutation.isPending}
                 onClick={() => setShareOpen(true)}
                 className={cn(
-                  'flex h-11 items-center gap-1 px-1 text-sm font-bold leading-6 text-[#404943] disabled:opacity-100',
+                  'flex h-11 items-center gap-1 px-1 text-sm font-bold leading-6 text-home-filter-muted dark:text-home-filter-ink disabled:opacity-100',
                   'min-[834px]:h-12 min-[834px]:text-base min-[1100px]:h-14'
                 )}
               >
@@ -327,8 +327,8 @@ export function ProfileStatsBar({
               'min-[834px]:w-auto min-[834px]:min-w-[140px] min-[834px]:py-4',
               'min-[1100px]:min-w-[153px] disabled:opacity-100',
               following
-                ? 'border-[#008D63] text-[#008D63]'
-                : 'bg-[#008D63] text-white hover:bg-[#007A56] disabled:bg-[#008D63]'
+                ? 'border-primary text-primary dark:border-primary-100 dark:text-primary-100'
+                : 'bg-primary text-primary-foreground hover:bg-primary-hover disabled:bg-primary dark:bg-primary-100 dark:text-primary-900 dark:hover:bg-primary-100/90 dark:disabled:bg-primary-100'
             )}
           >
             {following ? t('following') : t('follow')}

@@ -31,7 +31,7 @@ type CommentTransferFlowProps = {
   mode?: 'transfer' | 'edit';
 };
 
-/** Transfer-to-public-panel dialogs opened from comment More menu. */
+/** Transfer-to-public-panel dialogs (انتقال icon / More menu). */
 export function CommentTransferFlow({
   comment,
   transferredCount,
@@ -75,7 +75,7 @@ export function CommentTransferFlow({
         <DialogContent
           showCloseButton={false}
           dir="rtl"
-          className="max-h-[90vh] w-full max-w-[560px] overflow-y-auto rounded-2xl border-0 bg-[#F8F8F0] p-5 shadow-home-elevation-2 sm:max-w-[560px]"
+          className="max-h-[90vh] w-full max-w-[560px] overflow-y-auto rounded-2xl border-0 bg-home-search-fill p-5 shadow-home-elevation-2 sm:max-w-[560px] dark:bg-home-stat-card"
         >
           <DialogTitle className="sr-only">{t('submit')}</DialogTitle>
           <DialogDescription className="sr-only">
@@ -83,18 +83,24 @@ export function CommentTransferFlow({
           </DialogDescription>
 
           <header className="flex items-center gap-3">
-            <Avatar className="size-11 shrink-0 ring-2 ring-[#008D63]">
-              <AvatarFallback className="bg-[#008D63] text-sm font-bold text-white">
+            <Avatar className="size-11 shrink-0 ring-2 ring-primary dark:ring-primary-100">
+              <AvatarFallback className="bg-primary text-sm font-bold text-white dark:bg-primary-100 dark:text-primary-900">
                 صا
               </AvatarFallback>
             </Avatar>
             <div className="flex min-w-0 flex-1 flex-wrap items-center gap-x-2 gap-y-0.5 text-start">
-              <span className="text-sm font-bold text-[#171D19]">
+              <span className="text-sm font-bold text-home-filter-ink">
                 {t('ownerName')}
               </span>
-              <span className="text-xs text-[#707973]">@{t('ownerHandle')}</span>
-              <span className="text-xs text-[#707973]">۱۴۰۳/۱۲/۰۵</span>
-              <span className="text-xs text-[#707973]">۱۴:۳۲</span>
+              <span className="text-xs text-neutral-600 dark:text-home-filter-muted">
+                @{t('ownerHandle')}
+              </span>
+              <span className="text-xs text-neutral-600 dark:text-home-filter-muted">
+                ۱۴۰۳/۱۲/۰۵
+              </span>
+              <span className="text-xs text-neutral-600 dark:text-home-filter-muted">
+                ۱۴:۳۲
+              </span>
             </div>
           </header>
 
@@ -107,13 +113,16 @@ export function CommentTransferFlow({
                 placeholder={t('notePlaceholder')}
                 rows={3}
                 className={cn(
-                  'w-full resize-none rounded-xl border bg-white px-3 py-3 text-start text-sm leading-6 text-[#171D19]',
-                  'placeholder:text-[#707973] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30',
-                  note.trim() ? 'border-primary pb-8' : 'border-[#BFC9C1]'
+                  'w-full resize-none rounded-xl border bg-home-stat-card px-3 py-3 text-start text-sm leading-6 text-home-filter-ink',
+                  'placeholder:text-neutral-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30',
+                  'dark:bg-home-search-category dark:text-home-filter-ink dark:placeholder:text-home-filter-muted',
+                  note.trim()
+                    ? 'border-primary pb-8 dark:border-primary-100'
+                    : 'border-border'
                 )}
               />
               {note.trim() ? (
-                <span className="pointer-events-none absolute bottom-3 end-3 text-[11px] text-[#707973]">
+                <span className="pointer-events-none absolute bottom-3 end-3 text-[11px] text-neutral-600 dark:text-home-filter-muted">
                   {tChar('charCount', {
                     count: formatFaNumber(note.length),
                     max: formatFaNumber(NOTE_MAX_LENGTH),
@@ -126,7 +135,7 @@ export function CommentTransferFlow({
           </div>
 
           <div className="mt-5 flex items-center justify-between gap-3">
-            <span className="text-xs text-[#707973]">
+            <span className="text-xs text-neutral-600 dark:text-home-filter-muted">
               {tChar('charCount', {
                 count: formatFaNumber(note.length),
                 max: formatFaNumber(NOTE_MAX_LENGTH),
@@ -135,7 +144,7 @@ export function CommentTransferFlow({
             <div dir="ltr" className="flex items-center gap-3">
               <Button
                 type="button"
-                className="h-10 rounded-lg px-4"
+                className="h-10 rounded-lg px-4 dark:bg-primary-100 dark:text-primary-900 dark:hover:bg-primary-100/90"
                 onClick={() => {
                   if (mode === 'edit') {
                     onConfirmTransfer(note.trim());
@@ -150,7 +159,7 @@ export function CommentTransferFlow({
               <Button
                 type="button"
                 variant="link"
-                className="h-auto px-0 text-sm font-medium text-primary"
+                className="h-auto px-0 text-sm font-medium text-primary dark:text-primary-100"
                 onClick={() => {
                   if (note.trim()) setStep('exit');
                   else closeAll();
@@ -213,21 +222,21 @@ function QuotedComment({ comment }: { comment: PanelComment }) {
   const handle = comment.originalAuthorHandle ?? comment.authorHandle;
 
   return (
-    <div className="rounded-xl border border-[#008D63] bg-[rgba(0,141,99,0.1)] p-4">
+    <div className="rounded-xl border border-primary bg-primary/10 p-4 dark:border-primary-100">
       <div className="flex items-center gap-2.5">
         <Avatar className="size-10 shrink-0">
           {comment.authorAvatar && !comment.originalAuthorName ? (
             <AvatarImage src={comment.authorAvatar} alt={name} />
           ) : null}
-          <AvatarFallback className="bg-[#707973] text-xs font-bold text-white">
+          <AvatarFallback className="bg-neutral-600 text-xs font-bold text-white">
             {name.slice(0, 2)}
           </AvatarFallback>
         </Avatar>
-        <span className="text-sm font-bold text-[#171D19]">
+        <span className="text-sm font-bold text-home-filter-ink">
           {name} @{handle}
         </span>
       </div>
-      <p className="mt-3 text-start text-sm leading-[1.5] text-[#171D19]">
+      <p className="mt-3 text-start text-sm leading-[1.5] text-home-filter-ink">
         {comment.body}
       </p>
     </div>
@@ -267,16 +276,19 @@ export function CommentConfirmDialog({
       <DialogContent
         showCloseButton={false}
         dir="rtl"
-        className="w-full max-w-[420px] gap-6 rounded-2xl border-0 bg-[#F8F8F0] p-5 shadow-home-elevation-2 sm:max-w-[420px]"
+        className="w-full max-w-[420px] gap-6 rounded-2xl border-0 bg-home-search-fill p-5 shadow-home-elevation-2 sm:max-w-[420px] dark:bg-home-stat-card"
       >
-        <DialogTitle className="text-start text-sm font-medium leading-6 text-[#171D19]">
+        <DialogTitle className="text-start text-sm font-medium leading-6 text-home-filter-ink">
           {title}
         </DialogTitle>
         <DialogDescription className="sr-only">{title}</DialogDescription>
 
         <div dir={actionsDir} className="flex items-center gap-3">
           {primaryAsLink ? (
-            <Button asChild className="h-10 rounded-full px-5">
+            <Button
+              asChild
+              className="h-10 rounded-full px-5 dark:bg-primary-100 dark:text-primary-900 dark:hover:bg-primary-100/90"
+            >
               <Link href={primaryAsLink} onClick={onPrimary}>
                 {primaryLabel}
               </Link>
@@ -285,7 +297,7 @@ export function CommentConfirmDialog({
             <Button
               type="button"
               variant="link"
-              className="h-auto px-0 text-sm font-medium text-primary"
+              className="h-auto px-0 text-sm font-medium text-primary dark:text-primary-100"
               onClick={onPrimary}
             >
               {primaryLabel}
@@ -293,7 +305,7 @@ export function CommentConfirmDialog({
           ) : (
             <Button
               type="button"
-              className="h-10 rounded-lg px-5"
+              className="h-10 rounded-lg px-5 dark:bg-primary-100 dark:text-primary-900 dark:hover:bg-primary-100/90"
               onClick={onPrimary}
             >
               {primaryLabel}
@@ -303,7 +315,7 @@ export function CommentConfirmDialog({
             <Button
               type="button"
               variant="link"
-              className="h-auto px-0 text-sm font-medium text-primary"
+              className="h-auto px-0 text-sm font-medium text-primary dark:text-primary-100"
               onClick={onSecondary}
             >
               {secondaryLabel}

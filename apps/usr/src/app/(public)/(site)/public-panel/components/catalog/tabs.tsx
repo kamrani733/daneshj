@@ -3,7 +3,10 @@
 import { Info, ShoppingCart } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import type { ServiceCatalog } from '@public-panel/data/public-panel-ui';
+import type {
+  OtherInfoContent,
+  ServiceCatalog,
+} from '@public-panel/data/public-panel-ui';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 import { CatalogSection } from './section';
@@ -11,10 +14,11 @@ import { DiscountOfferCard } from './discount-offer-card';
 import { EmptyState } from '../shared/empty-state';
 import { NewsOfferCard } from './news-offer-card';
 import { NewsletterOfferCard } from './newsletter-offer-card';
+import { OtherInfoPanel } from './other-info-panel';
 
 type PublicPanelTabsProps = {
   catalog: ServiceCatalog;
-  otherInfo: string[];
+  otherInfo: OtherInfoContent;
 };
 
 /** Service catalog / other-info tabs. */
@@ -29,17 +33,17 @@ export function PublicPanelTabs({ catalog, otherInfo }: PublicPanelTabsProps) {
 
   return (
     <Tabs defaultValue="services" className="w-full items-stretch gap-6">
-      <TabsList className="w-full justify-center gap-8 border-b border-[#E5E7EB] pb-0 dark:border-border">
+      <TabsList className="w-full justify-center gap-8 border-b border-border pb-0">
         <TabsTrigger
           value="services"
-          className="gap-2 pb-3 text-base data-[state=active]:border-primary data-[state=active]:text-primary"
+          className="gap-2 pb-3 text-base data-[state=active]:border-primary data-[state=active]:text-primary dark:data-[state=active]:border-primary-100 dark:data-[state=active]:text-primary-100"
         >
           <ShoppingCart className="size-5" strokeWidth={1.5} aria-hidden />
           {t('tabs.services', { count: servicesCount })}
         </TabsTrigger>
         <TabsTrigger
           value="other"
-          className="gap-2 pb-3 text-base data-[state=active]:border-primary data-[state=active]:text-primary"
+          className="gap-2 pb-3 text-base data-[state=active]:border-primary data-[state=active]:text-primary dark:data-[state=active]:border-primary-100 dark:data-[state=active]:text-primary-100"
         >
           <Info className="size-5" strokeWidth={1.5} aria-hidden />
           {t('tabs.other')}
@@ -50,7 +54,7 @@ export function PublicPanelTabs({ catalog, otherInfo }: PublicPanelTabsProps) {
         {!hasServices ? (
           <EmptyState
             message={t('emptyServices')}
-            className="rounded-2xl bg-white shadow-[0_1px_2px_rgba(0,0,0,0.06)] dark:bg-home-search-category"
+            className="rounded-2xl bg-home-stat-card shadow-[0_1px_2px_rgba(0,0,0,0.06)] dark:bg-home-search-category"
           />
         ) : (
           <>
@@ -94,24 +98,7 @@ export function PublicPanelTabs({ catalog, otherInfo }: PublicPanelTabsProps) {
       </TabsContent>
 
       <TabsContent value="other" className="mt-0">
-        {otherInfo.length === 0 ? (
-          <EmptyState
-            message={t('emptyOther')}
-            imageSrc="/images/public-panel/empty-state-alt.png"
-            className="rounded-2xl bg-white shadow-[0_1px_2px_rgba(0,0,0,0.06)] dark:bg-home-search-category"
-          />
-        ) : (
-          <ul className="flex flex-col gap-3 rounded-2xl border border-border/40 bg-white p-4 dark:bg-home-search-category">
-            {otherInfo.map((item) => (
-              <li
-                key={item}
-                className="border-b border-border/40 pb-3 text-sm leading-6 text-home-filter-ink last:border-0 last:pb-0"
-              >
-                {item}
-              </li>
-            ))}
-          </ul>
-        )}
+        <OtherInfoPanel content={otherInfo} />
       </TabsContent>
     </Tabs>
   );

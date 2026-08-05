@@ -3,6 +3,7 @@
 import { useTranslations } from 'next-intl';
 
 import type {
+  OtherInfoContent,
   PublicPanelSocialLink,
   ServiceCatalog,
 } from '@public-panel/data/public-panel-ui';
@@ -14,7 +15,7 @@ import { SocialLinksRow } from '../profile/social-links-row';
 type ServiceInfoSectionProps = {
   links: PublicPanelSocialLink[];
   catalog: ServiceCatalog;
-  otherInfo: string[];
+  otherInfo: OtherInfoContent;
 };
 
 /** Service info: title, socials, and catalog tabs. */

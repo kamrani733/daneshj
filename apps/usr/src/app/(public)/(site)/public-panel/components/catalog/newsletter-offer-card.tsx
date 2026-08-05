@@ -3,6 +3,7 @@ import Image from 'next/image';
 
 import type { NewsletterItem } from '@public-panel/data/public-panel-ui';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { cn } from '@/lib/utils';
 
 import { CatalogOfferCardShell } from './offer-card-shell';
 
@@ -12,9 +13,17 @@ type NewsletterOfferCardProps = {
 };
 
 /** Newsletter catalog card. */
-export function NewsletterOfferCard({ item, className }: NewsletterOfferCardProps) {
+export function NewsletterOfferCard({
+  item,
+  className,
+}: NewsletterOfferCardProps) {
   return (
-    <CatalogOfferCardShell className={className}>
+    <CatalogOfferCardShell
+      className={cn(
+        'hover:bg-muted hover:shadow-[0_10px_24px_rgba(0,0,0,0.12)] dark:hover:bg-home-card',
+        className
+      )}
+    >
       <div className="flex items-center gap-2 px-3 pt-3">
         <Avatar className="size-8">
           <AvatarFallback className="bg-primary text-xs font-bold text-primary-foreground">
@@ -49,7 +58,7 @@ export function NewsletterOfferCard({ item, className }: NewsletterOfferCardProp
         </p>
 
         <div className="mt-auto flex items-center justify-start gap-1 pt-2 text-xs text-home-filter-ink">
-          <Star className="size-3.5 fill-[#FFC107] text-[#FFC107]" aria-hidden />
+          <Star className="size-3.5 fill-warning text-warning" aria-hidden />
           <span>
             {item.rating} ({item.reviewCount} نظر)
           </span>

@@ -40,10 +40,10 @@ export function PanelInfoBanner({ className }: PanelInfoBannerProps) {
           'min-[834px]:me-auto min-[834px]:ms-[117px]'
         )}
       >
-        <h2 className="text-lg font-bold leading-7 text-[#005138] min-[640px]:text-xl min-[640px]:leading-8 min-[834px]:text-2xl min-[834px]:leading-8">
+        <h2 className="text-lg font-bold leading-7 text-primary-700 min-[640px]:text-xl min-[640px]:leading-8 min-[834px]:text-2xl min-[834px]:leading-8 dark:text-primary-700">
           {t('title')}
         </h2>
-        <p className="text-sm font-bold leading-6 text-[#005138] min-[640px]:text-base min-[834px]:text-2xl min-[834px]:leading-8">
+        <p className="text-sm font-bold leading-6 text-primary-700 min-[640px]:text-base min-[834px]:text-2xl min-[834px]:leading-8 dark:text-primary-700">
           <span className="block">{t('bodyLine1')}</span>
           <span className="block">{t('bodyLine2')}</span>
         </p>
