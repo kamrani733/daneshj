@@ -1,19 +1,24 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import type { SVGProps } from 'react';
+import { useState, type SVGProps } from 'react';
 
-import type { PublicPanelSocialLink } from '@public-panel/data/public-panel-ui';
+import type {
+  PublicPanelSocialLink,
+  SocialNetwork,
+} from '@public-panel/data/public-panel-ui';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
 
 type SocialLinksRowProps = {
   links: PublicPanelSocialLink[];
   className?: string;
-  /** sm=40, md=48, lg=56. */
   size?: 'sm' | 'md' | 'lg';
-  /** Outline for hero; filled for service info. */
   variant?: 'outline' | 'filled';
-  /** Override list direction. */
   dir?: 'ltr' | 'rtl';
 };
 
@@ -102,7 +107,33 @@ const ICONS = {
   website: GlobeIcon,
 } as const;
 
-/** Social / contact icon row — outline (hero) or filled (service info). */
+const BRAND_STYLES: Record<SocialNetwork, string> = {
+  email: 'bg-[#00A0DC] text-white',
+  telegram: 'bg-[#2AABEE] text-white',
+  instagram:
+    'bg-[linear-gradient(45deg,#F58529_0%,#DD2A7B_50%,#8134AF_100%)] text-white',
+  x: 'bg-black text-white',
+  whatsapp: 'bg-[#25D366] text-white',
+  linkedin: 'bg-[#0A66C2] text-white',
+  website: 'bg-[#2563EB] text-white',
+};
+
+const PILL_BG = 'bg-[#F0EDE6]';
+
+function getCopyValue(link: PublicPanelSocialLink): string {
+  const { network, href } = link;
+  if (network === 'email') return href.replace(/^mailto:/i, '');
+  if (network === 'whatsapp') {
+    const match = href.match(/(?:wa\.me\/|phone=)(\+?\d+)/i);
+    return match ? match[1] : href;
+  }
+  if (network === 'telegram') {
+    const match = href.match(/t\.me\/([^/?#]+)/i);
+    return match ? `@${match[1]}` : href;
+  }
+  return href.replace(/^https?:\/\//i, '');
+}
+
 export function SocialLinksRow({
   links,
   className,
@@ -110,33 +141,110 @@ export function SocialLinksRow({
   variant = 'filled',
   dir,
 }: SocialLinksRowProps) {
-  const t = useTranslations('publicPanel.social');
+  const t = useTranslations('publicPanel');
+  const tSocial = useTranslations('publicPanel.social');
+  const [openNetwork, setOpenNetwork] = useState<SocialNetwork | null>(null);
+  const [copiedNetwork, setCopiedNetwork] = useState<SocialNetwork | null>(null);
+
   const box =
     size === 'lg' ? 'size-14' : size === 'md' ? 'size-12' : 'size-10';
   const iconSize =
     size === 'lg' ? 'size-6' : size === 'md' ? 'size-6' : 'size-[18px]';
 
+  async function handleCopy(link: PublicPanelSocialLink) {
+    const value = getCopyValue(link);
+    try {
+      await navigator.clipboard.writeText(value);
+      setCopiedNetwork(link.network);
+      window.setTimeout(() => {
+        setOpenNetwork((current) =>
+          current === link.network ? null : current
+        );
+        setCopiedNetwork((current) =>
+          current === link.network ? null : current
+        );
+      }, 1800);
+    } catch {
+      /* ignore clipboard failures */
+    }
+  }
+
   return (
     <ul dir={dir} className={cn('flex flex-wrap items-center gap-3', className)}>
       {links.map((link) => {
         const Icon = ICONS[link.network];
+        const open = openNetwork === link.network;
+        const copied = copiedNetwork === link.network;
+        const copyValue = getCopyValue(link);
+        const showCopyPrompt = open && !copied;
+
         return (
           <li key={link.network}>
-            <a
-              href={link.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label={t(link.network)}
-              className={cn(
-                'inline-flex items-center justify-center rounded-full transition-opacity hover:opacity-90',
-                box,
-                variant === 'filled'
-                  ? 'bg-primary text-primary-foreground'
-                  : '  bg-transparent text-primary'
-              )}
+            <Popover
+              open={open}
+              onOpenChange={(next) => {
+                setOpenNetwork(next ? link.network : null);
+                if (!next) setCopiedNetwork(null);
+              }}
             >
-              <Icon className={iconSize} aria-hidden />
-            </a>
+              <PopoverTrigger asChild>
+                <button
+                  type="button"
+                  aria-label={tSocial(link.network)}
+                  className={cn(
+                    'inline-flex items-center justify-center rounded-full transition-all',
+                    box,
+                    /* After copy: brand color */
+                    copied && BRAND_STYLES[link.network],
+                    /* Open copy prompt: white + green */
+                    showCopyPrompt &&
+                      'bg-white text-[#008D63] shadow-[0_1px_2px_rgba(0,0,0,0.06)]',
+                    /* Idle outline (hero) */
+                    !open &&
+                      variant === 'outline' &&
+                      'bg-white text-[#008D63] shadow-[0_1px_2px_rgba(0,0,0,0.06)] hover:opacity-90',
+                    /* Idle filled (service info) — primary green */
+                    !open &&
+                      variant === 'filled' &&
+                      'bg-primary text-primary-foreground hover:opacity-90'
+                  )}
+                >
+                  <Icon className={iconSize} aria-hidden />
+                </button>
+              </PopoverTrigger>
+              <PopoverContent
+                side="top"
+                align="center"
+                sideOffset={10}
+                dir="rtl"
+                className={cn(
+                  'flex w-auto min-w-0 border-0 p-0 shadow-[0_2px_8px_rgba(0,0,0,0.12)] ring-0',
+                  PILL_BG,
+                  copied
+                    ? 'items-center justify-center rounded-full px-4 py-2.5'
+                    : 'flex-row items-center justify-between gap-6 rounded-2xl px-4 py-2.5'
+                )}
+              >
+                {copied ? (
+                  <span className="text-sm font-medium text-[#171D19]">
+                    {t('copied')}
+                  </span>
+                ) : (
+                  <>
+                    <span className="max-w-[220px] truncate text-sm font-medium text-[#171D19]">
+                      {copyValue}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => void handleCopy(link)}
+                      className="shrink-0 text-sm font-medium text-[#008D63] hover:underline"
+                    >
+                      {tSocial('copy')}
+                    </button>
+                  </>
+                )}
+              </PopoverContent>
+            </Popover>
           </li>
         );
       })}
