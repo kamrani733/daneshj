@@ -10,7 +10,13 @@ import {
   ThumbsDown,
 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { useState, type ReactNode } from 'react';
+import {
+  useEffect,
+  useRef,
+  useState,
+  type ReactNode,
+  type RefObject,
+} from 'react';
 
 import {
   ACTOR_TYPE,
@@ -23,6 +29,7 @@ import {
 import type { PanelComment } from '@public-panel/data/public-panel-ui';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
   Popover,
   PopoverContent,
@@ -32,6 +39,8 @@ import { formatFaNumber } from '@/lib/format-fa';
 import { cn } from '@/lib/utils';
 
 import { CommentTransferFlow, CommentConfirmDialog } from './transfer-flow';
+
+const REPLY_MAX_LENGTH = 1500;
 
 type CommentCardProps = {
   comment: PanelComment;
@@ -43,6 +52,7 @@ type CommentCardProps = {
   onTransfer?: (commentId: string, note: string) => void;
   onDelete?: (commentId: string) => void;
   onEditNote?: (commentId: string, note: string) => void;
+  onReply?: (commentId: string, body: string) => void;
 };
 
 /** Comment thread item with actions and nested replies. */
@@ -56,11 +66,15 @@ export function CommentCard({
   onTransfer,
   onDelete,
   onEditNote,
+  onReply,
 }: CommentCardProps) {
   const t = useTranslations('publicPanel.comments');
   const tFlow = useTranslations('publicPanel.comments.transferFlow');
   const replies = comment.replies ?? [];
   const [showReplies, setShowReplies] = useState(false);
+  const [replying, setReplying] = useState(false);
+  const [replyDraft, setReplyDraft] = useState('');
+  const replyRef = useRef<HTMLTextAreaElement>(null);
   const [likes, setLikes] = useState(comment.likes);
   const [dislikes, setDislikes] = useState(comment.dislikes);
   const [shares, setShares] = useState(comment.shares);
@@ -72,6 +86,10 @@ export function CommentCard({
   const [deleteSuccessOpen, setDeleteSuccessOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const isTransferred = comment.kind === 'transferred';
+
+  useEffect(() => {
+    if (replying) replyRef.current?.focus();
+  }, [replying]);
 
   const likeMutation = useLikeMutation();
   const shareMutation = useShareMutation();
@@ -145,6 +163,39 @@ export function CommentCard({
     }
   }
 
+  const closeReply = () => {
+    setReplyDraft('');
+    setReplying(false);
+  };
+
+  const submitReply = () => {
+    const value = replyDraft.trim();
+    if (!value) return;
+    onReply?.(comment.id, value);
+    closeReply();
+    setShowReplies(true);
+  };
+
+  const replyComposer = replying ? (
+    <ReplyComposer
+      draft={replyDraft}
+      maxLength={REPLY_MAX_LENGTH}
+      textareaRef={replyRef}
+      onChange={setReplyDraft}
+      onSubmit={submitReply}
+      onCancel={closeReply}
+      labels={{
+        placeholder: t('replyPlaceholder'),
+        submit: t('submit'),
+        cancel: t('cancel'),
+        charCount: t('charCount', {
+          count: formatFaNumber(replyDraft.length),
+          max: formatFaNumber(REPLY_MAX_LENGTH),
+        }),
+      }}
+    />
+  ) : null;
+
   const interaction = (
     <InteractionRow
       likes={likes}
@@ -157,6 +208,7 @@ export function CommentCard({
       onLike={() => void handleReaction('like')}
       onDislike={() => void handleReaction('dislike')}
       onShare={() => void handleShare()}
+      onReply={() => setReplying((value) => !value)}
       onToggleFeature={() => setFeatured((value) => !value)}
       labels={{
         feature: t('feature'),
@@ -321,6 +373,7 @@ export function CommentCard({
         </div>
 
         {interaction}
+        {replyComposer}
       </article>
     );
   }
@@ -437,38 +490,42 @@ export function CommentCard({
           {interaction}
 
           {!nested && replies.length > 0 ? (
-            <div className="flex flex-col items-start gap-3">
-              <button
-                type="button"
-                onClick={() => setShowReplies((v) => !v)}
-                className="inline-flex h-9 w-fit items-center gap-1 rounded-full border border-[#BFC9C1] px-3 text-sm font-medium text-[#404943]"
-              >
-                <ChevronDown
-                  className={cn(
-                    'size-4 transition-transform',
-                    showReplies && 'rotate-180'
-                  )}
-                  aria-hidden
-                />
-                {showReplies
-                  ? t('hideReplies', { count: formatFaNumber(replies.length) })
-                  : t('showReplies', { count: formatFaNumber(replies.length) })}
-              </button>
+            <button
+              type="button"
+              onClick={() => setShowReplies((v) => !v)}
+              className="inline-flex h-9 w-fit items-center gap-1 rounded-full border border-[#BFC9C1] px-3 text-sm font-medium text-[#404943]"
+            >
+              <ChevronDown
+                className={cn(
+                  'size-4 transition-transform',
+                  showReplies && 'rotate-180'
+                )}
+                aria-hidden
+              />
               {showReplies
-                ? replies.map((reply) => (
-                    <CommentCard
-                      key={reply.id}
-                      comment={reply}
-                      nested
-                      transferredCount={transferredCount}
-                      accessToken={accessToken}
-                      viewerActorId={viewerActorId}
-                      onTransfer={onTransfer}
-                      onDelete={onDelete}
-                      onEditNote={onEditNote}
-                    />
-                  ))
-                : null}
+                ? t('hideReplies', { count: formatFaNumber(replies.length) })
+                : t('showReplies', { count: formatFaNumber(replies.length) })}
+            </button>
+          ) : null}
+
+          {replyComposer}
+
+          {!nested && showReplies && replies.length > 0 ? (
+            <div className="flex w-full flex-col items-stretch gap-3">
+              {replies.map((reply) => (
+                <CommentCard
+                  key={reply.id}
+                  comment={reply}
+                  nested
+                  transferredCount={transferredCount}
+                  accessToken={accessToken}
+                  viewerActorId={viewerActorId}
+                  onTransfer={onTransfer}
+                  onDelete={onDelete}
+                  onEditNote={onEditNote}
+                  onReply={onReply}
+                />
+              ))}
             </div>
           ) : null}
         </div>
@@ -521,6 +578,7 @@ function InteractionRow({
   onLike,
   onDislike,
   onShare,
+  onReply,
   onToggleFeature,
   labels,
 }: {
@@ -534,6 +592,7 @@ function InteractionRow({
   onLike: () => void;
   onDislike: () => void;
   onShare: () => void;
+  onReply: () => void;
   onToggleFeature: () => void;
   labels: {
     feature: string;
@@ -585,6 +644,7 @@ function InteractionRow({
         />
         <ActionButton
           label={labels.reply}
+          onClick={onReply}
           icon={<Reply className="size-5" strokeWidth={1.5} />}
         />
         <ActionButton
@@ -599,6 +659,79 @@ function InteractionRow({
             />
           }
         />
+      </div>
+    </div>
+  );
+}
+
+function ReplyComposer({
+  draft,
+  maxLength,
+  textareaRef,
+  onChange,
+  onSubmit,
+  onCancel,
+  labels,
+}: {
+  draft: string;
+  maxLength: number;
+  textareaRef: RefObject<HTMLTextAreaElement | null>;
+  onChange: (value: string) => void;
+  onSubmit: () => void;
+  onCancel: () => void;
+  labels: {
+    placeholder: string;
+    submit: string;
+    cancel: string;
+    charCount: string;
+  };
+}) {
+  return (
+    <div className="flex w-full items-start gap-3">
+      <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-[#BFC9C1] text-xs font-bold text-white">
+        s
+      </div>
+
+      <div className="flex min-w-0 flex-1 flex-col gap-3">
+        <label className="relative block w-full">
+          <span className="sr-only">{labels.placeholder}</span>
+          <textarea
+            ref={textareaRef}
+            value={draft}
+            maxLength={maxLength}
+            onChange={(event) => onChange(event.target.value)}
+            placeholder={labels.placeholder}
+            rows={4}
+            className={cn(
+              'w-full resize-none rounded-xl border border-[#BFC9C1] bg-white px-3 pb-8 pt-3',
+              'text-start text-xs font-medium leading-5 text-[#171D19]',
+              'placeholder:text-[#707973] focus-visible:border-primary focus-visible:outline-none'
+            )}
+          />
+          <span className="pointer-events-none absolute bottom-3 end-3 text-[11px] leading-4 text-[#707973]">
+            {labels.charCount}
+          </span>
+        </label>
+
+        <div dir="ltr" className="flex items-center gap-3">
+          <Button
+            type="button"
+            size="pillSm"
+            disabled={!draft.trim()}
+            onClick={onSubmit}
+            className="rounded-lg"
+          >
+            {labels.submit}
+          </Button>
+          <Button
+            type="button"
+            variant="link"
+            onClick={onCancel}
+            className="h-auto px-0 text-sm font-medium text-primary"
+          >
+            {labels.cancel}
+          </Button>
+        </div>
       </div>
     </div>
   );

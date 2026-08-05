@@ -87,6 +87,23 @@ export function CommentsSection({
     );
   };
 
+  const handleReply = (commentId: string, body: string) => {
+    const reply: PanelComment = {
+      id: `reply-${Date.now()}`,
+      authorName: tFlow('ownerName'),
+      authorHandle: tFlow('ownerHandle'),
+      authorAvatar: '/images/public-panel/avatar.png',
+      body,
+      createdAt: new Intl.DateTimeFormat('fa-IR').format(new Date()),
+      kind: 'registered',
+      likes: 0,
+      dislikes: 0,
+      shares: 0,
+    };
+
+    setComments((prev) => appendReply(prev, commentId, reply));
+  };
+
   const handleCancel = () => {
     setDraft('');
     setExpanded(false);
@@ -194,6 +211,7 @@ export function CommentsSection({
           onTransfer={handleTransfer}
           onDelete={handleDelete}
           onEditNote={handleEditNote}
+          onReply={handleReply}
         />
 
         <CommentListPanel
@@ -211,10 +229,33 @@ export function CommentsSection({
           onTransfer={handleTransfer}
           onDelete={handleDelete}
           onEditNote={handleEditNote}
+          onReply={handleReply}
         />
       </div>
     </section>
   );
+}
+
+function appendReply(
+  comments: PanelComment[],
+  commentId: string,
+  reply: PanelComment
+): PanelComment[] {
+  return comments.map((comment) => {
+    if (comment.id === commentId) {
+      return {
+        ...comment,
+        replies: [...(comment.replies ?? []), { ...reply, replyToName: comment.authorName }],
+      };
+    }
+    if (comment.replies?.length) {
+      return {
+        ...comment,
+        replies: appendReply(comment.replies, commentId, reply),
+      };
+    }
+    return comment;
+  });
 }
 
 function CommentListPanel({
@@ -230,6 +271,7 @@ function CommentListPanel({
   onTransfer,
   onDelete,
   onEditNote,
+  onReply,
 }: {
   kind: CommentKind;
   title: string;
@@ -243,6 +285,7 @@ function CommentListPanel({
   onTransfer?: (commentId: string, note: string) => void;
   onDelete?: (commentId: string) => void;
   onEditNote?: (commentId: string, note: string) => void;
+  onReply?: (commentId: string, body: string) => void;
 }) {
   const t = useTranslations('publicPanel.comments');
   const [query, setQuery] = useState('');
@@ -339,6 +382,7 @@ function CommentListPanel({
                 onTransfer={onTransfer}
                 onDelete={onDelete}
                 onEditNote={onEditNote}
+                onReply={onReply}
               />
             </li>
           ))}

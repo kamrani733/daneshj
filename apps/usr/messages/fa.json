@@ -702,6 +702,7 @@
       "share": "اشتراک‌گذاری",
       "transfer": "انتقال",
       "reply": "پاسخ",
+      "replyPlaceholder": "پاسخ خود را بنویسید...",
       "report": "گزارش",
       "showReplies": "نمایش {count} پاسخ",
       "hideReplies": "عدم نمایش {count} پاسخ",
