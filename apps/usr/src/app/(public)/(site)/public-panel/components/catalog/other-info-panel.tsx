@@ -43,7 +43,8 @@ export function OtherInfoPanel({ content }: OtherInfoPanelProps) {
           <div
             className={cn(
               'relative flex min-h-[184px] w-full flex-col gap-6 rounded-2xl border border-border bg-home-stat-card p-5',
-              CARD_ELEVATION
+              CARD_ELEVATION,
+              'dark:border-warning-700 dark:bg-warning-800'
             )}
           >
             <div className="flex items-start gap-4">
@@ -110,7 +111,7 @@ export function OtherInfoPanel({ content }: OtherInfoPanelProps) {
           >
             {content.portfolio.map((item) => (
               <li key={item.id} className="min-w-0">
-                <article className="flex h-full flex-col overflow-hidden rounded-xl border border-border bg-home-card dark:bg-home-stat-card">
+                <article className="flex h-full flex-col overflow-hidden rounded-xl border border-border bg-home-card dark:border-border dark:bg-surface-dark">
                   <div className="relative h-[188px] w-full shrink-0 overflow-hidden bg-home-search-category">
                     <Image
                       src={item.imageSrc}
@@ -120,7 +121,7 @@ export function OtherInfoPanel({ content }: OtherInfoPanelProps) {
                       sizes="(max-width: 640px) 100vw, (max-width: 960px) 50vw, 420px"
                     />
                   </div>
-                  <div className="flex flex-col items-start gap-0 p-4 text-start">
+                  <div className="flex flex-col items-start gap-0 bg-home-card p-4 text-start dark:bg-surface-dark">
                     <h4 className="w-full text-base font-normal leading-6 tracking-[0.0094em] text-home-filter-ink">
                       {item.title}
                     </h4>
@@ -141,7 +142,8 @@ export function OtherInfoPanel({ content }: OtherInfoPanelProps) {
             dir="rtl"
             className={cn(
               'flex w-full flex-col overflow-hidden rounded-2xl border border-border bg-home-stat-card',
-              CARD_ELEVATION
+              CARD_ELEVATION,
+              'dark:border-warning-700 dark:bg-warning-800'
             )}
           >
             {content.certificates.map((item, index) => (
@@ -150,7 +152,7 @@ export function OtherInfoPanel({ content }: OtherInfoPanelProps) {
                 className={cn(
                   'flex min-h-[68px] items-center gap-3 px-6 py-4',
                   index < content.certificates.length - 1 &&
-                    'border-b border-border'
+                    'border-b border-border dark:border-warning-700'
                 )}
               >
                 <Image

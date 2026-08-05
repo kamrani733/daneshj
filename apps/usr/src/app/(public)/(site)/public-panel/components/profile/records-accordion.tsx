@@ -60,7 +60,7 @@ export function RecordsAccordion({
             title={t('educationAddress.title')}
             titleBgClassName="bg-home-scene"
             titleClassName="text-sm font-medium text-home-filter-muted dark:text-home-filter-ink"
-            className="rounded-xl border-border bg-home-search-fill px-6 py-5 dark:bg-home-search-category"
+            className="rounded-xl border-border bg-home-search-fill px-6 pb-5 pt-8 dark:bg-home-search-category"
           >
             <dl className="grid grid-cols-2 gap-x-4 gap-y-4 min-[720px]:grid-cols-4">
               <AddressField

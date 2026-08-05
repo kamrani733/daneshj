@@ -25,9 +25,10 @@ export function DiscountOfferCard({ offer, className }: DiscountOfferCardProps) 
         className
       )}
     >
+      {/* Full-card image under content on hover */}
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-200 group-hover:opacity-100"
+        className="pointer-events-none absolute inset-0 z-0 opacity-0 transition-opacity duration-200 group-hover:opacity-100"
       >
         <Image
           src={offer.imageSrc}
@@ -40,7 +41,7 @@ export function DiscountOfferCard({ offer, className }: DiscountOfferCardProps) 
         <div className="absolute inset-0 bg-black/45" />
       </div>
 
-      <div className="relative z-10 h-[148px] w-full shrink-0 overflow-hidden bg-neutral-200">
+      <div className="relative z-10 h-[148px] w-full shrink-0 overflow-hidden bg-neutral-200 transition-colors duration-200 group-hover:bg-transparent">
         <Image
           src={offer.imageSrc}
           alt={offer.title}
@@ -54,7 +55,7 @@ export function DiscountOfferCard({ offer, className }: DiscountOfferCardProps) 
         </Badge>
       </div>
 
-      <div className="relative z-10 flex flex-1 flex-col gap-3 p-3">
+      <div className="relative z-10 flex flex-1 flex-col gap-3 bg-home-card p-3 transition-colors duration-200 group-hover:bg-transparent dark:bg-home-stat-card dark:group-hover:bg-transparent">
         <div className="flex flex-col gap-1 text-start">
           <h3 className="text-sm font-bold leading-5 text-home-filter-ink transition-colors duration-200 group-hover:text-white">
             {offer.title}

@@ -361,9 +361,10 @@ export function CommentCard({
       className={cn(
         'relative rounded-xl p-4 shadow-[0_2px_4px_0_rgba(0,0,0,0.05)]',
         featured
-          ? 'border-s-[3px] border-s-warning bg-warning-10 dark:bg-home-stat-card'
-          : 'bg-home-stat-card',
-        nested && 'bg-home-search-fill dark:bg-home-search-category',
+          ? 'border-s-[3px] border-s-warning bg-warning-10 dark:bg-surface-dark'
+          : nested
+            ? 'bg-home-search-fill dark:bg-home-search-category'
+            : 'bg-home-stat-card',
         className
       )}
     >

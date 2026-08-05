@@ -176,7 +176,6 @@ export function SocialLinksRow({
         const open = openNetwork === link.network;
         const copied = copiedNetwork === link.network;
         const copyValue = getCopyValue(link);
-        const showCopyPrompt = open && !copied;
 
         return (
           <li key={link.network}>
@@ -194,11 +193,8 @@ export function SocialLinksRow({
                   className={cn(
                     'inline-flex items-center justify-center rounded-full transition-all',
                     box,
-                    /* After copy: brand color */
-                    copied && BRAND_STYLES[link.network],
-                    /* Open copy prompt: white + green */
-                    showCopyPrompt &&
-                      'bg-home-stat-card text-primary shadow-[0_1px_2px_rgba(0,0,0,0.06)] dark:text-primary-100',
+                    /* Open popover/modal: brand color */
+                    open && BRAND_STYLES[link.network],
                     /* Idle outline (hero) */
                     !open &&
                       variant === 'outline' &&

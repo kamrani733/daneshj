@@ -8,6 +8,7 @@ import type {
   ServiceCatalog,
 } from '@public-panel/data/public-panel-ui';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { cn } from '@/lib/utils';
 
 import { CatalogSection } from './section';
 import { DiscountOfferCard } from './discount-offer-card';
@@ -33,20 +34,28 @@ export function PublicPanelTabs({ catalog, otherInfo }: PublicPanelTabsProps) {
 
   return (
     <Tabs defaultValue="services" className="w-full items-stretch gap-6">
-      <TabsList className="w-full justify-center gap-8 border-b border-border pb-0">
-        <TabsTrigger
-          value="services"
-          className="gap-2 pb-3 text-base data-[state=active]:border-primary data-[state=active]:text-primary dark:data-[state=active]:border-primary-100 dark:data-[state=active]:text-primary-100"
-        >
-          <ShoppingCart className="size-5" strokeWidth={1.5} aria-hidden />
-          {t('tabs.services', { count: servicesCount })}
-        </TabsTrigger>
+      <TabsList className="w-full justify-center gap-8 border-b border-border pb-0 dark:gap-3 dark:border-0 dark:pb-0">
         <TabsTrigger
           value="other"
-          className="gap-2 pb-3 text-base data-[state=active]:border-primary data-[state=active]:text-primary dark:data-[state=active]:border-primary-100 dark:data-[state=active]:text-primary-100"
+          className={cn(
+            'gap-2 pb-3 text-base data-[state=active]:border-primary data-[state=active]:text-primary',
+            'dark:rounded-lg dark:border-0 dark:bg-transparent dark:px-4 dark:py-2.5 dark:pb-2.5 dark:text-primary-100',
+            'dark:data-[state=active]:bg-primary-100 dark:data-[state=active]:text-primary-900'
+          )}
         >
           <Info className="size-5" strokeWidth={1.5} aria-hidden />
           {t('tabs.other')}
+        </TabsTrigger>
+        <TabsTrigger
+          value="services"
+          className={cn(
+            'gap-2 pb-3 text-base data-[state=active]:border-primary data-[state=active]:text-primary',
+            'dark:rounded-lg dark:border-0 dark:bg-transparent dark:px-4 dark:py-2.5 dark:pb-2.5 dark:text-primary-100',
+            'dark:data-[state=active]:bg-primary-100 dark:data-[state=active]:text-primary-900'
+          )}
+        >
+          <ShoppingCart className="size-5" strokeWidth={1.5} aria-hidden />
+          {t('tabs.services', { count: servicesCount })}
         </TabsTrigger>
       </TabsList>
 
