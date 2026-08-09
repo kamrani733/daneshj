@@ -1,6 +1,5 @@
 'use client';
 
-import { Search } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
@@ -11,7 +10,7 @@ import {
 } from '@/components/icons/material-icons';
 import type { ReportOrdering } from '@notifications/api';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { SearchField } from '@/components/ui/search-field';
 import {
   Popover,
   PopoverContent,
@@ -72,21 +71,14 @@ export function ReportsToolbar({
       )}
     >
       <div className="flex w-full flex-col gap-3 px-4 py-3 min-[834px]:flex-row min-[834px]:items-center min-[834px]:justify-between min-[834px]:gap-4">
-        <label className="relative block h-11 w-full min-[834px]:h-12 min-[834px]:max-w-[360px]">
-          <span className="sr-only">{t('search')}</span>
-          <Search
-            className="pointer-events-none absolute end-3 top-1/2 size-5 -translate-y-1/2 text-neutral-600 dark:text-home-filter-muted"
-            strokeWidth={1.5}
-            aria-hidden
-          />
-          <Input
-            type="search"
-            value={query}
-            onChange={(event) => onQueryChange(event.target.value)}
-            placeholder={t('search')}
-            className="h-full rounded-full border-0 bg-white pe-10 ps-4 text-sm text-content shadow-none placeholder:text-neutral-600 focus-visible:ring-1 focus-visible:ring-content-subtle dark:bg-home-search-category dark:placeholder:text-home-filter-muted min-[834px]:text-base"
-          />
-        </label>
+        <SearchField
+          label={t('search')}
+          size="md"
+          value={query}
+          onChange={(event) => onQueryChange(event.target.value)}
+          placeholder={t('search')}
+          containerClassName="min-[834px]:max-w-[360px]"
+        />
 
         <div className="flex shrink-0 items-center justify-end gap-1 min-[834px]:gap-2">
           <Button

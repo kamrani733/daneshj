@@ -26,10 +26,7 @@ function AccordionItem({
   return (
     <AccordionPrimitive.Item
       data-slot="accordion-item"
-      className={cn(
-        'rounded-xl border border-border bg-home-card px-4 dark:bg-home-search-category',
-        className
-      )}
+      className={cn('border-0 bg-transparent px-0', className)}
       {...props}
     />
   );
@@ -45,7 +42,7 @@ function AccordionTrigger({
       <AccordionPrimitive.Trigger
         data-slot="accordion-trigger"
         className={cn(
-          'flex flex-1 items-center justify-between gap-3 py-4 text-start text-sm font-medium text-content transition-all',
+          'inline-flex w-full items-center justify-start gap-2 py-4 text-start text-sm font-medium text-content transition-all',
           'hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30',
           '[&[data-state=open]>svg]:rotate-180',
           className

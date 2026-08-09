@@ -1,10 +1,6 @@
 'use client';
 
-import {
-  CircleHelp,
-  ClipboardList,
-  Settings2,
-} from 'lucide-react';
+import { CircleHelp, Info, UserCog } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import type { PrivatePanelTab } from '@private-panel/data/private-panel-ui';
@@ -20,14 +16,14 @@ import { GuideSection } from './guide/guide-section';
 
 const TAB_ITEMS: {
   id: PrivatePanelTab;
-  icon: typeof ClipboardList;
+  icon: typeof Info;
 }[] = [
-  { id: 'fields', icon: ClipboardList },
-  { id: 'publicOps', icon: Settings2 },
+  { id: 'fields', icon: Info },
+  { id: 'publicOps', icon: UserCog },
   { id: 'guide', icon: CircleHelp },
 ];
 
-/** Private panel primary tabs. */
+/** Private panel primary tabs — pill bar matching Figma. */
 export function PrivatePanelTabs() {
   const t = useTranslations('privatePanel');
 
@@ -35,8 +31,8 @@ export function PrivatePanelTabs() {
     <Tabs defaultValue="guide" className="w-full gap-8" dir="rtl">
       <TabsList
         className={cn(
-          'flex h-auto w-full flex-wrap items-center justify-start gap-2',
-          'rounded-2xl bg-home-card p-2 shadow-home-elevation-1 dark:bg-home-search-category'
+          'grid h-auto w-full grid-cols-3 gap-1 rounded-full p-1.5',
+          'bg-home-search-category dark:bg-home-stat-card'
         )}
       >
         {TAB_ITEMS.map(({ id, icon: Icon }) => (
@@ -44,14 +40,17 @@ export function PrivatePanelTabs() {
             key={id}
             value={id}
             className={cn(
-              'h-11 gap-2 rounded-xl border-0 px-4 text-sm font-medium',
-              'text-home-filter-muted data-[state=active]:bg-home-scene',
+              'h-12 gap-2 rounded-full border-0 border-b-0 px-3 pb-0 text-sm font-medium',
+              'justify-center text-primary shadow-none',
+              'hover:text-primary focus-visible:ring-primary/30',
+              'data-[state=active]:border-0 data-[state=active]:bg-white',
               'data-[state=active]:text-primary data-[state=active]:shadow-none',
-              'dark:data-[state=active]:bg-home-stat-card dark:data-[state=active]:text-primary-100'
+              'dark:text-primary-100 dark:data-[state=active]:bg-home-card dark:data-[state=active]:text-primary-100'
             )}
           >
-            <Icon className="size-5 shrink-0" strokeWidth={1.5} aria-hidden />
-            {t(`tabs.${id}`)}
+            {/* RTL: first child sits on the right — icon beside title */}
+            <Icon className="size-5 shrink-0" strokeWidth={1.75} aria-hidden />
+            <span className="truncate">{t(`tabs.${id}`)}</span>
           </TabsTrigger>
         ))}
       </TabsList>

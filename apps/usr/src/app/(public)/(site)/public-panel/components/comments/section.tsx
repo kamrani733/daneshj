@@ -1,6 +1,6 @@
 'use client';
 
-import { ArrowUpDown, Search } from 'lucide-react';
+import { ArrowUpDown } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useMemo, useRef, useState } from 'react';
 
@@ -12,6 +12,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { SearchField } from '@/components/ui/search-field';
 import { formatFaNumber } from '@/lib/format-fa';
 import { cn } from '@/lib/utils';
 
@@ -346,26 +347,13 @@ function CommentListPanel({
           />
         </label>
 
-        <label className="relative block w-full max-w-[280px] shrink">
-          <span className="sr-only">{searchPlaceholder}</span>
-          <Search
-            className="pointer-events-none absolute start-3 top-1/2 size-5 -translate-y-1/2 text-home-filter-muted"
-            strokeWidth={1.5}
-            aria-hidden
-          />
-          <Input
-            value={query}
-            onChange={(event) => setQuery(event.target.value)}
-            placeholder={searchPlaceholder}
-            className={cn(
-              'h-10 rounded-full border border-home-filter-ink bg-home-search-fill pe-4 ps-10',
-              'text-start text-sm font-medium text-home-filter-muted shadow-none',
-              'placeholder:text-home-filter-muted focus-visible:border-home-filter-ink focus-visible:ring-0',
-              'dark:border-border dark:bg-home-search-category dark:text-home-filter-ink',
-              'dark:placeholder:text-home-filter-muted dark:focus-visible:border-border'
-            )}
-          />
-        </label>
+        <SearchField
+          label={searchPlaceholder}
+          value={query}
+          onChange={(event) => setQuery(event.target.value)}
+          placeholder={searchPlaceholder}
+          containerClassName="max-w-[280px] shrink"
+        />
       </div>
 
       <div className="h-px w-full bg-home-search-category dark:bg-border" aria-hidden />

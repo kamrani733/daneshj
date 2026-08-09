@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Mail, Search, Settings } from 'lucide-react';
+import { Mail, Settings } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
@@ -9,7 +9,7 @@ import { FilterAltIcon } from '@/components/icons/material-icons';
 import type { NotificationsFilterValues } from '@notifications/data/notifications-filter-data';
 import { SETTINGS_PATH } from '@notifications/data/settings-mock';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { SearchField } from '@/components/ui/search-field';
 import { cn } from '@/lib/utils';
 
 import { NotificationsFilterPanel } from './filter-panel';
@@ -44,21 +44,14 @@ export function NotificationsToolbar({
       )}
     >
       <div className="flex w-full flex-col gap-3 px-4 py-2 min-[720px]:flex-row min-[720px]:items-center min-[720px]:justify-between min-[720px]:gap-4">
-        <label className="relative block h-12 w-full min-[720px]:max-w-[420px]">
-          <span className="sr-only">{t('search')}</span>
-          <Search
-            className="pointer-events-none absolute end-3 top-1/2 size-5 -translate-y-1/2 text-neutral-600 dark:text-home-filter-muted"
-            strokeWidth={1.5}
-            aria-hidden
-          />
-          <Input
-            type="search"
-            value={query}
-            onChange={(event) => onQueryChange(event.target.value)}
-            placeholder={t('search')}
-            className="h-12 rounded-full border-0 bg-white pe-10 ps-4 text-base text-content shadow-none placeholder:text-neutral-600 focus-visible:ring-1 focus-visible:ring-content-subtle dark:bg-home-search-category dark:placeholder:text-home-filter-muted"
-          />
-        </label>
+        <SearchField
+          label={t('search')}
+          size="lg"
+          value={query}
+          onChange={(event) => onQueryChange(event.target.value)}
+          placeholder={t('search')}
+          containerClassName="min-[720px]:max-w-[420px]"
+        />
 
         <div className="flex shrink-0 items-center justify-end gap-3">
           <ToolbarAction label={t('mail')}>

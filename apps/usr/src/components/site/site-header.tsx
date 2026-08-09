@@ -19,6 +19,7 @@ import { AUTH_ROUTES } from '@auth/lib/auth-routes';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { SearchField } from '@/components/ui/search-field';
 import { cn } from '@/lib/utils';
 
 import { NAV_MENUS } from '@/components/site/nav-data';
@@ -120,19 +121,12 @@ export function SiteHeader({
             />
           </div>
 
-          <label className="relative block h-14 w-full max-w-[420px] min-w-0">
-            <span className="sr-only">{t('searchPlaceholder')}</span>
-            <Search
-              className="pointer-events-none absolute right-4 top-1/2 size-6 -translate-y-1/2 text-content-muted"
-              aria-hidden
-            />
-            <input
-              type="search"
-              dir="rtl"
-              placeholder={t('searchPlaceholder')}
-              className="h-14 w-full rounded-[28px] border border-border bg-home-search-fill pe-12 ps-5 text-end text-base leading-6 tracking-[0.0094em] text-content outline-none placeholder:text-content-muted focus-visible:ring-2 focus-visible:ring-primary/30"
-            />
-          </label>
+          <SearchField
+            label={t('searchPlaceholder')}
+            size="xl"
+            placeholder={t('searchPlaceholder')}
+            containerClassName="max-w-[420px] min-w-0"
+          />
         </div>
 
         <nav className="flex shrink-0 items-center gap-0.5 min-[1280px]:gap-1" aria-label={t('mainNav')}>

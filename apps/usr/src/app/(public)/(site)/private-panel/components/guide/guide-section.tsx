@@ -1,147 +1,222 @@
 'use client';
 
-import { Search } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useMemo, useState } from 'react';
 
+import {
+  flattenGuideText,
+  type GuideAccordionBlock,
+  type GuideContentMessages,
+  type GuideSectionBlock,
+} from '@private-panel/data/guide-content';
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
-import { Input } from '@/components/ui/input';
-import { cn } from '@/lib/utils';
+import { SearchField } from '@/components/ui/search-field';
 
-type GuideBlock = {
-  id: string;
-  title: string;
-  body: string;
-  kind: 'text' | 'accordion';
-};
-
-/** Guide tab: search + informational accordions/copy. */
+/** Guide tab — copy from `privatePanel.guide` messages. */
 export function GuideSection() {
   const t = useTranslations('privatePanel.guide');
   const [query, setQuery] = useState('');
 
-  const blocks = useMemo<GuideBlock[]>(
-    () => [
-      {
-        id: 'intro',
-        title: t('subsectionFields'),
-        body: t('intro'),
-        kind: 'text',
-      },
-      {
-        id: 'edit',
-        title: t('editAccordion'),
-        body: t('editBody'),
-        kind: 'accordion',
-      },
-      {
-        id: 'confirm',
-        title: t('confirmAccordion'),
-        body: t('confirmBody'),
-        kind: 'accordion',
-      },
-      {
-        id: 'manage',
-        title: t('manageTitle'),
-        body: t('manageBody'),
-        kind: 'text',
-      },
-    ],
+  const content = useMemo(
+    () =>
+      ({
+        fieldsIntro: t('fieldsIntro'),
+        edit: t.raw('edit') as GuideContentMessages['edit'],
+        confirm: t.raw('confirm') as GuideContentMessages['confirm'],
+        manage: t.raw('manage') as GuideContentMessages['manage'],
+      }) satisfies GuideContentMessages,
     [t]
   );
 
-  const normalized = query.trim().toLowerCase();
-  const filtered = normalized
-    ? blocks.filter(
-        (block) =>
-          block.title.toLowerCase().includes(normalized) ||
-          block.body.toLowerCase().includes(normalized)
-      )
-    : blocks;
+  const editBlock: GuideAccordionBlock = { id: 'edit', ...content.edit };
+  const confirmBlock: GuideAccordionBlock = {
+    id: 'confirm',
+    ...content.confirm,
+  };
+  const manageBlock: GuideSectionBlock = { id: 'manage', ...content.manage };
 
-  const accordionItems = filtered.filter((b) => b.kind === 'accordion');
-  const textItems = filtered.filter((b) => b.kind === 'text');
+  const searchable = useMemo(() => flattenGuideText(content), [content]);
+  const normalized = query.trim().toLowerCase();
+
+  const matchesSearch =
+    !normalized || searchable.toLowerCase().includes(normalized);
+  const showEdit = !normalized || blockMatches(editBlock, normalized);
+  const showConfirm = !normalized || blockMatches(confirmBlock, normalized);
+  const showManage = !normalized || sectionMatches(manageBlock, normalized);
+  const hasAny = showEdit || showConfirm || showManage;
 
   return (
-    <section className="flex w-full flex-col gap-6">
-      <div className="relative w-full max-w-md self-end">
-        <Search
-          className="pointer-events-none absolute start-3 top-1/2 size-5 -translate-y-1/2 text-home-filter-muted"
-          strokeWidth={1.5}
-          aria-hidden
-        />
-        <Input
+    <section className="flex w-full flex-col gap-8">
+      <div className="flex flex-col gap-4 min-[720px]:flex-row min-[720px]:items-center min-[720px]:justify-between">
+        <div className="flex items-center gap-3">
+          <span
+            aria-hidden
+            className="h-7 w-1.5 shrink-0 rounded-full bg-warning"
+          />
+          <h2 className="text-xl font-bold leading-8 text-content dark:text-primary-100">
+            {t('title')}
+          </h2>
+        </div>
+
+        <SearchField
+          label={t('searchAria')}
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder={t('searchPlaceholder')}
-          aria-label={t('searchAria')}
-          className="h-11 rounded-full border-border bg-home-card pe-4 ps-11 dark:bg-home-search-category"
+          containerClassName="max-w-[280px] shrink-0 min-[720px]:ms-auto"
         />
       </div>
 
-      <div className="flex items-center gap-3">
-        <span
-          aria-hidden
-          className="h-7 w-1.5 shrink-0 rounded-full bg-warning"
-        />
-        <h2 className="text-xl font-bold leading-8 text-content dark:text-primary-100">
-          {t('title')}
-        </h2>
-      </div>
-
-      {filtered.length === 0 ? (
+      {!matchesSearch || !hasAny ? (
         <p className="text-sm text-home-filter-muted">{t('emptySearch')}</p>
       ) : (
-        <div className="flex flex-col gap-5">
-          {textItems
-            .filter((item) => item.id === 'intro')
-            .map((item) => (
-              <div key={item.id} className="flex flex-col gap-3">
-                <h3 className="text-base font-bold text-content dark:text-home-filter-ink">
-                  {item.title}
-                </h3>
-                <p className="text-justify text-sm font-medium leading-6 text-home-filter-muted dark:text-home-filter-ink">
-                  {item.body}
-                </p>
-              </div>
-            ))}
+        <div className="flex flex-col gap-6">
+          <div className="flex flex-col gap-3">
+            <h3 className="text-lg font-bold leading-7 text-content dark:text-home-filter-ink">
+              {t('subsectionFields')}
+            </h3>
+            <p className="text-justify text-sm font-medium leading-7 text-home-filter-muted dark:text-home-filter-ink">
+              {content.fieldsIntro}
+            </p>
+          </div>
 
-          {accordionItems.length > 0 ? (
-            <Accordion type="multiple" className="flex flex-col gap-3">
-              {accordionItems.map((item) => (
-                <AccordionItem key={item.id} value={item.id}>
-                  <AccordionTrigger>{item.title}</AccordionTrigger>
-                  <AccordionContent>{item.body}</AccordionContent>
-                </AccordionItem>
-              ))}
-            </Accordion>
+          <Accordion
+            type="multiple"
+            defaultValue={['edit', 'confirm']}
+            className="flex flex-col gap-3"
+          >
+            {showEdit ? (
+              <AccordionItem value={editBlock.id}>
+                <AccordionTrigger className="text-base font-bold">
+                  {editBlock.title}
+                </AccordionTrigger>
+                <AccordionContent>
+                  <AccordionBody block={editBlock} />
+                </AccordionContent>
+              </AccordionItem>
+            ) : null}
+
+            {showConfirm ? (
+              <AccordionItem value={confirmBlock.id}>
+                <AccordionTrigger className="text-base font-bold">
+                  {confirmBlock.title}
+                </AccordionTrigger>
+                <AccordionContent>
+                  <AccordionBody block={confirmBlock} />
+                </AccordionContent>
+              </AccordionItem>
+            ) : null}
+          </Accordion>
+
+          {showManage ? (
+            <div className="flex flex-col gap-4 pt-2">
+              <h3 className="text-base font-bold leading-7 text-content dark:text-home-filter-ink">
+                {manageBlock.title}
+              </h3>
+              <div className="flex flex-col gap-3 text-justify text-sm font-medium leading-7 text-home-filter-muted dark:text-home-filter-ink">
+                {manageBlock.paragraphs.map((p) => (
+                  <p key={p}>{p}</p>
+                ))}
+                {manageBlock.bullets?.length ? (
+                  <ul className="list-disc space-y-2 pe-5 marker:text-home-filter-muted">
+                    {manageBlock.bullets.map((item) => (
+                      <li key={item}>{item}</li>
+                    ))}
+                  </ul>
+                ) : null}
+              </div>
+            </div>
           ) : null}
-
-          {textItems
-            .filter((item) => item.id !== 'intro')
-            .map((item) => (
-              <div
-                key={item.id}
-                className={cn(
-                  'flex flex-col gap-3 rounded-2xl border border-border',
-                  'bg-home-card p-5 dark:bg-home-search-category'
-                )}
-              >
-                <h3 className="text-base font-bold text-content dark:text-home-filter-ink">
-                  {item.title}
-                </h3>
-                <p className="text-justify text-sm font-medium leading-6 text-home-filter-muted dark:text-home-filter-ink">
-                  {item.body}
-                </p>
-              </div>
-            ))}
         </div>
       )}
     </section>
   );
+}
+
+function AccordionBody({ block }: { block: GuideAccordionBlock }) {
+  return (
+    <div className="flex flex-col gap-4 text-justify text-sm font-medium leading-7 text-home-filter-muted dark:text-home-filter-ink">
+      {block.intro.map((p) => (
+        <p key={p}>{p}</p>
+      ))}
+
+      {block.categoriesLead ? <p>{block.categoriesLead}</p> : null}
+
+      {block.categories?.map((category, categoryIndex) => (
+        <div
+          key={`${category.title}-${categoryIndex}`}
+          className="flex flex-col gap-3"
+        >
+          <h4 className="font-bold text-content dark:text-home-filter-ink">
+            {category.title}
+          </h4>
+          {category.paragraphs?.map((p) => (
+            <p key={p}>{p}</p>
+          ))}
+          {category.subsections?.map((sub) => (
+            <div key={sub.title} className="flex flex-col gap-2 ps-1">
+              <h5 className="font-semibold text-content dark:text-home-filter-ink">
+                {sub.title}
+              </h5>
+              {sub.paragraphs?.map((p) => (
+                <p key={p}>{p}</p>
+              ))}
+              {sub.bullets?.length ? (
+                <ul className="list-disc space-y-1.5 pe-5 marker:text-home-filter-muted">
+                  {sub.bullets.map((item) => (
+                    <li key={item}>{item}</li>
+                  ))}
+                </ul>
+              ) : null}
+            </div>
+          ))}
+          {category.bullets?.length ? (
+            <ul className="list-disc space-y-1.5 pe-5 marker:text-home-filter-muted">
+              {category.bullets.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
+          ) : null}
+        </div>
+      ))}
+
+      {block.outro?.map((p) => (
+        <p key={p}>{p}</p>
+      ))}
+    </div>
+  );
+}
+
+function blockMatches(block: GuideAccordionBlock, q: string) {
+  const hay = [
+    block.title,
+    ...block.intro,
+    block.categoriesLead ?? '',
+    ...(block.categories ?? []).flatMap((c) => [
+      c.title,
+      ...(c.paragraphs ?? []),
+      ...(c.bullets ?? []),
+      ...(c.subsections ?? []).flatMap((sub) => [
+        sub.title,
+        ...(sub.paragraphs ?? []),
+        ...(sub.bullets ?? []),
+      ]),
+    ]),
+    ...(block.outro ?? []),
+  ]
+    .join('\n')
+    .toLowerCase();
+  return hay.includes(q);
+}
+
+function sectionMatches(block: GuideSectionBlock, q: string) {
+  const hay = [block.title, ...block.paragraphs, ...(block.bullets ?? [])]
+    .join('\n')
+    .toLowerCase();
+  return hay.includes(q);
 }

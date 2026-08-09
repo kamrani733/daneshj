@@ -1,6 +1,6 @@
 'use client';
 
-import { Copy, Search, X } from 'lucide-react';
+import { Copy, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useEffect, useMemo, useState } from 'react';
 
@@ -12,7 +12,7 @@ import {
   DialogDescription,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
+import { SearchField } from '@/components/ui/search-field';
 import { cn } from '@/lib/utils';
 
 export type StatsPeopleKind = 'followers' | 'following' | 'likers' | 'liked';
@@ -145,26 +145,12 @@ export function StatsPeopleDialog({
           <X className="size-5" strokeWidth={1.75} />
         </button>
 
-        <label className="relative block w-full">
-          <span className="sr-only">{tDialog('searchPlaceholder')}</span>
-          <Search
-            className="pointer-events-none absolute start-3 top-1/2 size-5 -translate-y-1/2 text-home-filter-muted"
-            strokeWidth={1.5}
-            aria-hidden
-          />
-          <Input
-            value={query}
-            onChange={(event) => setQuery(event.target.value)}
-            placeholder={tDialog('searchPlaceholder')}
-            className={cn(
-              'h-10 rounded-full border border-home-filter-ink bg-home-stat-card pe-4 ps-10',
-              'text-start text-sm font-medium text-home-filter-muted shadow-none',
-              'placeholder:text-home-filter-muted focus-visible:border-home-filter-ink focus-visible:ring-0',
-              'dark:border-border dark:bg-home-stat-card dark:text-home-filter-ink',
-              'dark:placeholder:text-home-filter-muted dark:focus-visible:border-border'
-            )}
-          />
-        </label>
+        <SearchField
+          label={tDialog('searchPlaceholder')}
+          value={query}
+          onChange={(event) => setQuery(event.target.value)}
+          placeholder={tDialog('searchPlaceholder')}
+        />
 
         {filtered.length === 0 ? (
           <p className="py-8 text-center text-sm font-medium text-neutral-600 dark:text-home-filter-muted">
