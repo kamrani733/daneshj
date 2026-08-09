@@ -8,9 +8,10 @@ import type {
   ServiceCatalog,
 } from '@public-panel/data/public-panel-ui';
 
+import { SocialLinksRow } from '@/components/panel';
+
 import { PublicPanelTabs } from './tabs';
 import { SectionTitle } from '../shared/section-title';
-import { SocialLinksRow } from '../profile/social-links-row';
 
 type ServiceInfoSectionProps = {
   links: PublicPanelSocialLink[];

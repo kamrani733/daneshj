@@ -1,18 +1,12 @@
-/** Shared public-panel types/paths (page UI + site menu). */
+/** Public-panel types/paths (page UI + site menu). */
 
-export type SocialNetwork =
-  | 'email'
-  | 'telegram'
-  | 'instagram'
-  | 'x'
-  | 'whatsapp'
-  | 'linkedin'
-  | 'website';
+import type {
+  PanelProfileIdentity,
+  PanelSocialLink,
+  SocialNetwork,
+} from '@/components/panel';
 
-export type PublicPanelSocialLink = {
-  network: SocialNetwork;
-  href: string;
-};
+export type { PanelSocialLink as PublicPanelSocialLink, SocialNetwork };
 
 export type AcademicRecordStatus = 'verified' | 'declared';
 export type AcademicRecordRole = 'graduate' | 'student';
@@ -117,41 +111,6 @@ export type PanelComment = {
   timeLabel?: string;
 };
 
-export type PublicPanelProfile = {
-  /** Interactive Ops actor/target id for this panel owner. */
-  actorId: number;
-  /** Interactive Ops actor/target type (1 = user). */
-  actorType: 1 | 2 | 3 | 4;
-  displayName: string;
-  username: string;
-  roleLabelKey: 'student';
-  /** Omit / null when the owner is not a service provider. */
-  providerBadgeKey?: 'individualProvider' | null;
-  location: string;
-  /** Empty string hides the about-me card. */
-  bio: string;
-  avatarSrc: string;
-  electronicCardHref: string;
-  socialLinks: PublicPanelSocialLink[];
-  serviceSocialLinks: PublicPanelSocialLink[];
-  stats: {
-    followers: number;
-    following: number;
-    likers: number;
-    liked: number;
-  };
-  engagement: {
-    thumbsUp: number;
-    thumbsDown: number;
-    shares: number;
-  };
-  academicRecords: AcademicRecord[];
-  educationAddress: EducationAddress;
-  serviceCatalog: ServiceCatalog;
-  otherInfo: OtherInfoContent;
-  comments: PanelComment[];
-};
-
 export type ResumeFile = {
   fileName: string;
   sizeLabel: string;
@@ -180,6 +139,30 @@ export type OtherInfoContent = {
   resume?: ResumeFile | null;
   portfolio: PortfolioItem[];
   certificates: CertificateItem[];
+};
+
+export type PublicPanelProfile = PanelProfileIdentity & {
+  /** Interactive Ops actor/target id for this panel owner. */
+  actorId: number;
+  /** Interactive Ops actor/target type (1 = user). */
+  actorType: 1 | 2 | 3 | 4;
+  serviceSocialLinks: PanelSocialLink[];
+  stats: {
+    followers: number;
+    following: number;
+    likers: number;
+    liked: number;
+  };
+  engagement: {
+    thumbsUp: number;
+    thumbsDown: number;
+    shares: number;
+  };
+  academicRecords: AcademicRecord[];
+  educationAddress: EducationAddress;
+  serviceCatalog: ServiceCatalog;
+  otherInfo: OtherInfoContent;
+  comments: PanelComment[];
 };
 
 export const PUBLIC_PANEL_PATH = '/public-panel';

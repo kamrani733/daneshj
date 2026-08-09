@@ -15,6 +15,7 @@ import { createPortal } from 'react-dom';
 
 import { clearSession } from '@auth/lib/auth-actions';
 import { AUTH_ROUTES } from '@auth/lib/auth-routes';
+import { PRIVATE_PANEL_PATH } from '@private-panel/data/private-panel-ui';
 import { PUBLIC_PANEL_PATH } from '@public-panel/data/public-panel-ui';
 import { Button } from '@/components/ui/button';
 import { useDismissible } from '@/hooks/use-dismissible';
@@ -31,9 +32,8 @@ export type UserProfileMenuProps = {
   }) => React.ReactNode;
 };
 
-/** Figma Menu #1:332 / library #2354:2437 — user account menu under avatar. */
 const MENU_ITEMS = [
-  { key: 'privatePanel' as const, href: '/' },
+  { key: 'privatePanel' as const, href: PRIVATE_PANEL_PATH },
   { key: 'publicPanel' as const, href: PUBLIC_PANEL_PATH },
   { key: 'operationalPanel' as const, href: AUTH_ROUTES.dashboard },
   { key: 'membershipOps' as const, href: AUTH_ROUTES.dashboard },

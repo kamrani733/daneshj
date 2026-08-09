@@ -5,22 +5,21 @@ import { MapPin } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
-import type { PublicPanelProfile } from '@public-panel/data/public-panel-ui';
+import type { PanelProfileIdentity } from '@/components/panel/types';
+import { BorderedSectionCard } from '@/components/panel/bordered-section-card';
+import { SocialLinksRow } from '@/components/panel/social-links-row';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
-import { BorderedSectionCard } from '../shared/bordered-section-card';
-import { SocialLinksRow } from './social-links-row';
-
 type ProfileHeroCardProps = {
-  profile: PublicPanelProfile;
+  profile: PanelProfileIdentity;
 };
 
-/** Profile identity, about section, and personal social links. */
+/** Shared profile identity, about section, and personal social links. */
 export function ProfileHeroCard({ profile }: ProfileHeroCardProps) {
-  const t = useTranslations('publicPanel');
+  const t = useTranslations('panel');
   const [expanded, setExpanded] = useState(false);
 
   const showProvider = Boolean(profile.providerBadgeKey);
@@ -57,7 +56,6 @@ export function ProfileHeroCard({ profile }: ProfileHeroCardProps) {
           'min-[834px]:gap-6 min-[834px]:px-[54px] min-[834px]:py-8'
         )}
       >
-        {/* Identity block — always centered stack on mobile; desktop splits when about exists */}
         <div
           className={cn(
             'flex w-full flex-col items-center gap-5',
@@ -68,7 +66,8 @@ export function ProfileHeroCard({ profile }: ProfileHeroCardProps) {
           <div
             className={cn(
               'flex w-full flex-col items-center gap-4',
-              showAbout && 'min-[834px]:w-auto min-[834px]:shrink-0 min-[834px]:flex-row min-[834px]:gap-10'
+              showAbout &&
+                'min-[834px]:w-auto min-[834px]:shrink-0 min-[834px]:flex-row min-[834px]:gap-10'
             )}
           >
             <Avatar

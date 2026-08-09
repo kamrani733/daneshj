@@ -12,7 +12,8 @@ import { Badge } from '@/components/ui/badge';
 import { formatFaNumber } from '@/lib/format-fa';
 import { cn } from '@/lib/utils';
 
-import { BorderedSectionCard } from '../shared/bordered-section-card';
+import { BorderedSectionCard } from '@/components/panel';
+
 import { TitleUnderline } from '../shared/title-underline';
 
 type RecordsAccordionProps = {

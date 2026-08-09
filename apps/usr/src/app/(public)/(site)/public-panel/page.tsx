@@ -6,7 +6,7 @@ import { PublicPanelView } from './components/view';
 
 export default async function PublicPanelPage() {
   const session = await getSession();
-  const viewerActorId = session?.user.id
+  const viewerActorId = session?.user?.id
     ? Number.parseInt(session.user.id, 10)
     : null;
 

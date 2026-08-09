@@ -12,10 +12,6 @@ type SiteShellProps = {
   children: ReactNode;
 };
 
-/**
- * Shared chrome for public site pages (not auth flows):
- * header · background · page · motivation · footer.
- */
 export async function SiteShell({ children }: SiteShellProps) {
   const session = await getSession();
 
@@ -26,7 +22,7 @@ export async function SiteShell({ children }: SiteShellProps) {
       />
       <SiteHeader
         isAuthenticated={!!session}
-        userName={session?.user.name?.trim() || undefined}
+        userName={session?.user?.name?.trim() || undefined}
         accessToken={session?.accessToken}
       />
       <SiteBgPattern />

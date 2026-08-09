@@ -1,9 +1,9 @@
 'use client';
 
 import Image from 'next/image';
-import Link from 'next/link';
-import { ChevronLeft } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+
+import { PanelBreadcrumb } from '@/components/panel';
 
 import { TitleUnderline } from './title-underline';
 
@@ -11,39 +11,18 @@ type PublicPanelHeadingProps = {
   displayName: string;
 };
 
-/** Page breadcrumb + title box (same motif as home SectionTitle). */
+/** Page breadcrumb + decorative title box (public panel). */
 export function PublicPanelHeading({ displayName }: PublicPanelHeadingProps) {
   const t = useTranslations('publicPanel');
 
   return (
     <header className="flex w-full flex-col items-start gap-8">
-      <nav
-        aria-label={t('breadcrumb.label')}
-        className="flex flex-wrap items-center gap-2 text-sm"
-      >
-        <span className="font-semibold leading-5 tracking-[0.0071em] text-home-filter-muted dark:text-home-filter-ink">
-          {t('breadcrumb.current')}
-        </span>
-        <ChevronLeft
-          className="size-4 shrink-0 text-neutral-600 dark:text-muted-foreground"
-          strokeWidth={1.5}
-          aria-hidden
-        />
-        <span className="font-medium leading-5 tracking-[0.0071em] text-neutral-600 dark:text-muted-foreground">
-          {t('breadcrumb.account')}
-        </span>
-        <ChevronLeft
-          className="size-4 shrink-0 text-neutral-600 dark:text-muted-foreground"
-          strokeWidth={1.5}
-          aria-hidden
-        />
-        <Link
-          href="/"
-          className="font-medium leading-5 tracking-[0.0071em] text-neutral-600 hover:text-primary dark:text-muted-foreground dark:hover:text-primary-100"
-        >
-          {t('breadcrumb.home')}
-        </Link>
-      </nav>
+      <PanelBreadcrumb
+        label={t('breadcrumb.label')}
+        current={t('breadcrumb.current')}
+        account={t('breadcrumb.account')}
+        home={t('breadcrumb.home')}
+      />
 
       <div className="relative flex min-h-[70px] w-full max-w-[374px] items-center justify-center gap-2 pb-4">
         <Image

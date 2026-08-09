@@ -1,0 +1,1 @@
+export { PrivatePanelView } from './view';

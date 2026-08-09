@@ -2,9 +2,10 @@
 
 import type { PublicPanelProfile } from '@public-panel/data/public-panel-ui';
 
+import { ProfileHeroCard } from '@/components/panel';
+
 import { CommentsSection } from './comments/section';
 import { PanelInfoBanner } from './profile/info-banner';
-import { ProfileHeroCard } from './profile/hero-card';
 import { ProfileStatsBar } from './profile/stats-bar';
 import { PublicPanelHeading } from './shared/heading';
 import { RecordsAccordion } from './profile/records-accordion';

@@ -3,10 +3,7 @@
 import { useTranslations } from 'next-intl';
 import { useState, type SVGProps } from 'react';
 
-import type {
-  PublicPanelSocialLink,
-  SocialNetwork,
-} from '@public-panel/data/public-panel-ui';
+import type { PanelSocialLink, SocialNetwork } from '@/components/panel/types';
 import {
   Popover,
   PopoverContent,
@@ -15,7 +12,7 @@ import {
 import { cn } from '@/lib/utils';
 
 type SocialLinksRowProps = {
-  links: PublicPanelSocialLink[];
+  links: PanelSocialLink[];
   className?: string;
   size?: 'sm' | 'md' | 'lg';
   variant?: 'outline' | 'filled';
@@ -120,7 +117,7 @@ const BRAND_STYLES: Record<SocialNetwork, string> = {
 
 const PILL_BG = 'bg-home-search-category dark:bg-home-stat-card';
 
-function getCopyValue(link: PublicPanelSocialLink): string {
+function getCopyValue(link: PanelSocialLink): string {
   const { network, href } = link;
   if (network === 'email') return href.replace(/^mailto:/i, '');
   if (network === 'whatsapp') {
@@ -141,8 +138,8 @@ export function SocialLinksRow({
   variant = 'filled',
   dir,
 }: SocialLinksRowProps) {
-  const t = useTranslations('publicPanel');
-  const tSocial = useTranslations('publicPanel.social');
+  const t = useTranslations('panel');
+  const tSocial = useTranslations('panel.social');
   const [openNetwork, setOpenNetwork] = useState<SocialNetwork | null>(null);
   const [copiedNetwork, setCopiedNetwork] = useState<SocialNetwork | null>(null);
 
@@ -151,7 +148,7 @@ export function SocialLinksRow({
   const iconSize =
     size === 'lg' ? 'size-6' : size === 'md' ? 'size-6' : 'size-[18px]';
 
-  async function handleCopy(link: PublicPanelSocialLink) {
+  async function handleCopy(link: PanelSocialLink) {
     const value = getCopyValue(link);
     try {
       await navigator.clipboard.writeText(value);
@@ -193,13 +190,10 @@ export function SocialLinksRow({
                   className={cn(
                     'inline-flex items-center justify-center rounded-full transition-all',
                     box,
-                    /* Open popover/modal: brand color */
                     open && BRAND_STYLES[link.network],
-                    /* Idle outline (hero) */
                     !open &&
                       variant === 'outline' &&
                       'bg-home-stat-card text-primary shadow-[0_1px_2px_rgba(0,0,0,0.06)] hover:opacity-90 dark:text-primary-100',
-                    /* Idle filled (service info) — primary green */
                     !open &&
                       variant === 'filled' &&
                       'bg-primary text-primary-foreground hover:opacity-90 dark:bg-primary-100 dark:text-primary-900'
