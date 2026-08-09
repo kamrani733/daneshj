@@ -28,11 +28,12 @@ export function PrivatePanelTabs() {
   const t = useTranslations('privatePanel');
 
   return (
-    <Tabs defaultValue="guide" className="w-full gap-8" dir="rtl">
+    <Tabs defaultValue="guide" className="w-full gap-6 min-[720px]:gap-8" dir="rtl">
       <TabsList
         className={cn(
-          'grid h-auto w-full grid-cols-3 gap-1 rounded-full p-1.5',
-          'bg-home-search-category dark:bg-home-stat-card'
+          'grid h-auto w-full grid-cols-3 gap-0.5 rounded-full p-1',
+          'bg-home-search-category dark:bg-home-stat-card',
+          'min-[720px]:gap-1 min-[720px]:p-1.5'
         )}
       >
         {TAB_ITEMS.map(({ id, icon: Icon }) => (
@@ -40,7 +41,9 @@ export function PrivatePanelTabs() {
             key={id}
             value={id}
             className={cn(
-              'h-12 gap-2 rounded-full border-0 border-b-0 px-3 pb-0 text-sm font-medium',
+              'h-11 min-w-0 gap-1 rounded-full border-0 border-b-0 px-1.5 pb-0',
+              'text-[11px] font-medium leading-4 sm:text-xs min-[720px]:h-12',
+              'min-[720px]:gap-2 min-[720px]:px-3 min-[720px]:text-sm',
               'justify-center text-primary shadow-none',
               'hover:text-primary focus-visible:ring-primary/30',
               'data-[state=active]:border-0 data-[state=active]:bg-white',
@@ -49,7 +52,11 @@ export function PrivatePanelTabs() {
             )}
           >
             {/* RTL: first child sits on the right — icon beside title */}
-            <Icon className="size-5 shrink-0" strokeWidth={1.75} aria-hidden />
+            <Icon
+              className="size-4 shrink-0 min-[720px]:size-5"
+              strokeWidth={1.75}
+              aria-hidden
+            />
             <span className="truncate">{t(`tabs.${id}`)}</span>
           </TabsTrigger>
         ))}

@@ -43,7 +43,8 @@ export type SearchFieldProps = Omit<
 };
 
 /**
- * Shared pill search field — cream fill, dark border, icon on the start (RTL right).
+ * Shared pill search field — Figma Search bar (#191:6227):
+ * fill #f8f8f0 · border #bfc9c1 · icon/placeholder #404943
  */
 export const SearchField = React.forwardRef<HTMLInputElement, SearchFieldProps>(
   (
@@ -64,8 +65,7 @@ export const SearchField = React.forwardRef<HTMLInputElement, SearchFieldProps>(
         <span className="sr-only">{label}</span>
         <Search
           className={cn(
-            'pointer-events-none absolute top-1/2 -translate-y-1/2 text-home-filter-ink',
-            'dark:text-home-filter-muted',
+            'pointer-events-none absolute top-1/2 -translate-y-1/2 text-home-filter-muted',
             styles.icon
           )}
           strokeWidth={1.5}
@@ -76,12 +76,12 @@ export const SearchField = React.forwardRef<HTMLInputElement, SearchFieldProps>(
           type="search"
           dir={dir}
           className={cn(
-            'h-full w-full rounded-full border border-home-filter-ink bg-home-search-fill',
+            'h-full w-full rounded-full border border-home-filter-border bg-home-search-fill',
             'text-start font-medium text-home-filter-ink shadow-none outline-none',
             'placeholder:text-home-filter-muted',
-            'focus-visible:border-home-filter-ink focus-visible:ring-0',
-            'dark:border-border dark:bg-home-search-category dark:text-home-filter-ink',
-            'dark:placeholder:text-home-filter-muted dark:focus-visible:border-border',
+            'focus-visible:border-home-filter-border focus-visible:ring-0',
+            'dark:border-home-filter-border dark:bg-home-search-fill dark:text-home-filter-ink',
+            'dark:placeholder:text-home-filter-muted dark:focus-visible:border-home-filter-border',
             '[&::-webkit-search-cancel-button]:appearance-none',
             styles.input,
             styles.pad,

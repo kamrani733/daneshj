@@ -1,19 +1,16 @@
 'use client';
 
+import { ContactRound } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { PanelBreadcrumb } from '@/components/panel';
 
-type PrivatePanelHeadingProps = {
-  displayName: string;
-};
-
-/** Private panel breadcrumb + green-bar title. */
-export function PrivatePanelHeading({ displayName }: PrivatePanelHeadingProps) {
+/** Private panel breadcrumb + title with panel icon (mobile/desktop). */
+export function PrivatePanelHeading() {
   const t = useTranslations('privatePanel');
 
   return (
-    <header className="flex w-full flex-col items-start gap-6">
+    <header className="flex w-full flex-col items-start gap-5 min-[720px]:gap-6">
       <PanelBreadcrumb
         label={t('breadcrumb.label')}
         current={t('breadcrumb.current')}
@@ -21,19 +18,15 @@ export function PrivatePanelHeading({ displayName }: PrivatePanelHeadingProps) {
         home={t('breadcrumb.home')}
       />
 
-      <div className="flex items-start gap-3">
-        <span
+      <div className="flex items-center gap-2.5">
+        <ContactRound
+          className="size-8 shrink-0 text-primary min-[720px]:size-9 dark:text-primary-100"
+          strokeWidth={1.5}
           aria-hidden
-          className="mt-1 h-10 w-1.5 shrink-0 rounded-full bg-primary dark:bg-primary-100"
         />
-        <div className="flex flex-col gap-1">
-          <h1 className="text-[28px] font-bold leading-10 text-primary-700 min-[720px]:text-[32px] dark:text-primary-100">
-            {t('title')}
-          </h1>
-          <p className="text-base font-medium leading-6 text-home-filter-muted dark:text-home-filter-ink">
-            {displayName}
-          </p>
-        </div>
+        <h1 className="text-[28px] font-bold leading-10 text-primary-700 min-[720px]:text-[32px] dark:text-primary-100">
+          {t('title')}
+        </h1>
       </div>
     </header>
   );

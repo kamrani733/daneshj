@@ -1,12 +1,12 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { useMemo, useState } from 'react';
+import { useMemo, useState, type ReactNode } from 'react';
 
 import {
   flattenGuideText,
+  getGuideContentMessages,
   type GuideAccordionBlock,
-  type GuideContentMessages,
   type GuideSectionBlock,
 } from '@private-panel/data/guide-content';
 import {
@@ -17,21 +17,12 @@ import {
 } from '@/components/ui/accordion';
 import { SearchField } from '@/components/ui/search-field';
 
-/** Guide tab — copy from `privatePanel.guide` messages. */
+/** Guide tab — stacked on mobile (full-width search), row on desktop. */
 export function GuideSection() {
   const t = useTranslations('privatePanel.guide');
   const [query, setQuery] = useState('');
 
-  const content = useMemo(
-    () =>
-      ({
-        fieldsIntro: t('fieldsIntro'),
-        edit: t.raw('edit') as GuideContentMessages['edit'],
-        confirm: t.raw('confirm') as GuideContentMessages['confirm'],
-        manage: t.raw('manage') as GuideContentMessages['manage'],
-      }) satisfies GuideContentMessages,
-    [t]
-  );
+  const content = useMemo(() => getGuideContentMessages(), []);
 
   const editBlock: GuideAccordionBlock = { id: 'edit', ...content.edit };
   const confirmBlock: GuideAccordionBlock = {
@@ -51,8 +42,8 @@ export function GuideSection() {
   const hasAny = showEdit || showConfirm || showManage;
 
   return (
-    <section className="flex w-full flex-col gap-8">
-      <div className="flex flex-col gap-4 min-[720px]:flex-row min-[720px]:items-center min-[720px]:justify-between">
+    <section className="flex w-full flex-col gap-6 min-[720px]:gap-8">
+      <div className="flex flex-col gap-3 min-[720px]:flex-row min-[720px]:items-center min-[720px]:justify-between min-[720px]:gap-4">
         <div className="flex items-center gap-3">
           <span
             aria-hidden
@@ -68,16 +59,16 @@ export function GuideSection() {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder={t('searchPlaceholder')}
-          containerClassName="max-w-[280px] shrink-0 min-[720px]:ms-auto"
+          containerClassName="w-full min-[720px]:ms-auto min-[720px]:max-w-[280px]"
         />
       </div>
 
       {!matchesSearch || !hasAny ? (
         <p className="text-sm text-home-filter-muted">{t('emptySearch')}</p>
       ) : (
-        <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-5 min-[720px]:gap-6">
           <div className="flex flex-col gap-3">
-            <h3 className="text-lg font-bold leading-7 text-content dark:text-home-filter-ink">
+            <h3 className="text-base font-bold leading-7 text-content min-[720px]:text-lg dark:text-home-filter-ink">
               {t('subsectionFields')}
             </h3>
             <p className="text-justify text-sm font-medium leading-7 text-home-filter-muted dark:text-home-filter-ink">
@@ -85,14 +76,10 @@ export function GuideSection() {
             </p>
           </div>
 
-          <Accordion
-            type="multiple"
-            defaultValue={['edit', 'confirm']}
-            className="flex flex-col gap-3"
-          >
+          <Accordion type="multiple" className="flex flex-col gap-1">
             {showEdit ? (
               <AccordionItem value={editBlock.id}>
-                <AccordionTrigger className="text-base font-bold">
+                <AccordionTrigger className="py-3 text-base font-bold">
                   {editBlock.title}
                 </AccordionTrigger>
                 <AccordionContent>
@@ -103,7 +90,7 @@ export function GuideSection() {
 
             {showConfirm ? (
               <AccordionItem value={confirmBlock.id}>
-                <AccordionTrigger className="text-base font-bold">
+                <AccordionTrigger className="py-3 text-base font-bold">
                   {confirmBlock.title}
                 </AccordionTrigger>
                 <AccordionContent>
@@ -114,13 +101,13 @@ export function GuideSection() {
           </Accordion>
 
           {showManage ? (
-            <div className="flex flex-col gap-4 pt-2">
+            <div className="flex flex-col gap-3 pt-1 min-[720px]:gap-4">
               <h3 className="text-base font-bold leading-7 text-content dark:text-home-filter-ink">
                 {manageBlock.title}
               </h3>
               <div className="flex flex-col gap-3 text-justify text-sm font-medium leading-7 text-home-filter-muted dark:text-home-filter-ink">
                 {manageBlock.paragraphs.map((p) => (
-                  <p key={p}>{p}</p>
+                  <p key={p}>{highlightQuotes(p)}</p>
                 ))}
                 {manageBlock.bullets?.length ? (
                   <ul className="list-disc space-y-2 pe-5 marker:text-home-filter-muted">
@@ -189,6 +176,22 @@ function AccordionBody({ block }: { block: GuideAccordionBlock }) {
         <p key={p}>{p}</p>
       ))}
     </div>
+  );
+}
+
+/** Highlight «…» captions in manage copy to match design accent. */
+function highlightQuotes(text: string): ReactNode {
+  const parts = text.split(/(«[^»]+»)/g);
+  if (parts.length === 1) return text;
+
+  return parts.map((part, index) =>
+    part.startsWith('«') && part.endsWith('»') ? (
+      <span key={`${part}-${index}`} className="font-semibold text-warning">
+        {part}
+      </span>
+    ) : (
+      <span key={`${part}-${index}`}>{part}</span>
+    )
   );
 }
 

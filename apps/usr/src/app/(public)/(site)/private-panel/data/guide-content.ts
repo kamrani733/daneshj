@@ -1,4 +1,6 @@
-/** Structure types for private-panel guide (copy lives in messages/fa.json). */
+/** Structure types + guide body from messages/fa.json. */
+
+import fa from '@messages/fa.json';
 
 export type GuideBullet = string;
 
@@ -37,6 +39,17 @@ export type GuideContentMessages = {
   confirm: Omit<GuideAccordionBlock, 'id'>;
   manage: Omit<GuideSectionBlock, 'id'>;
 };
+
+/** Body copy from `privatePanel.guide` (not via next-intl lookup). */
+export function getGuideContentMessages(): GuideContentMessages {
+  const guide = fa.privatePanel.guide;
+  return {
+    fieldsIntro: guide.fieldsIntro,
+    edit: guide.edit as GuideContentMessages['edit'],
+    confirm: guide.confirm as GuideContentMessages['confirm'],
+    manage: guide.manage as GuideContentMessages['manage'],
+  };
+}
 
 export function flattenGuideText(content: GuideContentMessages): string {
   const { fieldsIntro, edit, confirm, manage } = content;
