@@ -117,7 +117,14 @@ export function ProfileHeroCard({ profile }: ProfileHeroCardProps) {
                   'min-[834px]:h-12 min-[834px]:w-auto min-[834px]:min-w-[169px]'
                 )}
               >
-                <Link href={profile.electronicCardHref}>
+                <Link
+                  href={
+                    typeof profile.electronicCardHref === 'string' &&
+                    profile.electronicCardHref.length > 0
+                      ? profile.electronicCardHref
+                      : '#'
+                  }
+                >
                   {t('viewElectronicCard')}
                 </Link>
               </Button>

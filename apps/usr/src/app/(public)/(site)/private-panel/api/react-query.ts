@@ -63,14 +63,15 @@ const EMPTY_PROFILE: PrivatePanelProfile = {
 async function fetchPrivatePanelProfile(
   accessToken: string
 ): Promise<PrivatePanelProfile> {
-  const [actorInfo, privateData] = await Promise.all([
+  // get_actor_info can 500 on fresh users while retrieve-for-owner still works.
+  const [actorInfoResult, privateData] = await Promise.all([
     getActorInfo({
       accessToken,
       actorType: ACTOR_TYPE_NAME.user,
-    }),
+    }).catch(() => undefined),
     retrievePrivatePanelForOwner({ accessToken }),
   ]);
-  return mapPrivatePanelProfile(actorInfo, privateData);
+  return mapPrivatePanelProfile(actorInfoResult, privateData);
 }
 
 /** Owner private-panel hero profile from Actor MS. */
@@ -227,18 +228,16 @@ export function useSubmitPrivateTabByOwnerMutation() {
   return useMutation({
     mutationFn: (payload: SubmitPrivateTabByOwnerPayload) =>
       submitPrivateTabByOwner(payload),
-    onSuccess: async () => {
-      await Promise.all([
-        queryClient.invalidateQueries({
-          queryKey: actorQueryKeys.privatePanelOwner(),
-        }),
-        queryClient.invalidateQueries({
-          queryKey: [...actorQueryKeys.all, 'manage-visibility'],
-        }),
-        queryClient.invalidateQueries({
-          queryKey: privatePanelQueryKeys.profile(),
-        }),
-      ]);
+    onSuccess: () => {
+      void queryClient.invalidateQueries({
+        queryKey: actorQueryKeys.privatePanelOwner(),
+      });
+      void queryClient.invalidateQueries({
+        queryKey: [...actorQueryKeys.all, 'manage-visibility'],
+      });
+      void queryClient.invalidateQueries({
+        queryKey: privatePanelQueryKeys.profile(),
+      });
     },
   });
 }
@@ -287,18 +286,16 @@ export function useSubmitPublicTabByOwnerMutation() {
   return useMutation({
     mutationFn: (payload: SubmitPublicTabByOwnerPayload) =>
       submitPublicTabByOwner(payload),
-    onSuccess: async (_data, variables) => {
-      await Promise.all([
-        queryClient.invalidateQueries({
-          queryKey: actorQueryKeys.publicPanelOwner(),
-        }),
-        queryClient.invalidateQueries({
-          queryKey: actorQueryKeys.publicTab(variables.tabName),
-        }),
-        queryClient.invalidateQueries({
-          queryKey: [...actorQueryKeys.all, 'manage-visibility'],
-        }),
-      ]);
+    onSuccess: (_data, variables) => {
+      void queryClient.invalidateQueries({
+        queryKey: actorQueryKeys.publicPanelOwner(),
+      });
+      void queryClient.invalidateQueries({
+        queryKey: actorQueryKeys.publicTab(variables.tabName),
+      });
+      void queryClient.invalidateQueries({
+        queryKey: [...actorQueryKeys.all, 'manage-visibility'],
+      });
     },
   });
 }

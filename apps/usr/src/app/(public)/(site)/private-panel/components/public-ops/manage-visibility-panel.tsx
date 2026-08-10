@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from 'react';
 
 import fa from '@messages/fa.json';
 import {
+  getActorApiErrorMessage,
   mapVisibilityFields,
   tabsAffectedBySelection,
   tabsAffectedByValues,
@@ -21,6 +22,11 @@ import {
   type VisibilityCategoryId,
   type VisibilityField,
 } from '@private-panel/data/visibility-config';
+import {
+  firstCategoryWithErrors,
+  validateVisibilityValues,
+  type VisibilityValidationErrorKey,
+} from '@private-panel/data/visibility-validation';
 import { AppDialog } from '@/components/ui/app-dialog';
 import { Button } from '@/components/ui/button';
 import {
@@ -86,8 +92,7 @@ export function ManageVisibilityPanel({
   const visibilityQuery = useManageVisibilityQuery(accessToken);
   const submitPublicMutation = useSubmitPublicTabByOwnerMutation();
   const submitPrivateMutation = useSubmitPrivateTabByOwnerMutation();
-  const isSaving =
-    submitPublicMutation.isPending || submitPrivateMutation.isPending;
+  const [isSaving, setIsSaving] = useState(false);
 
   const fields =
     visibilityQuery.data?.fields ?? mapVisibilityFields(null, null);
@@ -110,6 +115,10 @@ export function ManageVisibilityPanel({
   >({});
   const [discardOpen, setDiscardOpen] = useState(false);
   const [hydratedKey, setHydratedKey] = useState<number | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<
+    Record<string, VisibilityValidationErrorKey>
+  >({});
+  const [formError, setFormError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!visibilityQuery.data) return;
@@ -150,11 +159,11 @@ export function ManageVisibilityPanel({
   ]);
 
   const isDirty = useMemo(() => {
-    const fieldsDirty = fields.some(
-      (field) =>
-        selection[field.id] !== savedSelection[field.id] ||
-        values[field.id] !== savedValues[field.id]
-    );
+    const fieldsDirty = fields.some((field) => {
+      if (selection[field.id] !== savedSelection[field.id]) return true;
+      if (field.locked) return false;
+      return values[field.id] !== savedValues[field.id];
+    });
     const recordsDirty = records.some(
       (record) =>
         recordSelection[record.id] !== savedRecordSelection[record.id]
@@ -185,11 +194,37 @@ export function ManageVisibilityPanel({
   }
 
   function handleValueChange(id: string, value: string) {
+    const field = fields.find((item) => item.id === id);
+    if (!field || field.locked) return;
     setValues((prev) => ({ ...prev, [id]: value }));
+    setFieldErrors((prev) => {
+      if (!prev[id]) return prev;
+      const next = { ...prev };
+      delete next[id];
+      return next;
+    });
+    if (formError) setFormError(null);
+  }
+
+  function fieldErrorMessage(fieldId: string): string | null {
+    const key = fieldErrors[fieldId];
+    if (!key) return null;
+    return t(`validation.${key}`);
   }
 
   async function handleSave() {
-    if (!accessToken) return;
+    if (!accessToken || isSaving) return;
+
+    const nextFieldErrors = validateVisibilityValues(values, savedValues);
+    setFieldErrors(nextFieldErrors);
+    setFormError(null);
+
+    if (Object.keys(nextFieldErrors).length > 0) {
+      setFormError(t('validation.formHasErrors'));
+      const nextCategory = firstCategoryWithErrors(nextFieldErrors);
+      if (nextCategory) setCategory(nextCategory as VisibilityCategoryId);
+      return;
+    }
 
     const publicTabs = tabsAffectedBySelection(selection, savedSelection);
     const privateTabs = tabsAffectedByValues(values, savedValues);
@@ -206,21 +241,39 @@ export function ManageVisibilityPanel({
         submitPrivateMutation.mutateAsync({
           accessToken,
           tabName,
-          body: toPrivateTabSubmitBody(values, tabName, privateData),
+          body: toPrivateTabSubmitBody(
+            values,
+            tabName,
+            privateData,
+            savedValues
+          ),
         })
       ),
     ];
 
     // Nothing mapped to Actor endpoints (e.g. only provider/record local toggles).
     if (requests.length === 0) {
+      setSavedSelection(selection);
+      setSavedValues(values);
       setSavedRecordSelection(recordSelection);
+      setFieldErrors({});
+      setFormError(t('validation.nothingToSave'));
       return;
     }
 
-    await Promise.all(requests);
-    setSavedSelection(selection);
-    setSavedValues(values);
-    setSavedRecordSelection(recordSelection);
+    setIsSaving(true);
+    try {
+      await Promise.all(requests);
+      setSavedSelection(selection);
+      setSavedValues(values);
+      setSavedRecordSelection(recordSelection);
+      setFieldErrors({});
+      setFormError(null);
+    } catch (error) {
+      setFormError(getActorApiErrorMessage(error, t('saveFailed')));
+    } finally {
+      setIsSaving(false);
+    }
   }
 
   function requestCancel() {
@@ -232,6 +285,8 @@ export function ManageVisibilityPanel({
     setSelection(savedSelection);
     setValues(savedValues);
     setRecordSelection(savedRecordSelection);
+    setFieldErrors({});
+    setFormError(null);
     setDiscardOpen(false);
   }
 
@@ -250,6 +305,7 @@ export function ManageVisibilityPanel({
                 field={field}
                 value={values[field.id] ?? ''}
                 selected={Boolean(selection[field.id])}
+                error={fieldErrorMessage(field.id)}
                 onToggle={toggleField}
                 onValueChange={handleValueChange}
               />
@@ -265,6 +321,7 @@ export function ManageVisibilityPanel({
                 field={field}
                 value={values[field.id] ?? ''}
                 selected={Boolean(selection[field.id])}
+                error={fieldErrorMessage(field.id)}
                 onToggle={toggleField}
                 onValueChange={handleValueChange}
               />
@@ -280,6 +337,7 @@ export function ManageVisibilityPanel({
                 field={field}
                 value={values[field.id] ?? ''}
                 selected={Boolean(selection[field.id])}
+                error={fieldErrorMessage(field.id)}
                 onToggle={toggleField}
                 onValueChange={handleValueChange}
               />
@@ -403,6 +461,15 @@ export function ManageVisibilityPanel({
                   );
                 })}
 
+                {formError ? (
+                  <p
+                    role="alert"
+                    className="text-start text-xs font-medium text-error min-[720px]:text-sm"
+                  >
+                    {formError}
+                  </p>
+                ) : null}
+
                 <div className="flex w-full flex-col-reverse gap-2 pt-1 min-[720px]:flex-row min-[720px]:flex-wrap min-[720px]:items-center min-[720px]:justify-end min-[720px]:gap-3">
                   <Button
                     type="button"
@@ -421,7 +488,8 @@ export function ManageVisibilityPanel({
                   </Button>
                   <Button
                     type="button"
-                    disabled={!isDirty || isSaving || !accessToken}
+                    loading={isSaving}
+                    disabled={!isDirty || !accessToken}
                     onClick={() => {
                       void handleSave();
                     }}

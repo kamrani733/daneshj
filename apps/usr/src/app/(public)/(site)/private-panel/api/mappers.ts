@@ -6,6 +6,7 @@ import {
   type VisibilityField,
   type VisibilityFieldDef,
 } from '@private-panel/data/visibility-config';
+import { pad2 } from '@/lib/jalali';
 
 import type {
   ActorInfo,
@@ -54,11 +55,36 @@ function pickSection(
   return null;
 }
 
+/**
+ * Actor retrieve wraps each field as:
+ * `{ pending, request_id, value, previous_value, new_value, editable, ... }`
+ * Plain scalars are still supported.
+ */
+function unwrapFieldValue(raw: unknown): unknown {
+  if (raw == null) return raw;
+  if (typeof raw !== 'object' || Array.isArray(raw)) return raw;
+  const field = raw as Record<string, unknown>;
+  if (
+    'value' in field ||
+    'new_value' in field ||
+    'previous_value' in field ||
+    'pending' in field ||
+    'editable' in field
+  ) {
+    if (field.value != null && field.value !== '') return field.value;
+    if (field.new_value != null && field.new_value !== '') return field.new_value;
+    if (field.previous_value != null) return field.previous_value;
+    return field.value ?? '';
+  }
+  return raw;
+}
+
 function readString(source: Record<string, unknown> | null, key: string): string {
   if (!source) return '';
-  const value = source[key];
+  const value = unwrapFieldValue(source[key]);
   if (value == null) return '';
   if (typeof value === 'boolean') return value ? 'true' : 'false';
+  if (typeof value === 'object') return '';
   return String(value);
 }
 
@@ -117,6 +143,28 @@ const OCCUPATION_STATUS_LABELS: Record<string, string> = {
   '5': 'سایر',
 };
 
+/** Normalize API dates to Gregorian `YYYY-MM-DD` for JalaliDatePicker. */
+function formatIsoAsDateOnly(raw: string): string | null {
+  const trimmed = raw.trim();
+  if (!trimmed) return null;
+  if (/^\d{4}-\d{2}-\d{2}$/.test(trimmed)) return trimmed;
+
+  const looksInstant =
+    /[Tt]/.test(trimmed) ||
+    /[Zz]$/.test(trimmed) ||
+    /[+-]\d{2}:?\d{2}$/.test(trimmed);
+
+  if (looksInstant) {
+    const parsed = new Date(trimmed);
+    if (!Number.isNaN(parsed.getTime())) {
+      return `${parsed.getFullYear()}-${pad2(parsed.getMonth() + 1)}-${pad2(parsed.getDate())}`;
+    }
+  }
+
+  if (/^\d{4}-\d{2}-\d{2}/.test(trimmed)) return trimmed.slice(0, 10);
+  return null;
+}
+
 function formatDisplayValue(def: VisibilityFieldDef, raw: string): string {
   if (!raw) return '';
   if (def.id === 'gender') return GENDER_LABELS[raw] ?? raw;
@@ -126,6 +174,14 @@ function formatDisplayValue(def: VisibilityFieldDef, raw: string): string {
   if (def.id === 'serviceProviderStatus') {
     if (raw === 'true') return 'سرویس‌دهنده انفرادی';
     if (raw === 'false') return '';
+  }
+  if (
+    def.withCalendar ||
+    def.id === 'membershipDate' ||
+    def.id === 'membershipExpiry' ||
+    def.id === 'birthDate'
+  ) {
+    return formatIsoAsDateOnly(raw) ?? raw;
   }
   return raw;
 }
@@ -272,6 +328,14 @@ export function mapPrivatePanelProfile(
   const avatarSrc =
     readString(identity, 'profile_picture_path') ||
     '/images/public-panel/avatar.png';
+  const electronicCardPath = readString(
+    identity,
+    'electronic_card_picture_path'
+  );
+  const electronicCardHref =
+    !electronicCardPath || electronicCardPath === '[object Object]'
+      ? '#'
+      : electronicCardPath;
 
   return {
     displayName,
@@ -283,7 +347,7 @@ export function mapPrivatePanelProfile(
     location: locationParts.join('،'),
     bio: readString(identity, 'about_me'),
     avatarSrc,
-    electronicCardHref: readString(identity, 'electronic_card_picture_path') || '#',
+    electronicCardHref,
     socialLinks,
   };
 }
@@ -449,6 +513,13 @@ function parsePrivateFieldValue(
   return trimmed;
 }
 
+const PRIVATE_SUBMIT_SECTIONS = new Set([
+  'identity_info_user',
+  'social_info_user',
+  'contact_info_user',
+  'education_occupation_info_user',
+]);
+
 /** Tabs with value edits that owner can PATCH via private/tab/submit-by-owner. */
 export function tabsAffectedByValues(
   values: Record<string, string>,
@@ -456,11 +527,12 @@ export function tabsAffectedByValues(
 ): PrivateOwnerTabName[] {
   const tabs = new Set<PrivateOwnerTabName>();
   for (const def of VISIBILITY_FIELD_DEFS) {
-    if (!def.tabName || !def.valueField) continue;
+    if (!def.tabName || !def.valueField || !def.apiSection) continue;
     if (!PRIVATE_OWNER_TABS.includes(def.tabName as PrivateOwnerTabName)) {
       continue;
     }
-    if (def.kind === 'toggle') continue;
+    if (def.locked || def.kind === 'toggle') continue;
+    if (!PRIVATE_SUBMIT_SECTIONS.has(def.apiSection)) continue;
     if ((values[def.id] ?? '') !== (savedValues[def.id] ?? '')) {
       tabs.add(def.tabName as PrivateOwnerTabName);
     }
@@ -472,7 +544,8 @@ export function tabsAffectedByValues(
 export function toPrivateTabSubmitBody(
   values: Record<string, string>,
   tabName: PrivateOwnerTabName,
-  privateData?: ProfileRetrieveData | null
+  privateData?: ProfileRetrieveData | null,
+  savedValues: Record<string, string> = {}
 ): PrivateTabSubmitByOwnerBodyDto {
   const body: PrivateTabSubmitByOwnerBodyDto = {};
 
@@ -502,6 +575,14 @@ export function toPrivateTabSubmitBody(
       continue;
     }
 
+    const next = values[def.id] ?? '';
+    const prev = savedValues[def.id] ?? '';
+    // Only PATCH dirty fields — blank strings fail Actor validation (e.g. country_code).
+    if (next === prev) continue;
+
+    const parsed = parsePrivateFieldValue(def, next);
+    if (parsed === '' || parsed == null) continue;
+
     const sectionKey = def.apiSection as
       | 'identity_info_user'
       | 'social_info_user'
@@ -519,10 +600,20 @@ export function toPrivateTabSubmitBody(
     const section = (body[sectionKey] ??= {
       ...(sectionIds[sectionKey] != null ? { id: sectionIds[sectionKey] } : {}),
     }) as Record<string, unknown>;
-    section[def.valueField] = parsePrivateFieldValue(
-      def,
-      values[def.id] ?? ''
-    );
+    section[def.valueField] = parsed;
+  }
+
+  // Drop sections that only have id and no field payload.
+  for (const key of [
+    'identity_info_user',
+    'social_info_user',
+    'contact_info_user',
+    'education_occupation_info_user',
+  ] as const) {
+    const section = body[key] as Record<string, unknown> | undefined;
+    if (!section) continue;
+    const keys = Object.keys(section).filter((k) => k !== 'id');
+    if (keys.length === 0) delete body[key];
   }
 
   return body;

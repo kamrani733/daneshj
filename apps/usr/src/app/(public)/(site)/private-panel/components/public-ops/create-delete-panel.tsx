@@ -6,6 +6,7 @@ import { useState } from 'react';
 import fa from '@messages/fa.json';
 import {
   ACTOR_TYPE_NAME,
+  getActorApiErrorMessage,
   usePublicPanelStatusByOwnerQuery,
   useRequestPublicPanelChangeStatusMutation,
 } from '@private-panel/api';
@@ -22,7 +23,6 @@ type CreateDeletePanelProps = {
   accessToken?: string | null;
 };
 
-/** Create or delete public panel — confirm → Actor change-status-request. */
 export function CreateDeletePanel({ accessToken }: CreateDeletePanelProps) {
   const t = useTranslations('privatePanel.publicOps.createDelete');
   const statusQuery = usePublicPanelStatusByOwnerQuery({ accessToken });
@@ -33,11 +33,13 @@ export function CreateDeletePanel({ accessToken }: CreateDeletePanelProps) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [step, setStep] = useState<DialogStep>('confirm');
   const [requestSubmitted, setRequestSubmitted] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const paragraphs = hasPanel ? COPY.deleteParagraphs : COPY.createParagraphs;
 
   function openConfirm() {
     if (requestSubmitted || requestMutation.isPending) return;
+    setErrorMessage(null);
     setStep('confirm');
     setDialogOpen(true);
   }
@@ -45,9 +47,12 @@ export function CreateDeletePanel({ accessToken }: CreateDeletePanelProps) {
   function closeDialog() {
     setDialogOpen(false);
     setStep('confirm');
+    setErrorMessage(null);
   }
 
   async function handleConfirm() {
+    if (requestMutation.isPending) return;
+    setErrorMessage(null);
     try {
       await requestMutation.mutateAsync({
         accessToken,
@@ -56,8 +61,13 @@ export function CreateDeletePanel({ accessToken }: CreateDeletePanelProps) {
       });
       setRequestSubmitted(true);
       setStep('success');
-    } catch {
-      // Keep confirm step; mutation error surfaces via react-query if needed.
+    } catch (error) {
+      setErrorMessage(
+        getActorApiErrorMessage(
+          error,
+          hasPanel ? t('deleteConfirm') : t('createConfirm')
+        )
+      );
     }
   }
 
@@ -106,6 +116,8 @@ export function CreateDeletePanel({ accessToken }: CreateDeletePanelProps) {
         cancelLabel={t('cancel')}
         successTitle={hasPanel ? t('deleteSuccess') : t('createSuccess')}
         closeLabel={t('close')}
+        errorMessage={errorMessage}
+        confirming={requestMutation.isPending}
         onConfirm={() => {
           void handleConfirm();
         }}

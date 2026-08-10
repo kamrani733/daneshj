@@ -10,6 +10,8 @@ type ConfirmStepProps = {
   cancelLabel: string;
   successTitle: string;
   closeLabel: string;
+  errorMessage?: string | null;
+  confirming?: boolean;
   onConfirm: () => void;
   onClose: () => void;
 };
@@ -23,10 +25,15 @@ export function OpsConfirmDialog({
   cancelLabel,
   successTitle,
   closeLabel,
+  errorMessage,
+  confirming = false,
   onConfirm,
   onClose,
 }: ConfirmStepProps) {
   const isConfirm = step === 'confirm';
+  const title = isConfirm
+    ? errorMessage?.trim() || confirmTitle
+    : successTitle;
 
   return (
     <AppDialog
@@ -35,10 +42,13 @@ export function OpsConfirmDialog({
         if (!next) onClose();
       }}
       variant="confirm"
-      title={isConfirm ? confirmTitle : successTitle}
+      title={title}
       primaryAction={
         isConfirm
-          ? { label: confirmAction, onClick: onConfirm }
+          ? {
+              label: confirmAction,
+              onClick: confirming ? undefined : onConfirm,
+            }
           : { label: closeLabel, onClick: onClose }
       }
       secondaryAction={
