@@ -5,18 +5,9 @@ import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 
 import { MAZE_LINES } from '@/components/auth/auth-scene-assets';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
+import { AppDialog } from '@/components/ui/app-dialog';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Spinner } from '@/components/ui/spinner';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import {
   Table,
@@ -414,45 +405,22 @@ export function SessionManagementForm({
         className="h-10 w-full shrink-0 select-none object-cover object-bottom md:h-14"
       />
 
-      <AlertDialog
+      <AppDialog
         open={confirmId !== null}
         onOpenChange={(open) => {
           if (!open) setConfirmId(null);
         }}
-      >
-        <AlertDialogContent
-          dir="rtl"
-          className="max-w-sm rounded-2xl border-0 bg-[#E3E0DA] p-6 text-right shadow-xl ring-0 dark:bg-primary-900"
-        >
-          <AlertDialogHeader className="place-items-start text-right sm:text-right">
-            <AlertDialogTitle className="text-sm font-medium text-green-850 dark:text-primary-50">
-              {t('confirmTitle')}
-            </AlertDialogTitle>
-          </AlertDialogHeader>
-          <AlertDialogFooter className="mt-2 flex-row justify-start gap-3 border-0 bg-transparent p-0 sm:justify-start">
-            <AlertDialogCancel
-              variant="ghost"
-              className="h-auto border-0 bg-transparent px-4 py-2 text-sm font-medium text-green-700 shadow-none hover:bg-transparent hover:text-green-850 dark:text-primary-100"
-            >
-              {t('cancel')}
-            </AlertDialogCancel>
-            <AlertDialogAction
-              disabled={busyId !== null}
-              className="h-auto min-w-[5.5rem] rounded-full bg-primary-500 px-7 py-2 text-sm font-medium hover:bg-primary-600"
-              onClick={(event) => {
-                event.preventDefault();
-                void onConfirmLogout();
-              }}
-            >
-              {busyId !== null ? (
-                <Spinner className="size-5" aria-label={t('confirm')} />
-              ) : (
-                t('confirm')
-              )}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+        variant="confirm"
+        title={t('confirmTitle')}
+        primaryAction={{
+          label: t('confirm'),
+          loading: busyId !== null,
+          onClick: () => {
+            void onConfirmLogout();
+          },
+        }}
+        secondaryAction={{ label: t('cancel') }}
+      />
     </div>
   );
 }

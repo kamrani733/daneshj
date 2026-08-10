@@ -3,7 +3,14 @@
 import Link from 'next/link';
 import { MailCheck, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { useEffect, useState, type ReactNode } from 'react';
+import {
+  cloneElement,
+  isValidElement,
+  useEffect,
+  useState,
+  type ReactElement,
+  type ReactNode,
+} from 'react';
 
 import {
   getNotificationApiErrorMessage,
@@ -14,13 +21,8 @@ import {
   type NotificationItem,
 } from '@notifications/api';
 import { NotificationStatusIcon } from '@notifications/components/inbox/status-icon';
+import { AppDialog } from '@/components/ui/app-dialog';
 import { Button } from '@/components/ui/button';
-import {
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
 import {
   Popover,
   PopoverContent,
@@ -160,30 +162,26 @@ export function NotificationsPanel({
     );
   }
 
+  const triggerNode = trigger({ open, unreadCount });
+
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>{trigger({ open, unreadCount })}</DialogTrigger>
-      <DialogContent
-        showCloseButton={false}
-        aria-label={triggerLabel}
-        className={cn(
-          'top-auto right-0 bottom-0 left-0 flex w-full max-w-none translate-x-0 translate-y-0 flex-col gap-4',
-          'max-h-[min(85vh,720px)] rounded-t-3xl rounded-b-none border-0 bg-home-header p-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] text-content',
-          'ring-0 shadow-home-elevation-3 sm:max-w-none',
-          'data-open:zoom-in-100 data-closed:zoom-out-100',
-          'data-open:slide-in-from-bottom-4 data-closed:slide-out-to-bottom-4'
-        )}
+    <>
+      {isValidElement(triggerNode)
+        ? cloneElement(triggerNode as ReactElement<{ onClick?: () => void }>, {
+            onClick: () => setOpen(true),
+          })
+        : triggerNode}
+      <AppDialog
+        open={open}
+        onOpenChange={setOpen}
+        variant="sheet"
+        title={t('title')}
+        description={triggerLabel}
+        className="max-h-[min(85vh,720px)] gap-4 bg-home-header text-content"
       >
-        <div className="flex flex-col items-center">
-          <span
-            aria-hidden
-            className="mb-1 h-1 w-10 rounded-full bg-neutral-300 dark:bg-neutral-600"
-          />
-          <DialogTitle className="sr-only">{t('title')}</DialogTitle>
-        </div>
         {panelBody}
-      </DialogContent>
-    </Dialog>
+      </AppDialog>
+    </>
   );
 }
 

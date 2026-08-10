@@ -1,18 +1,12 @@
 'use client';
 
-import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 
 import type { PanelComment } from '@public-panel/data/public-panel-ui';
+import { AppDialog } from '@/components/ui/app-dialog';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogTitle,
-} from '@/components/ui/dialog';
 import { formatFaNumber } from '@/lib/format-fa';
 import { cn } from '@/lib/utils';
 
@@ -63,7 +57,7 @@ export function CommentTransferFlow({
 
   return (
     <>
-      <Dialog
+      <AppDialog
         open={open && step === 'form'}
         onOpenChange={(next) => {
           if (!next) {
@@ -71,147 +65,159 @@ export function CommentTransferFlow({
             else closeAll();
           }
         }}
+        variant="content"
+        title={t('submit')}
+        description={t('notePlaceholder')}
+        className="max-h-[90vh] max-w-[560px] overflow-y-auto sm:max-w-[560px]"
       >
-        <DialogContent
-          showCloseButton={false}
-          dir="rtl"
-          className="max-h-[90vh] w-full max-w-[560px] overflow-y-auto rounded-2xl border-0 bg-home-search-fill p-5 shadow-home-elevation-2 sm:max-w-[560px] dark:bg-home-stat-card"
-        >
-          <DialogTitle className="sr-only">{t('submit')}</DialogTitle>
-          <DialogDescription className="sr-only">
-            {t('notePlaceholder')}
-          </DialogDescription>
-
-          <header className="flex items-center gap-3">
-            <Avatar className="size-11 shrink-0 ring-2 ring-primary dark:ring-primary-100">
-              <AvatarFallback className="bg-primary text-sm font-bold text-white dark:bg-primary-100 dark:text-primary-900">
-                صا
-              </AvatarFallback>
-            </Avatar>
-            <div className="flex min-w-0 flex-1 flex-wrap items-center gap-x-2 gap-y-0.5 text-start">
-              <span className="text-sm font-bold text-home-filter-ink">
-                {t('ownerName')}
-              </span>
-              <span className="text-xs text-neutral-600 dark:text-home-filter-muted">
-                @{t('ownerHandle')}
-              </span>
-              <span className="text-xs text-neutral-600 dark:text-home-filter-muted">
-                ۱۴۰۳/۱۲/۰۵
-              </span>
-              <span className="text-xs text-neutral-600 dark:text-home-filter-muted">
-                ۱۴:۳۲
-              </span>
-            </div>
-          </header>
-
-          <div className="mt-4 flex flex-col gap-3">
-            <label className="relative block">
-              <textarea
-                value={note}
-                maxLength={NOTE_MAX_LENGTH}
-                onChange={(event) => setNote(event.target.value)}
-                placeholder={t('notePlaceholder')}
-                rows={3}
-                className={cn(
-                  'w-full resize-none rounded-xl border bg-home-stat-card px-3 py-3 text-start text-sm leading-6 text-home-filter-ink',
-                  'placeholder:text-neutral-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30',
-                  'dark:bg-home-search-category dark:text-home-filter-ink dark:placeholder:text-home-filter-muted',
-                  note.trim()
-                    ? 'border-primary pb-8 dark:border-primary-100'
-                    : 'border-border'
-                )}
-              />
-              {note.trim() ? (
-                <span className="pointer-events-none absolute bottom-3 end-3 text-[11px] text-neutral-600 dark:text-home-filter-muted">
-                  {tChar('charCount', {
-                    count: formatFaNumber(note.length),
-                    max: formatFaNumber(NOTE_MAX_LENGTH),
-                  })}
-                </span>
-              ) : null}
-            </label>
-
-            <QuotedComment comment={comment} />
-          </div>
-
-          <div className="mt-5 flex items-center justify-between gap-3">
-            <span className="text-xs text-neutral-600 dark:text-home-filter-muted">
-              {tChar('charCount', {
-                count: formatFaNumber(note.length),
-                max: formatFaNumber(NOTE_MAX_LENGTH),
-              })}
+        <header className="flex items-center gap-3">
+          <Avatar className="size-11 shrink-0 ring-2 ring-primary dark:ring-primary-100">
+            <AvatarFallback className="bg-primary text-sm font-bold text-white dark:bg-primary-100 dark:text-primary-900">
+              صا
+            </AvatarFallback>
+          </Avatar>
+          <div className="flex min-w-0 flex-1 flex-wrap items-center gap-x-2 gap-y-0.5 text-start">
+            <span className="text-sm font-bold text-home-filter-ink">
+              {t('ownerName')}
             </span>
-            <div dir="ltr" className="flex items-center gap-3">
-              <Button
-                type="button"
-                className="h-10 rounded-lg px-4 dark:bg-primary-100 dark:text-primary-900 dark:hover:bg-primary-100/90"
-                onClick={() => {
-                  if (mode === 'edit') {
-                    onConfirmTransfer(note.trim());
-                    closeAll();
-                    return;
-                  }
-                  setStep('confirm');
-                }}
-              >
-                {t('submit')}
-              </Button>
-              <Button
-                type="button"
-                variant="link"
-                className="h-auto px-0 text-sm font-medium text-primary dark:text-primary-100"
-                onClick={() => {
-                  if (note.trim()) setStep('exit');
-                  else closeAll();
-                }}
-              >
-                {t('cancel')}
-              </Button>
-            </div>
+            <span className="text-xs text-neutral-600 dark:text-home-filter-muted">
+              @{t('ownerHandle')}
+            </span>
+            <span className="text-xs text-neutral-600 dark:text-home-filter-muted">
+              ۱۴۰۳/۱۲/۰۵
+            </span>
+            <span className="text-xs text-neutral-600 dark:text-home-filter-muted">
+              ۱۴:۳۲
+            </span>
           </div>
-        </DialogContent>
-      </Dialog>
+        </header>
 
-      <CommentConfirmDialog
+        <div className="mt-4 flex flex-col gap-3">
+          <label className="relative block">
+            <textarea
+              value={note}
+              maxLength={NOTE_MAX_LENGTH}
+              onChange={(event) => setNote(event.target.value)}
+              placeholder={t('notePlaceholder')}
+              rows={3}
+              className={cn(
+                'w-full resize-none rounded-xl border bg-home-stat-card px-3 py-3 text-start text-sm leading-6 text-home-filter-ink',
+                'placeholder:text-neutral-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30',
+                'dark:bg-home-search-category dark:text-home-filter-ink dark:placeholder:text-home-filter-muted',
+                note.trim()
+                  ? 'border-primary pb-8 dark:border-primary-100'
+                  : 'border-border'
+              )}
+            />
+            {note.trim() ? (
+              <span className="pointer-events-none absolute bottom-3 end-3 text-[11px] text-neutral-600 dark:text-home-filter-muted">
+                {tChar('charCount', {
+                  count: formatFaNumber(note.length),
+                  max: formatFaNumber(NOTE_MAX_LENGTH),
+                })}
+              </span>
+            ) : null}
+          </label>
+
+          <QuotedComment comment={comment} />
+        </div>
+
+        <div className="mt-5 flex items-center justify-between gap-3">
+          <span className="text-xs text-neutral-600 dark:text-home-filter-muted">
+            {tChar('charCount', {
+              count: formatFaNumber(note.length),
+              max: formatFaNumber(NOTE_MAX_LENGTH),
+            })}
+          </span>
+          <div dir="ltr" className="flex items-center gap-3">
+            <Button
+              type="button"
+              className="h-10 rounded-lg px-4 dark:bg-primary-100 dark:text-primary-900 dark:hover:bg-primary-100/90"
+              onClick={() => {
+                if (mode === 'edit') {
+                  onConfirmTransfer(note.trim());
+                  closeAll();
+                  return;
+                }
+                setStep('confirm');
+              }}
+            >
+              {t('submit')}
+            </Button>
+            <Button
+              type="button"
+              variant="link"
+              className="h-auto px-0 text-sm font-medium text-primary dark:text-primary-100"
+              onClick={() => {
+                if (note.trim()) setStep('exit');
+                else closeAll();
+              }}
+            >
+              {t('cancel')}
+            </Button>
+          </div>
+        </div>
+      </AppDialog>
+
+      <AppDialog
         open={open && step === 'confirm'}
-        title={t('confirmTitle', { limit: formatFaNumber(TRANSFER_LIMIT) })}
-        primaryLabel={t('confirm')}
-        secondaryLabel={t('cancel')}
-        onPrimary={() => {
-          onConfirmTransfer(note.trim());
-          setStep('success');
+        onOpenChange={(next) => {
+          if (!next) setStep('form');
         }}
-        onSecondary={() => setStep('form')}
+        variant="confirm"
+        title={t('confirmTitle', { limit: formatFaNumber(TRANSFER_LIMIT) })}
+        primaryAction={{
+          label: t('confirm'),
+          onClick: () => {
+            onConfirmTransfer(note.trim());
+            setStep('success');
+          },
+        }}
+        secondaryAction={{
+          label: t('cancel'),
+          onClick: () => setStep('form'),
+        }}
       />
 
-      <CommentConfirmDialog
+      <AppDialog
         open={open && step === 'limit'}
+        onOpenChange={(next) => {
+          if (!next) closeAll();
+        }}
+        variant="confirm"
         title={t('limitTitle')}
-        primaryLabel={t('goToPanel')}
-        secondaryLabel={t('cancel')}
-        primaryAsLink="/public-panel"
-        onPrimary={closeAll}
-        onSecondary={closeAll}
+        primaryAction={{
+          label: t('goToPanel'),
+          href: '/public-panel',
+          onClick: closeAll,
+        }}
+        secondaryAction={{ label: t('cancel'), onClick: closeAll }}
       />
 
-      <CommentConfirmDialog
+      <AppDialog
         open={open && step === 'exit'}
+        onOpenChange={(next) => {
+          if (!next) setStep('form');
+        }}
+        variant="confirm"
         title={t('exitTitle')}
-        primaryLabel={t('yes')}
-        secondaryLabel={t('no')}
-        textActions
-        actionsDir="rtl"
-        onPrimary={closeAll}
-        onSecondary={() => setStep('form')}
+        actionsStyle="text"
+        primaryAction={{ label: t('yes'), onClick: closeAll }}
+        secondaryAction={{
+          label: t('no'),
+          onClick: () => setStep('form'),
+        }}
       />
 
-      <CommentConfirmDialog
+      <AppDialog
         open={open && step === 'success'}
+        onOpenChange={(next) => {
+          if (!next) closeAll();
+        }}
+        variant="confirm"
         title={t('successTitle')}
-        primaryLabel={t('close')}
-        textActions
-        singleAction
-        onPrimary={closeAll}
+        actionsStyle="text"
+        primaryAction={{ label: t('close'), onClick: closeAll }}
       />
     </>
   );
@@ -240,89 +246,5 @@ function QuotedComment({ comment }: { comment: PanelComment }) {
         {comment.body}
       </p>
     </div>
-  );
-}
-
-export function CommentConfirmDialog({
-  open,
-  title,
-  primaryLabel,
-  secondaryLabel,
-  onPrimary,
-  onSecondary,
-  primaryAsLink,
-  textActions,
-  singleAction,
-  actionsDir = 'ltr',
-}: {
-  open: boolean;
-  title: string;
-  primaryLabel: string;
-  secondaryLabel?: string;
-  onPrimary: () => void;
-  onSecondary?: () => void;
-  primaryAsLink?: string;
-  textActions?: boolean;
-  singleAction?: boolean;
-  actionsDir?: 'ltr' | 'rtl';
-}) {
-  return (
-    <Dialog
-      open={open}
-      onOpenChange={(next) => {
-        if (!next) (onSecondary ?? onPrimary)();
-      }}
-    >
-      <DialogContent
-        showCloseButton={false}
-        dir="rtl"
-        className="w-full max-w-[420px] gap-6 rounded-2xl border-0 bg-home-search-fill p-5 shadow-home-elevation-2 sm:max-w-[420px] dark:bg-home-stat-card"
-      >
-        <DialogTitle className="text-start text-sm font-medium leading-6 text-home-filter-ink">
-          {title}
-        </DialogTitle>
-        <DialogDescription className="sr-only">{title}</DialogDescription>
-
-        <div dir={actionsDir} className="flex items-center gap-3">
-          {primaryAsLink ? (
-            <Button
-              asChild
-              className="h-10 rounded-full px-5 dark:bg-primary-100 dark:text-primary-900 dark:hover:bg-primary-100/90"
-            >
-              <Link href={primaryAsLink} onClick={onPrimary}>
-                {primaryLabel}
-              </Link>
-            </Button>
-          ) : textActions ? (
-            <Button
-              type="button"
-              variant="link"
-              className="h-auto px-0 text-sm font-medium text-primary dark:text-primary-100"
-              onClick={onPrimary}
-            >
-              {primaryLabel}
-            </Button>
-          ) : (
-            <Button
-              type="button"
-              className="h-10 rounded-lg px-5 dark:bg-primary-100 dark:text-primary-900 dark:hover:bg-primary-100/90"
-              onClick={onPrimary}
-            >
-              {primaryLabel}
-            </Button>
-          )}
-          {!singleAction && secondaryLabel && onSecondary ? (
-            <Button
-              type="button"
-              variant="link"
-              className="h-auto px-0 text-sm font-medium text-primary dark:text-primary-100"
-              onClick={onSecondary}
-            >
-              {secondaryLabel}
-            </Button>
-          ) : null}
-        </div>
-      </DialogContent>
-    </Dialog>
   );
 }

@@ -25,6 +25,7 @@ import {
   useLikeMutation,
 } from '@public-panel/api';
 import type { PanelComment } from '@public-panel/data/public-panel-ui';
+import { AppDialog } from '@/components/ui/app-dialog';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -36,7 +37,7 @@ import {
 import { formatFaNumber } from '@/lib/format-fa';
 import { cn } from '@/lib/utils';
 
-import { CommentTransferFlow, CommentConfirmDialog } from './transfer-flow';
+import { CommentTransferFlow } from './transfer-flow';
 
 const REPLY_MAX_LENGTH = 1500;
 
@@ -264,27 +265,36 @@ export function CommentCard({
           </Popover>
         </div>
 
-        <CommentConfirmDialog
+        <AppDialog
           open={deleteOpen}
+          onOpenChange={setDeleteOpen}
+          variant="confirm"
           title={tFlow('revertTitle')}
-          primaryLabel={tFlow('yes')}
-          secondaryLabel={tFlow('no')}
-          textActions
-          onPrimary={() => {
-            onDelete?.(comment.id);
-            setDeleteOpen(false);
-            setDeleteSuccessOpen(true);
+          actionsStyle="text"
+          primaryAction={{
+            label: tFlow('yes'),
+            onClick: () => {
+              onDelete?.(comment.id);
+              setDeleteOpen(false);
+              setDeleteSuccessOpen(true);
+            },
           }}
-          onSecondary={() => setDeleteOpen(false)}
+          secondaryAction={{
+            label: tFlow('no'),
+            onClick: () => setDeleteOpen(false),
+          }}
         />
 
-        <CommentConfirmDialog
+        <AppDialog
           open={deleteSuccessOpen}
+          onOpenChange={setDeleteSuccessOpen}
+          variant="confirm"
           title={tFlow('deleteSuccess')}
-          primaryLabel={tFlow('close')}
-          textActions
-          singleAction
-          onPrimary={() => setDeleteSuccessOpen(false)}
+          actionsStyle="text"
+          primaryAction={{
+            label: tFlow('close'),
+            onClick: () => setDeleteSuccessOpen(false),
+          }}
         />
 
         <CommentTransferFlow
@@ -510,27 +520,36 @@ export function CommentCard({
         </div>
       </div>
 
-      <CommentConfirmDialog
+      <AppDialog
         open={deleteOpen}
+        onOpenChange={setDeleteOpen}
+        variant="confirm"
         title={tFlow('deleteTitle')}
-        primaryLabel={tFlow('yes')}
-        secondaryLabel={tFlow('no')}
-        textActions
-        onPrimary={() => {
-          onDelete?.(comment.id);
-          setDeleteOpen(false);
-          setDeleteSuccessOpen(true);
+        actionsStyle="text"
+        primaryAction={{
+          label: tFlow('yes'),
+          onClick: () => {
+            onDelete?.(comment.id);
+            setDeleteOpen(false);
+            setDeleteSuccessOpen(true);
+          },
         }}
-        onSecondary={() => setDeleteOpen(false)}
+        secondaryAction={{
+          label: tFlow('no'),
+          onClick: () => setDeleteOpen(false),
+        }}
       />
 
-      <CommentConfirmDialog
+      <AppDialog
         open={deleteSuccessOpen}
+        onOpenChange={setDeleteSuccessOpen}
+        variant="confirm"
         title={tFlow('deleteSuccess')}
-        primaryLabel={tFlow('close')}
-        textActions
-        singleAction
-        onPrimary={() => setDeleteSuccessOpen(false)}
+        actionsStyle="text"
+        primaryAction={{
+          label: tFlow('close'),
+          onClick: () => setDeleteSuccessOpen(false),
+        }}
       />
 
       <CommentTransferFlow

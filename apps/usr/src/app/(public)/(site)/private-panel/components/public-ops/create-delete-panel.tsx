@@ -62,7 +62,7 @@ export function CreateDeletePanel() {
           type="button"
           onClick={openConfirm}
           className={cn(
-            'h-11 w-full self-end rounded-full border-0 px-6 text-sm font-medium text-white shadow-none',
+            'h-12 w-full self-end !rounded-full border-0 px-8 text-sm font-medium text-white shadow-none',
             'min-[720px]:w-auto',
             hasPanel
               ? 'bg-warning hover:bg-warning/90'

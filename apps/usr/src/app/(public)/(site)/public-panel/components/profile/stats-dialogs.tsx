@@ -4,14 +4,9 @@ import { Copy, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useEffect, useMemo, useState } from 'react';
 
+import { AppDialog } from '@/components/ui/app-dialog';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogTitle,
-} from '@/components/ui/dialog';
 import { SearchField } from '@/components/ui/search-field';
 import { cn } from '@/lib/utils';
 
@@ -120,89 +115,86 @@ export function StatsPeopleDialog({
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent
-        showCloseButton={false}
-        dir="rtl"
-        className={cn(
-          'flex max-h-[85vh] w-full max-w-[420px] flex-col gap-4 overflow-hidden rounded-2xl border-0',
-          'bg-home-search-fill p-4 shadow-home-elevation-2 dark:bg-home-search-category sm:max-w-[480px]'
-        )}
+    <AppDialog
+      open={open}
+      onOpenChange={onOpenChange}
+      variant="content"
+      title={tDialog(TITLE_KEY[kind])}
+      className={cn(
+        'flex max-h-[85vh] max-w-[420px] flex-col gap-4 overflow-hidden p-4',
+        'dark:bg-home-search-category sm:max-w-[480px]'
+      )}
+    >
+      <h2 className="ps-10 text-start text-base font-bold leading-7 text-home-filter-ink">
+        {tDialog(TITLE_KEY[kind])}
+      </h2>
+
+      <button
+        type="button"
+        aria-label={tDialog('close')}
+        onClick={() => onOpenChange(false)}
+        className="absolute end-3 top-3 inline-flex size-9 items-center justify-center rounded-full text-home-filter-muted hover:bg-black/5 dark:text-home-filter-ink dark:hover:bg-white/5"
       >
-        <DialogTitle className="ps-10 text-start text-base font-bold leading-7 text-home-filter-ink">
-          {tDialog(TITLE_KEY[kind])}
-        </DialogTitle>
-        <DialogDescription className="sr-only">
-          {tDialog(TITLE_KEY[kind])}
-        </DialogDescription>
+        <X className="size-5" strokeWidth={1.75} />
+      </button>
 
-        <button
-          type="button"
-          aria-label={tDialog('close')}
-          onClick={() => onOpenChange(false)}
-          className="absolute end-3 top-3 inline-flex size-9 items-center justify-center rounded-full text-home-filter-muted hover:bg-black/5 dark:text-home-filter-ink dark:hover:bg-white/5"
-        >
-          <X className="size-5" strokeWidth={1.75} />
-        </button>
+      <SearchField
+        label={tDialog('searchPlaceholder')}
+        value={query}
+        onChange={(event) => setQuery(event.target.value)}
+        placeholder={tDialog('searchPlaceholder')}
+      />
 
-        <SearchField
-          label={tDialog('searchPlaceholder')}
-          value={query}
-          onChange={(event) => setQuery(event.target.value)}
-          placeholder={tDialog('searchPlaceholder')}
-        />
+      {filtered.length === 0 ? (
+        <p className="py-8 text-center text-sm font-medium text-neutral-600 dark:text-home-filter-muted">
+          {tDialog('emptySearch')}
+        </p>
+      ) : (
+        <ul className="flex max-h-[min(60vh,480px)] flex-col gap-3 overflow-y-auto pe-1">
+          {filtered.map((person) => (
+            <li
+              key={person.id}
+              className={cn(
+                'flex items-center gap-3 rounded-2xl bg-home-stat-card p-3',
+                'shadow-[0_1px_2px_rgba(0,0,0,0.06)]'
+              )}
+            >
+              <Avatar className="size-12 shrink-0 bg-border">
+                {person.avatarSrc ? (
+                  <AvatarImage
+                    src={person.avatarSrc}
+                    alt={person.displayName}
+                  />
+                ) : null}
+                <AvatarFallback className="bg-border text-sm font-bold text-primary-foreground">
+                  {person.displayName.slice(0, 1)}
+                </AvatarFallback>
+              </Avatar>
 
-        {filtered.length === 0 ? (
-          <p className="py-8 text-center text-sm font-medium text-neutral-600 dark:text-home-filter-muted">
-            {tDialog('emptySearch')}
-          </p>
-        ) : (
-          <ul className="flex max-h-[min(60vh,480px)] flex-col gap-3 overflow-y-auto pe-1">
-            {filtered.map((person) => (
-              <li
-                key={person.id}
-                className={cn(
-                  'flex items-center gap-3 rounded-2xl bg-home-stat-card p-3',
-                  'shadow-[0_1px_2px_rgba(0,0,0,0.06)]'
-                )}
-              >
-                <Avatar className="size-12 shrink-0 bg-border">
-                  {person.avatarSrc ? (
-                    <AvatarImage
-                      src={person.avatarSrc}
-                      alt={person.displayName}
-                    />
-                  ) : null}
-                  <AvatarFallback className="bg-border text-sm font-bold text-primary-foreground">
-                    {person.displayName.slice(0, 1)}
-                  </AvatarFallback>
-                </Avatar>
+              <div className="flex min-w-0 flex-1 flex-col items-start gap-0.5 text-start">
+                <span className="truncate text-sm font-bold text-home-filter-ink">
+                  {person.username}
+                </span>
+                <span className="truncate text-xs font-medium text-neutral-600 dark:text-home-filter-muted">
+                  {person.displayName}
+                </span>
+              </div>
 
-                <div className="flex min-w-0 flex-1 flex-col items-start gap-0.5 text-start">
-                  <span className="truncate text-sm font-bold text-home-filter-ink">
-                    {person.username}
-                  </span>
-                  <span className="truncate text-xs font-medium text-neutral-600 dark:text-home-filter-muted">
-                    {person.displayName}
-                  </span>
-                </div>
-
-                <PeopleActionButton
-                  kind={kind}
-                  person={person}
-                  labels={{
-                    follow: t('follow'),
-                    unfollow: t('unfollow'),
-                    remove: t('remove'),
-                  }}
-                  onClick={() => handleAction(person)}
-                />
-              </li>
-            ))}
-          </ul>
-        )}
-      </DialogContent>
-    </Dialog>
+              <PeopleActionButton
+                kind={kind}
+                person={person}
+                labels={{
+                  follow: t('follow'),
+                  unfollow: t('unfollow'),
+                  remove: t('remove'),
+                }}
+                onClick={() => handleAction(person)}
+              />
+            </li>
+          ))}
+        </ul>
+      )}
+    </AppDialog>
   );
 }
 
@@ -291,7 +283,7 @@ export function StatsShareDialog({
   }
 
   return (
-    <Dialog
+    <AppDialog
       open={open}
       onOpenChange={(next) => {
         if (!next) {
@@ -300,82 +292,84 @@ export function StatsShareDialog({
         }
         onOpenChange(next);
       }}
+      variant="content"
+      title={t('shareTitle')}
+      className={cn(
+        'flex max-w-[420px] flex-col gap-5',
+        'dark:bg-home-search-category sm:max-w-[480px]'
+      )}
     >
-      <DialogContent
-        showCloseButton={false}
-        dir="rtl"
-        className={cn(
-          'flex w-full max-w-[420px] flex-col gap-5 rounded-2xl border-0',
-          'bg-home-search-fill p-5 shadow-home-elevation-2 dark:bg-home-search-category sm:max-w-[480px]'
-        )}
-      >
-        <DialogTitle className="text-start text-base font-bold text-home-filter-ink">
-          {t('shareTitle')}
-        </DialogTitle>
-        <DialogDescription className="sr-only">{t('shareTitle')}</DialogDescription>
+      <h2 className="text-start text-base font-bold text-home-filter-ink">
+        {t('shareTitle')}
+      </h2>
 
-        <label className="relative block w-full">
-          <span className="absolute -top-2.5 start-3 bg-home-search-fill px-1 text-xs font-medium text-primary dark:bg-home-search-category dark:text-primary-100">
-            {t('shareReason')}
-          </span>
-          <textarea
-            value={reason}
-            onChange={(event) => setReason(event.target.value)}
-            placeholder={t('sharePlaceholder')}
-            rows={3}
-            className={cn(
-              'w-full resize-none rounded-xl border border-home-filter-muted bg-transparent px-3 py-3',
-              'text-start text-sm text-home-filter-ink placeholder:text-neutral-600',
-              'dark:border-border dark:placeholder:text-home-filter-muted',
-              'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30'
-            )}
-          />
-        </label>
+      <label className="relative block w-full">
+        <span className="absolute -top-2.5 start-3 bg-home-search-fill px-1 text-xs font-medium text-primary dark:bg-home-search-category dark:text-primary-100">
+          {t('shareReason')}
+        </span>
+        <textarea
+          value={reason}
+          onChange={(event) => setReason(event.target.value)}
+          placeholder={t('sharePlaceholder')}
+          rows={3}
+          className={cn(
+            'w-full resize-none rounded-xl border border-home-filter-muted bg-transparent px-3 py-3',
+            'text-start text-sm text-home-filter-ink placeholder:text-neutral-600',
+            'dark:border-border dark:placeholder:text-home-filter-muted',
+            'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30'
+          )}
+        />
+      </label>
 
-        <div className="flex items-center gap-2 text-start">
-          <button
-            type="button"
-            aria-label={t('copyLink')}
-            onClick={() => void handleCopy()}
-            className="inline-flex size-9 shrink-0 items-center justify-center rounded-lg text-home-filter-muted hover:bg-black/5 dark:text-home-filter-ink dark:hover:bg-white/5"
-          >
-            <Copy className="size-5" strokeWidth={1.5} />
-          </button>
-          <p className="min-w-0 flex-1 truncate text-sm text-home-filter-muted" dir="ltr">
-            {copied ? t('copied') : shareUrl}
-          </p>
-        </div>
+      <div className="flex items-center gap-2 text-start">
+        <button
+          type="button"
+          aria-label={t('copyLink')}
+          onClick={() => void handleCopy()}
+          className="inline-flex size-9 shrink-0 items-center justify-center rounded-lg text-home-filter-muted hover:bg-black/5 dark:text-home-filter-ink dark:hover:bg-white/5"
+        >
+          <Copy className="size-5" strokeWidth={1.5} />
+        </button>
+        <p
+          className="min-w-0 flex-1 truncate text-sm text-home-filter-muted"
+          dir="ltr"
+        >
+          {copied ? t('copied') : shareUrl}
+        </p>
+      </div>
 
-        <div className="h-px w-full bg-home-carousel-inactive dark:bg-border" aria-hidden />
+      <div
+        className="h-px w-full bg-home-carousel-inactive dark:bg-border"
+        aria-hidden
+      />
 
-        <ul className="mx-auto grid grid-cols-4 gap-4">
-          {SHARE_TARGETS.map((target) => (
-            <li key={target.id} className="flex justify-center">
-              <button
-                type="button"
-                aria-label={target.id}
-                onClick={() => {
-                  onShared?.();
-                  if (typeof window !== 'undefined') {
-                    window.open(
-                      target.href(shareUrl, reason),
-                      '_blank',
-                      'noopener,noreferrer'
-                    );
-                  }
-                }}
-                className={cn(
-                  'inline-flex size-12 items-center justify-center rounded-full text-white',
-                  target.className
-                )}
-              >
-                {target.icon}
-              </button>
-            </li>
-          ))}
-        </ul>
-      </DialogContent>
-    </Dialog>
+      <ul className="mx-auto grid grid-cols-4 gap-4">
+        {SHARE_TARGETS.map((target) => (
+          <li key={target.id} className="flex justify-center">
+            <button
+              type="button"
+              aria-label={target.id}
+              onClick={() => {
+                onShared?.();
+                if (typeof window !== 'undefined') {
+                  window.open(
+                    target.href(shareUrl, reason),
+                    '_blank',
+                    'noopener,noreferrer'
+                  );
+                }
+              }}
+              className={cn(
+                'inline-flex size-12 items-center justify-center rounded-full text-white',
+                target.className
+              )}
+            >
+              {target.icon}
+            </button>
+          </li>
+        ))}
+      </ul>
+    </AppDialog>
   );
 }
 
