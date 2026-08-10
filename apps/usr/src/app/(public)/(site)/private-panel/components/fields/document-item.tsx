@@ -17,7 +17,7 @@ export type DocumentItemModel = {
   kind: DocumentKind;
   state: DocumentItemState;
   progress?: number;
-  errorKey?: 'maxSize';
+  errorKey?: 'maxSize' | 'uploadFailed';
   decision?: DocumentReviewDecision;
 };
 

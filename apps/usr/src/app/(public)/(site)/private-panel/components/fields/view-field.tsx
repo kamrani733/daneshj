@@ -1,11 +1,15 @@
 'use client';
 
-import { Calendar, ChevronDown, User } from 'lucide-react';
+import { Calendar, ChevronDown } from 'lucide-react';
 import { useId, useRef, type ChangeEvent, type ReactNode } from 'react';
 
-import { optionsForField } from '@private-panel/data/field-options';
+import {
+  optionsForField,
+  type FieldOptionsContext,
+} from '@private-panel/data/field-options';
 import type { VisibilityField } from '@private-panel/data/visibility-config';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { AvatarUserIcon } from '@/components/ui/avatar-user-icon';
 import { JalaliDatePicker } from '@/components/ui/jalali-date-picker';
 import {
   dateToJalali,
@@ -36,6 +40,13 @@ const SELECT_IDS = new Set([
   'gradEmploymentStatus',
   'membershipType',
   'serviceProviderStatus',
+]);
+
+const CASCADE_SELECT_IDS = new Set([
+  'province',
+  'city',
+  'eduProvince',
+  'eduCity',
 ]);
 
 const REQUIRED_IDS = new Set([
@@ -82,6 +93,7 @@ type ViewFieldProps = {
   label: string;
   editable?: boolean;
   value?: string;
+  values?: FieldOptionsContext;
   error?: string | null;
   onChange?: (id: string, value: string) => void;
 };
@@ -91,6 +103,7 @@ export function ViewField({
   label,
   editable = false,
   value,
+  values,
   error,
   onChange,
 }: ViewFieldProps) {
@@ -214,8 +227,10 @@ export function ViewField({
   }
 
   if (control === 'select') {
-    const options = optionsForField(field.id);
-    if (canEdit && options.length > 0) {
+    const options = optionsForField(field.id, values);
+    const useListPicker =
+      canEdit && (options.length > 0 || CASCADE_SELECT_IDS.has(field.id));
+    if (useListPicker) {
       return (
         <FieldWithError error={error}>
           <LocationListPicker
@@ -231,6 +246,7 @@ export function ViewField({
             }
             options={options}
             value={current}
+            disabled={options.length === 0}
             onChange={(next) => onChange?.(field.id, next)}
           />
         </FieldWithError>
@@ -382,7 +398,7 @@ function PhotoField({
       <Avatar className="size-20 min-[720px]:size-24">
         {hasPhoto ? <AvatarImage src={imageSrc} alt={label} /> : null}
         <AvatarFallback className="bg-transparent text-home-filter-muted">
-          <User className="size-10" strokeWidth={1.25} />
+          <AvatarUserIcon className="size-10" />
         </AvatarFallback>
       </Avatar>
       <p className="text-xs font-medium text-[#404943] dark:text-home-filter-muted">

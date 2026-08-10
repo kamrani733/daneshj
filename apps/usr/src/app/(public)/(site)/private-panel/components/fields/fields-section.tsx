@@ -11,11 +11,13 @@ import {
 
 import {
   getActorApiErrorMessage,
+  isPrivateFileUploadConfigured,
   mapPendingFieldRequests,
   mapVisibilityFields,
   sanitizeValuesForPrivateSubmit,
   tabsAffectedByValues,
   toPrivateTabSubmitBody,
+  uploadPrivatePanelFile,
   useManageVisibilityQuery,
   useReviewPrivateChangesByOwnerMutation,
   useSubmitPrivateTabByOwnerMutation,
@@ -44,8 +46,25 @@ import {
 } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
 
-import { DocumentsPanel } from './documents-panel';
+import {
+  DocumentsPanel,
+  type DocumentDraft,
+} from './documents-panel';
 import { ViewField, resolveViewControl } from './view-field';
+
+function readyDocuments(docs: DocumentDraft[]): DocumentDraft[] {
+  return docs.filter(
+    (doc) =>
+      (doc.state === 'done' || doc.state === 'review') && Boolean(doc.filePath)
+  );
+}
+
+function documentsSignature(docs: DocumentDraft[]): string {
+  return readyDocuments(docs)
+    .map((doc) => `${doc.id}:${doc.filePath}`)
+    .sort()
+    .join('|');
+}
 
 type FieldsSectionProps = {
   accessToken?: string | null;
@@ -80,6 +99,18 @@ export function FieldsSection({ accessToken }: FieldsSectionProps) {
   const [reviewDecisions, setReviewDecisions] = useState<
     Record<number, 'approve' | 'reject'>
   >({});
+  const [academicDocuments, setAcademicDocuments] = useState<DocumentDraft[]>(
+    []
+  );
+  const [savedAcademicDocuments, setSavedAcademicDocuments] = useState<
+    DocumentDraft[]
+  >([]);
+  const [providerDocuments, setProviderDocuments] = useState<DocumentDraft[]>(
+    []
+  );
+  const [savedProviderDocuments, setSavedProviderDocuments] = useState<
+    DocumentDraft[]
+  >([]);
 
   const fields =
     visibilityQuery.data?.fields ?? mapVisibilityFields(null, null);
@@ -90,15 +121,26 @@ export function FieldsSection({ accessToken }: FieldsSectionProps) {
     [privateData]
   );
 
+  const uploadDocumentFile = async (file: File) => {
+    if (!accessToken || !isPrivateFileUploadConfigured()) {
+      throw new Error('FILE_UPLOAD_UNAVAILABLE');
+    }
+    return uploadPrivatePanelFile({ accessToken, file });
+  };
+
   useEffect(() => {
     if (!visibilityQuery.data) return;
     if (hydratedKey === visibilityQuery.dataUpdatedAt) return;
 
     const hasLocalEdits =
       hydratedKey !== null &&
-      Object.keys(draftValues).some(
+      (Object.keys(draftValues).some(
         (id) => draftValues[id] !== savedValues[id]
-      );
+      ) ||
+        documentsSignature(academicDocuments) !==
+          documentsSignature(savedAcademicDocuments) ||
+        documentsSignature(providerDocuments) !==
+          documentsSignature(savedProviderDocuments));
     if (hasLocalEdits) {
       setHydratedKey(visibilityQuery.dataUpdatedAt);
       return;
@@ -116,10 +158,36 @@ export function FieldsSection({ accessToken }: FieldsSectionProps) {
     hydratedKey,
     draftValues,
     savedValues,
+    academicDocuments,
+    savedAcademicDocuments,
+    providerDocuments,
+    savedProviderDocuments,
   ]);
 
   const onFieldChange = (id: string, value: string) => {
-    setDraftValues((prev) => ({ ...prev, [id]: value }));
+    setDraftValues((prev) => {
+      const next = { ...prev, [id]: value };
+      if (id === 'country') {
+        next.province = '';
+        next.city = '';
+        next.district = '';
+      } else if (id === 'province') {
+        next.city = '';
+        next.district = '';
+      } else if (id === 'city') {
+        next.district = '';
+      } else if (id === 'eduCountry') {
+        next.eduProvince = '';
+        next.eduCity = '';
+        next.eduDistrict = '';
+      } else if (id === 'eduProvince') {
+        next.eduCity = '';
+        next.eduDistrict = '';
+      } else if (id === 'eduCity') {
+        next.eduDistrict = '';
+      }
+      return next;
+    });
     setFieldErrors((prev) => {
       if (!prev[id]) return prev;
       const next = { ...prev };
@@ -129,13 +197,30 @@ export function FieldsSection({ accessToken }: FieldsSectionProps) {
     if (formError) setFormError(null);
   };
 
-  const isDirty = useMemo(
-    () =>
-      Object.keys(draftValues).some(
-        (id) => (draftValues[id] ?? '') !== (savedValues[id] ?? '')
-      ),
-    [draftValues, savedValues]
-  );
+  const isDirty = useMemo(() => {
+    const fieldsDirty = Object.keys(draftValues).some(
+      (id) => (draftValues[id] ?? '') !== (savedValues[id] ?? '')
+    );
+    const academicDirty =
+      documentsSignature(academicDocuments) !==
+      documentsSignature(savedAcademicDocuments);
+    const providerDirty =
+      documentsSignature(providerDocuments) !==
+      documentsSignature(savedProviderDocuments);
+    const hasPendingDocs = [...academicDocuments, ...providerDocuments].some(
+      (doc) =>
+        doc.state === 'uploading' ||
+        ((doc.state === 'done' || doc.state === 'review') && !doc.filePath)
+    );
+    return fieldsDirty || academicDirty || providerDirty || hasPendingDocs;
+  }, [
+    draftValues,
+    savedValues,
+    academicDocuments,
+    savedAcademicDocuments,
+    providerDocuments,
+    savedProviderDocuments,
+  ]);
 
   const categoryFields = useMemo(
     () => fields.filter((field) => field.category === category),
@@ -158,21 +243,97 @@ export function FieldsSection({ accessToken }: FieldsSectionProps) {
       return;
     }
 
+    if (
+      academicDocuments.some((doc) => doc.state === 'uploading') ||
+      providerDocuments.some((doc) => doc.state === 'uploading')
+    ) {
+      setFormError(t('documentsUploading'));
+      return;
+    }
+
     const hasLocalBlob = Object.values(draftValues).some((value) =>
       value.startsWith('blob:')
     );
-    const submitValues = sanitizeValuesForPrivateSubmit(draftValues);
-    const privateTabs = tabsAffectedByValues(submitValues, savedValues);
+    if (hasLocalBlob) {
+      setFormError(t('localImageOnly'));
+      return;
+    }
 
-    if (privateTabs.length === 0) {
-      setFormError(hasLocalBlob ? t('localImageOnly') : t('nothingToSave'));
+    let nextAcademicDocuments = academicDocuments;
+    let nextProviderDocuments = providerDocuments;
+    const needsDocumentUpload = [...academicDocuments, ...providerDocuments].some(
+      (doc) =>
+        (doc.state === 'done' || doc.state === 'review') &&
+        !doc.filePath &&
+        Boolean(doc.file)
+    );
+
+    if (needsDocumentUpload) {
+      if (!isPrivateFileUploadConfigured()) {
+        setFormError(t('localDocumentOnly'));
+        return;
+      }
+      setIsSaving(true);
+      try {
+        nextAcademicDocuments = await Promise.all(
+          academicDocuments.map(async (doc) => {
+            if (doc.filePath || !doc.file) return doc;
+            if (doc.state !== 'done' && doc.state !== 'review') return doc;
+            const filePath = await uploadPrivatePanelFile({
+              accessToken,
+              file: doc.file,
+            });
+            return { ...doc, filePath };
+          })
+        );
+        nextProviderDocuments = await Promise.all(
+          providerDocuments.map(async (doc) => {
+            if (doc.filePath || !doc.file) return doc;
+            if (doc.state !== 'done' && doc.state !== 'review') return doc;
+            const filePath = await uploadPrivatePanelFile({
+              accessToken,
+              file: doc.file,
+            });
+            return { ...doc, filePath };
+          })
+        );
+        setAcademicDocuments(nextAcademicDocuments);
+        setProviderDocuments(nextProviderDocuments);
+      } catch (error) {
+        setFormError(getActorApiErrorMessage(error, t('localDocumentOnly')));
+        setIsSaving(false);
+        return;
+      }
+    }
+
+    const submitValues = sanitizeValuesForPrivateSubmit(draftValues);
+    const privateTabs = new Set(
+      tabsAffectedByValues(submitValues, savedValues)
+    );
+    const academicReady = readyDocuments(nextAcademicDocuments);
+    const academicDocsDirty =
+      documentsSignature(nextAcademicDocuments) !==
+      documentsSignature(savedAcademicDocuments);
+    if (academicDocsDirty && academicReady.length > 0) {
+      privateTabs.add('educational_information');
+    }
+
+    if (privateTabs.size === 0) {
+      if (
+        documentsSignature(nextProviderDocuments) !==
+        documentsSignature(savedProviderDocuments)
+      ) {
+        setFormError(t('localDocumentOnly'));
+        return;
+      }
+      setFormError(t('nothingToSave'));
       return;
     }
 
     setIsSaving(true);
     try {
       await Promise.all(
-        privateTabs.map((tabName: PrivateOwnerTabName) =>
+        [...privateTabs].map((tabName: PrivateOwnerTabName) =>
           submitPrivateMutation.mutateAsync({
             accessToken,
             tabName,
@@ -180,13 +341,26 @@ export function FieldsSection({ accessToken }: FieldsSectionProps) {
               submitValues,
               tabName,
               privateData,
-              savedValues
+              savedValues,
+              tabName === 'educational_information' && academicDocsDirty
+                ? {
+                    academicDocuments: academicReady.map((doc) => ({
+                      filePath: doc.filePath!,
+                      description: doc.name,
+                    })),
+                  }
+                : undefined
             ),
           })
         )
       );
       setSavedValues(submitValues);
       setDraftValues((prev) => ({ ...prev, ...submitValues }));
+      if (academicDocsDirty) {
+        setSavedAcademicDocuments(academicReady);
+        setAcademicDocuments(academicReady);
+      }
+      setSavedProviderDocuments(nextProviderDocuments);
       setFormError(null);
     } catch (error) {
       setFormError(getActorApiErrorMessage(error, t('saveFailed')));
@@ -197,6 +371,8 @@ export function FieldsSection({ accessToken }: FieldsSectionProps) {
 
   function handleCancel() {
     setDraftValues(savedValues);
+    setAcademicDocuments(savedAcademicDocuments);
+    setProviderDocuments(savedProviderDocuments);
     setFieldErrors({});
     setFormError(null);
   }
@@ -334,6 +510,13 @@ export function FieldsSection({ accessToken }: FieldsSectionProps) {
                             <AcademicRecordsBlock
                               key={section.key}
                               records={records}
+                              documents={academicDocuments}
+                              onDocumentsChange={setAcademicDocuments}
+                              onUploadFile={
+                                isPrivateFileUploadConfigured()
+                                  ? uploadDocumentFile
+                                  : undefined
+                              }
                               t={t}
                               tVis={tVis}
                             />
@@ -349,6 +532,13 @@ export function FieldsSection({ accessToken }: FieldsSectionProps) {
                               values={draftValues}
                               fieldErrors={fieldErrors}
                               onChange={onFieldChange}
+                              documents={providerDocuments}
+                              onDocumentsChange={setProviderDocuments}
+                              onUploadFile={
+                                isPrivateFileUploadConfigured()
+                                  ? uploadDocumentFile
+                                  : undefined
+                              }
                               t={t}
                               tVis={tVis}
                             />
@@ -709,6 +899,7 @@ function IdentityCategoryBlocks({
               label={tVis(`fields.${field.labelKey}`)}
               editable={editable}
               value={values[field.id] ?? field.value}
+              values={values}
               error={fieldErrorMessage(fieldErrors, field.id, tVis)}
               onChange={onChange}
             />
@@ -723,6 +914,7 @@ function IdentityCategoryBlocks({
                 label={tVis(`fields.${field.labelKey}`)}
                 editable={editable}
                 value={values[field.id] ?? field.value}
+                values={values}
                 error={fieldErrorMessage(fieldErrors, field.id, tVis)}
                 onChange={onChange}
               />
@@ -740,6 +932,9 @@ function ProviderBlocks({
   values,
   fieldErrors,
   onChange,
+  documents,
+  onDocumentsChange,
+  onUploadFile,
   t,
   tVis,
 }: {
@@ -748,6 +943,9 @@ function ProviderBlocks({
   values: Record<string, string>;
   fieldErrors: Record<string, VisibilityValidationErrorKey>;
   onChange: (id: string, value: string) => void;
+  documents: DocumentDraft[];
+  onDocumentsChange: (documents: DocumentDraft[]) => void;
+  onUploadFile?: (file: File) => Promise<string>;
   t: ReturnType<typeof useTranslations>;
   tVis: ReturnType<typeof useTranslations>;
 }) {
@@ -772,6 +970,9 @@ function ProviderBlocks({
             dropLabel={t('dropHere')}
             dropOrLabel={t('dropOr')}
             uploadLabel={t('uploadFile')}
+            documents={documents}
+            onDocumentsChange={onDocumentsChange}
+            onUploadFile={onUploadFile}
           />
         </div>
       </FieldsetBlock>
@@ -781,11 +982,17 @@ function ProviderBlocks({
 
 function AcademicRecordsBlock({
   records,
+  documents,
+  onDocumentsChange,
+  onUploadFile,
   reviewMode = false,
   t,
   tVis,
 }: {
   records: VisibilityAcademicRecord[];
+  documents: DocumentDraft[];
+  onDocumentsChange: (documents: DocumentDraft[]) => void;
+  onUploadFile?: (file: File) => Promise<string>;
   reviewMode?: boolean;
   t: ReturnType<typeof useTranslations>;
   tVis: ReturnType<typeof useTranslations>;
@@ -854,6 +1061,9 @@ function AcademicRecordsBlock({
             uploadLabel={t('uploadFile')}
             reviewMode={reviewMode}
             wide
+            documents={documents}
+            onDocumentsChange={onDocumentsChange}
+            onUploadFile={onUploadFile}
           />
         </div>
       ) : null}
@@ -961,6 +1171,7 @@ function FieldGrid({
               label={tVis(`fields.${field.labelKey}`)}
               editable={editable}
               value={values[field.id] ?? field.value}
+              values={values}
               error={fieldErrorMessage(fieldErrors, field.id, tVis)}
               onChange={onChange}
             />
@@ -974,6 +1185,7 @@ function FieldGrid({
           label={tVis(`fields.${field.labelKey}`)}
           editable={editable}
           value={values[field.id] ?? field.value}
+          values={values}
           error={fieldErrorMessage(fieldErrors, field.id, tVis)}
           onChange={onChange}
         />

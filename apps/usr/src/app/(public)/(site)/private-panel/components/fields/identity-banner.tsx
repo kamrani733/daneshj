@@ -1,11 +1,11 @@
 'use client';
 
-import { User } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import type { PanelProfileIdentity } from '@/components/panel/types';
 import { SITE_IMAGES } from '@/components/site/site-assets';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { AvatarUserIcon } from '@/components/ui/avatar-user-icon';
 import { cn } from '@/lib/utils';
 
 type IdentityBannerProps = {
@@ -71,10 +71,7 @@ export function PrivatePanelIdentityBanner({ profile }: IdentityBannerProps) {
               <AvatarImage src={profile.avatarSrc} alt={profile.displayName} />
             ) : null}
             <AvatarFallback className="bg-[#efede6] text-[#9a9a92] dark:bg-home-stat-card dark:text-home-filter-muted">
-              <User
-                className="size-14 min-[720px]:size-[72px] min-[834px]:size-20"
-                strokeWidth={1.1}
-              />
+              <AvatarUserIcon className="size-14 min-[720px]:size-[72px] min-[834px]:size-20" />
             </AvatarFallback>
           </Avatar>
 

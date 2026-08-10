@@ -56,7 +56,11 @@ export {
   toPrivateTabSubmitBody,
   toPublicVisibilitySubmitBody,
 } from './mappers';
-export type { PendingFieldRequest } from './mappers';
+export type { PendingFieldRequest, PrivateSubmitDocument } from './mappers';
+export {
+  isPrivateFileUploadConfigured,
+  uploadPrivatePanelFile,
+} from './upload';
 export {
   mapActorInfo,
   mapPublicPanelStatus,

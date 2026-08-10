@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 
 import { cn } from '@/lib/utils';
 
@@ -15,6 +15,11 @@ import { UploadDropzone } from './upload-dropzone';
 const MAX_BYTES = 1 * 1024 * 1024;
 const MAX_FILES = 5;
 
+export type DocumentDraft = DocumentItemModel & {
+  file?: File;
+  filePath?: string;
+};
+
 type DocumentsPanelProps = {
   dropLabel: string;
   dropOrLabel: string;
@@ -22,11 +27,17 @@ type DocumentsPanelProps = {
   reviewMode?: boolean;
   wide?: boolean;
   className?: string;
+  documents: DocumentDraft[];
+  onDocumentsChange: (documents: DocumentDraft[]) => void;
+  onUploadFile?: (file: File) => Promise<string>;
 };
 
 function detectKind(file: File): DocumentKind {
   if (file.type === 'application/pdf' || /\.pdf$/i.test(file.name)) return 'pdf';
-  if (file.type.startsWith('image/') || /\.(jpe?g|png|gif|webp)$/i.test(file.name)) {
+  if (
+    file.type.startsWith('image/') ||
+    /\.(jpe?g|png|gif|webp)$/i.test(file.name)
+  ) {
     return 'image';
   }
   return 'other';
@@ -39,105 +50,112 @@ export function DocumentsPanel({
   reviewMode = false,
   wide = false,
   className,
+  documents,
+  onDocumentsChange,
+  onUploadFile,
 }: DocumentsPanelProps) {
-  const [items, setItems] = useState<DocumentItemModel[]>([]);
-  const timers = useRef<Map<string, number>>(new Map());
+  const documentsRef = useRef(documents);
+  documentsRef.current = documents;
 
   useEffect(() => {
-    const map = timers.current;
     return () => {
-      for (const id of map.values()) window.clearInterval(id);
-      map.clear();
+      /* no timers to clear when using real/async upload */
     };
   }, []);
 
-  const clearTimer = (id: string) => {
-    const handle = timers.current.get(id);
-    if (handle != null) {
-      window.clearInterval(handle);
-      timers.current.delete(id);
-    }
+  const patchDocument = (id: string, patch: Partial<DocumentDraft>) => {
+    onDocumentsChange(
+      documentsRef.current.map((item) =>
+        item.id === id ? { ...item, ...patch } : item
+      )
+    );
   };
-
-  const simulateUpload = useCallback((id: string) => {
-    clearTimer(id);
-    const handle = window.setInterval(() => {
-      setItems((prev) => {
-        const current = prev.find((item) => item.id === id);
-        if (!current || current.state !== 'uploading') {
-          clearTimer(id);
-          return prev;
-        }
-        const next = Math.min(100, (current.progress ?? 0) + 12);
-        if (next >= 100) {
-          clearTimer(id);
-          return prev.map((item) =>
-            item.id === id
-              ? {
-                  ...item,
-                  progress: 100,
-                  state: reviewMode ? 'review' : 'done',
-                  decision: reviewMode ? null : item.decision,
-                }
-              : item
-          );
-        }
-        return prev.map((item) =>
-          item.id === id ? { ...item, progress: next } : item
-        );
-      });
-    }, 180);
-    timers.current.set(id, handle);
-  }, [reviewMode]);
 
   const onFiles = (files: FileList | File[]) => {
     const list = Array.from(files);
-    setItems((prev) => {
-      const room = Math.max(0, MAX_FILES - prev.length);
-      const accepted = list.slice(0, room);
-      const nextItems = [...prev];
+    const room = Math.max(0, MAX_FILES - documents.length);
+    const accepted = list.slice(0, room);
+    if (accepted.length === 0) return;
 
-      for (const file of accepted) {
-        const id = `${file.name}-${file.size}-${file.lastModified}-${Math.random().toString(36).slice(2, 7)}`;
-        const kind = detectKind(file);
-        if (file.size > MAX_BYTES) {
-          nextItems.push({
-            id,
-            name: file.name,
-            kind,
-            state: 'error',
-            progress: 28,
-            errorKey: 'maxSize',
-          });
-          continue;
-        }
+    const nextItems = [...documents];
+    const queued: DocumentDraft[] = [];
+
+    for (const file of accepted) {
+      const id = `${file.name}-${file.size}-${file.lastModified}-${Math.random().toString(36).slice(2, 7)}`;
+      const kind = detectKind(file);
+      if (file.size > MAX_BYTES) {
         nextItems.push({
           id,
           name: file.name,
           kind,
-          state: 'uploading',
-          progress: 8,
+          state: 'error',
+          progress: 28,
+          errorKey: 'maxSize',
+          file,
         });
-        queueMicrotask(() => simulateUpload(id));
+        continue;
       }
+      const draft: DocumentDraft = {
+        id,
+        name: file.name,
+        kind,
+        state: 'uploading',
+        progress: 12,
+        file,
+      };
+      nextItems.push(draft);
+      queued.push(draft);
+    }
 
-      return nextItems;
-    });
+    onDocumentsChange(nextItems);
+
+    for (const draft of queued) {
+      void (async () => {
+        try {
+          if (onUploadFile) {
+            const filePath = await onUploadFile(draft.file!);
+            patchDocument(draft.id, {
+              progress: 100,
+              state: reviewMode ? 'review' : 'done',
+              filePath,
+              decision: reviewMode ? null : draft.decision,
+            });
+            return;
+          }
+
+          let progress = 12;
+          while (progress < 100) {
+            await new Promise((resolve) => window.setTimeout(resolve, 120));
+            progress = Math.min(100, progress + 18);
+            patchDocument(draft.id, { progress });
+          }
+          patchDocument(draft.id, {
+            progress: 100,
+            state: reviewMode ? 'review' : 'done',
+            decision: reviewMode ? null : draft.decision,
+          });
+        } catch {
+          patchDocument(draft.id, {
+            state: 'error',
+            progress: 40,
+            errorKey: 'uploadFailed',
+          });
+        }
+      })();
+    }
   };
 
   const onCancel = (id: string) => {
-    clearTimer(id);
-    setItems((prev) => prev.filter((item) => item.id !== id));
+    onDocumentsChange(documents.filter((item) => item.id !== id));
   };
 
   const onRemove = (id: string) => {
-    clearTimer(id);
-    setItems((prev) => prev.filter((item) => item.id !== id));
+    onDocumentsChange(documents.filter((item) => item.id !== id));
   };
 
   const onDecisionChange = (id: string, decision: DocumentReviewDecision) => {
-    setItems((prev) =>
-      prev.map((item) => (item.id === id ? { ...item, decision } : item))
+    onDocumentsChange(
+      documents.map((item) => (item.id === id ? { ...item, decision } : item))
     );
   };
 
@@ -150,9 +168,9 @@ export function DocumentsPanel({
         className
       )}
     >
-      {items.length > 0 ? (
+      {documents.length > 0 ? (
         <ul className="flex w-full flex-1 flex-col gap-3 min-[720px]:max-w-[462px]">
-          {items.map((item) => (
+          {documents.map((item) => (
             <li key={item.id}>
               <DocumentItem
                 item={item}
@@ -165,7 +183,7 @@ export function DocumentsPanel({
         </ul>
       ) : null}
 
-      {items.length < MAX_FILES ? (
+      {documents.length < MAX_FILES ? (
         <UploadDropzone
           label={dropLabel}
           orLabel={dropOrLabel}

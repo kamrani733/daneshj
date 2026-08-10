@@ -10,6 +10,7 @@ import { pad2 } from '@/lib/jalali';
 
 import type {
   ActorInfo,
+  DivisionCodeDto,
   PrivateOwnerTabName,
   PrivateTabSubmitByOwnerBodyDto,
   ProfileRetrieveData,
@@ -570,6 +571,8 @@ const PRIVATE_SUBMIT_SECTIONS = new Set([
   'social_info_user',
   'contact_info_user',
   'education_occupation_info_user',
+  'social_info_user_division_code',
+  'education_occupation_info_user_division_code',
 ]);
 
 export function tabsAffectedByValues(
@@ -589,6 +592,52 @@ export function tabsAffectedByValues(
     }
   }
   return [...tabs];
+}
+
+function parseDivisionLevel(raw: string): number | undefined {
+  const digits = raw.replace(/[^\d۰-۹]/g, '');
+  if (!digits) return undefined;
+  const normalized = digits.replace(/[۰-۹]/g, (char) =>
+    String('۰۱۲۳۴۵۶۷۸۹'.indexOf(char))
+  );
+  const n = Number(normalized);
+  return Number.isFinite(n) ? n : undefined;
+}
+
+function buildDivisionCodePayload(
+  values: Record<string, string>,
+  ids: { province: string; city: string; district: string },
+  existingId?: number
+): DivisionCodeDto {
+  const province = (values[ids.province] ?? '').trim();
+  const city = (values[ids.city] ?? '').trim();
+  const district = (values[ids.district] ?? '').trim();
+  const parsedLevel = parseDivisionLevel(district);
+  const row: DivisionCodeDto = {
+    level: parsedLevel ?? 0,
+  };
+  if (typeof existingId === 'number') row.id = existingId;
+  if (province) row.normalized_code = province;
+  if (city && district && parsedLevel == null) {
+    row.other = `${city} — ${district}`;
+  } else if (city) {
+    row.other = city;
+  } else if (district) {
+    row.other = district;
+  }
+  return row;
+}
+
+function isDivisionAddressDirty(
+  values: Record<string, string>,
+  savedValues: Record<string, string>,
+  ids: { province: string; city: string; district: string }
+): boolean {
+  return (
+    (values[ids.province] ?? '') !== (savedValues[ids.province] ?? '') ||
+    (values[ids.city] ?? '') !== (savedValues[ids.city] ?? '') ||
+    (values[ids.district] ?? '') !== (savedValues[ids.district] ?? '')
+  );
 }
 
 export type PendingFieldRequest = {
@@ -657,11 +706,17 @@ export function sanitizeValuesForPrivateSubmit(
   );
 }
 
+export type PrivateSubmitDocument = {
+  filePath: string;
+  description?: string;
+};
+
 export function toPrivateTabSubmitBody(
   values: Record<string, string>,
   tabName: PrivateOwnerTabName,
   privateData?: ProfileRetrieveData | null,
-  savedValues: Record<string, string> = {}
+  savedValues: Record<string, string> = {},
+  options?: { academicDocuments?: PrivateSubmitDocument[] }
 ): PrivateTabSubmitByOwnerBodyDto {
   const body: PrivateTabSubmitByOwnerBodyDto = {};
 
@@ -716,6 +771,70 @@ export function toPrivateTabSubmitBody(
       ...(sectionIds[sectionKey] != null ? { id: sectionIds[sectionKey] } : {}),
     }) as Record<string, unknown>;
     section[def.valueField] = parsed;
+  }
+
+  if (tabName === 'social_information') {
+    const addressIds = {
+      province: 'province',
+      city: 'city',
+      district: 'district',
+    } as const;
+    if (isDivisionAddressDirty(values, savedValues, addressIds)) {
+      const social = pickSection(privateData, 'social_info_user');
+      const existingDivision = asRecord(
+        asArray(social?.social_info_user_division_code)[0]
+      );
+      const existingId =
+        typeof existingDivision?.id === 'number'
+          ? existingDivision.id
+          : undefined;
+      const socialSection = (body.social_info_user ??= {
+        ...(sectionIds.social_info_user != null
+          ? { id: sectionIds.social_info_user }
+          : {}),
+      });
+      socialSection.social_info_user_division_code = [
+        buildDivisionCodePayload(values, addressIds, existingId),
+      ];
+    }
+  }
+
+  if (tabName === 'educational_information') {
+    const addressIds = {
+      province: 'eduProvince',
+      city: 'eduCity',
+      district: 'eduDistrict',
+    } as const;
+    if (isDivisionAddressDirty(values, savedValues, addressIds)) {
+      const education = pickSection(
+        privateData,
+        'education_occupation_info_user'
+      );
+      const existingDivision = asRecord(
+        asArray(education?.education_occupation_info_user_division_code)[0]
+      );
+      const existingId =
+        typeof existingDivision?.id === 'number'
+          ? existingDivision.id
+          : undefined;
+      const educationSection = (body.education_occupation_info_user ??= {
+        ...(sectionIds.education_occupation_info_user != null
+          ? { id: sectionIds.education_occupation_info_user }
+          : {}),
+      });
+      educationSection.education_occupation_info_user_division_code = [
+        buildDivisionCodePayload(values, addressIds, existingId),
+      ];
+    }
+
+    const academicDocuments = options?.academicDocuments ?? [];
+    if (academicDocuments.length > 0) {
+      body.academic_document_user = academicDocuments.map((doc) => ({
+        id: 0,
+        file_path: doc.filePath,
+        description: doc.description?.slice(0, 100) || null,
+      }));
+    }
   }
 
   for (const key of [
