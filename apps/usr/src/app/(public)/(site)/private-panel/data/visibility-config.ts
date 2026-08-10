@@ -50,6 +50,8 @@ export type VisibilityField = {
   hiddenCaptionKey?: 'notDisplayed';
   withCalendar?: boolean;
   imageSrc?: string;
+  /** True when Actor wrapped value is awaiting admin approval. */
+  pending?: boolean;
 };
 
 /** Maps a UI field to YAML PatchedUserDynamicFlagSerializersRequest paths. */
@@ -94,7 +96,7 @@ export const VISIBILITY_SECTIONS: Record<
   contact: [{ key: 'contact', titleKey: 'contact' }],
   account: [{ key: 'account', titleKey: 'account' }],
   education: [
-    { key: 'educationExtra', titleKey: 'educationExtra' },
+    { key: 'educationExtra', titleKey: 'education' },
     { key: 'educationWorkAddress', titleKey: 'educationWorkAddress' },
     { key: 'academicRecords', titleKey: 'academicRecords' },
   ],

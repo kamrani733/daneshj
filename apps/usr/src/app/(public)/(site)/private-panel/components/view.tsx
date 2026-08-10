@@ -1,16 +1,14 @@
 'use client';
 
-import { ProfileHeroCard } from '@/components/panel';
 import { usePrivatePanelProfileQuery } from '@private-panel/api';
 
+import { PrivatePanelIdentityBanner } from './fields/identity-banner';
 import { PrivatePanelHeading } from './page-heading';
 import { PrivatePanelTabs } from './panel-tabs';
 
 type PrivatePanelViewProps = {
   accessToken?: string | null;
 };
-
-/** Private panel page composition. */
 export function PrivatePanelView({ accessToken }: PrivatePanelViewProps) {
   const profileQuery = usePrivatePanelProfileQuery(accessToken);
   const profile = profileQuery.data;
@@ -18,10 +16,10 @@ export function PrivatePanelView({ accessToken }: PrivatePanelViewProps) {
   return (
     <main
       dir="rtl"
-      className="mx-auto flex w-full max-w-[1322px] flex-col gap-5 bg-transparent px-4 py-4 min-[720px]:gap-8 min-[720px]:px-6 min-[720px]:py-6 min-[834px]:gap-12 min-[834px]:px-[95px] min-[834px]:py-8"
+      className="mx-auto flex w-full max-w-[1312px] flex-col gap-6 bg-transparent px-4 py-4 min-[720px]:gap-8 min-[720px]:px-6 min-[720px]:py-6 min-[834px]:gap-8 min-[834px]:px-8 min-[834px]:py-8"
     >
       <PrivatePanelHeading displayName={profile?.displayName ?? ''} />
-      {profile ? <ProfileHeroCard profile={profile} /> : null}
+      {profile ? <PrivatePanelIdentityBanner profile={profile} /> : null}
       <PrivatePanelTabs accessToken={accessToken} />
     </main>
   );

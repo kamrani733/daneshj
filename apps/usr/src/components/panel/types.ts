@@ -14,7 +14,7 @@ export type PanelSocialLink = {
   href: string;
 };
 
-export type PanelRoleLabelKey = 'student';
+export type PanelRoleLabelKey = 'normal' | 'student' | 'graduate';
 
 export type PanelProviderBadgeKey = 'individualProvider';
 

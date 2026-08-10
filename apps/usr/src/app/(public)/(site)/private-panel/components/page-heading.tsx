@@ -3,17 +3,17 @@
 import { useTranslations } from 'next-intl';
 
 import { PanelBreadcrumb } from '@/components/panel';
+import { cn } from '@/lib/utils';
 
 type PrivatePanelHeadingProps = {
   displayName: string;
 };
 
-/** Private panel breadcrumb + green-bar title (Figma). */
 export function PrivatePanelHeading({ displayName }: PrivatePanelHeadingProps) {
   const t = useTranslations('privatePanel');
 
   return (
-    <header className="flex w-full flex-col items-start gap-4 min-[720px]:gap-6">
+    <header className="flex w-full flex-col items-end gap-4 min-[720px]:gap-4">
       <PanelBreadcrumb
         label={t('breadcrumb.label')}
         current={t('breadcrumb.current')}
@@ -21,19 +21,30 @@ export function PrivatePanelHeading({ displayName }: PrivatePanelHeadingProps) {
         home={t('breadcrumb.home')}
       />
 
-      <div className="flex items-start gap-2.5 min-[720px]:gap-3">
-        <span
-          aria-hidden
-          className="mt-1 h-8 w-1.5 shrink-0 rounded-full bg-primary min-[720px]:h-10 dark:bg-primary-100"
-        />
-        <div className="flex min-w-0 flex-col gap-0.5 min-[720px]:gap-1">
-          <h1 className="text-2xl font-bold leading-9 text-primary-700 min-[720px]:text-[32px] min-[720px]:leading-10 dark:text-primary-100">
+      <div className="flex flex-col items-end gap-3 py-2">
+        <div className="flex items-center justify-center gap-2 px-2">
+          <h1
+            className={cn(
+              'text-2xl font-bold leading-9 text-[#005138]',
+              'min-[720px]:text-[28px] min-[720px]:leading-10',
+              'dark:text-primary-100'
+            )}
+          >
             {t('title')}
           </h1>
-          <p className="truncate text-sm font-medium leading-6 text-home-filter-muted min-[720px]:text-base dark:text-home-filter-ink">
-            {displayName}
-          </p>
+          <span
+            aria-hidden
+            className="h-8 w-3 shrink-0 rounded-[2px] bg-[#008d63] min-[720px]:h-8"
+          />
         </div>
+        <p
+          className={cn(
+            'px-2 text-sm font-semibold leading-5 tracking-[0.007em] text-[#707973]',
+            'dark:text-home-filter-ink'
+          )}
+        >
+          {displayName || t('titleUserFallback')}
+        </p>
       </div>
     </header>
   );

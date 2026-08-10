@@ -52,10 +52,10 @@ function canFetch(accessToken: string | null | undefined) {
 const EMPTY_PROFILE: PrivatePanelProfile = {
   displayName: '',
   username: '',
-  roleLabelKey: 'student',
+  roleLabelKey: 'normal',
   location: '',
   bio: '',
-  avatarSrc: '/images/public-panel/avatar.png',
+  avatarSrc: '',
   electronicCardHref: '#',
   socialLinks: [],
 };

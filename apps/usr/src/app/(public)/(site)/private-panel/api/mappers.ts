@@ -79,6 +79,19 @@ function unwrapFieldValue(raw: unknown): unknown {
   return raw;
 }
 
+function isWrappedPending(raw: unknown): boolean {
+  if (raw == null || typeof raw !== 'object' || Array.isArray(raw)) return false;
+  return Boolean((raw as Record<string, unknown>).pending);
+}
+
+function readPending(
+  source: Record<string, unknown> | null,
+  key: string
+): boolean {
+  if (!source) return false;
+  return isWrappedPending(source[key]);
+}
+
 function readString(source: Record<string, unknown> | null, key: string): string {
   if (!source) return '';
   const value = unwrapFieldValue(source[key]);
@@ -186,11 +199,11 @@ function formatDisplayValue(def: VisibilityFieldDef, raw: string): string {
   return raw;
 }
 
-function readPrivateValue(
+function resolvePrivateSection(
   privateData: ProfileRetrieveData | null | undefined,
   def: VisibilityFieldDef
-): string {
-  if (!def.valueField) return '';
+): Record<string, unknown> | null {
+  if (!def.valueField) return null;
 
   if (
     def.apiSection === 'social_info_user_division_code' ||
@@ -204,15 +217,14 @@ function readPrivateValue(
     const divisions = asArray(
       parent?.[def.apiSection] ?? privateData?.[def.apiSection]
     );
-    const first = asRecord(divisions[0]);
-    return readString(first, def.valueField);
+    return asRecord(divisions[0]);
   }
 
   if (
     def.apiSection === 'academic_record_verified_user' ||
     def.apiSection === 'academic_record_submitted_user'
   ) {
-    return '';
+    return null;
   }
 
   const sectionKey =
@@ -231,11 +243,9 @@ function readPrivateValue(
                 : null;
 
   if (sectionKey) {
-    const section = pickSection(privateData, sectionKey);
-    return formatDisplayValue(def, readString(section, def.valueField));
+    return pickSection(privateData, sectionKey);
   }
 
-  // Fallback: search common containers for locked fields like mobile / national_code
   for (const key of [
     'identity_info_user',
     'contact_info_user',
@@ -243,12 +253,29 @@ function readPrivateValue(
     'education_occupation_info_user',
   ]) {
     const section = pickSection(privateData, key);
-    if (section && def.valueField in section) {
-      return formatDisplayValue(def, readString(section, def.valueField));
-    }
+    if (section && def.valueField in section) return section;
   }
 
-  return '';
+  return null;
+}
+
+function readPrivateValue(
+  privateData: ProfileRetrieveData | null | undefined,
+  def: VisibilityFieldDef
+): string {
+  if (!def.valueField) return '';
+  const section = resolvePrivateSection(privateData, def);
+  if (!section) return '';
+  return formatDisplayValue(def, readString(section, def.valueField));
+}
+
+function readPrivatePending(
+  privateData: ProfileRetrieveData | null | undefined,
+  def: VisibilityFieldDef
+): boolean {
+  if (!def.valueField) return false;
+  const section = resolvePrivateSection(privateData, def);
+  return readPending(section, def.valueField);
 }
 
 function socialHref(
@@ -325,9 +352,7 @@ export function mapPrivatePanelProfile(
     if (href) socialLinks.push({ network, href });
   }
 
-  const avatarSrc =
-    readString(identity, 'profile_picture_path') ||
-    '/images/public-panel/avatar.png';
+  const avatarSrc = readString(identity, 'profile_picture_path');
   const electronicCardPath = readString(
     identity,
     'electronic_card_picture_path'
@@ -339,8 +364,13 @@ export function mapPrivatePanelProfile(
 
   return {
     displayName,
-    username: actorInfo?.username || readString(pickSection(privateData, 'our_user'), 'username'),
-    roleLabelKey: 'student',
+    username:
+      actorInfo?.username ||
+      readString(pickSection(privateData, 'our_user'), 'username'),
+    roleLabelKey: mapMembershipRole(
+      actorInfo?.membership ||
+        readString(pickSection(privateData, 'membership_type_user'), 'membership_type')
+    ),
     providerBadgeKey: actorInfo?.isIndividualServiceProvider
       ? 'individualProvider'
       : null,
@@ -352,6 +382,28 @@ export function mapPrivatePanelProfile(
   };
 }
 
+function mapMembershipRole(
+  raw: string | undefined
+): PrivatePanelProfile['roleLabelKey'] {
+  const value = (raw ?? '').trim().toLowerCase();
+  if (!value) return 'normal';
+  if (
+    value === '2' ||
+    value.includes('student') ||
+    value.includes('دانشجو')
+  ) {
+    return 'student';
+  }
+  if (
+    value === '3' ||
+    value.includes('graduate') ||
+    value.includes('فارغ')
+  ) {
+    return 'graduate';
+  }
+  return 'normal';
+}
+
 export function mapVisibilityFields(
   privateData: ProfileRetrieveData | null | undefined,
   publicFlags: ProfileRetrieveData | null | undefined
@@ -359,12 +411,7 @@ export function mapVisibilityFields(
   return VISIBILITY_FIELD_DEFS.map((def) => {
     const flag = readFlag(publicFlags, def.apiSection, def.apiField);
     const value = readPrivateValue(privateData, def);
-    const imageSrc =
-      def.kind === 'photo' && value
-        ? value
-        : def.kind === 'photo'
-          ? '/images/public-panel/avatar.png'
-          : undefined;
+    const imageSrc = def.kind === 'photo' && value ? value : undefined;
 
     return {
       id: def.id,
@@ -380,6 +427,7 @@ export function mapVisibilityFields(
       hiddenCaptionKey: def.hiddenCaptionKey,
       withCalendar: def.withCalendar,
       imageSrc,
+      pending: readPrivatePending(privateData, def),
     };
   });
 }
@@ -401,6 +449,36 @@ function readRecordList(
   return [];
 }
 
+function mapOneAcademicRecord(
+  item: unknown,
+  index: number,
+  statusLabel: string,
+  idPrefix: string
+): VisibilityAcademicRecord {
+  const row = asRecord(item) ?? {};
+  const degreeLevel = readString(row, 'degree_level');
+  const academicGroup = readString(row, 'academic_group');
+  const studyStatus = readString(row, 'study_status');
+  const fieldOfStudy = readString(row, 'field_of_study');
+  const degree =
+    [DEGREE_LABELS[degreeLevel] ?? degreeLevel, fieldOfStudy]
+      .filter(Boolean)
+      .join(' ') || fieldOfStudy;
+
+  return {
+    id: String(row.id ?? `${idPrefix}-${index}`),
+    degree,
+    university: readString(row, 'university'),
+    faculty: readString(row, 'faculty'),
+    fieldGroup: ACADEMIC_GROUP_LABELS[academicGroup] ?? academicGroup,
+    description: readString(row, 'degree_level_description'),
+    endDate: readString(row, 'graduation_date'),
+    roleLabel: STUDY_STATUS_LABELS[studyStatus] ?? studyStatus,
+    statusLabel,
+    initiallyVisible: false,
+  };
+}
+
 export function mapAcademicRecords(
   privateData: ProfileRetrieveData | null | undefined
 ): VisibilityAcademicRecord[] {
@@ -409,33 +487,15 @@ export function mapAcademicRecords(
     privateData,
     'academic_record_submitted_user'
   );
-  const list = verified.length > 0 ? verified : submitted;
-  const verifiedSource = verified.length > 0;
 
-  return list.map((item, index) => {
-    const row = asRecord(item) ?? {};
-    const degreeLevel = readString(row, 'degree_level');
-    const academicGroup = readString(row, 'academic_group');
-    const studyStatus = readString(row, 'study_status');
-    const fieldOfStudy = readString(row, 'field_of_study');
-    const degree =
-      [DEGREE_LABELS[degreeLevel] ?? degreeLevel, fieldOfStudy]
-        .filter(Boolean)
-        .join(' ') || fieldOfStudy;
-
-    return {
-      id: String(row.id ?? `record-${index}`),
-      degree,
-      university: readString(row, 'university'),
-      faculty: readString(row, 'faculty'),
-      fieldGroup: ACADEMIC_GROUP_LABELS[academicGroup] ?? academicGroup,
-      description: readString(row, 'degree_level_description'),
-      endDate: readString(row, 'graduation_date'),
-      roleLabel: STUDY_STATUS_LABELS[studyStatus] ?? studyStatus,
-      statusLabel: verifiedSource ? 'تایید شده' : 'ثبت‌شده',
-      initiallyVisible: false,
-    };
-  });
+  return [
+    ...verified.map((item, index) =>
+      mapOneAcademicRecord(item, index, 'تایید شده', 'verified')
+    ),
+    ...submitted.map((item, index) =>
+      mapOneAcademicRecord(item, index, 'اظهاری', 'submitted')
+    ),
+  ];
 }
 
 /** Build YAML public flag body for one tab from current checkbox selection. */
