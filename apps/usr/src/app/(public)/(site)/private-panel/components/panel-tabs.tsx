@@ -31,7 +31,7 @@ export function PrivatePanelTabs() {
   return (
     <Tabs
       defaultValue="publicOps"
-      className="w-full gap-6 min-[720px]:gap-8"
+      className="w-full gap-5 min-[720px]:gap-8"
       dir="rtl"
     >
       <TabsList
@@ -46,9 +46,10 @@ export function PrivatePanelTabs() {
             key={id}
             value={id}
             className={cn(
-              'h-11 min-w-0 gap-1 rounded-full border-0 border-b-0 px-1.5 pb-0',
-              'text-[11px] font-medium leading-4 sm:text-xs min-[720px]:h-12',
-              'min-[720px]:gap-2 min-[720px]:px-3 min-[720px]:text-sm',
+              'h-auto min-h-12 min-w-0 flex-col gap-1 rounded-full border-0 border-b-0 px-1.5 py-2',
+              'text-[10px] font-medium leading-tight sm:text-[11px]',
+              'min-[720px]:h-12 min-[720px]:flex-row min-[720px]:gap-2',
+              'min-[720px]:px-3 min-[720px]:py-0 min-[720px]:text-sm min-[720px]:leading-4',
               'justify-center text-primary shadow-none',
               'hover:text-primary focus-visible:ring-primary/30',
               'data-[state=active]:border-0 data-[state=active]:bg-white',
@@ -56,13 +57,14 @@ export function PrivatePanelTabs() {
               'dark:text-primary-100 dark:data-[state=active]:bg-home-card dark:data-[state=active]:text-primary-100'
             )}
           >
-            {/* RTL: first child sits on the right — icon beside title */}
             <Icon
               className="size-4 shrink-0 min-[720px]:size-5"
               strokeWidth={1.75}
               aria-hidden
             />
-            <span className="truncate">{t(`tabs.${id}`)}</span>
+            <span className="max-w-full whitespace-normal text-center leading-snug min-[720px]:truncate min-[720px]:whitespace-nowrap">
+              {t(`tabs.${id}`)}
+            </span>
           </TabsTrigger>
         ))}
       </TabsList>

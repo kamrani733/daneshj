@@ -25,10 +25,12 @@ export function CreateDeletePanel() {
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [step, setStep] = useState<DialogStep>('confirm');
+  const [requestSubmitted, setRequestSubmitted] = useState(false);
 
   const paragraphs = hasPanel ? COPY.deleteParagraphs : COPY.createParagraphs;
 
   function openConfirm() {
+    if (requestSubmitted) return;
     setStep('confirm');
     setDialogOpen(true);
   }
@@ -40,16 +42,17 @@ export function CreateDeletePanel() {
 
   function handleConfirm() {
     // TODO: call create / delete request API, then:
+    setRequestSubmitted(true);
     setStep('success');
   }
 
   return (
-    <div className="flex w-full flex-col gap-6">
+    <div className="flex w-full flex-col gap-4 min-[720px]:gap-6">
       <section
         className={cn(
-          'flex flex-col gap-6 rounded-2xl border border-border bg-home-card p-5',
+          'flex flex-col gap-5 rounded-2xl border border-border bg-home-card p-4',
           'dark:bg-home-search-category',
-          'min-[834px]:p-6'
+          'min-[720px]:gap-6 min-[720px]:p-5 min-[834px]:p-6'
         )}
       >
         <ul className="flex list-disc flex-col gap-3 pe-5 text-justify text-sm font-medium leading-7 text-home-filter-muted marker:text-home-filter-muted dark:text-home-filter-ink">
@@ -61,9 +64,11 @@ export function CreateDeletePanel() {
         <Button
           type="button"
           onClick={openConfirm}
+          disabled={requestSubmitted}
           className={cn(
-            'h-12 w-full self-end !rounded-full border-0 px-8 text-sm font-medium text-white shadow-none',
-            'min-[720px]:w-auto',
+            'h-11 w-full self-stretch !rounded-full border-0 px-6 text-sm font-medium text-white shadow-none',
+            'min-[720px]:h-12 min-[720px]:w-auto min-[720px]:self-end min-[720px]:px-8',
+            'disabled:pointer-events-none disabled:opacity-50',
             hasPanel
               ? 'bg-warning hover:bg-warning/90'
               : 'bg-primary hover:bg-primary/90'
@@ -73,7 +78,7 @@ export function CreateDeletePanel() {
         </Button>
       </section>
 
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-3 min-[720px]:gap-4">
         {MOCK_PUBLIC_PANEL_RESTRICTIONS.map((restriction) => (
           <RestrictionCard key={restriction.id} restriction={restriction} />
         ))}
