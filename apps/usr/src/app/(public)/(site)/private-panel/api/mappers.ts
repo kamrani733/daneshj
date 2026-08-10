@@ -55,11 +55,6 @@ function pickSection(
   return null;
 }
 
-/**
- * Actor retrieve wraps each field as:
- * `{ pending, request_id, value, previous_value, new_value, editable, ... }`
- * Plain scalars are still supported.
- */
 function unwrapFieldValue(raw: unknown): unknown {
   if (raw == null) return raw;
   if (typeof raw !== 'object' || Array.isArray(raw)) return raw;
@@ -156,7 +151,6 @@ const OCCUPATION_STATUS_LABELS: Record<string, string> = {
   '5': 'سایر',
 };
 
-/** Normalize API dates to Gregorian `YYYY-MM-DD` for JalaliDatePicker. */
 function formatIsoAsDateOnly(raw: string): string | null {
   const trimmed = raw.trim();
   if (!trimmed) return null;
@@ -306,7 +300,6 @@ function socialHref(
   }
 }
 
-/** Map Actor info + private retrieve → hero profile. */
 export function mapPrivatePanelProfile(
   actorInfo: ActorInfo | undefined,
   privateData: ProfileRetrieveData | null | undefined
@@ -498,7 +491,6 @@ export function mapAcademicRecords(
   ];
 }
 
-/** Build YAML public flag body for one tab from current checkbox selection. */
 export function toPublicVisibilitySubmitBody(
   selection: Record<string, boolean>,
   tabName: ProfileTabName | string
@@ -580,7 +572,6 @@ const PRIVATE_SUBMIT_SECTIONS = new Set([
   'education_occupation_info_user',
 ]);
 
-/** Tabs with value edits that owner can PATCH via private/tab/submit-by-owner. */
 export function tabsAffectedByValues(
   values: Record<string, string>,
   savedValues: Record<string, string>
@@ -600,7 +591,72 @@ export function tabsAffectedByValues(
   return [...tabs];
 }
 
-/** Build YAML private tab body from edited display values. */
+export type PendingFieldRequest = {
+  requestId: number;
+  sectionKey: string;
+  apiField: string;
+  fieldId: string | null;
+  labelKey: string | null;
+  newValue: string;
+  previousValue: string;
+};
+
+const PENDING_SECTIONS = [
+  'identity_info_user',
+  'social_info_user',
+  'contact_info_user',
+  'education_occupation_info_user',
+] as const;
+
+export function mapPendingFieldRequests(
+  privateData: ProfileRetrieveData | null | undefined
+): PendingFieldRequest[] {
+  const items: PendingFieldRequest[] = [];
+  if (!privateData) return items;
+
+  for (const sectionKey of PENDING_SECTIONS) {
+    const section = pickSection(privateData, sectionKey);
+    if (!section) continue;
+    for (const [apiField, raw] of Object.entries(section)) {
+      if (apiField === 'id' || !isWrappedPending(raw)) continue;
+      const wrapped = asRecord(raw) ?? {};
+      const requestId = Number(wrapped.request_id);
+      if (!Number.isFinite(requestId) || requestId <= 0) continue;
+      const def = VISIBILITY_FIELD_DEFS.find(
+        (item) =>
+          item.apiSection === sectionKey && item.valueField === apiField
+      );
+      const newValue = unwrapFieldValue(wrapped.new_value ?? wrapped.value);
+      const previousValue = unwrapFieldValue(wrapped.previous_value);
+      items.push({
+        requestId,
+        sectionKey,
+        apiField,
+        fieldId: def?.id ?? null,
+        labelKey: def?.labelKey ?? null,
+        newValue:
+          newValue == null || typeof newValue === 'object'
+            ? ''
+            : String(newValue),
+        previousValue:
+          previousValue == null || typeof previousValue === 'object'
+            ? ''
+            : String(previousValue),
+      });
+    }
+  }
+
+  return items;
+}
+
+export function sanitizeValuesForPrivateSubmit(
+  values: Record<string, string>
+): Record<string, string> {
+  return Object.fromEntries(
+    Object.entries(values).filter(([, value]) => !value.startsWith('blob:'))
+  );
+}
+
 export function toPrivateTabSubmitBody(
   values: Record<string, string>,
   tabName: PrivateOwnerTabName,
@@ -637,7 +693,6 @@ export function toPrivateTabSubmitBody(
 
     const next = values[def.id] ?? '';
     const prev = savedValues[def.id] ?? '';
-    // Only PATCH dirty fields — blank strings fail Actor validation (e.g. country_code).
     if (next === prev) continue;
 
     const parsed = parsePrivateFieldValue(def, next);
@@ -663,7 +718,6 @@ export function toPrivateTabSubmitBody(
     section[def.valueField] = parsed;
   }
 
-  // Drop sections that only have id and no field payload.
   for (const key of [
     'identity_info_user',
     'social_info_user',

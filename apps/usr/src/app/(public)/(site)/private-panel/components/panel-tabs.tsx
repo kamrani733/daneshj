@@ -50,7 +50,7 @@ export function PrivatePanelTabs({ accessToken }: PrivatePanelTabsProps) {
             key={id}
             value={id}
             className={cn(
-              'h-auto min-h-12 min-w-0 flex-1 flex-col gap-1 rounded-full border-0 px-2 py-2',
+              'h-auto min-h-12 min-w-0 flex-1 flex-col items-center justify-center gap-1 rounded-full border-0 px-2 py-2',
               'text-[10px] font-bold leading-tight text-[#008d63] shadow-none',
               'hover:text-[#008d63] focus-visible:ring-primary/30',
               'data-[state=active]:bg-[#fafaf7] data-[state=active]:text-[#008d63]',

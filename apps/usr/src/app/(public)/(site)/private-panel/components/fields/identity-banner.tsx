@@ -12,11 +12,6 @@ type IdentityBannerProps = {
   profile: PanelProfileIdentity;
 };
 
-/**
- * Private-panel identity strip.
- * Figma library «main top frame»: 1312×358, avatar 200, gap 56, radius 24.
- * https://www.figma.com/design/hieOKdeoR9ZmVujscuIadt/...?node-id=2486-9278
- */
 export function PrivatePanelIdentityBanner({ profile }: IdentityBannerProps) {
   const t = useTranslations('panel');
   const hasAvatar =
@@ -65,7 +60,6 @@ export function PrivatePanelIdentityBanner({ profile }: IdentityBannerProps) {
             'min-[720px]:gap-10 min-[834px]:gap-14'
           )}
         >
-          {/* First in RTL flex → right side (Figma). */}
           <Avatar
             className={cn(
               'size-[112px] shrink-0 bg-[#efede6] ring-4 ring-[#ffdbcf]',

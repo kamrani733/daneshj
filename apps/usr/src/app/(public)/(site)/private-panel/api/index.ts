@@ -47,13 +47,16 @@ export {
 } from './react-query';
 export {
   mapAcademicRecords,
+  mapPendingFieldRequests,
   mapPrivatePanelProfile,
   mapVisibilityFields,
+  sanitizeValuesForPrivateSubmit,
   tabsAffectedBySelection,
   tabsAffectedByValues,
   toPrivateTabSubmitBody,
   toPublicVisibilitySubmitBody,
 } from './mappers';
+export type { PendingFieldRequest } from './mappers';
 export {
   mapActorInfo,
   mapPublicPanelStatus,

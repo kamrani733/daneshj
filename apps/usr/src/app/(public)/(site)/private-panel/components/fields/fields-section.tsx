@@ -1,19 +1,26 @@
 'use client';
 
-import {
-  BadgeCheck,
-  Check,
-  CloudUpload,
-  Eye,
-  Pencil,
-  Plus,
-} from 'lucide-react';
+import { Check, Loader2, Pencil, Plus, Stamp } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { useMemo, useState, type ReactNode } from 'react';
+import {
+  useEffect,
+  useMemo,
+  useState,
+  type ReactNode,
+} from 'react';
 
 import {
+  getActorApiErrorMessage,
+  mapPendingFieldRequests,
   mapVisibilityFields,
+  sanitizeValuesForPrivateSubmit,
+  tabsAffectedByValues,
+  toPrivateTabSubmitBody,
   useManageVisibilityQuery,
+  useReviewPrivateChangesByOwnerMutation,
+  useSubmitPrivateTabByOwnerMutation,
+  type PendingFieldRequest,
+  type PrivateOwnerTabName,
 } from '@private-panel/api';
 import {
   VISIBILITY_CATEGORIES,
@@ -22,6 +29,11 @@ import {
   type VisibilityCategoryId,
   type VisibilityField,
 } from '@private-panel/data/visibility-config';
+import {
+  firstCategoryWithErrors,
+  validateVisibilityValues,
+  type VisibilityValidationErrorKey,
+} from '@private-panel/data/visibility-validation';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -32,6 +44,7 @@ import {
 } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
 
+import { DocumentsPanel } from './documents-panel';
 import { ViewField, resolveViewControl } from './view-field';
 
 type FieldsSectionProps = {
@@ -40,21 +53,89 @@ type FieldsSectionProps = {
 
 type FieldsMode = 'view' | 'review';
 
-/**
- * «فیلدهای اطلاعاتی» — view mode (empty / filled).
- * Filled: https://www.figma.com/design/hieOKdeoR9ZmVujscuIadt/...?node-id=2496-14747
- */
+function valuesFromFields(fields: VisibilityField[]): Record<string, string> {
+  return Object.fromEntries(
+    fields.map((field) => [field.id, field.imageSrc || field.value || ''])
+  );
+}
+
 export function FieldsSection({ accessToken }: FieldsSectionProps) {
   const t = useTranslations('privatePanel.fields');
   const tVis = useTranslations('privatePanel.publicOps.manageVisibility');
   const visibilityQuery = useManageVisibilityQuery(accessToken);
+  const submitPrivateMutation = useSubmitPrivateTabByOwnerMutation();
+  const reviewMutation = useReviewPrivateChangesByOwnerMutation();
+
   const [mode, setMode] = useState<FieldsMode>('view');
   const [category, setCategory] =
     useState<VisibilityCategoryId>('identity');
+  const [draftValues, setDraftValues] = useState<Record<string, string>>({});
+  const [savedValues, setSavedValues] = useState<Record<string, string>>({});
+  const [hydratedKey, setHydratedKey] = useState<number | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<
+    Record<string, VisibilityValidationErrorKey>
+  >({});
+  const [reviewDecisions, setReviewDecisions] = useState<
+    Record<number, 'approve' | 'reject'>
+  >({});
 
   const fields =
     visibilityQuery.data?.fields ?? mapVisibilityFields(null, null);
   const records = visibilityQuery.data?.records ?? [];
+  const privateData = visibilityQuery.data?.privateData;
+  const pendingRequests = useMemo(
+    () => mapPendingFieldRequests(privateData),
+    [privateData]
+  );
+
+  useEffect(() => {
+    if (!visibilityQuery.data) return;
+    if (hydratedKey === visibilityQuery.dataUpdatedAt) return;
+
+    const hasLocalEdits =
+      hydratedKey !== null &&
+      Object.keys(draftValues).some(
+        (id) => draftValues[id] !== savedValues[id]
+      );
+    if (hasLocalEdits) {
+      setHydratedKey(visibilityQuery.dataUpdatedAt);
+      return;
+    }
+
+    const nextValues = valuesFromFields(visibilityQuery.data.fields);
+    setDraftValues(nextValues);
+    setSavedValues(nextValues);
+    setFieldErrors({});
+    setFormError(null);
+    setHydratedKey(visibilityQuery.dataUpdatedAt);
+  }, [
+    visibilityQuery.data,
+    visibilityQuery.dataUpdatedAt,
+    hydratedKey,
+    draftValues,
+    savedValues,
+  ]);
+
+  const onFieldChange = (id: string, value: string) => {
+    setDraftValues((prev) => ({ ...prev, [id]: value }));
+    setFieldErrors((prev) => {
+      if (!prev[id]) return prev;
+      const next = { ...prev };
+      delete next[id];
+      return next;
+    });
+    if (formError) setFormError(null);
+  };
+
+  const isDirty = useMemo(
+    () =>
+      Object.keys(draftValues).some(
+        (id) => (draftValues[id] ?? '') !== (savedValues[id] ?? '')
+      ),
+    [draftValues, savedValues]
+  );
 
   const categoryFields = useMemo(
     () => fields.filter((field) => field.category === category),
@@ -62,9 +143,96 @@ export function FieldsSection({ accessToken }: FieldsSectionProps) {
   );
 
   const sections = VISIBILITY_SECTIONS[category];
+  const editable = mode === 'view';
+
+  async function handleSave() {
+    if (!accessToken || isSaving) return;
+
+    const nextFieldErrors = validateVisibilityValues(draftValues, savedValues);
+    setFieldErrors(nextFieldErrors);
+    setFormError(null);
+    if (Object.keys(nextFieldErrors).length > 0) {
+      setFormError(t('formHasErrors'));
+      const nextCategory = firstCategoryWithErrors(nextFieldErrors);
+      if (nextCategory) setCategory(nextCategory as VisibilityCategoryId);
+      return;
+    }
+
+    const hasLocalBlob = Object.values(draftValues).some((value) =>
+      value.startsWith('blob:')
+    );
+    const submitValues = sanitizeValuesForPrivateSubmit(draftValues);
+    const privateTabs = tabsAffectedByValues(submitValues, savedValues);
+
+    if (privateTabs.length === 0) {
+      setFormError(hasLocalBlob ? t('localImageOnly') : t('nothingToSave'));
+      return;
+    }
+
+    setIsSaving(true);
+    try {
+      await Promise.all(
+        privateTabs.map((tabName: PrivateOwnerTabName) =>
+          submitPrivateMutation.mutateAsync({
+            accessToken,
+            tabName,
+            body: toPrivateTabSubmitBody(
+              submitValues,
+              tabName,
+              privateData,
+              savedValues
+            ),
+          })
+        )
+      );
+      setSavedValues(submitValues);
+      setDraftValues((prev) => ({ ...prev, ...submitValues }));
+      setFormError(null);
+    } catch (error) {
+      setFormError(getActorApiErrorMessage(error, t('saveFailed')));
+    } finally {
+      setIsSaving(false);
+    }
+  }
+
+  function handleCancel() {
+    setDraftValues(savedValues);
+    setFieldErrors({});
+    setFormError(null);
+  }
+
+  async function handleReviewSave() {
+    if (!accessToken || isSaving) return;
+    const confirmed = Object.entries(reviewDecisions)
+      .filter(([, decision]) => decision === 'approve')
+      .map(([id]) => ({ request_id: Number(id) }));
+    const rejected = Object.entries(reviewDecisions)
+      .filter(([, decision]) => decision === 'reject')
+      .map(([id]) => ({ request_id: Number(id) }));
+
+    if (confirmed.length === 0 && rejected.length === 0) {
+      setFormError(t('nothingToSave'));
+      return;
+    }
+
+    setIsSaving(true);
+    setFormError(null);
+    try {
+      await reviewMutation.mutateAsync({
+        accessToken,
+        confirmedRequests: confirmed,
+        rejectedRequests: rejected,
+      });
+      setReviewDecisions({});
+    } catch (error) {
+      setFormError(getActorApiErrorMessage(error, t('reviewFailed')));
+    } finally {
+      setIsSaving(false);
+    }
+  }
 
   return (
-    <div className="flex w-full flex-col gap-6">
+    <div dir="rtl" className="flex w-full flex-col gap-6 text-start">
       <ModeTabs mode={mode} onModeChange={setMode} t={t} />
 
       <IntroBullets t={t} />
@@ -124,9 +292,21 @@ export function FieldsSection({ accessToken }: FieldsSectionProps) {
                   )}
                 >
                   {mode === 'review' ? (
-                    <p className="text-sm font-medium leading-6 text-[#404943] dark:text-home-filter-muted">
-                      {t('reviewPlaceholder')}
-                    </p>
+                    <ReviewPendingList
+                      requests={pendingRequests}
+                      decisions={reviewDecisions}
+                      onDecisionChange={(requestId, decision) =>
+                        setReviewDecisions((prev) => ({
+                          ...prev,
+                          [requestId]: decision,
+                        }))
+                      }
+                      isSaving={isSaving}
+                      formError={formError}
+                      onSave={handleReviewSave}
+                      t={t}
+                      tVis={tVis}
+                    />
                   ) : (
                     <>
                       {sections.map((section) => {
@@ -139,6 +319,10 @@ export function FieldsSection({ accessToken }: FieldsSectionProps) {
                             <IdentityCategoryBlocks
                               key={section.key}
                               fields={sectionFields}
+                              editable={editable}
+                              values={draftValues}
+                              fieldErrors={fieldErrors}
+                              onChange={onFieldChange}
                               t={t}
                               tVis={tVis}
                             />
@@ -161,6 +345,10 @@ export function FieldsSection({ accessToken }: FieldsSectionProps) {
                             <ProviderBlocks
                               key={section.key}
                               fields={sectionFields}
+                              editable={editable}
+                              values={draftValues}
+                              fieldErrors={fieldErrors}
+                              onChange={onFieldChange}
                               t={t}
                               tVis={tVis}
                             />
@@ -174,27 +362,60 @@ export function FieldsSection({ accessToken }: FieldsSectionProps) {
                             key={section.key}
                             title={tVis(`sections.${section.titleKey}`)}
                           >
-                            <FieldGrid fields={sectionFields} tVis={tVis} />
+                            <FieldGrid
+                              fields={sectionFields}
+                              editable={editable}
+                              values={draftValues}
+                              fieldErrors={fieldErrors}
+                              onChange={onFieldChange}
+                              tVis={tVis}
+                            />
                           </FieldsetBlock>
                         );
                       })}
 
-                      <div className="flex justify-start">
+                      {formError ? (
+                        <p role="alert" className="text-sm font-medium text-error">
+                          {formError}
+                        </p>
+                      ) : null}
+
+                      <div className="flex flex-wrap items-center justify-start gap-3">
                         <Button
                           type="button"
+                          disabled={!accessToken || isSaving || !isDirty}
+                          onClick={() => void handleSave()}
                           className={cn(
                             'h-12 w-full max-w-[220px] gap-2 !rounded-2xl bg-[#008d63]',
                             'px-4 text-base font-medium text-white shadow-none',
-                            'hover:bg-[#008d63]/90'
+                            'hover:bg-[#008d63]/90 disabled:opacity-60'
                           )}
                         >
-                          <Pencil
-                            className="size-6"
-                            strokeWidth={1.75}
-                            aria-hidden
-                          />
-                          {t('editAction')}
+                          {isSaving ? (
+                            <Loader2
+                              className="size-5 animate-spin"
+                              aria-hidden
+                            />
+                          ) : (
+                            <Pencil
+                              className="size-6"
+                              strokeWidth={1.75}
+                              aria-hidden
+                            />
+                          )}
+                          {isSaving ? t('saving') : t('save')}
                         </Button>
+                        {isDirty ? (
+                          <Button
+                            type="button"
+                            variant="outline"
+                            disabled={isSaving}
+                            onClick={handleCancel}
+                            className="h-12 max-w-[160px] !rounded-2xl border-[#008d63] px-4 text-base font-medium text-[#008d63] shadow-none"
+                          >
+                            {t('cancel')}
+                          </Button>
+                        ) : null}
                       </div>
                     </>
                   )}
@@ -210,6 +431,124 @@ export function FieldsSection({ accessToken }: FieldsSectionProps) {
   );
 }
 
+function ReviewPendingList({
+  requests,
+  decisions,
+  onDecisionChange,
+  isSaving,
+  formError,
+  onSave,
+  t,
+  tVis,
+}: {
+  requests: PendingFieldRequest[];
+  decisions: Record<number, 'approve' | 'reject'>;
+  onDecisionChange: (
+    requestId: number,
+    decision: 'approve' | 'reject'
+  ) => void;
+  isSaving: boolean;
+  formError: string | null;
+  onSave: () => void;
+  t: ReturnType<typeof useTranslations>;
+  tVis: ReturnType<typeof useTranslations>;
+}) {
+  if (requests.length === 0) {
+    return (
+      <p className="text-sm font-medium leading-6 text-[#404943] dark:text-home-filter-muted">
+        {t('reviewEmpty')}
+      </p>
+    );
+  }
+
+  return (
+    <div className="flex flex-col gap-6">
+      <ul className="flex flex-col gap-4">
+        {requests.map((request) => (
+          <li
+            key={request.requestId}
+            className="rounded-2xl border border-warning/60 bg-[#f8f8f0] p-4 dark:bg-home-stat-card"
+          >
+            <p className="mb-2 text-sm font-bold text-[#171d19] dark:text-home-filter-ink">
+              {request.labelKey
+                ? tVis(`fields.${request.labelKey}`)
+                : request.apiField}
+            </p>
+            <div className="mb-3 flex flex-col gap-1 text-xs text-[#404943] dark:text-home-filter-muted">
+              <p>
+                {t('previousValue')}: {request.previousValue || t('emptyValue')}
+              </p>
+              <p>
+                {t('newValue')}: {request.newValue || t('emptyValue')}
+              </p>
+            </div>
+            <div className="flex items-center justify-start gap-5">
+              <label className="flex cursor-pointer items-center gap-2 text-sm">
+                <span
+                  className={cn(
+                    decisions[request.requestId] === 'approve'
+                      ? 'text-[#008d63]'
+                      : 'text-[#404943]'
+                  )}
+                >
+                  {t('documents.approve')}
+                </span>
+                <input
+                  type="radio"
+                  name={`review-${request.requestId}`}
+                  checked={decisions[request.requestId] === 'approve'}
+                  onChange={() =>
+                    onDecisionChange(request.requestId, 'approve')
+                  }
+                />
+              </label>
+              <label className="flex cursor-pointer items-center gap-2 text-sm">
+                <span
+                  className={cn(
+                    decisions[request.requestId] === 'reject'
+                      ? 'text-[#ba1a1a]'
+                      : 'text-[#404943]'
+                  )}
+                >
+                  {t('documents.reject')}
+                </span>
+                <input
+                  type="radio"
+                  name={`review-${request.requestId}`}
+                  checked={decisions[request.requestId] === 'reject'}
+                  onChange={() =>
+                    onDecisionChange(request.requestId, 'reject')
+                  }
+                />
+              </label>
+            </div>
+          </li>
+        ))}
+      </ul>
+
+      {formError ? (
+        <p role="alert" className="text-sm font-medium text-error">
+          {formError}
+        </p>
+      ) : null}
+
+      <Button
+        type="button"
+        disabled={isSaving}
+        onClick={onSave}
+        className="h-12 w-full max-w-[220px] gap-2 !rounded-2xl bg-[#008d63] text-white shadow-none hover:bg-[#008d63]/90"
+      >
+        {isSaving ? (
+          <Loader2 className="size-5 animate-spin" aria-hidden />
+        ) : (
+          <Stamp className="size-5" strokeWidth={1.75} aria-hidden />
+        )}
+        {t('reviewSave')}
+      </Button>
+    </div>
+  );
+}
+
 function ModeTabs({
   mode,
   onModeChange,
@@ -219,6 +558,15 @@ function ModeTabs({
   onModeChange: (mode: FieldsMode) => void;
   t: ReturnType<typeof useTranslations>;
 }) {
+  const triggerClass = cn(
+    'h-full flex-1 items-center justify-center gap-2 rounded-none border-0 border-b-2 border-transparent',
+    'text-sm font-medium text-[#404943] shadow-none',
+    'data-[state=active]:border-b-[#008d63] data-[state=active]:bg-transparent',
+    'data-[state=active]:font-bold data-[state=active]:text-[#171d19]',
+    'data-[state=active]:shadow-none dark:text-home-filter-ink',
+    'dark:data-[state=active]:border-b-primary-100 dark:data-[state=active]:text-primary-100'
+  );
+
   return (
     <Tabs
       value={mode}
@@ -228,38 +576,20 @@ function ModeTabs({
     >
       <TabsList
         className={cn(
-          'flex h-12 w-full items-stretch justify-end gap-0',
+          'flex h-12 w-full items-stretch justify-center gap-0',
           'rounded-none border-b border-[#dbd8d1] bg-transparent p-0',
           'dark:border-auth-input-border'
         )}
       >
-        <TabsTrigger
-          value="review"
-          className={cn(
-            'h-full flex-1 gap-2 rounded-none border-0 border-b-2 border-transparent',
-            'text-sm font-medium text-[#404943] shadow-none',
-            'data-[state=active]:border-b-[#008d63] data-[state=active]:bg-transparent',
-            'data-[state=active]:font-bold data-[state=active]:text-[#171d19]',
-            'data-[state=active]:shadow-none dark:text-home-filter-ink',
-            'dark:data-[state=active]:border-b-primary-100 dark:data-[state=active]:text-primary-100'
-          )}
-        >
-          <BadgeCheck className="size-5 shrink-0" strokeWidth={1.75} aria-hidden />
-          <span className="whitespace-nowrap">{t('modes.review')}</span>
+        <TabsTrigger value="view" className={triggerClass}>
+          <Pencil className="size-5 shrink-0" strokeWidth={1.75} aria-hidden />
+          <span className="whitespace-nowrap text-center">{t('modes.view')}</span>
         </TabsTrigger>
-        <TabsTrigger
-          value="view"
-          className={cn(
-            'h-full flex-1 gap-2 rounded-none border-0 border-b-2 border-transparent',
-            'text-sm font-medium text-[#404943] shadow-none',
-            'data-[state=active]:border-b-[#008d63] data-[state=active]:bg-transparent',
-            'data-[state=active]:font-bold data-[state=active]:text-[#171d19]',
-            'data-[state=active]:shadow-none dark:text-home-filter-ink',
-            'dark:data-[state=active]:border-b-primary-100 dark:data-[state=active]:text-primary-100'
-          )}
-        >
-          <Eye className="size-5 shrink-0" strokeWidth={1.75} aria-hidden />
-          <span className="whitespace-nowrap">{t('modes.view')}</span>
+        <TabsTrigger value="review" className={triggerClass}>
+          <Stamp className="size-5 shrink-0" strokeWidth={1.75} aria-hidden />
+          <span className="whitespace-nowrap text-center">
+            {t('modes.review')}
+          </span>
         </TabsTrigger>
       </TabsList>
     </Tabs>
@@ -295,12 +625,30 @@ function IntroBullets({ t }: { t: ReturnType<typeof useTranslations> }) {
   );
 }
 
+function fieldErrorMessage(
+  fieldErrors: Record<string, VisibilityValidationErrorKey>,
+  fieldId: string,
+  tVis: ReturnType<typeof useTranslations>
+): string | null {
+  const key = fieldErrors[fieldId];
+  if (!key) return null;
+  return tVis(`validation.${key}`);
+}
+
 function IdentityCategoryBlocks({
   fields,
+  editable,
+  values,
+  fieldErrors,
+  onChange,
   t,
   tVis,
 }: {
   fields: VisibilityField[];
+  editable: boolean;
+  values: Record<string, string>;
+  fieldErrors: Record<string, VisibilityValidationErrorKey>;
+  onChange: (id: string, value: string) => void;
   t: ReturnType<typeof useTranslations>;
   tVis: ReturnType<typeof useTranslations>;
 }) {
@@ -309,26 +657,49 @@ function IdentityCategoryBlocks({
   const textFields = rest.filter((f) => f.kind !== 'textarea');
   const textareas = rest.filter((f) => f.kind === 'textarea');
 
+  const openSharedPhotoPicker = () => {
+    const first = photos[0];
+    if (!first) return;
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/jpeg,image/png,image/webp,image/*';
+    input.onchange = () => {
+      const file = input.files?.[0];
+      if (!file || !file.type.startsWith('image/')) return;
+      const url = URL.createObjectURL(file);
+      for (const photo of photos) onChange(photo.id, url);
+    };
+    input.click();
+  };
+
   return (
     <>
       <FieldsetBlock title={t('photosTitle')}>
         <p className="text-justify text-sm font-medium leading-6 text-[#404943] dark:text-home-filter-muted">
-          {t('photosHint')}{' '}
+          {t('photosHintBefore')}
           <button
             type="button"
             className="text-warning underline-offset-2 hover:underline"
+            onClick={openSharedPhotoPicker}
           >
-            {t('photosTermsLink')}
+            {t('photosHintLink')}
           </button>
         </p>
         <div className="grid grid-cols-1 gap-8 min-[720px]:grid-cols-2 min-[720px]:gap-x-[100px] min-[834px]:gap-x-[158px]">
-          {photos.map((field) => (
-            <ViewField
-              key={field.id}
-              field={field}
-              label={tVis(`fields.${field.labelKey}`)}
-            />
-          ))}
+          {photos.map((field) => {
+            const src = values[field.id] || field.imageSrc || field.value;
+            return (
+              <ViewField
+                key={field.id}
+                field={{ ...field, imageSrc: src, value: src }}
+                label={tVis(`fields.${field.labelKey}`)}
+                editable={editable}
+                value={src}
+                error={fieldErrorMessage(fieldErrors, field.id, tVis)}
+                onChange={onChange}
+              />
+            );
+          })}
         </div>
       </FieldsetBlock>
 
@@ -339,6 +710,10 @@ function IdentityCategoryBlocks({
               key={field.id}
               field={field}
               label={tVis(`fields.${field.labelKey}`)}
+              editable={editable}
+              value={values[field.id] ?? field.value}
+              error={fieldErrorMessage(fieldErrors, field.id, tVis)}
+              onChange={onChange}
             />
           ))}
         </div>
@@ -349,6 +724,10 @@ function IdentityCategoryBlocks({
                 key={field.id}
                 field={field}
                 label={tVis(`fields.${field.labelKey}`)}
+                editable={editable}
+                value={values[field.id] ?? field.value}
+                error={fieldErrorMessage(fieldErrors, field.id, tVis)}
+                onChange={onChange}
               />
             ))}
           </div>
@@ -360,27 +739,42 @@ function IdentityCategoryBlocks({
 
 function ProviderBlocks({
   fields,
+  editable,
+  values,
+  fieldErrors,
+  onChange,
   t,
   tVis,
 }: {
   fields: VisibilityField[];
+  editable: boolean;
+  values: Record<string, string>;
+  fieldErrors: Record<string, VisibilityValidationErrorKey>;
+  onChange: (id: string, value: string) => void;
   t: ReturnType<typeof useTranslations>;
   tVis: ReturnType<typeof useTranslations>;
 }) {
   return (
     <div className="flex flex-col gap-8 min-[720px]:gap-12">
       <FieldsetBlock title={tVis('sections.provider')}>
-        <FieldGrid fields={fields} tVis={tVis} />
+        <FieldGrid
+          fields={fields}
+          editable={editable}
+          values={values}
+          fieldErrors={fieldErrors}
+          onChange={onChange}
+          tVis={tVis}
+        />
       </FieldsetBlock>
       <FieldsetBlock title={t('documentsTitle')}>
-        <div className="flex flex-col gap-6 min-[720px]:flex-row min-[720px]:items-stretch min-[720px]:justify-between">
-          <ul className="flex flex-col gap-4 min-[720px]:max-w-[48%]">
+        <div className="flex flex-col gap-6">
+          <ul className="flex flex-col gap-4">
             <BulletText>{t('providerDocumentsHint')}</BulletText>
           </ul>
-          <UploadDropzone
-            label={t('dropHere')}
-            orLabel={t('dropOr')}
-            actionLabel={t('uploadFile')}
+          <DocumentsPanel
+            dropLabel={t('dropHere')}
+            dropOrLabel={t('dropOr')}
+            uploadLabel={t('uploadFile')}
           />
         </div>
       </FieldsetBlock>
@@ -390,10 +784,12 @@ function ProviderBlocks({
 
 function AcademicRecordsBlock({
   records,
+  reviewMode = false,
   t,
   tVis,
 }: {
   records: VisibilityAcademicRecord[];
+  reviewMode?: boolean;
   t: ReturnType<typeof useTranslations>;
   tVis: ReturnType<typeof useTranslations>;
 }) {
@@ -455,10 +851,11 @@ function AcademicRecordsBlock({
             <BulletText tone="muted">{t('academicDocumentsPrivate')}</BulletText>
           </ul>
 
-          <UploadDropzone
-            label={t('dropHere')}
-            orLabel={t('dropOr')}
-            actionLabel={t('uploadFile')}
+          <DocumentsPanel
+            dropLabel={t('dropHere')}
+            dropOrLabel={t('dropOr')}
+            uploadLabel={t('uploadFile')}
+            reviewMode={reviewMode}
             wide
           />
         </div>
@@ -540,9 +937,17 @@ function AcademicRecordCard({
 
 function FieldGrid({
   fields,
+  editable,
+  values,
+  fieldErrors,
+  onChange,
   tVis,
 }: {
   fields: VisibilityField[];
+  editable: boolean;
+  values: Record<string, string>;
+  fieldErrors: Record<string, VisibilityValidationErrorKey>;
+  onChange: (id: string, value: string) => void;
   tVis: ReturnType<typeof useTranslations>;
 }) {
   const textareas = fields.filter((f) => f.kind === 'textarea');
@@ -557,6 +962,10 @@ function FieldGrid({
               key={field.id}
               field={field}
               label={tVis(`fields.${field.labelKey}`)}
+              editable={editable}
+              value={values[field.id] ?? field.value}
+              error={fieldErrorMessage(fieldErrors, field.id, tVis)}
+              onChange={onChange}
             />
           ))}
         </div>
@@ -566,6 +975,10 @@ function FieldGrid({
           key={field.id}
           field={field}
           label={tVis(`fields.${field.labelKey}`)}
+          editable={editable}
+          value={values[field.id] ?? field.value}
+          error={fieldErrorMessage(fieldErrors, field.id, tVis)}
+          onChange={onChange}
         />
       ))}
     </div>
@@ -594,53 +1007,6 @@ function FieldsetBlock({
       </legend>
       {children}
     </fieldset>
-  );
-}
-
-function UploadDropzone({
-  label,
-  orLabel,
-  actionLabel,
-  wide = false,
-}: {
-  label: string;
-  orLabel: string;
-  actionLabel: string;
-  wide?: boolean;
-}) {
-  return (
-    <div
-      className={cn(
-        'flex min-h-[220px] w-full flex-col items-center justify-center gap-1 rounded-2xl',
-        'border border-dashed border-[#bfc9c1] px-4 py-8',
-        'bg-transparent dark:border-auth-input-border',
-        wide
-          ? 'min-[720px]:max-w-[462px]'
-          : 'min-[720px]:min-w-[240px] min-[720px]:max-w-[320px]'
-      )}
-    >
-      <CloudUpload
-        className="size-12 text-[#404943] dark:text-home-filter-muted"
-        strokeWidth={1.5}
-        aria-hidden
-      />
-      <p className="text-center text-xs font-medium text-[#404943] dark:text-home-filter-muted">
-        {label}
-      </p>
-      <p className="text-center text-xs font-medium text-[#404943] dark:text-home-filter-muted">
-        {orLabel}
-      </p>
-      <Button
-        type="button"
-        variant="outline"
-        className={cn(
-          'mt-1 h-12 !rounded-xl border-0 bg-[#ffdbcf] px-3 text-sm font-medium text-[#72351f] shadow-none',
-          'hover:bg-[#ffdbcf]/80 hover:text-[#72351f]'
-        )}
-      >
-        {actionLabel}
-      </Button>
-    </div>
   );
 }
 

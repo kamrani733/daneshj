@@ -63,7 +63,6 @@ const EMPTY_PROFILE: PrivatePanelProfile = {
 async function fetchPrivatePanelProfile(
   accessToken: string
 ): Promise<PrivatePanelProfile> {
-  // get_actor_info can 500 on fresh users while retrieve-for-owner still works.
   const [actorInfoResult, privateData] = await Promise.all([
     getActorInfo({
       accessToken,
@@ -74,7 +73,6 @@ async function fetchPrivatePanelProfile(
   return mapPrivatePanelProfile(actorInfoResult, privateData);
 }
 
-/** Owner private-panel hero profile from Actor MS. */
 export function usePrivatePanelProfileQuery(
   accessToken: string | null | undefined
 ) {
@@ -154,7 +152,6 @@ const EMPTY_MANAGE_VISIBILITY = {
   publicFlags: {} as Record<string, unknown>,
 };
 
-/** Combined private values + public visibility flags for manage-visibility UI. */
 export function useManageVisibilityQuery(
   accessToken: string | null | undefined,
   enabled = true
@@ -174,7 +171,6 @@ export function useManageVisibilityQuery(
       };
     },
     enabled: enabled && canFetch(accessToken),
-    /** Keep field catalog visible while loading / when query is disabled. */
     placeholderData: EMPTY_MANAGE_VISIBILITY,
   });
 }
@@ -261,9 +257,17 @@ export function useReviewPrivateChangesByOwnerMutation() {
     mutationFn: (payload: ReviewPrivateChangesByOwnerPayload) =>
       reviewPrivateChangesByOwner(payload),
     onSuccess: async () => {
-      await queryClient.invalidateQueries({
-        queryKey: actorQueryKeys.privatePanelOwner(),
-      });
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: actorQueryKeys.privatePanelOwner(),
+        }),
+        queryClient.invalidateQueries({
+          queryKey: [...actorQueryKeys.all, 'manage-visibility'],
+        }),
+        queryClient.invalidateQueries({
+          queryKey: privatePanelQueryKeys.profile(),
+        }),
+      ]);
     },
   });
 }

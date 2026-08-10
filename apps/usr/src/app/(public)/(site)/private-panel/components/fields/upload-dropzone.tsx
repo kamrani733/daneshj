@@ -1,0 +1,103 @@
+'use client';
+
+import { CloudUpload } from 'lucide-react';
+import { useRef, type ChangeEvent, type DragEvent } from 'react';
+
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
+
+type UploadDropzoneProps = {
+  label: string;
+  orLabel: string;
+  actionLabel: string;
+  accept?: string;
+  disabled?: boolean;
+  wide?: boolean;
+  onFiles?: (files: FileList | File[]) => void;
+};
+
+export function UploadDropzone({
+  label,
+  orLabel,
+  actionLabel,
+  accept = 'application/pdf,image/jpeg,image/png',
+  disabled,
+  wide = false,
+  onFiles,
+}: UploadDropzoneProps) {
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const handleFiles = (files: FileList | null) => {
+    if (!files?.length || disabled) return;
+    onFiles?.(files);
+  };
+
+  const onInputChange = (event: ChangeEvent<HTMLInputElement>) => {
+    handleFiles(event.target.files);
+    event.target.value = '';
+  };
+
+  const onDrop = (event: DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    handleFiles(event.dataTransfer.files);
+  };
+
+  return (
+    <div
+      role="button"
+      tabIndex={0}
+      onKeyDown={(event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          inputRef.current?.click();
+        }
+      }}
+      onDragOver={(event) => event.preventDefault()}
+      onDrop={onDrop}
+      onClick={() => inputRef.current?.click()}
+      className={cn(
+        'flex min-h-[220px] w-full flex-col items-center justify-center gap-1 rounded-2xl',
+        'border border-dashed border-[#bfc9c1] px-4 py-8',
+        'bg-transparent dark:border-auth-input-border',
+        disabled && 'pointer-events-none opacity-50',
+        wide
+          ? 'min-[720px]:max-w-[462px]'
+          : 'min-[720px]:min-w-[240px] min-[720px]:max-w-[320px]'
+      )}
+    >
+      <CloudUpload
+        className="size-12 text-[#404943] dark:text-home-filter-muted"
+        strokeWidth={1.5}
+        aria-hidden
+      />
+      <p className="text-center text-xs font-medium text-[#404943] dark:text-home-filter-muted">
+        {label}
+      </p>
+      <p className="text-center text-xs font-medium text-[#404943] dark:text-home-filter-muted">
+        {orLabel}
+      </p>
+      <Button
+        type="button"
+        variant="outline"
+        onClick={(event) => {
+          event.stopPropagation();
+          inputRef.current?.click();
+        }}
+        className={cn(
+          'mt-1 h-12 !rounded-xl border-0 bg-[#ffdbcf] px-3 text-sm font-medium text-[#72351f] shadow-none',
+          'hover:bg-[#ffdbcf]/80 hover:text-[#72351f]'
+        )}
+      >
+        {actionLabel}
+      </Button>
+      <input
+        ref={inputRef}
+        type="file"
+        accept={accept}
+        multiple
+        className="sr-only"
+        onChange={onInputChange}
+      />
+    </div>
+  );
+}
