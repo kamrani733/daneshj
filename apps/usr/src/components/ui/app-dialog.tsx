@@ -28,6 +28,8 @@ export type AppDialogAction = {
   onClick?: () => void;
   loading?: boolean;
   href?: string;
+  /** Text-link tone when `actionsStyle="text"`. */
+  tone?: 'default' | 'destructive' | 'muted';
 };
 
 export type AppDialogProps = {
@@ -37,6 +39,8 @@ export type AppDialogProps = {
   title: string;
   description?: string;
   children?: ReactNode;
+  /** Optional media above the title (e.g. warning icon). */
+  icon?: ReactNode;
   primaryAction?: AppDialogAction;
   secondaryAction?: AppDialogAction;
   actionsStyle?: 'default' | 'text';
@@ -74,8 +78,20 @@ const GHOST =
 const TEXT_LINK =
   'h-auto border-0 bg-transparent px-0 py-2 text-sm font-medium text-primary shadow-none hover:bg-transparent hover:text-primary dark:text-primary-100';
 
+const TEXT_DESTRUCTIVE =
+  'h-auto border-0 bg-transparent px-0 py-2 text-sm font-medium text-error shadow-none hover:bg-transparent hover:text-error';
+
+const TEXT_MUTED =
+  'h-auto border-0 bg-transparent px-0 py-2 text-sm font-medium text-home-filter-ink shadow-none hover:bg-transparent hover:text-home-filter-ink dark:text-home-filter-ink';
+
 const PRIMARY_PILL =
   'h-11 min-w-[5.5rem] !rounded-full bg-primary px-8 text-sm font-medium text-white hover:bg-primary/90 dark:bg-primary-100 dark:text-primary-900 dark:hover:bg-primary-100/90';
+
+function textActionClass(tone: AppDialogAction['tone'] = 'default') {
+  if (tone === 'destructive') return TEXT_DESTRUCTIVE;
+  if (tone === 'muted') return TEXT_MUTED;
+  return TEXT_LINK;
+}
 
 export function AppDialog({
   open,
@@ -84,6 +100,7 @@ export function AppDialog({
   title,
   description,
   children,
+  icon,
   primaryAction,
   secondaryAction,
   actionsStyle = 'default',
@@ -100,9 +117,18 @@ export function AppDialog({
           <AlertDialogHeader
             className={cn(
               'w-full place-items-stretch !text-right',
-              'sm:place-items-stretch sm:!text-right'
+              'sm:place-items-stretch sm:!text-right',
+              icon && 'gap-4'
             )}
           >
+            {icon ? (
+              <div
+                data-slot="alert-dialog-media"
+                className="flex w-full justify-center"
+              >
+                {icon}
+              </div>
+            ) : null}
             <AlertDialogTitle
               dir="rtl"
               className="w-full text-right text-sm font-medium leading-7 text-home-filter-ink dark:text-primary-50"
@@ -115,11 +141,15 @@ export function AppDialog({
           </AlertDialogHeader>
 
           {(primaryAction || secondaryAction) && (
-            <AlertDialogFooter className="mt-0 flex-row justify-end gap-3 border-0 bg-transparent p-0 sm:justify-end">
+            <AlertDialogFooter className="mt-0 flex-row justify-end gap-4 border-0 bg-transparent p-0 sm:justify-end">
               {secondaryAction ? (
                 <AlertDialogCancel
                   variant="ghost"
-                  className={actionsStyle === 'text' ? TEXT_LINK : GHOST}
+                  className={
+                    actionsStyle === 'text'
+                      ? textActionClass(secondaryAction.tone ?? 'muted')
+                      : GHOST
+                  }
                   onClick={secondaryAction.onClick}
                 >
                   {secondaryAction.label}
@@ -140,7 +170,9 @@ export function AppDialog({
                   <AlertDialogAction
                     disabled={primaryAction.loading}
                     className={
-                      actionsStyle === 'text' ? TEXT_LINK : PRIMARY_PILL
+                      actionsStyle === 'text'
+                        ? textActionClass(primaryAction.tone)
+                        : PRIMARY_PILL
                     }
                     onClick={(event) => {
                       event.preventDefault();
@@ -159,7 +191,11 @@ export function AppDialog({
                 ) : (
                   <AlertDialogCancel
                     variant="ghost"
-                    className={actionsStyle === 'text' ? TEXT_LINK : GHOST}
+                    className={
+                      actionsStyle === 'text'
+                        ? textActionClass(primaryAction.tone)
+                        : GHOST
+                    }
                     onClick={primaryAction.onClick}
                   >
                     {primaryAction.label}

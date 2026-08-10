@@ -66,7 +66,7 @@ export function CreateDeletePanel() {
           onClick={openConfirm}
           disabled={requestSubmitted}
           className={cn(
-            'h-11 w-full self-stretch !rounded-full border-0 px-6 text-sm font-medium text-white shadow-none',
+            'h-11 w-full self-stretch !rounded-full border-0 px-5 text-sm font-medium text-white shadow-none',
             'min-[720px]:h-12 min-[720px]:w-auto min-[720px]:self-end min-[720px]:px-8',
             'disabled:pointer-events-none disabled:opacity-50',
             hasPanel
