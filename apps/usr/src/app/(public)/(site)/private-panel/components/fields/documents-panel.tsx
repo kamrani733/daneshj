@@ -143,13 +143,15 @@ export function DocumentsPanel({
 
   return (
     <div
+      dir="rtl"
       className={cn(
-        'flex w-full flex-col gap-4 min-[720px]:flex-row min-[720px]:items-start min-[720px]:justify-between',
+        'flex w-full flex-col items-stretch gap-4',
+        'min-[720px]:flex-row min-[720px]:items-start min-[720px]:justify-between',
         className
       )}
     >
       {items.length > 0 ? (
-        <ul className="flex w-full flex-col gap-3 min-[720px]:max-w-[462px]">
+        <ul className="flex w-full flex-1 flex-col gap-3 min-[720px]:max-w-[462px]">
           {items.map((item) => (
             <li key={item.id}>
               <DocumentItem

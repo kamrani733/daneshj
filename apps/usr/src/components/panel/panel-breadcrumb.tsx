@@ -9,7 +9,6 @@ type PanelBreadcrumbProps = {
   homeHref?: string;
 };
 
-/** RTL breadcrumb: current < account < home */
 export function PanelBreadcrumb({
   label,
   current,
@@ -19,8 +18,9 @@ export function PanelBreadcrumb({
 }: PanelBreadcrumbProps) {
   return (
     <nav
+      dir="rtl"
       aria-label={label}
-      className="flex flex-wrap items-center gap-2 text-sm"
+      className="flex flex-wrap items-center justify-start gap-2 text-sm"
     >
       <span className="font-semibold leading-5 tracking-[0.0071em] text-home-filter-muted dark:text-home-filter-ink">
         {current}

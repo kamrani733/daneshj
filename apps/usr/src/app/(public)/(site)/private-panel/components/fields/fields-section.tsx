@@ -572,7 +572,7 @@ function ModeTabs({
       value={mode}
       onValueChange={(value) => onModeChange(value as FieldsMode)}
       dir="rtl"
-      className="w-full max-w-[360px] self-end"
+      className="w-full max-w-[360px] self-start"
     >
       <TabsList
         className={cn(
@@ -598,13 +598,14 @@ function ModeTabs({
 
 function IntroBullets({ t }: { t: ReturnType<typeof useTranslations> }) {
   return (
-    <ul className="flex flex-col items-end gap-4">
+    <ul className="flex w-full flex-col gap-4">
       {[0, 1, 2].map((index) => (
-        <li
-          key={index}
-          className="flex w-full items-start justify-end gap-2.5"
-        >
-          <p className="text-justify text-sm font-medium leading-6 text-[#171d19] dark:text-home-filter-ink">
+        <li key={index} className="flex w-full items-start gap-2.5">
+          <span
+            aria-hidden
+            className="mt-2 size-1.5 shrink-0 rounded-full bg-[#008d63]"
+          />
+          <p className="min-w-0 flex-1 text-justify text-sm font-medium leading-6 text-[#171d19] dark:text-home-filter-ink">
             {index === 1 ? (
               <>
                 {t('intro.requiredBefore')}
@@ -615,10 +616,6 @@ function IntroBullets({ t }: { t: ReturnType<typeof useTranslations> }) {
               t(`intro.p${index + 1}` as 'intro.p1' | 'intro.p3')
             )}
           </p>
-          <span
-            aria-hidden
-            className="mt-2 size-1.5 shrink-0 rounded-full bg-[#008d63]"
-          />
         </li>
       ))}
     </ul>
@@ -832,7 +829,7 @@ function AcademicRecordsBlock({
             'dark:border-auth-input-border dark:bg-home-stat-card'
           )}
         >
-          <h4 className="absolute -top-3 end-4 bg-[#f8f8f0] px-1 text-base font-bold text-[#404943] dark:bg-home-stat-card dark:text-primary-100 min-[720px]:end-8">
+          <h4 className="absolute -top-3 start-4 bg-[#f8f8f0] px-1 text-base font-bold text-[#404943] dark:bg-home-stat-card dark:text-primary-100 min-[720px]:start-8">
             {t('academicDocumentsTitle')}
           </h4>
 
@@ -881,7 +878,7 @@ function AcademicRecordCard({
         'dark:border-auth-input-border'
       )}
     >
-      <div className="flex flex-wrap items-center justify-end gap-2">
+      <div className="flex flex-wrap items-center justify-start gap-2">
         <h4 className="text-sm font-bold text-[#171d19] dark:text-home-filter-ink min-[720px]:text-base">
           {record.degree || '\u00a0'}
         </h4>
@@ -1002,7 +999,7 @@ function FieldsetBlock({
         'dark:border-auth-input-border dark:bg-home-stat-card'
       )}
     >
-      <legend className="absolute -top-3 end-4 max-w-[calc(100%-2rem)] bg-[#f8f8f0] px-1 text-sm font-bold text-[#404943] min-[720px]:end-8 min-[720px]:text-base dark:bg-home-stat-card dark:text-primary-100">
+      <legend className="absolute -top-3 start-4 max-w-[calc(100%-2rem)] bg-[#f8f8f0] px-1 text-sm font-bold text-[#404943] min-[720px]:start-8 min-[720px]:text-base dark:bg-home-stat-card dark:text-primary-100">
         {title}
       </legend>
       {children}
@@ -1018,10 +1015,14 @@ function BulletText({
   tone?: 'body' | 'muted';
 }) {
   return (
-    <li className="flex w-full items-start justify-end gap-2.5">
+    <li className="flex w-full items-start gap-2.5">
+      <span
+        aria-hidden
+        className="mt-2 size-1.5 shrink-0 rounded-full bg-[#008d63]"
+      />
       <p
         className={cn(
-          'text-justify text-sm font-medium leading-6',
+          'min-w-0 flex-1 text-justify text-sm font-medium leading-6',
           tone === 'muted'
             ? 'text-[#404943] dark:text-home-filter-muted'
             : 'text-[#171d19] dark:text-home-filter-ink'
@@ -1029,10 +1030,6 @@ function BulletText({
       >
         {children}
       </p>
-      <span
-        aria-hidden
-        className="mt-2 size-1.5 shrink-0 rounded-full bg-[#008d63]"
-      />
     </li>
   );
 }
@@ -1055,7 +1052,7 @@ function LimitationsSection({
             'dark:border-auth-input-border dark:bg-home-stat-card'
           )}
         >
-          <h3 className="absolute -top-3 end-4 bg-[#f8f8f0] px-1 text-base font-semibold text-[#ba1a1a] dark:bg-home-stat-card">
+          <h3 className="absolute -top-3 start-4 bg-[#f8f8f0] px-1 text-base font-semibold text-[#ba1a1a] dark:bg-home-stat-card">
             {t('limitations.title', { n })}
           </h3>
 
@@ -1112,10 +1109,10 @@ function ReadOnlyChip({
         wide && 'min-[720px]:col-span-1'
       )}
     >
-      <span className="absolute -top-2 end-2 bg-[#f8f8f0] px-1 text-xs font-bold text-[#404943] dark:bg-home-stat-card dark:text-home-filter-muted">
+      <span className="absolute -top-2 start-2 bg-[#f8f8f0] px-1 text-xs font-bold text-[#404943] dark:bg-home-stat-card dark:text-home-filter-muted">
         {label}
       </span>
-      <p className="text-sm font-medium text-[#404943] dark:text-home-filter-ink">
+      <p className="text-start text-sm font-medium text-[#404943] dark:text-home-filter-ink">
         {value}
       </p>
     </div>

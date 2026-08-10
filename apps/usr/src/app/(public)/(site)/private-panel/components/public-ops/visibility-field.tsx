@@ -19,9 +19,7 @@ type VisibilityFieldCardProps = {
   field: VisibilityField;
   value: string;
   selected: boolean;
-  error?: string | null;
   onToggle: (id: string) => void;
-  onValueChange: (id: string, value: string) => void;
 };
 
 const CARD_BG = 'bg-[#f8f8f0] dark:bg-home-search-category';
@@ -37,14 +35,11 @@ export function resolveVisibilityState(
   return 'hidden';
 }
 
-/** Card: editable outlined field + visibility checkbox (Figma identity grid). */
 export function VisibilityFieldCard({
   field,
   value,
   selected,
-  error,
   onToggle,
-  onValueChange,
 }: VisibilityFieldCardProps) {
   const t = useTranslations('privatePanel.publicOps.manageVisibility');
   const state = resolveVisibilityState(field, selected);
@@ -59,7 +54,6 @@ export function VisibilityFieldCard({
         : t(`captions.${state}`);
   const showCalendar =
     Boolean(field.withCalendar) || field.labelKey === 'birthDate';
-  const errorId = error ? `${field.id}-error` : undefined;
 
   if (field.kind === 'photo') {
     return (
@@ -119,39 +113,12 @@ export function VisibilityFieldCard({
   return (
     <div className={cn(cardClass(state), 'gap-2.5 p-3 pt-2.5 min-[720px]:gap-3 min-[720px]:p-4 min-[720px]:pt-3')}>
       {field.kind === 'textarea' ? (
-        <OutlinedTextarea
-          label={label}
-          value={value}
-          readOnly={locked}
-          error={Boolean(error)}
-          errorId={errorId}
-          onChange={(next) => onValueChange(field.id, next)}
-        />
+        <OutlinedTextarea label={label} value={value} readOnly />
       ) : showCalendar ? (
-        <OutlinedDatePicker
-          label={label}
-          value={value}
-          disabled={locked}
-          error={Boolean(error)}
-          errorId={errorId}
-          onChange={(next) => onValueChange(field.id, next)}
-        />
+        <OutlinedDatePicker label={label} value={value} disabled />
       ) : (
-        <OutlinedInput
-          label={label}
-          value={value}
-          readOnly={locked}
-          error={Boolean(error)}
-          errorId={errorId}
-          onChange={(next) => onValueChange(field.id, next)}
-        />
+        <OutlinedInput label={label} value={value} readOnly />
       )}
-
-      {error ? (
-        <p id={errorId} role="alert" className="text-start text-[11px] font-medium text-error min-[720px]:text-xs">
-          {error}
-        </p>
-      ) : null}
 
       <VisibilityCheckbox
         label={label}
@@ -253,7 +220,7 @@ function OutlinedDatePicker({
 }: {
   label: string;
   value: string;
-  onChange: (value: string) => void;
+  onChange?: (value: string) => void;
   disabled?: boolean;
   error?: boolean;
   errorId?: string;
@@ -266,7 +233,7 @@ function OutlinedDatePicker({
       <JalaliDatePicker
         id={id}
         value={isoValue}
-        onChange={onChange}
+        onChange={(next) => onChange?.(next)}
         disabled={disabled}
         startAdornment={
           <Calendar
@@ -299,7 +266,6 @@ function OutlinedDatePicker({
   );
 }
 
-/** Accept ISO date, ISO instant, or already-normalized picker values. */
 function toPickerIsoValue(value: string): string {
   const trimmed = value.trim();
   if (!trimmed) return '';
@@ -328,7 +294,7 @@ function OutlinedInput({
 }: {
   label: string;
   value: string;
-  onChange: (value: string) => void;
+  onChange?: (value: string) => void;
   endAdornment?: ReactNode;
   error?: boolean;
   errorId?: string;
@@ -339,16 +305,18 @@ function OutlinedInput({
   return (
     <div className="relative">
       <input
+        dir="rtl"
         id={id}
         value={value}
         readOnly={readOnly}
+        tabIndex={readOnly ? -1 : undefined}
         placeholder=" "
         aria-invalid={error || undefined}
         aria-describedby={errorId}
         aria-readonly={readOnly || undefined}
         onChange={(event) => {
           if (readOnly) return;
-          onChange(event.target.value);
+          onChange?.(event.target.value);
         }}
         className={cn(
           'peer h-12 w-full rounded-lg border border-solid border-[#707973]',
@@ -358,7 +326,7 @@ function OutlinedInput({
           'focus-visible:ring-2 focus-visible:ring-primary/30',
           endAdornment && 'ps-11',
           'dark:border-auth-input-border dark:text-home-filter-ink',
-          readOnly && 'cursor-not-allowed opacity-80',
+          readOnly && 'cursor-default opacity-90',
           error &&
             'border-error focus-visible:border-error focus-visible:ring-error/30'
         )}
@@ -369,14 +337,14 @@ function OutlinedInput({
           'pointer-events-none absolute start-3 top-0 z-[1] -translate-y-1/2 px-1 text-xs font-medium',
           'text-[#404943] dark:text-home-filter-muted',
           CARD_BG,
-          'peer-focus:text-primary',
+          !readOnly && 'peer-focus:text-primary',
           error && 'text-error peer-focus:text-error'
         )}
       >
         {label}
       </label>
       {endAdornment ? (
-        <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2">
+        <span className="pointer-events-none absolute end-3 top-1/2 -translate-y-1/2">
           {endAdornment}
         </span>
       ) : null}
@@ -394,7 +362,7 @@ function OutlinedTextarea({
 }: {
   label: string;
   value: string;
-  onChange: (value: string) => void;
+  onChange?: (value: string) => void;
   error?: boolean;
   errorId?: string;
   readOnly?: boolean;
@@ -404,9 +372,11 @@ function OutlinedTextarea({
   return (
     <div className="relative">
       <textarea
+        dir="rtl"
         id={id}
         value={value}
         readOnly={readOnly}
+        tabIndex={readOnly ? -1 : undefined}
         placeholder=" "
         rows={3}
         aria-invalid={error || undefined}
@@ -414,7 +384,7 @@ function OutlinedTextarea({
         aria-readonly={readOnly || undefined}
         onChange={(event) => {
           if (readOnly) return;
-          onChange(event.target.value);
+          onChange?.(event.target.value);
         }}
         className={cn(
           'peer w-full resize-none rounded-lg border border-solid border-[#707973]',
@@ -423,7 +393,7 @@ function OutlinedTextarea({
           'placeholder:text-transparent focus-visible:border-primary focus-visible:outline-none',
           'focus-visible:ring-2 focus-visible:ring-primary/30',
           'dark:border-auth-input-border dark:text-home-filter-ink',
-          readOnly && 'cursor-not-allowed opacity-80',
+          readOnly && 'cursor-default opacity-90',
           error &&
             'border-error focus-visible:border-error focus-visible:ring-error/30'
         )}
@@ -434,7 +404,7 @@ function OutlinedTextarea({
           'pointer-events-none absolute start-3 top-0 z-[1] -translate-y-1/2 px-1 text-xs font-medium',
           'text-[#404943] dark:text-home-filter-muted',
           CARD_BG,
-          'peer-focus:text-primary',
+          !readOnly && 'peer-focus:text-primary',
           error && 'text-error peer-focus:text-error'
         )}
       >

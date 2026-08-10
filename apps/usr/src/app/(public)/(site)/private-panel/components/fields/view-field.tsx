@@ -141,6 +141,7 @@ export function ViewField({
           asLabel
         >
           <textarea
+            dir="rtl"
             value={current}
             onChange={(event) => onChange?.(field.id, event.target.value)}
             rows={4}
@@ -185,6 +186,7 @@ export function ViewField({
             triggerClassName={cn(
               'h-12 w-full justify-start rounded-lg border px-3 pe-11 text-start text-sm font-medium',
               INPUT_SURFACE,
+              '[direction:rtl]',
               pending || error
                 ? 'border-warning'
                 : 'border-[#707973] dark:border-auth-input-border'
@@ -250,6 +252,7 @@ export function ViewField({
             asLabel
           >
             <input
+              dir="rtl"
               type="text"
               value={current}
               onChange={(event) => onChange?.(field.id, event.target.value)}
@@ -303,6 +306,7 @@ export function ViewField({
         asLabel
       >
         <input
+          dir="rtl"
           type="text"
           value={current}
           onChange={(event) => onChange?.(field.id, event.target.value)}
@@ -416,7 +420,7 @@ function OutlinedShell({
   const Wrapper = asLabel ? 'label' : 'div';
 
   return (
-    <Wrapper className="relative block">
+    <Wrapper dir="rtl" className="relative block">
       <div
         id={id}
         className={cn(

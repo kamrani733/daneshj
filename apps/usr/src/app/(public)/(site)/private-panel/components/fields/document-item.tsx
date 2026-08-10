@@ -72,7 +72,10 @@ export function DocumentItem({
 
   if (item.state === 'review') {
     return (
-      <div className={cn('flex w-full flex-col items-stretch gap-2', className)}>
+      <div
+        dir="rtl"
+        className={cn('flex w-full flex-col items-stretch gap-2', className)}
+      >
         <div
           className={cn(
             'flex h-12 items-center justify-start gap-2 rounded-xl border border-[#bfc9c1]',
@@ -105,7 +108,7 @@ export function DocumentItem({
   }
 
   return (
-    <div className={cn('flex w-full flex-col gap-1', className)}>
+    <div dir="rtl" className={cn('flex w-full flex-col gap-1', className)}>
       <div
         className={cn(
           'flex h-14 items-center gap-3 rounded-xl border px-3',

@@ -13,7 +13,10 @@ export function PrivatePanelHeading({ displayName }: PrivatePanelHeadingProps) {
   const t = useTranslations('privatePanel');
 
   return (
-    <header className="flex w-full flex-col items-end gap-4 min-[720px]:gap-4">
+    <header
+      dir="rtl"
+      className="flex w-full flex-col items-start gap-4 min-[720px]:gap-4"
+    >
       <PanelBreadcrumb
         label={t('breadcrumb.label')}
         current={t('breadcrumb.current')}
@@ -21,25 +24,25 @@ export function PrivatePanelHeading({ displayName }: PrivatePanelHeadingProps) {
         home={t('breadcrumb.home')}
       />
 
-      <div className="flex flex-col items-end gap-3 py-2">
-        <div className="flex items-center justify-center gap-2 px-2">
+      <div className="flex w-full flex-col items-start gap-3 py-2">
+        <div className="flex items-center justify-start gap-2 px-2">
+          <span
+            aria-hidden
+            className="h-8 w-3 shrink-0 rounded-[2px] bg-[#008d63] min-[720px]:h-8"
+          />
           <h1
             className={cn(
-              'text-2xl font-bold leading-9 text-[#005138]',
+              'text-start text-2xl font-bold leading-9 text-[#005138]',
               'min-[720px]:text-[28px] min-[720px]:leading-10',
               'dark:text-primary-100'
             )}
           >
             {t('title')}
           </h1>
-          <span
-            aria-hidden
-            className="h-8 w-3 shrink-0 rounded-[2px] bg-[#008d63] min-[720px]:h-8"
-          />
         </div>
         <p
           className={cn(
-            'px-2 text-sm font-semibold leading-5 tracking-[0.007em] text-[#707973]',
+            'px-2 text-start text-sm font-semibold leading-5 tracking-[0.007em] text-[#707973]',
             'dark:text-home-filter-ink'
           )}
         >

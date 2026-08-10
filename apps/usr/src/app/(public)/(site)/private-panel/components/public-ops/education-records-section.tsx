@@ -30,7 +30,6 @@ type EducationRecordsSectionProps = {
   onToggleRecord: (id: string) => void;
 };
 
-/** Academic-records block: field toggles + selectable record cards. */
 export function EducationRecordsSection({
   toggleFields,
   records,
@@ -57,7 +56,6 @@ export function EducationRecordsSection({
             value=""
             selected={Boolean(fieldSelection[field.id])}
             onToggle={onToggleField}
-            onValueChange={() => undefined}
           />
         ))}
       </div>

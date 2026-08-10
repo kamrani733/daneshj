@@ -43,8 +43,9 @@ export function LocationListPicker({
       <PopoverTrigger asChild disabled={disabled}>
         <button
           type="button"
+          dir="rtl"
           className={cn(
-            'relative flex h-12 w-full items-center rounded-lg border border-[#707973]',
+            'relative flex h-12 w-full items-center justify-start rounded-lg border border-[#707973]',
             'bg-home-card px-3 pe-11 text-start dark:border-auth-input-border dark:bg-auth-input-bg',
             'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30',
             disabled && 'cursor-not-allowed opacity-60',
@@ -61,7 +62,7 @@ export function LocationListPicker({
           </span>
           <span
             className={cn(
-              'truncate text-sm font-medium',
+              'w-full truncate text-start text-sm font-medium',
               selectedLabel
                 ? 'text-content dark:text-home-filter-ink'
                 : 'text-home-filter-muted'
@@ -70,7 +71,7 @@ export function LocationListPicker({
             {selectedLabel || placeholder || '\u00a0'}
           </span>
           <ChevronDown
-            className="pointer-events-none absolute left-3 top-1/2 size-5 -translate-y-1/2 text-[#404943] dark:text-home-filter-muted"
+            className="pointer-events-none absolute end-3 top-1/2 size-5 -translate-y-1/2 text-[#404943] dark:text-home-filter-muted"
             strokeWidth={1.75}
             aria-hidden
           />
@@ -134,7 +135,7 @@ export function LocationOptionList({
               type="button"
               onClick={() => onSelect(option.value)}
               className={cn(
-                'flex w-full items-center justify-start px-4 py-2.5 text-sm font-medium',
+                'flex w-full items-center justify-start px-4 py-2.5 text-start text-sm font-medium',
                 'text-[#171d19] hover:bg-[#efede6]',
                 'dark:text-home-filter-ink dark:hover:bg-home-card',
                 selected && 'bg-[#efede6] font-bold text-[#008d63] dark:bg-home-card dark:text-primary-100'
