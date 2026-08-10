@@ -3,7 +3,7 @@
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
-import type { PublicPanelRestriction } from '@private-panel/data/public-ops-mock';
+import type { PublicPanelRestriction } from '@private-panel/data/public-ops-types';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 

@@ -24,8 +24,12 @@ const TAB_ITEMS: {
   { id: 'guide', icon: CircleHelp },
 ];
 
+type PrivatePanelTabsProps = {
+  accessToken?: string | null;
+};
+
 /** Private panel primary tabs — pill bar matching Figma. */
-export function PrivatePanelTabs() {
+export function PrivatePanelTabs({ accessToken }: PrivatePanelTabsProps) {
   const t = useTranslations('privatePanel');
 
   return (
@@ -73,7 +77,7 @@ export function PrivatePanelTabs() {
         <PlaceholderPanel message={t('placeholder.fields')} />
       </TabsContent>
       <TabsContent value="publicOps" className="mt-0">
-        <PublicOpsSection />
+        <PublicOpsSection accessToken={accessToken} />
       </TabsContent>
       <TabsContent value="guide" className="mt-0">
         <GuideSection />

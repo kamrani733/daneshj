@@ -5,23 +5,30 @@ import { useState } from 'react';
 
 import fa from '@messages/fa.json';
 import {
-  MOCK_HAS_PUBLIC_PANEL,
-  MOCK_PUBLIC_PANEL_RESTRICTIONS,
-} from '@private-panel/data/public-ops-mock';
+  ACTOR_TYPE_NAME,
+  usePublicPanelStatusByOwnerQuery,
+  useRequestPublicPanelChangeStatusMutation,
+} from '@private-panel/api';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
 import { OpsConfirmDialog } from './ops-confirm-dialog';
-import { RestrictionCard } from './restriction-card';
 
 const COPY = fa.privatePanel.publicOps.createDelete;
 
 type DialogStep = 'confirm' | 'success';
 
-/** Create or delete public panel — confirm → success; API later in handlers. */
-export function CreateDeletePanel() {
+type CreateDeletePanelProps = {
+  accessToken?: string | null;
+};
+
+/** Create or delete public panel — confirm → Actor change-status-request. */
+export function CreateDeletePanel({ accessToken }: CreateDeletePanelProps) {
   const t = useTranslations('privatePanel.publicOps.createDelete');
-  const hasPanel = MOCK_HAS_PUBLIC_PANEL;
+  const statusQuery = usePublicPanelStatusByOwnerQuery({ accessToken });
+  const requestMutation = useRequestPublicPanelChangeStatusMutation();
+
+  const hasPanel = Boolean(statusQuery.data?.isPublicPanelActive);
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [step, setStep] = useState<DialogStep>('confirm');
@@ -30,7 +37,7 @@ export function CreateDeletePanel() {
   const paragraphs = hasPanel ? COPY.deleteParagraphs : COPY.createParagraphs;
 
   function openConfirm() {
-    if (requestSubmitted) return;
+    if (requestSubmitted || requestMutation.isPending) return;
     setStep('confirm');
     setDialogOpen(true);
   }
@@ -40,10 +47,18 @@ export function CreateDeletePanel() {
     setStep('confirm');
   }
 
-  function handleConfirm() {
-    // TODO: call create / delete request API, then:
-    setRequestSubmitted(true);
-    setStep('success');
+  async function handleConfirm() {
+    try {
+      await requestMutation.mutateAsync({
+        accessToken,
+        actorType: ACTOR_TYPE_NAME.user,
+        action: hasPanel ? 'DELETE' : 'CREATE',
+      });
+      setRequestSubmitted(true);
+      setStep('success');
+    } catch {
+      // Keep confirm step; mutation error surfaces via react-query if needed.
+    }
   }
 
   return (
@@ -64,7 +79,12 @@ export function CreateDeletePanel() {
         <Button
           type="button"
           onClick={openConfirm}
-          disabled={requestSubmitted}
+          disabled={
+            requestSubmitted ||
+            requestMutation.isPending ||
+            statusQuery.isLoading ||
+            !accessToken
+          }
           className={cn(
             'h-11 w-full self-stretch !rounded-full border-0 px-5 text-sm font-medium text-white shadow-none',
             'min-[720px]:h-12 min-[720px]:w-auto min-[720px]:self-end min-[720px]:px-8',
@@ -78,12 +98,6 @@ export function CreateDeletePanel() {
         </Button>
       </section>
 
-      <div className="flex flex-col gap-3 min-[720px]:gap-4">
-        {MOCK_PUBLIC_PANEL_RESTRICTIONS.map((restriction) => (
-          <RestrictionCard key={restriction.id} restriction={restriction} />
-        ))}
-      </div>
-
       <OpsConfirmDialog
         open={dialogOpen}
         step={step}
@@ -92,7 +106,9 @@ export function CreateDeletePanel() {
         cancelLabel={t('cancel')}
         successTitle={hasPanel ? t('deleteSuccess') : t('createSuccess')}
         closeLabel={t('close')}
-        onConfirm={handleConfirm}
+        onConfirm={() => {
+          void handleConfirm();
+        }}
         onClose={closeDialog}
       />
     </div>

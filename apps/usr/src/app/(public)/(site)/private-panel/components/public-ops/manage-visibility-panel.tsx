@@ -1,18 +1,26 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import fa from '@messages/fa.json';
 import {
-  MOCK_ACADEMIC_RECORDS,
-  MOCK_VISIBILITY_FIELDS,
+  mapVisibilityFields,
+  tabsAffectedBySelection,
+  tabsAffectedByValues,
+  toPrivateTabSubmitBody,
+  toPublicVisibilitySubmitBody,
+  useManageVisibilityQuery,
+  useSubmitPrivateTabByOwnerMutation,
+  useSubmitPublicTabByOwnerMutation,
+} from '@private-panel/api';
+import {
+  academicRecordSelectionSeed,
   VISIBILITY_CATEGORIES,
   VISIBILITY_SECTIONS,
   type VisibilityCategoryId,
   type VisibilityField,
-} from '@private-panel/data/manage-visibility-mock';
-import { MOCK_PUBLIC_PANEL_RESTRICTIONS } from '@private-panel/data/public-ops-mock';
+} from '@private-panel/data/visibility-config';
 import { AppDialog } from '@/components/ui/app-dialog';
 import { Button } from '@/components/ui/button';
 import {
@@ -22,6 +30,14 @@ import {
   TabsTrigger,
 } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
+
+import {
+  EducationRecordsSection,
+} from './education-records-section';
+import { VisibilityFieldCard } from './visibility-field';
+
+const INTRO_PARAGRAPHS =
+  fa.privatePanel.publicOps.manageVisibility.introParagraphs;
 
 function DiscardWarningIcon() {
   return (
@@ -34,19 +50,9 @@ function DiscardWarningIcon() {
   );
 }
 
-import {
-  academicRecordSelectionSeed,
-  EducationRecordsSection,
-} from './education-records-section';
-import { RestrictionCard } from './restriction-card';
-import { VisibilityFieldCard } from './visibility-field';
-
-const INTRO_PARAGRAPHS =
-  fa.privatePanel.publicOps.manageVisibility.introParagraphs;
-
-function initialSelection(): Record<string, boolean> {
+function selectionFromFields(fields: VisibilityField[]): Record<string, boolean> {
   return Object.fromEntries(
-    MOCK_VISIBILITY_FIELDS.map((field) => [
+    fields.map((field) => [
       field.id,
       field.locked
         ? false
@@ -55,10 +61,8 @@ function initialSelection(): Record<string, boolean> {
   );
 }
 
-function initialValues(): Record<string, string> {
-  return Object.fromEntries(
-    MOCK_VISIBILITY_FIELDS.map((field) => [field.id, field.value])
-  );
+function valuesFromFields(fields: VisibilityField[]): Record<string, string> {
+  return Object.fromEntries(fields.map((field) => [field.id, field.value]));
 }
 
 function partitionFields(fields: VisibilityField[]) {
@@ -70,35 +74,95 @@ function partitionFields(fields: VisibilityField[]) {
   };
 }
 
+type ManageVisibilityPanelProps = {
+  accessToken?: string | null;
+};
+
 /** Manage which private-panel fields appear on the public panel. */
-export function ManageVisibilityPanel() {
+export function ManageVisibilityPanel({
+  accessToken,
+}: ManageVisibilityPanelProps) {
   const t = useTranslations('privatePanel.publicOps.manageVisibility');
+  const visibilityQuery = useManageVisibilityQuery(accessToken);
+  const submitPublicMutation = useSubmitPublicTabByOwnerMutation();
+  const submitPrivateMutation = useSubmitPrivateTabByOwnerMutation();
+  const isSaving =
+    submitPublicMutation.isPending || submitPrivateMutation.isPending;
+
+  const fields =
+    visibilityQuery.data?.fields ?? mapVisibilityFields(null, null);
+  const records = visibilityQuery.data?.records ?? [];
+  const privateData = visibilityQuery.data?.privateData;
+
   const [category, setCategory] =
     useState<VisibilityCategoryId>('identity');
-  const [selection, setSelection] = useState(initialSelection);
-  const [values, setValues] = useState(initialValues);
-  const [savedSelection, setSavedSelection] = useState(initialSelection);
-  const [savedValues, setSavedValues] = useState(initialValues);
-  const [recordSelection, setRecordSelection] = useState(() =>
-    academicRecordSelectionSeed(MOCK_ACADEMIC_RECORDS)
+  const [selection, setSelection] = useState<Record<string, boolean>>({});
+  const [values, setValues] = useState<Record<string, string>>({});
+  const [savedSelection, setSavedSelection] = useState<Record<string, boolean>>(
+    {}
   );
-  const [savedRecordSelection, setSavedRecordSelection] = useState(() =>
-    academicRecordSelectionSeed(MOCK_ACADEMIC_RECORDS)
+  const [savedValues, setSavedValues] = useState<Record<string, string>>({});
+  const [recordSelection, setRecordSelection] = useState<Record<string, boolean>>(
+    {}
   );
+  const [savedRecordSelection, setSavedRecordSelection] = useState<
+    Record<string, boolean>
+  >({});
   const [discardOpen, setDiscardOpen] = useState(false);
+  const [hydratedKey, setHydratedKey] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (!visibilityQuery.data) return;
+    if (hydratedKey === visibilityQuery.dataUpdatedAt) return;
+
+    // Avoid wiping in-progress edits when a late fetch resolves.
+    const hasLocalEdits =
+      hydratedKey !== null &&
+      (Object.keys(selection).some(
+        (id) => selection[id] !== savedSelection[id]
+      ) ||
+        Object.keys(values).some((id) => values[id] !== savedValues[id]));
+    if (hasLocalEdits) {
+      setHydratedKey(visibilityQuery.dataUpdatedAt);
+      return;
+    }
+
+    const nextFields = visibilityQuery.data.fields;
+    const nextRecords = visibilityQuery.data.records;
+    const nextSelection = selectionFromFields(nextFields);
+    const nextValues = valuesFromFields(nextFields);
+    const nextRecordsSelection = academicRecordSelectionSeed(nextRecords);
+    setSelection(nextSelection);
+    setSavedSelection(nextSelection);
+    setValues(nextValues);
+    setSavedValues(nextValues);
+    setRecordSelection(nextRecordsSelection);
+    setSavedRecordSelection(nextRecordsSelection);
+    setHydratedKey(visibilityQuery.dataUpdatedAt);
+  }, [
+    visibilityQuery.data,
+    visibilityQuery.dataUpdatedAt,
+    hydratedKey,
+    selection,
+    savedSelection,
+    values,
+    savedValues,
+  ]);
 
   const isDirty = useMemo(() => {
-    const fieldsDirty = MOCK_VISIBILITY_FIELDS.some(
+    const fieldsDirty = fields.some(
       (field) =>
         selection[field.id] !== savedSelection[field.id] ||
         values[field.id] !== savedValues[field.id]
     );
-    const recordsDirty = MOCK_ACADEMIC_RECORDS.some(
+    const recordsDirty = records.some(
       (record) =>
         recordSelection[record.id] !== savedRecordSelection[record.id]
     );
     return fieldsDirty || recordsDirty;
   }, [
+    fields,
+    records,
     selection,
     savedSelection,
     values,
@@ -108,12 +172,10 @@ export function ManageVisibilityPanel() {
   ]);
 
   const sections = VISIBILITY_SECTIONS[category];
-  const categoryFields = MOCK_VISIBILITY_FIELDS.filter(
-    (field) => field.category === category
-  );
+  const categoryFields = fields.filter((field) => field.category === category);
 
   function toggleField(id: string) {
-    const field = MOCK_VISIBILITY_FIELDS.find((item) => item.id === id);
+    const field = fields.find((item) => item.id === id);
     if (!field || field.locked) return;
     setSelection((prev) => ({ ...prev, [id]: !prev[id] }));
   }
@@ -126,8 +188,36 @@ export function ManageVisibilityPanel() {
     setValues((prev) => ({ ...prev, [id]: value }));
   }
 
-  function handleSave() {
-    // TODO: persist values + visibility via API
+  async function handleSave() {
+    if (!accessToken) return;
+
+    const publicTabs = tabsAffectedBySelection(selection, savedSelection);
+    const privateTabs = tabsAffectedByValues(values, savedValues);
+
+    const requests: Promise<unknown>[] = [
+      ...publicTabs.map((tabName) =>
+        submitPublicMutation.mutateAsync({
+          accessToken,
+          tabName,
+          body: toPublicVisibilitySubmitBody(selection, tabName),
+        })
+      ),
+      ...privateTabs.map((tabName) =>
+        submitPrivateMutation.mutateAsync({
+          accessToken,
+          tabName,
+          body: toPrivateTabSubmitBody(values, tabName, privateData),
+        })
+      ),
+    ];
+
+    // Nothing mapped to Actor endpoints (e.g. only provider/record local toggles).
+    if (requests.length === 0) {
+      setSavedRecordSelection(recordSelection);
+      return;
+    }
+
+    await Promise.all(requests);
     setSavedSelection(selection);
     setSavedValues(values);
     setSavedRecordSelection(recordSelection);
@@ -145,8 +235,8 @@ export function ManageVisibilityPanel() {
     setDiscardOpen(false);
   }
 
-  function renderFieldGrid(fields: VisibilityField[]) {
-    const { photos, texts, textareas, toggles } = partitionFields(fields);
+  function renderFieldGrid(sectionFields: VisibilityField[]) {
+    const { photos, texts, textareas, toggles } = partitionFields(sectionFields);
     const fieldGridClass =
       'grid grid-cols-1 gap-3 min-[720px]:grid-cols-2 min-[720px]:gap-4 min-[834px]:gap-5';
 
@@ -300,7 +390,7 @@ export function ManageVisibilityPanel() {
                       {section.key === 'academicRecords' ? (
                         <EducationRecordsSection
                           toggleFields={sectionFields}
-                          records={MOCK_ACADEMIC_RECORDS}
+                          records={records}
                           fieldSelection={selection}
                           recordSelection={recordSelection}
                           onToggleField={toggleField}
@@ -317,7 +407,7 @@ export function ManageVisibilityPanel() {
                   <Button
                     type="button"
                     variant="ghost"
-                    disabled={!isDirty}
+                    disabled={!isDirty || isSaving}
                     onClick={requestCancel}
                     className={cn(
                       'h-11 w-full px-4 text-sm font-medium text-primary shadow-none',
@@ -331,8 +421,10 @@ export function ManageVisibilityPanel() {
                   </Button>
                   <Button
                     type="button"
-                    disabled={!isDirty}
-                    onClick={handleSave}
+                    disabled={!isDirty || isSaving || !accessToken}
+                    onClick={() => {
+                      void handleSave();
+                    }}
                     className={cn(
                       'h-11 w-full !rounded-xl bg-primary px-6 text-sm font-medium text-white shadow-none',
                       'hover:bg-primary/90 disabled:opacity-40',
@@ -347,12 +439,6 @@ export function ManageVisibilityPanel() {
           </TabsContent>
         ))}
       </Tabs>
-
-      <div className="flex flex-col gap-3 min-[720px]:gap-4">
-        {MOCK_PUBLIC_PANEL_RESTRICTIONS.map((restriction) => (
-          <RestrictionCard key={restriction.id} restriction={restriction} />
-        ))}
-      </div>
 
       <AppDialog
         open={discardOpen}

@@ -1,4 +1,12 @@
-/** Mock public-panel visibility fields until Actor MS is wired. */
+/** UI catalog for public-panel visibility — values/flags come from Actor MS. */
+
+/** Mirrors Actor `tab_name` query (profiles_user public/private). */
+export type VisibilityTabName =
+  | 'contact_information'
+  | 'educational_information'
+  | 'identity_information'
+  | 'social_information'
+  | 'user_information';
 
 export type VisibilityCategoryId =
   | 'identity'
@@ -25,32 +33,44 @@ export type VisibilityAcademicRecord = {
 
 export type VisibilitySection = {
   key: string;
-  /** Key under manageVisibility.sections or categories. */
   titleKey: string;
 };
 
 export type VisibilityField = {
   id: string;
   category: VisibilityCategoryId;
-  /** Groups fields into bordered fieldsets within a category. */
   section: string;
   kind: VisibilityFieldKind;
   labelKey: string;
   value: string;
-  /** Committed public visibility (server truth) — drives pending-removal. */
   initiallyVisible: boolean;
-  /** Current checkbox seed; defaults to `initiallyVisible`. */
   selectedInitially?: boolean;
-  /** System-locked — cannot be toggled on. */
   locked?: boolean;
-  /** Caption when locked (default privacy `locked`). */
   lockedCaptionKey?: 'locked' | 'notDisplayed';
-  /** Optional alternate caption key when unchecked (e.g. gender). */
   hiddenCaptionKey?: 'notDisplayed';
-  /** Show calendar adornment in the value field. */
   withCalendar?: boolean;
-  /** Image src for photo fields. */
   imageSrc?: string;
+};
+
+/** Maps a UI field to YAML PatchedUserDynamicFlagSerializersRequest paths. */
+export type VisibilityFieldDef = {
+  id: string;
+  category: VisibilityCategoryId;
+  section: string;
+  kind: VisibilityFieldKind;
+  labelKey: string;
+  /** Public-panel tab_name for submit-by-owner. */
+  tabName: VisibilityTabName | null;
+  /** Section key inside the public flag body. */
+  apiSection: string | null;
+  /** Boolean flag field name inside that section. */
+  apiField: string | null;
+  /** Value path under private retrieve section (snake_case). */
+  valueField?: string | null;
+  locked?: boolean;
+  lockedCaptionKey?: 'locked' | 'notDisplayed';
+  hiddenCaptionKey?: 'notDisplayed';
+  withCalendar?: boolean;
 };
 
 export const VISIBILITY_CATEGORIES: VisibilityCategoryId[] = [
@@ -62,7 +82,6 @@ export const VISIBILITY_CATEGORIES: VisibilityCategoryId[] = [
   'provider',
 ];
 
-/** Section order per category (fieldset legends). */
 export const VISIBILITY_SECTIONS: Record<
   VisibilityCategoryId,
   VisibilitySection[]
@@ -82,58 +101,29 @@ export const VISIBILITY_SECTIONS: Record<
   provider: [{ key: 'provider', titleKey: 'provider' }],
 };
 
-export const MOCK_ACADEMIC_RECORDS: VisibilityAcademicRecord[] = [
-  {
-    id: 'edu-1',
-    degree: 'کارشناسی حقوق',
-    university: 'دانشگاه علامه طباطبایی',
-    faculty: 'دانشکده حقوق',
-    fieldGroup: 'علوم انسانی',
-    description:
-      'توضیح مقطع تحصیلی اگر وجود دارد در این قسمت نوشته می‌شود',
-    endDate: '۱۳۹۲/۰۷/۱۲',
-    roleLabel: 'فارغ‌التحصیل',
-    statusLabel: 'تایید شده',
-    initiallyVisible: true,
-  },
-  {
-    id: 'edu-2',
-    degree: 'کارشناسی حقوق',
-    university: 'دانشگاه علامه طباطبایی',
-    faculty: 'دانشکده حقوق',
-    fieldGroup: 'علوم انسانی',
-    description:
-      'توضیح مقطع تحصیلی اگر وجود دارد در این قسمت نوشته می‌شود',
-    endDate: '۱۳۹۲/۰۷/۱۲',
-    roleLabel: 'فارغ‌التحصیل',
-    statusLabel: 'تایید شده',
-    initiallyVisible: true,
-  },
-  {
-    id: 'edu-3',
-    degree: 'کارشناسی حقوق',
-    university: 'دانشگاه علامه طباطبایی',
-    faculty: 'دانشکده حقوق',
-    fieldGroup: 'علوم انسانی',
-    description:
-      'توضیح مقطع تحصیلی اگر وجود دارد در این قسمت نوشته می‌شود',
-    endDate: '۱۳۹۲/۰۷/۱۲',
-    roleLabel: 'فارغ‌التحصیل',
-    statusLabel: 'تایید شده',
-    initiallyVisible: false,
-  },
-];
+export const CATEGORY_TO_TAB: Record<
+  VisibilityCategoryId,
+  VisibilityTabName | null
+> = {
+    identity: 'identity_information',
+    social: 'social_information',
+    contact: 'contact_information',
+    account: 'user_information',
+    education: 'educational_information',
+    provider: null,
+  };
 
-export const MOCK_VISIBILITY_FIELDS: VisibilityField[] = [
+export const VISIBILITY_FIELD_DEFS: VisibilityFieldDef[] = [
   {
     id: 'avatar',
     category: 'identity',
     section: 'identity',
     kind: 'photo',
     labelKey: 'avatar',
-    value: '',
-    initiallyVisible: true,
-    imageSrc: '/images/public-panel/avatar.png',
+    tabName: 'identity_information',
+    apiSection: 'identity_info_user',
+    apiField: 'profile_picture_path',
+    valueField: 'profile_picture_path',
   },
   {
     id: 'electronicCardPhoto',
@@ -141,9 +131,10 @@ export const MOCK_VISIBILITY_FIELDS: VisibilityField[] = [
     section: 'identity',
     kind: 'photo',
     labelKey: 'electronicCardPhoto',
-    value: '',
-    initiallyVisible: true,
-    imageSrc: '/images/public-panel/avatar.png',
+    tabName: 'identity_information',
+    apiSection: 'identity_info_user',
+    apiField: 'electronic_card_picture_path',
+    valueField: 'electronic_card_picture_path',
   },
   {
     id: 'firstName',
@@ -151,8 +142,10 @@ export const MOCK_VISIBILITY_FIELDS: VisibilityField[] = [
     section: 'identity',
     kind: 'text',
     labelKey: 'firstName',
-    value: 'سعید',
-    initiallyVisible: true,
+    tabName: 'identity_information',
+    apiSection: 'identity_info_user',
+    apiField: 'first_name',
+    valueField: 'first_name',
   },
   {
     id: 'lastName',
@@ -160,8 +153,10 @@ export const MOCK_VISIBILITY_FIELDS: VisibilityField[] = [
     section: 'identity',
     kind: 'text',
     labelKey: 'lastName',
-    value: 'سعیدی',
-    initiallyVisible: true,
+    tabName: 'identity_information',
+    apiSection: 'identity_info_user',
+    apiField: 'last_name',
+    valueField: 'last_name',
   },
   {
     id: 'legalFirstName',
@@ -169,8 +164,10 @@ export const MOCK_VISIBILITY_FIELDS: VisibilityField[] = [
     section: 'identity',
     kind: 'text',
     labelKey: 'legalFirstName',
-    value: 'سعید',
-    initiallyVisible: false,
+    tabName: 'identity_information',
+    apiSection: 'identity_info_user',
+    apiField: 'legal_first_name',
+    valueField: 'legal_first_name',
   },
   {
     id: 'legalLastName',
@@ -178,8 +175,10 @@ export const MOCK_VISIBILITY_FIELDS: VisibilityField[] = [
     section: 'identity',
     kind: 'text',
     labelKey: 'legalLastName',
-    value: 'سعیدی',
-    initiallyVisible: false,
+    tabName: 'identity_information',
+    apiSection: 'identity_info_user',
+    apiField: 'legal_last_name',
+    valueField: 'legal_last_name',
   },
   {
     id: 'nationalId',
@@ -187,8 +186,10 @@ export const MOCK_VISIBILITY_FIELDS: VisibilityField[] = [
     section: 'identity',
     kind: 'text',
     labelKey: 'nationalId',
-    value: '۰۰۲۲۶۶۵۵۴۴',
-    initiallyVisible: false,
+    tabName: null,
+    apiSection: null,
+    apiField: null,
+    valueField: 'national_code',
     locked: true,
   },
   {
@@ -197,8 +198,10 @@ export const MOCK_VISIBILITY_FIELDS: VisibilityField[] = [
     section: 'identity',
     kind: 'text',
     labelKey: 'birthDate',
-    value: '۱۳۷۸/۱۲/۱۹',
-    initiallyVisible: false,
+    tabName: 'identity_information',
+    apiSection: 'identity_info_user',
+    apiField: 'birth_date',
+    valueField: 'birth_date',
     withCalendar: true,
   },
   {
@@ -207,8 +210,10 @@ export const MOCK_VISIBILITY_FIELDS: VisibilityField[] = [
     section: 'identity',
     kind: 'text',
     labelKey: 'gender',
-    value: 'مرد',
-    initiallyVisible: false,
+    tabName: 'identity_information',
+    apiSection: 'identity_info_user',
+    apiField: 'gender',
+    valueField: 'gender',
     hiddenCaptionKey: 'notDisplayed',
   },
   {
@@ -217,8 +222,10 @@ export const MOCK_VISIBILITY_FIELDS: VisibilityField[] = [
     section: 'identity',
     kind: 'textarea',
     labelKey: 'bio',
-    value: 'عاشق موسیقی و سفر و تجربه غذاهای محلی',
-    initiallyVisible: true,
+    tabName: 'identity_information',
+    apiSection: 'identity_info_user',
+    apiField: 'about_me',
+    valueField: 'about_me',
   },
   {
     id: 'militaryStatus',
@@ -226,8 +233,10 @@ export const MOCK_VISIBILITY_FIELDS: VisibilityField[] = [
     section: 'social',
     kind: 'text',
     labelKey: 'militaryStatus',
-    value: 'پایان خدمت',
-    initiallyVisible: false,
+    tabName: 'social_information',
+    apiSection: 'social_info_user',
+    apiField: 'military_status',
+    valueField: 'military_status',
     hiddenCaptionKey: 'notDisplayed',
   },
   {
@@ -236,8 +245,10 @@ export const MOCK_VISIBILITY_FIELDS: VisibilityField[] = [
     section: 'social',
     kind: 'text',
     labelKey: 'maritalStatus',
-    value: 'مجرد',
-    initiallyVisible: false,
+    tabName: 'social_information',
+    apiSection: 'social_info_user',
+    apiField: 'marital_status',
+    valueField: 'marital_status',
     hiddenCaptionKey: 'notDisplayed',
   },
   {
@@ -246,8 +257,10 @@ export const MOCK_VISIBILITY_FIELDS: VisibilityField[] = [
     section: 'address',
     kind: 'text',
     labelKey: 'country',
-    value: 'ایران',
-    initiallyVisible: true,
+    tabName: 'social_information',
+    apiSection: 'social_info_user',
+    apiField: 'country_code',
+    valueField: 'country_code',
   },
   {
     id: 'province',
@@ -255,8 +268,10 @@ export const MOCK_VISIBILITY_FIELDS: VisibilityField[] = [
     section: 'address',
     kind: 'text',
     labelKey: 'province',
-    value: 'تهران',
-    initiallyVisible: true,
+    tabName: 'social_information',
+    apiSection: 'social_info_user_division_code',
+    apiField: 'normalized_code',
+    valueField: 'normalized_code',
   },
   {
     id: 'city',
@@ -264,8 +279,10 @@ export const MOCK_VISIBILITY_FIELDS: VisibilityField[] = [
     section: 'address',
     kind: 'text',
     labelKey: 'city',
-    value: 'تهران',
-    initiallyVisible: false,
+    tabName: 'social_information',
+    apiSection: 'social_info_user_division_code',
+    apiField: 'other',
+    valueField: 'other',
   },
   {
     id: 'district',
@@ -273,8 +290,10 @@ export const MOCK_VISIBILITY_FIELDS: VisibilityField[] = [
     section: 'address',
     kind: 'text',
     labelKey: 'district',
-    value: '',
-    initiallyVisible: false,
+    tabName: 'social_information',
+    apiSection: 'social_info_user_division_code',
+    apiField: 'level',
+    valueField: 'level',
   },
   {
     id: 'mobile',
@@ -282,8 +301,10 @@ export const MOCK_VISIBILITY_FIELDS: VisibilityField[] = [
     section: 'contact',
     kind: 'text',
     labelKey: 'mobile',
-    value: '۰۹۱۲۱۵۴۵۴۵',
-    initiallyVisible: false,
+    tabName: null,
+    apiSection: null,
+    apiField: null,
+    valueField: 'mobile',
     locked: true,
   },
   {
@@ -292,8 +313,10 @@ export const MOCK_VISIBILITY_FIELDS: VisibilityField[] = [
     section: 'contact',
     kind: 'text',
     labelKey: 'email',
-    value: 'Saeed@domain.com',
-    initiallyVisible: true,
+    tabName: 'contact_information',
+    apiSection: 'contact_info_user',
+    apiField: 'email',
+    valueField: 'email',
   },
   {
     id: 'whatsapp',
@@ -301,8 +324,10 @@ export const MOCK_VISIBILITY_FIELDS: VisibilityField[] = [
     section: 'contact',
     kind: 'text',
     labelKey: 'whatsapp',
-    value: 'Saeedjhjh',
-    initiallyVisible: false,
+    tabName: 'contact_information',
+    apiSection: 'contact_info_user',
+    apiField: 'whatsapp_id',
+    valueField: 'whatsapp_id',
   },
   {
     id: 'telegram',
@@ -310,8 +335,10 @@ export const MOCK_VISIBILITY_FIELDS: VisibilityField[] = [
     section: 'contact',
     kind: 'text',
     labelKey: 'telegram',
-    value: 'Saeedjhjh',
-    initiallyVisible: false,
+    tabName: 'contact_information',
+    apiSection: 'contact_info_user',
+    apiField: 'telegram_id',
+    valueField: 'telegram_id',
   },
   {
     id: 'instagram',
@@ -319,8 +346,10 @@ export const MOCK_VISIBILITY_FIELDS: VisibilityField[] = [
     section: 'contact',
     kind: 'text',
     labelKey: 'instagram',
-    value: 'Saeedjhjh',
-    initiallyVisible: false,
+    tabName: 'contact_information',
+    apiSection: 'contact_info_user',
+    apiField: 'instagram_id',
+    valueField: 'instagram_id',
   },
   {
     id: 'x',
@@ -328,8 +357,10 @@ export const MOCK_VISIBILITY_FIELDS: VisibilityField[] = [
     section: 'contact',
     kind: 'text',
     labelKey: 'x',
-    value: 'Saeedjhjh',
-    initiallyVisible: true,
+    tabName: 'contact_information',
+    apiSection: 'contact_info_user',
+    apiField: 'twitter_id',
+    valueField: 'twitter_id',
   },
   {
     id: 'linkedin',
@@ -337,8 +368,10 @@ export const MOCK_VISIBILITY_FIELDS: VisibilityField[] = [
     section: 'contact',
     kind: 'text',
     labelKey: 'linkedin',
-    value: 'Saeedjhjh',
-    initiallyVisible: true,
+    tabName: 'contact_information',
+    apiSection: 'contact_info_user',
+    apiField: 'linkedin_id',
+    valueField: 'linkedin_id',
   },
   {
     id: 'username',
@@ -346,9 +379,10 @@ export const MOCK_VISIBILITY_FIELDS: VisibilityField[] = [
     section: 'account',
     kind: 'text',
     labelKey: 'username',
-    value: 'saeedd1122',
-    initiallyVisible: true,
-    selectedInitially: false,
+    tabName: 'user_information',
+    apiSection: 'our_user',
+    apiField: 'username',
+    valueField: 'username',
   },
   {
     id: 'membershipType',
@@ -356,8 +390,10 @@ export const MOCK_VISIBILITY_FIELDS: VisibilityField[] = [
     section: 'account',
     kind: 'text',
     labelKey: 'membershipType',
-    value: 'دانشجو',
-    initiallyVisible: true,
+    tabName: 'user_information',
+    apiSection: 'membership_type_user',
+    apiField: 'membership_type',
+    valueField: 'membership_type',
   },
   {
     id: 'membershipDate',
@@ -365,8 +401,10 @@ export const MOCK_VISIBILITY_FIELDS: VisibilityField[] = [
     section: 'account',
     kind: 'text',
     labelKey: 'membershipDate',
-    value: '۱۳۷۸/۱۲/۱۹',
-    initiallyVisible: false,
+    tabName: 'user_information',
+    apiSection: 'our_user',
+    apiField: 'create_time',
+    valueField: 'create_time',
     withCalendar: true,
   },
   {
@@ -375,8 +413,10 @@ export const MOCK_VISIBILITY_FIELDS: VisibilityField[] = [
     section: 'account',
     kind: 'text',
     labelKey: 'membershipExpiry',
-    value: '۱۳۷۸/۱۲/۱۹',
-    initiallyVisible: false,
+    tabName: 'user_information',
+    apiSection: 'membership_type_user',
+    apiField: 'membership_expiry',
+    valueField: 'membership_expiry',
     withCalendar: true,
   },
   {
@@ -385,8 +425,10 @@ export const MOCK_VISIBILITY_FIELDS: VisibilityField[] = [
     section: 'account',
     kind: 'text',
     labelKey: 'levelChangeMethod',
-    value: 'اتوماتیک',
-    initiallyVisible: false,
+    tabName: 'user_information',
+    apiSection: 'membership_type_user',
+    apiField: 'membership_level_change_method',
+    valueField: 'membership_level_change_method',
     locked: true,
     lockedCaptionKey: 'notDisplayed',
   },
@@ -396,8 +438,10 @@ export const MOCK_VISIBILITY_FIELDS: VisibilityField[] = [
     section: 'account',
     kind: 'text',
     labelKey: 'serviceProviderStatus',
-    value: '',
-    initiallyVisible: false,
+    tabName: 'user_information',
+    apiSection: 'our_user',
+    apiField: 'is_individual_service_provider',
+    valueField: 'is_individual_service_provider',
   },
   {
     id: 'gradEmploymentStatus',
@@ -405,8 +449,10 @@ export const MOCK_VISIBILITY_FIELDS: VisibilityField[] = [
     section: 'educationExtra',
     kind: 'text',
     labelKey: 'gradEmploymentStatus',
-    value: 'فارغ‌التحصیل',
-    initiallyVisible: false,
+    tabName: 'educational_information',
+    apiSection: 'education_occupation_info_user',
+    apiField: 'status',
+    valueField: 'status',
     hiddenCaptionKey: 'notDisplayed',
   },
   {
@@ -415,8 +461,10 @@ export const MOCK_VISIBILITY_FIELDS: VisibilityField[] = [
     section: 'educationExtra',
     kind: 'text',
     labelKey: 'studentNumber',
-    value: '۸۹۱۲۱۵۴۵۶۶۵۴',
-    initiallyVisible: false,
+    tabName: null,
+    apiSection: null,
+    apiField: null,
+    valueField: 'student_id',
     locked: true,
   },
   {
@@ -425,8 +473,10 @@ export const MOCK_VISIBILITY_FIELDS: VisibilityField[] = [
     section: 'educationWorkAddress',
     kind: 'text',
     labelKey: 'country',
-    value: 'ایران',
-    initiallyVisible: false,
+    tabName: 'educational_information',
+    apiSection: 'education_occupation_info_user',
+    apiField: 'country_code',
+    valueField: 'country_code',
     hiddenCaptionKey: 'notDisplayed',
   },
   {
@@ -435,8 +485,10 @@ export const MOCK_VISIBILITY_FIELDS: VisibilityField[] = [
     section: 'educationWorkAddress',
     kind: 'text',
     labelKey: 'province',
-    value: 'تهران',
-    initiallyVisible: false,
+    tabName: 'educational_information',
+    apiSection: 'education_occupation_info_user_division_code',
+    apiField: 'normalized_code',
+    valueField: 'normalized_code',
     hiddenCaptionKey: 'notDisplayed',
   },
   {
@@ -445,8 +497,10 @@ export const MOCK_VISIBILITY_FIELDS: VisibilityField[] = [
     section: 'educationWorkAddress',
     kind: 'text',
     labelKey: 'city',
-    value: 'تهران',
-    initiallyVisible: false,
+    tabName: 'educational_information',
+    apiSection: 'education_occupation_info_user_division_code',
+    apiField: 'other',
+    valueField: 'other',
     hiddenCaptionKey: 'notDisplayed',
   },
   {
@@ -455,8 +509,10 @@ export const MOCK_VISIBILITY_FIELDS: VisibilityField[] = [
     section: 'educationWorkAddress',
     kind: 'text',
     labelKey: 'district',
-    value: '',
-    initiallyVisible: false,
+    tabName: 'educational_information',
+    apiSection: 'education_occupation_info_user_division_code',
+    apiField: 'level',
+    valueField: 'level',
     hiddenCaptionKey: 'notDisplayed',
   },
   {
@@ -465,8 +521,9 @@ export const MOCK_VISIBILITY_FIELDS: VisibilityField[] = [
     section: 'academicRecords',
     kind: 'toggle',
     labelKey: 'recordMajor',
-    value: '',
-    initiallyVisible: true,
+    tabName: 'educational_information',
+    apiSection: 'academic_record_verified_user',
+    apiField: 'field_of_study',
   },
   {
     id: 'recordUniversity',
@@ -474,8 +531,9 @@ export const MOCK_VISIBILITY_FIELDS: VisibilityField[] = [
     section: 'academicRecords',
     kind: 'toggle',
     labelKey: 'recordUniversity',
-    value: '',
-    initiallyVisible: true,
+    tabName: 'educational_information',
+    apiSection: 'academic_record_verified_user',
+    apiField: 'university',
   },
   {
     id: 'recordFieldGroup',
@@ -483,8 +541,9 @@ export const MOCK_VISIBILITY_FIELDS: VisibilityField[] = [
     section: 'academicRecords',
     kind: 'toggle',
     labelKey: 'recordFieldGroup',
-    value: '',
-    initiallyVisible: true,
+    tabName: 'educational_information',
+    apiSection: 'academic_record_verified_user',
+    apiField: 'academic_group',
   },
   {
     id: 'recordDegreeLevel',
@@ -492,8 +551,9 @@ export const MOCK_VISIBILITY_FIELDS: VisibilityField[] = [
     section: 'academicRecords',
     kind: 'toggle',
     labelKey: 'recordDegreeLevel',
-    value: '',
-    initiallyVisible: true,
+    tabName: 'educational_information',
+    apiSection: 'academic_record_verified_user',
+    apiField: 'degree_level',
   },
   {
     id: 'recordFaculty',
@@ -501,8 +561,9 @@ export const MOCK_VISIBILITY_FIELDS: VisibilityField[] = [
     section: 'academicRecords',
     kind: 'toggle',
     labelKey: 'recordFaculty',
-    value: '',
-    initiallyVisible: true,
+    tabName: 'educational_information',
+    apiSection: 'academic_record_verified_user',
+    apiField: 'faculty',
   },
   {
     id: 'recordStudentStatus',
@@ -510,8 +571,9 @@ export const MOCK_VISIBILITY_FIELDS: VisibilityField[] = [
     section: 'academicRecords',
     kind: 'toggle',
     labelKey: 'recordStudentStatus',
-    value: '',
-    initiallyVisible: false,
+    tabName: 'educational_information',
+    apiSection: 'academic_record_verified_user',
+    apiField: 'study_status',
   },
   {
     id: 'recordDegreeDescription',
@@ -519,8 +581,9 @@ export const MOCK_VISIBILITY_FIELDS: VisibilityField[] = [
     section: 'academicRecords',
     kind: 'toggle',
     labelKey: 'recordDegreeDescription',
-    value: '',
-    initiallyVisible: false,
+    tabName: 'educational_information',
+    apiSection: 'academic_record_verified_user',
+    apiField: 'degree_level_description',
   },
   {
     id: 'recordGraduationDate',
@@ -528,17 +591,20 @@ export const MOCK_VISIBILITY_FIELDS: VisibilityField[] = [
     section: 'academicRecords',
     kind: 'toggle',
     labelKey: 'recordGraduationDate',
-    value: '',
-    initiallyVisible: false,
+    tabName: 'educational_information',
+    apiSection: 'academic_record_verified_user',
+    apiField: 'graduation_date',
   },
+  // Provider fields — no matching public-flag section in current Actor YAML.
   {
     id: 'workPhone',
     category: 'provider',
     section: 'provider',
     kind: 'text',
     labelKey: 'workPhone',
-    value: '۰۹۱۲۱۲۴۶',
-    initiallyVisible: true,
+    tabName: null,
+    apiSection: null,
+    apiField: null,
   },
   {
     id: 'workEmail',
@@ -546,8 +612,9 @@ export const MOCK_VISIBILITY_FIELDS: VisibilityField[] = [
     section: 'provider',
     kind: 'text',
     labelKey: 'workEmail',
-    value: 'Companyname @domain.com',
-    initiallyVisible: true,
+    tabName: null,
+    apiSection: null,
+    apiField: null,
   },
   {
     id: 'workWhatsapp',
@@ -555,8 +622,9 @@ export const MOCK_VISIBILITY_FIELDS: VisibilityField[] = [
     section: 'provider',
     kind: 'text',
     labelKey: 'workWhatsapp',
-    value: '@Companyname',
-    initiallyVisible: true,
+    tabName: null,
+    apiSection: null,
+    apiField: null,
   },
   {
     id: 'workTelegram',
@@ -564,8 +632,9 @@ export const MOCK_VISIBILITY_FIELDS: VisibilityField[] = [
     section: 'provider',
     kind: 'text',
     labelKey: 'workTelegram',
-    value: '@Companyname',
-    initiallyVisible: true,
+    tabName: null,
+    apiSection: null,
+    apiField: null,
   },
   {
     id: 'workInstagram',
@@ -573,8 +642,9 @@ export const MOCK_VISIBILITY_FIELDS: VisibilityField[] = [
     section: 'provider',
     kind: 'text',
     labelKey: 'workInstagram',
-    value: '@Companyname',
-    initiallyVisible: true,
+    tabName: null,
+    apiSection: null,
+    apiField: null,
   },
   {
     id: 'workX',
@@ -582,8 +652,9 @@ export const MOCK_VISIBILITY_FIELDS: VisibilityField[] = [
     section: 'provider',
     kind: 'text',
     labelKey: 'workX',
-    value: '@Companyname',
-    initiallyVisible: true,
+    tabName: null,
+    apiSection: null,
+    apiField: null,
   },
   {
     id: 'workLinkedin',
@@ -591,8 +662,9 @@ export const MOCK_VISIBILITY_FIELDS: VisibilityField[] = [
     section: 'provider',
     kind: 'text',
     labelKey: 'workLinkedin',
-    value: '@Companyname',
-    initiallyVisible: true,
+    tabName: null,
+    apiSection: null,
+    apiField: null,
   },
   {
     id: 'github',
@@ -600,8 +672,9 @@ export const MOCK_VISIBILITY_FIELDS: VisibilityField[] = [
     section: 'provider',
     kind: 'text',
     labelKey: 'github',
-    value: '@Companyname',
-    initiallyVisible: true,
+    tabName: null,
+    apiSection: null,
+    apiField: null,
   },
   {
     id: 'website',
@@ -609,8 +682,9 @@ export const MOCK_VISIBILITY_FIELDS: VisibilityField[] = [
     section: 'provider',
     kind: 'text',
     labelKey: 'website',
-    value: 'www.Companyname.com',
-    initiallyVisible: true,
+    tabName: null,
+    apiSection: null,
+    apiField: null,
   },
   {
     id: 'providerCredit',
@@ -618,9 +692,9 @@ export const MOCK_VISIBILITY_FIELDS: VisibilityField[] = [
     section: 'provider',
     kind: 'text',
     labelKey: 'providerCredit',
-    value: 'متن جایگزین',
-    initiallyVisible: true,
-    selectedInitially: false,
+    tabName: null,
+    apiSection: null,
+    apiField: null,
   },
   {
     id: 'offeredServices',
@@ -628,7 +702,16 @@ export const MOCK_VISIBILITY_FIELDS: VisibilityField[] = [
     section: 'provider',
     kind: 'text',
     labelKey: 'offeredServices',
-    value: 'سرویس یک - سرویس دو - سرویس سه',
-    initiallyVisible: true,
+    tabName: null,
+    apiSection: null,
+    apiField: null,
   },
 ];
+
+export function academicRecordSelectionSeed(
+  records: VisibilityAcademicRecord[]
+): Record<string, boolean> {
+  return Object.fromEntries(
+    records.map((record) => [record.id, record.initiallyVisible])
+  );
+}

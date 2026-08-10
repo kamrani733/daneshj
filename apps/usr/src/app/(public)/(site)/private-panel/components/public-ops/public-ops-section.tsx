@@ -18,8 +18,12 @@ type PublicOpsSubTab = 'manageVisibility' | 'createDelete';
 /** RTL: first item sits on the right — manage first, create/delete second. */
 const SUB_TABS: PublicOpsSubTab[] = ['manageVisibility', 'createDelete'];
 
+type PublicOpsSectionProps = {
+  accessToken?: string | null;
+};
+
 /** Public panel operations — underline sub-tabs + panels. */
-export function PublicOpsSection() {
+export function PublicOpsSection({ accessToken }: PublicOpsSectionProps) {
   const t = useTranslations('privatePanel.publicOps');
 
   return (
@@ -58,11 +62,11 @@ export function PublicOpsSection() {
       </div>
 
       <TabsContent value="manageVisibility" className="mt-0">
-        <ManageVisibilityPanel />
+        <ManageVisibilityPanel accessToken={accessToken} />
       </TabsContent>
 
       <TabsContent value="createDelete" className="mt-0">
-        <CreateDeletePanel />
+        <CreateDeletePanel accessToken={accessToken} />
       </TabsContent>
     </Tabs>
   );

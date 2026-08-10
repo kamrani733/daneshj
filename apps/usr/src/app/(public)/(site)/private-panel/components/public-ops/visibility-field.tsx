@@ -4,7 +4,7 @@ import { Calendar, Check } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useId, type ReactNode } from 'react';
 
-import type { VisibilityField } from '@private-panel/data/manage-visibility-mock';
+import type { VisibilityField } from '@private-panel/data/visibility-config';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
 

@@ -7,7 +7,7 @@ import fa from '@messages/fa.json';
 import type {
   VisibilityAcademicRecord,
   VisibilityField,
-} from '@private-panel/data/manage-visibility-mock';
+} from '@private-panel/data/visibility-config';
 import { Badge } from '@/components/ui/badge';
 import { formatFaNumber } from '@/lib/format-fa';
 import { cn } from '@/lib/utils';
