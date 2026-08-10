@@ -13,6 +13,7 @@ import {
 import { cn } from '@/lib/utils';
 
 import { GuideSection } from './guide/guide-section';
+import { PublicOpsSection } from './public-ops/public-ops-section';
 
 const TAB_ITEMS: {
   id: PrivatePanelTab;
@@ -28,7 +29,11 @@ export function PrivatePanelTabs() {
   const t = useTranslations('privatePanel');
 
   return (
-    <Tabs defaultValue="guide" className="w-full gap-6 min-[720px]:gap-8" dir="rtl">
+    <Tabs
+      defaultValue="publicOps"
+      className="w-full gap-6 min-[720px]:gap-8"
+      dir="rtl"
+    >
       <TabsList
         className={cn(
           'grid h-auto w-full grid-cols-3 gap-0.5 rounded-full p-1',
@@ -66,7 +71,7 @@ export function PrivatePanelTabs() {
         <PlaceholderPanel message={t('placeholder.fields')} />
       </TabsContent>
       <TabsContent value="publicOps" className="mt-0">
-        <PlaceholderPanel message={t('placeholder.publicOps')} />
+        <PublicOpsSection />
       </TabsContent>
       <TabsContent value="guide" className="mt-0">
         <GuideSection />
