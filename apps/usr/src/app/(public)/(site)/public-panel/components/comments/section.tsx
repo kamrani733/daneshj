@@ -11,7 +11,6 @@ import {
 } from '@public-panel/data/public-panel-ui';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { SearchField } from '@/components/ui/search-field';
 import { formatFaNumber } from '@/lib/format-fa';
 import { cn } from '@/lib/utils';
