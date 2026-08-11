@@ -3,7 +3,7 @@
 import { CloudUpload } from 'lucide-react';
 import { useRef, type ChangeEvent, type DragEvent } from 'react';
 
-import { Button } from '@/components/ui/button';
+import { UploadButton } from '@/components/ui/upload-button';
 import { cn } from '@/lib/utils';
 
 type UploadDropzoneProps = {
@@ -76,20 +76,15 @@ export function UploadDropzone({
       <p className="text-center text-xs font-medium text-[#404943] dark:text-home-filter-muted">
         {orLabel}
       </p>
-      <Button
-        type="button"
-        variant="outline"
+      <UploadButton
+        className="mt-1"
         onClick={(event) => {
           event.stopPropagation();
           inputRef.current?.click();
         }}
-        className={cn(
-          'mt-1 h-12 !rounded-xl border-0 bg-[#ffdbcf] px-3 text-sm font-medium text-[#72351f] shadow-none',
-          'hover:bg-[#ffdbcf]/80 hover:text-[#72351f]'
-        )}
       >
         {actionLabel}
-      </Button>
+      </UploadButton>
       <input
         ref={inputRef}
         type="file"

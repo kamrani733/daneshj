@@ -62,7 +62,7 @@ export function PrivatePanelIdentityBanner({ profile }: IdentityBannerProps) {
         >
           <Avatar
             className={cn(
-              'size-[112px] shrink-0 bg-[#efede6] ring-4 ring-[#ffdbcf]',
+              'size-[112px] shrink-0 bg-[#efede7] ring-4 ring-[#ffdbcf]',
               'min-[720px]:size-[160px]',
               'min-[834px]:size-[200px]'
             )}
@@ -70,7 +70,7 @@ export function PrivatePanelIdentityBanner({ profile }: IdentityBannerProps) {
             {hasAvatar ? (
               <AvatarImage src={profile.avatarSrc} alt={profile.displayName} />
             ) : null}
-            <AvatarFallback className="bg-[#efede6] text-[#9a9a92] dark:bg-home-stat-card dark:text-home-filter-muted">
+            <AvatarFallback className="bg-[#efede7] text-[#7a807a] dark:bg-home-stat-card dark:text-home-filter-muted">
               <AvatarUserIcon className="size-14 min-[720px]:size-[72px] min-[834px]:size-20" />
             </AvatarFallback>
           </Avatar>

@@ -111,6 +111,9 @@ export function FieldsSection({ accessToken }: FieldsSectionProps) {
   const [savedProviderDocuments, setSavedProviderDocuments] = useState<
     DocumentDraft[]
   >([]);
+  const [pendingPhotoFiles, setPendingPhotoFiles] = useState<
+    Record<string, File>
+  >({});
 
   const fields =
     visibilityQuery.data?.fields ?? mapVisibilityFields(null, null);
@@ -137,6 +140,7 @@ export function FieldsSection({ accessToken }: FieldsSectionProps) {
       (Object.keys(draftValues).some(
         (id) => draftValues[id] !== savedValues[id]
       ) ||
+        Object.keys(pendingPhotoFiles).length > 0 ||
         documentsSignature(academicDocuments) !==
           documentsSignature(savedAcademicDocuments) ||
         documentsSignature(providerDocuments) !==
@@ -149,6 +153,7 @@ export function FieldsSection({ accessToken }: FieldsSectionProps) {
     const nextValues = valuesFromFields(visibilityQuery.data.fields);
     setDraftValues(nextValues);
     setSavedValues(nextValues);
+    setPendingPhotoFiles({});
     setFieldErrors({});
     setFormError(null);
     setHydratedKey(visibilityQuery.dataUpdatedAt);
@@ -158,6 +163,7 @@ export function FieldsSection({ accessToken }: FieldsSectionProps) {
     hydratedKey,
     draftValues,
     savedValues,
+    pendingPhotoFiles,
     academicDocuments,
     savedAcademicDocuments,
     providerDocuments,
@@ -188,6 +194,24 @@ export function FieldsSection({ accessToken }: FieldsSectionProps) {
       }
       return next;
     });
+    setFieldErrors((prev) => {
+      if (!prev[id]) return prev;
+      const next = { ...prev };
+      delete next[id];
+      return next;
+    });
+    if (formError) setFormError(null);
+  };
+
+  const onPhotoPick = (id: string, previewUrl: string, file: File) => {
+    setDraftValues((prev) => {
+      const previous = prev[id];
+      if (previous?.startsWith('blob:')) {
+        URL.revokeObjectURL(previous);
+      }
+      return { ...prev, [id]: previewUrl };
+    });
+    setPendingPhotoFiles((prev) => ({ ...prev, [id]: file }));
     setFieldErrors((prev) => {
       if (!prev[id]) return prev;
       const next = { ...prev };
@@ -251,62 +275,100 @@ export function FieldsSection({ accessToken }: FieldsSectionProps) {
       return;
     }
 
-    const hasLocalBlob = Object.values(draftValues).some((value) =>
-      value.startsWith('blob:')
+    const pendingPhotoEntries = Object.entries(draftValues).filter(
+      ([id, value]) => value.startsWith('blob:') && Boolean(pendingPhotoFiles[id])
     );
-    if (hasLocalBlob) {
+    const orphanBlob = Object.entries(draftValues).some(
+      ([id, value]) => value.startsWith('blob:') && !pendingPhotoFiles[id]
+    );
+    if (orphanBlob) {
       setFormError(t('localImageOnly'));
       return;
     }
 
     let nextAcademicDocuments = academicDocuments;
     let nextProviderDocuments = providerDocuments;
+    let valuesForSubmit = { ...draftValues };
+
     const needsDocumentUpload = [...academicDocuments, ...providerDocuments].some(
       (doc) =>
         (doc.state === 'done' || doc.state === 'review') &&
         !doc.filePath &&
         Boolean(doc.file)
     );
+    const needsPhotoUpload = pendingPhotoEntries.length > 0;
 
-    if (needsDocumentUpload) {
+    if (needsPhotoUpload || needsDocumentUpload) {
       if (!isPrivateFileUploadConfigured()) {
-        setFormError(t('localDocumentOnly'));
+        setFormError(
+          needsPhotoUpload ? t('localImageOnly') : t('localDocumentOnly')
+        );
         return;
       }
+
       setIsSaving(true);
       try {
-        nextAcademicDocuments = await Promise.all(
-          academicDocuments.map(async (doc) => {
-            if (doc.filePath || !doc.file) return doc;
-            if (doc.state !== 'done' && doc.state !== 'review') return doc;
-            const filePath = await uploadPrivatePanelFile({
-              accessToken,
-              file: doc.file,
-            });
-            return { ...doc, filePath };
-          })
-        );
-        nextProviderDocuments = await Promise.all(
-          providerDocuments.map(async (doc) => {
-            if (doc.filePath || !doc.file) return doc;
-            if (doc.state !== 'done' && doc.state !== 'review') return doc;
-            const filePath = await uploadPrivatePanelFile({
-              accessToken,
-              file: doc.file,
-            });
-            return { ...doc, filePath };
-          })
-        );
-        setAcademicDocuments(nextAcademicDocuments);
-        setProviderDocuments(nextProviderDocuments);
+        if (needsPhotoUpload) {
+          const uploaded = await Promise.all(
+            pendingPhotoEntries.map(async ([id, previewUrl]) => {
+              const file = pendingPhotoFiles[id]!;
+              const filePath = await uploadPrivatePanelFile({
+                accessToken,
+                file,
+              });
+              if (previewUrl.startsWith('blob:')) {
+                URL.revokeObjectURL(previewUrl);
+              }
+              return [id, filePath] as const;
+            })
+          );
+          valuesForSubmit = {
+            ...valuesForSubmit,
+            ...Object.fromEntries(uploaded),
+          };
+          setDraftValues((prev) => ({ ...prev, ...Object.fromEntries(uploaded) }));
+          setPendingPhotoFiles({});
+        }
+
+        if (needsDocumentUpload) {
+          nextAcademicDocuments = await Promise.all(
+            academicDocuments.map(async (doc) => {
+              if (doc.filePath || !doc.file) return doc;
+              if (doc.state !== 'done' && doc.state !== 'review') return doc;
+              const filePath = await uploadPrivatePanelFile({
+                accessToken,
+                file: doc.file,
+              });
+              return { ...doc, filePath };
+            })
+          );
+          nextProviderDocuments = await Promise.all(
+            providerDocuments.map(async (doc) => {
+              if (doc.filePath || !doc.file) return doc;
+              if (doc.state !== 'done' && doc.state !== 'review') return doc;
+              const filePath = await uploadPrivatePanelFile({
+                accessToken,
+                file: doc.file,
+              });
+              return { ...doc, filePath };
+            })
+          );
+          setAcademicDocuments(nextAcademicDocuments);
+          setProviderDocuments(nextProviderDocuments);
+        }
       } catch (error) {
-        setFormError(getActorApiErrorMessage(error, t('localDocumentOnly')));
+        setFormError(
+          getActorApiErrorMessage(
+            error,
+            needsPhotoUpload ? t('imageUploadFailed') : t('localDocumentOnly')
+          )
+        );
         setIsSaving(false);
         return;
       }
     }
 
-    const submitValues = sanitizeValuesForPrivateSubmit(draftValues);
+    const submitValues = sanitizeValuesForPrivateSubmit(valuesForSubmit);
     const privateTabs = new Set(
       tabsAffectedByValues(submitValues, savedValues)
     );
@@ -324,9 +386,11 @@ export function FieldsSection({ accessToken }: FieldsSectionProps) {
         documentsSignature(savedProviderDocuments)
       ) {
         setFormError(t('localDocumentOnly'));
+        setIsSaving(false);
         return;
       }
       setFormError(t('nothingToSave'));
+      setIsSaving(false);
       return;
     }
 
@@ -356,6 +420,7 @@ export function FieldsSection({ accessToken }: FieldsSectionProps) {
       );
       setSavedValues(submitValues);
       setDraftValues((prev) => ({ ...prev, ...submitValues }));
+      setPendingPhotoFiles({});
       if (academicDocsDirty) {
         setSavedAcademicDocuments(academicReady);
         setAcademicDocuments(academicReady);
@@ -370,7 +435,15 @@ export function FieldsSection({ accessToken }: FieldsSectionProps) {
   }
 
   function handleCancel() {
-    setDraftValues(savedValues);
+    setDraftValues((prev) => {
+      for (const [id, value] of Object.entries(prev)) {
+        if (value.startsWith('blob:') && value !== savedValues[id]) {
+          URL.revokeObjectURL(value);
+        }
+      }
+      return savedValues;
+    });
+    setPendingPhotoFiles({});
     setAcademicDocuments(savedAcademicDocuments);
     setProviderDocuments(savedProviderDocuments);
     setFieldErrors({});
@@ -499,6 +572,7 @@ export function FieldsSection({ accessToken }: FieldsSectionProps) {
                               values={draftValues}
                               fieldErrors={fieldErrors}
                               onChange={onFieldChange}
+                              onPhotoPick={onPhotoPick}
                               t={t}
                               tVis={tVis}
                             />
@@ -828,6 +902,7 @@ function IdentityCategoryBlocks({
   values,
   fieldErrors,
   onChange,
+  onPhotoPick,
   t,
   tVis,
 }: {
@@ -836,6 +911,7 @@ function IdentityCategoryBlocks({
   values: Record<string, string>;
   fieldErrors: Record<string, VisibilityValidationErrorKey>;
   onChange: (id: string, value: string) => void;
+  onPhotoPick: (id: string, previewUrl: string, file: File) => void;
   t: ReturnType<typeof useTranslations>;
   tVis: ReturnType<typeof useTranslations>;
 }) {
@@ -843,21 +919,6 @@ function IdentityCategoryBlocks({
   const rest = fields.filter((f) => resolveViewControl(f) !== 'photo');
   const textFields = rest.filter((f) => f.kind !== 'textarea');
   const textareas = rest.filter((f) => f.kind === 'textarea');
-
-  const openSharedPhotoPicker = () => {
-    const first = photos[0];
-    if (!first) return;
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = 'image/jpeg,image/png,image/webp,image/*';
-    input.onchange = () => {
-      const file = input.files?.[0];
-      if (!file || !file.type.startsWith('image/')) return;
-      const url = URL.createObjectURL(file);
-      for (const photo of photos) onChange(photo.id, url);
-    };
-    input.click();
-  };
 
   return (
     <>
@@ -867,7 +928,6 @@ function IdentityCategoryBlocks({
           <button
             type="button"
             className="text-warning underline-offset-2 hover:underline"
-            onClick={openSharedPhotoPicker}
           >
             {t('photosHintLink')}
           </button>
@@ -884,6 +944,7 @@ function IdentityCategoryBlocks({
                 value={src}
                 error={fieldErrorMessage(fieldErrors, field.id, tVis)}
                 onChange={onChange}
+                onPhotoPick={onPhotoPick}
               />
             );
           })}

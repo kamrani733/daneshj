@@ -1,6 +1,7 @@
 'use client';
 
 import { Calendar, ChevronDown } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useId, useRef, type ChangeEvent, type ReactNode } from 'react';
 
 import {
@@ -11,6 +12,7 @@ import type { VisibilityField } from '@private-panel/data/visibility-config';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { AvatarUserIcon } from '@/components/ui/avatar-user-icon';
 import { JalaliDatePicker } from '@/components/ui/jalali-date-picker';
+import { UploadButton } from '@/components/ui/upload-button';
 import {
   dateToJalali,
   formatJalaliDisplay,
@@ -96,6 +98,7 @@ type ViewFieldProps = {
   values?: FieldOptionsContext;
   error?: string | null;
   onChange?: (id: string, value: string) => void;
+  onPhotoPick?: (id: string, previewUrl: string, file: File) => void;
 };
 
 export function ViewField({
@@ -106,6 +109,7 @@ export function ViewField({
   values,
   error,
   onChange,
+  onPhotoPick,
 }: ViewFieldProps) {
   const control = resolveViewControl(field);
   const required = isRequiredField(field);
@@ -127,7 +131,13 @@ export function ViewField({
           imageSrc={field.imageSrc || current}
           pending={pending}
           editable={canEdit}
-          onPick={(src) => onChange?.(field.id, src)}
+          onPick={(previewUrl, file) => {
+            if (onPhotoPick) {
+              onPhotoPick(field.id, previewUrl, file);
+              return;
+            }
+            onChange?.(field.id, previewUrl);
+          }}
         />
       </FieldWithError>
     );
@@ -358,7 +368,6 @@ function FieldWithError({
 function PhotoField({
   label,
   imageSrc,
-  pending,
   editable,
   onPick,
 }: {
@@ -366,8 +375,9 @@ function PhotoField({
   imageSrc?: string;
   pending: boolean;
   editable: boolean;
-  onPick: (src: string) => void;
+  onPick: (previewUrl: string, file: File) => void;
 }) {
+  const t = useTranslations('privatePanel.fields');
   const inputRef = useRef<HTMLInputElement>(null);
   const hasPhoto =
     Boolean(imageSrc?.trim()) &&
@@ -377,43 +387,49 @@ function PhotoField({
     const file = event.target.files?.[0];
     event.target.value = '';
     if (!file || !file.type.startsWith('image/')) return;
-    onPick(URL.createObjectURL(file));
+    if (file.size > 2 * 1024 * 1024) return;
+    onPick(URL.createObjectURL(file), file);
   };
 
   return (
-    <button
-      type="button"
-      disabled={!editable}
-      onClick={() => editable && inputRef.current?.click()}
+    <div
       className={cn(
-        'flex min-h-[160px] w-full flex-col items-center justify-center gap-3 rounded-xl border px-4 py-5',
+        'flex w-full flex-col items-center gap-4 rounded-2xl border border-[#dbd8d1] px-4 pb-5 pt-4',
         FIELD_SURFACE,
-        pending
-          ? 'border-warning'
-          : 'border-[#707973] dark:border-auth-input-border',
-        editable && 'cursor-pointer hover:border-[#008d63]',
-        !editable && 'cursor-default'
+        'dark:border-auth-input-border'
       )}
     >
-      <Avatar className="size-20 min-[720px]:size-24">
-        {hasPhoto ? <AvatarImage src={imageSrc} alt={label} /> : null}
-        <AvatarFallback className="bg-transparent text-home-filter-muted">
-          <AvatarUserIcon className="size-10" />
-        </AvatarFallback>
-      </Avatar>
-      <p className="text-xs font-medium text-[#404943] dark:text-home-filter-muted">
+      <p className="w-full text-start text-sm font-bold text-[#404943] dark:text-home-filter-muted">
         {label}
       </p>
+
+      <Avatar className="size-24 bg-[#efede7] min-[720px]:size-[112px]">
+        {hasPhoto ? <AvatarImage src={imageSrc} alt={label} /> : null}
+        <AvatarFallback className="bg-[#efede7] text-[#7a807a]">
+          <AvatarUserIcon className="size-12" />
+        </AvatarFallback>
+      </Avatar>
+
+      <p className="text-center text-xs font-medium leading-5 text-[#404943] dark:text-home-filter-muted">
+        {t('photosHintMax')}
+      </p>
+
       {editable ? (
-        <input
-          ref={inputRef}
-          type="file"
-          accept="image/jpeg,image/png,image/webp,image/*"
-          className="sr-only"
-          onChange={onFile}
-        />
+        <>
+          <UploadButton onClick={() => inputRef.current?.click()}>
+            {t('uploadPhoto')}
+          </UploadButton>
+          <input
+            ref={inputRef}
+            type="file"
+            accept="image/jpeg,image/png,image/webp,image/*"
+            className="sr-only"
+            aria-label={t('photosPickAria')}
+            onChange={onFile}
+          />
+        </>
       ) : null}
-    </button>
+    </div>
   );
 }
 
