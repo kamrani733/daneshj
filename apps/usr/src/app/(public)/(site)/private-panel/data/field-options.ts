@@ -41,6 +41,30 @@ export const OCCUPATION_OPTIONS: FieldOption[] = [
   { value: '5', label: 'سایر' },
 ];
 
+export const ACADEMIC_GROUP_OPTIONS: FieldOption[] = [
+  { value: '1', label: 'علوم پایه' },
+  { value: '2', label: 'فنی مهندسی' },
+  { value: '3', label: 'علوم انسانی' },
+  { value: '4', label: 'پزشکی' },
+  { value: '5', label: 'هنر' },
+  { value: '6', label: 'زبان' },
+  { value: '7', label: 'سایر' },
+];
+
+export const DEGREE_LEVEL_OPTIONS: FieldOption[] = [
+  { value: '1', label: 'کاردانی' },
+  { value: '2', label: 'کارشناسی' },
+  { value: '3', label: 'کارشناسی ارشد' },
+  { value: '4', label: 'دکتری' },
+  { value: '5', label: 'پسادکتری' },
+  { value: '6', label: 'سایر' },
+];
+
+export const STUDY_STATUS_OPTIONS: FieldOption[] = [
+  { value: '1', label: 'دانشجو' },
+  { value: '2', label: 'فارغ‌التحصیل' },
+];
+
 const STATIC_BY_ID: Record<string, FieldOption[]> = {
   gender: GENDER_OPTIONS,
   militaryStatus: MILITARY_OPTIONS,
@@ -50,6 +74,9 @@ const STATIC_BY_ID: Record<string, FieldOption[]> = {
   province: IRAN_PROVINCE_OPTIONS,
   eduProvince: IRAN_PROVINCE_OPTIONS,
   gradEmploymentStatus: OCCUPATION_OPTIONS,
+  academicGroup: ACADEMIC_GROUP_OPTIONS,
+  degreeLevel: DEGREE_LEVEL_OPTIONS,
+  studyStatus: STUDY_STATUS_OPTIONS,
 };
 
 export function optionsForField(

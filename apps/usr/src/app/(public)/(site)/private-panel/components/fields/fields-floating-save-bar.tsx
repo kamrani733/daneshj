@@ -1,0 +1,70 @@
+'use client';
+
+import { Loader2 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
+
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
+
+type FieldsFloatingSaveBarProps = {
+  onCancel: () => void;
+  onSave: () => void;
+  saving?: boolean;
+  disabled?: boolean;
+};
+
+export function FieldsFloatingSaveBar({
+  onCancel,
+  onSave,
+  saving = false,
+  disabled = false,
+}: FieldsFloatingSaveBarProps) {
+  const t = useTranslations('privatePanel.fields');
+
+  return (
+    <div
+      role="region"
+      aria-label={t('floatingActions')}
+      className={cn(
+        'pointer-events-none fixed inset-x-0 bottom-0 z-40 flex justify-center',
+        'px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-2',
+        'min-[834px]:hidden'
+      )}
+    >
+      <div
+        className={cn(
+          'pointer-events-auto flex w-full max-w-[920px] items-center gap-3',
+          'rounded-full bg-[#efede6] px-4 py-2.5 shadow-home-elevation-2',
+          'dark:bg-home-stat-card'
+        )}
+      >
+        <p className="min-w-0 flex-1 text-start text-xs font-medium leading-5 text-[#171d19] min-[720px]:text-sm dark:text-home-filter-ink">
+          {t('dirtyHint')}
+        </p>
+        <button
+          type="button"
+          disabled={saving}
+          onClick={onCancel}
+          className="shrink-0 px-1 text-sm font-medium text-[#008d63] hover:underline disabled:opacity-60 dark:text-primary-100"
+        >
+          {t('cancel')}
+        </button>
+        <Button
+          type="button"
+          disabled={disabled || saving}
+          onClick={onSave}
+          className={cn(
+            'h-10 shrink-0 !rounded-xl bg-[#008d63] px-5 text-sm font-medium text-white shadow-none',
+            'hover:bg-[#008d63]/90 disabled:opacity-60'
+          )}
+        >
+          {saving ? (
+            <Loader2 className="size-4 animate-spin" aria-hidden />
+          ) : (
+            t('saveShort')
+          )}
+        </Button>
+      </div>
+    </div>
+  );
+}

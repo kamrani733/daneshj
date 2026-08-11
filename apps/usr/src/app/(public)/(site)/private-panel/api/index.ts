@@ -53,6 +53,7 @@ export {
   sanitizeValuesForPrivateSubmit,
   tabsAffectedBySelection,
   tabsAffectedByValues,
+  toAcademicRecordUserDto,
   toPrivateTabSubmitBody,
   toPublicVisibilitySubmitBody,
 } from './mappers';

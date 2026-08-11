@@ -2,7 +2,7 @@
 
 import { Calendar, ChevronDown } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { useId, useRef, type ChangeEvent, type ReactNode } from 'react';
+import { useRef, type ChangeEvent } from 'react';
 
 import {
   optionsForField,
@@ -11,7 +11,12 @@ import {
 import type { VisibilityField } from '@private-panel/data/visibility-config';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { AvatarUserIcon } from '@/components/ui/avatar-user-icon';
-import { JalaliDatePicker } from '@/components/ui/jalali-date-picker';
+import {
+  OutlinedDateField,
+  OutlinedDisplayField,
+  OutlinedTextareaField,
+  OutlinedTextField,
+} from '@/components/ui/outlined-field';
 import { UploadButton } from '@/components/ui/upload-button';
 import {
   dateToJalali,
@@ -51,12 +56,7 @@ const CASCADE_SELECT_IDS = new Set([
   'eduCity',
 ]);
 
-const REQUIRED_IDS = new Set([
-  'nationalId',
-  'country',
-  'province',
-  'city',
-]);
+const REQUIRED_IDS = new Set(['nationalId', 'country', 'province', 'city']);
 
 export function resolveViewControl(field: VisibilityField): ViewControl {
   if (field.kind === 'photo') return 'photo';
@@ -116,123 +116,68 @@ export function ViewField({
   const pending = Boolean(field.pending);
   const canEdit = editable;
   const current = value ?? field.value;
-  const labelNode = (
-    <>
-      {label}
-      {required ? <span className="text-error"> *</span> : null}
-    </>
-  );
+  const shared = {
+    label,
+    required,
+    pending,
+    error,
+    labelSurfaceClassName: FIELD_SURFACE,
+    surfaceClassName: INPUT_SURFACE,
+  };
 
   if (control === 'photo') {
     return (
-      <FieldWithError error={error}>
-        <PhotoField
-          label={label}
-          imageSrc={field.imageSrc || current}
-          pending={pending}
-          editable={canEdit}
-          onPick={(previewUrl, file) => {
-            if (onPhotoPick) {
-              onPhotoPick(field.id, previewUrl, file);
-              return;
-            }
-            onChange?.(field.id, previewUrl);
-          }}
-        />
-      </FieldWithError>
+      <PhotoField
+        label={label}
+        imageSrc={field.imageSrc || current}
+        editable={canEdit}
+        error={error}
+        onPick={(previewUrl, file) => {
+          if (onPhotoPick) {
+            onPhotoPick(field.id, previewUrl, file);
+            return;
+          }
+          onChange?.(field.id, previewUrl);
+        }}
+      />
     );
   }
 
   if (control === 'textarea') {
     if (!canEdit) {
-      return (
-        <FieldWithError error={error}>
-          <OutlinedShell label={labelNode} multiline pending={pending}>
-            <p className="min-h-[72px] whitespace-pre-wrap text-start text-sm font-medium leading-6 text-content dark:text-home-filter-ink">
-              {current || '\u00a0'}
-            </p>
-          </OutlinedShell>
-        </FieldWithError>
-      );
+      return <OutlinedDisplayField {...shared} multiline value={current} />;
     }
     return (
-      <FieldWithError error={error}>
-        <OutlinedShell
-          label={labelNode}
-          multiline
-          pending={pending || Boolean(error)}
-          asLabel
-        >
-          <textarea
-            dir="rtl"
-            value={current}
-            onChange={(event) => onChange?.(field.id, event.target.value)}
-            rows={4}
-            className={cn(
-              'min-h-[72px] w-full resize-y bg-transparent text-start text-sm font-medium',
-              'leading-6 text-content outline-none dark:text-home-filter-ink'
-            )}
-          />
-        </OutlinedShell>
-      </FieldWithError>
+      <OutlinedTextareaField
+        {...shared}
+        value={current}
+        onValueChange={(next) => onChange?.(field.id, next)}
+      />
     );
   }
 
   if (control === 'date') {
     if (!canEdit) {
       return (
-        <FieldWithError error={error}>
-          <OutlinedShell
-            label={labelNode}
-            pending={pending}
-            endAdornment={
-              <Calendar
-                className="size-5 text-[#404943] dark:text-home-filter-muted"
-                strokeWidth={1.75}
-                aria-hidden
-              />
-            }
-          >
-            <p className="truncate text-start text-sm font-medium text-content dark:text-home-filter-ink">
-              {formatViewDate(current) || '\u00a0'}
-            </p>
-          </OutlinedShell>
-        </FieldWithError>
-      );
-    }
-    return (
-      <FieldWithError error={error}>
-        <div className="relative">
-          <JalaliDatePicker
-            value={current.slice(0, 10)}
-            onChange={(iso) => onChange?.(field.id, iso)}
-            triggerClassName={cn(
-              'h-12 w-full justify-start rounded-lg border px-3 pe-11 text-start text-sm font-medium',
-              INPUT_SURFACE,
-              '[direction:rtl]',
-              pending || error
-                ? 'border-warning'
-                : 'border-[#707973] dark:border-auth-input-border'
-            )}
-          />
-          <span
-            className={cn(
-              'pointer-events-none absolute start-3 top-0 z-[1] -translate-y-1/2 px-1 text-xs font-medium',
-              'text-[#404943] dark:text-home-filter-muted',
-              FIELD_SURFACE
-            )}
-          >
-            {labelNode}
-          </span>
-          <span className="pointer-events-none absolute end-3 top-1/2 -translate-y-1/2">
+        <OutlinedDisplayField
+          {...shared}
+          value={formatViewDate(current)}
+          endAdornment={
             <Calendar
               className="size-5 text-[#404943] dark:text-home-filter-muted"
               strokeWidth={1.75}
               aria-hidden
             />
-          </span>
-        </div>
-      </FieldWithError>
+          }
+        />
+      );
+    }
+    return (
+      <OutlinedDateField
+        {...shared}
+        value={current.slice(0, 10)}
+        onValueChange={(iso) => onChange?.(field.id, iso)}
+      />
     );
   }
 
@@ -242,60 +187,23 @@ export function ViewField({
       canEdit && (options.length > 0 || CASCADE_SELECT_IDS.has(field.id));
     if (useListPicker) {
       return (
-        <FieldWithError error={error}>
-          <LocationListPicker
-            label={
-              required ? (
-                <>
-                  {label}
-                  <span className="text-error"> *</span>
-                </>
-              ) : (
-                label
-              )
-            }
-            options={options}
-            value={current}
-            disabled={options.length === 0}
-            onChange={(next) => onChange?.(field.id, next)}
-          />
-        </FieldWithError>
+        <LocationListPicker
+          label={label}
+          required={required}
+          options={options}
+          value={current}
+          disabled={options.length === 0}
+          error={error}
+          pending={pending}
+          onChange={(next) => onChange?.(field.id, next)}
+        />
       );
     }
     if (canEdit) {
       return (
-        <FieldWithError error={error}>
-          <OutlinedShell
-            label={labelNode}
-            pending={pending || Boolean(error)}
-            endAdornment={
-              <ChevronDown
-                className="size-5 text-[#404943] dark:text-home-filter-muted"
-                strokeWidth={1.75}
-                aria-hidden
-              />
-            }
-            asLabel
-          >
-            <input
-              dir="rtl"
-              type="text"
-              value={current}
-              onChange={(event) => onChange?.(field.id, event.target.value)}
-              className={cn(
-                'w-full truncate bg-transparent text-start text-sm font-medium',
-                'text-content outline-none dark:text-home-filter-ink'
-              )}
-            />
-          </OutlinedShell>
-        </FieldWithError>
-      );
-    }
-    return (
-      <FieldWithError error={error}>
-        <OutlinedShell
-          label={labelNode}
-          pending={pending}
+        <OutlinedTextField
+          {...shared}
+          value={current}
           endAdornment={
             <ChevronDown
               className="size-5 text-[#404943] dark:text-home-filter-muted"
@@ -303,65 +211,35 @@ export function ViewField({
               aria-hidden
             />
           }
-        >
-          <p className="truncate text-start text-sm font-medium text-content dark:text-home-filter-ink">
-            {current || '\u00a0'}
-          </p>
-        </OutlinedShell>
-      </FieldWithError>
+          onValueChange={(next) => onChange?.(field.id, next)}
+        />
+      );
+    }
+    return (
+      <OutlinedDisplayField
+        {...shared}
+        value={current}
+        endAdornment={
+          <ChevronDown
+            className="size-5 text-[#404943] dark:text-home-filter-muted"
+            strokeWidth={1.75}
+            aria-hidden
+          />
+        }
+      />
     );
   }
 
   if (!canEdit) {
-    return (
-      <FieldWithError error={error}>
-        <OutlinedShell label={labelNode} pending={pending}>
-          <p className="truncate text-start text-sm font-medium text-content dark:text-home-filter-ink">
-            {current || '\u00a0'}
-          </p>
-        </OutlinedShell>
-      </FieldWithError>
-    );
+    return <OutlinedDisplayField {...shared} value={current} />;
   }
 
   return (
-    <FieldWithError error={error}>
-      <OutlinedShell
-        label={labelNode}
-        pending={pending || Boolean(error)}
-        asLabel
-      >
-        <input
-          dir="rtl"
-          type="text"
-          value={current}
-          onChange={(event) => onChange?.(field.id, event.target.value)}
-          className={cn(
-            'w-full truncate bg-transparent text-start text-sm font-medium',
-            'text-content outline-none dark:text-home-filter-ink'
-          )}
-        />
-      </OutlinedShell>
-    </FieldWithError>
-  );
-}
-
-function FieldWithError({
-  error,
-  children,
-}: {
-  error?: string | null;
-  children: ReactNode;
-}) {
-  return (
-    <div className="flex flex-col gap-1">
-      {children}
-      {error ? (
-        <p role="alert" className="text-start text-xs font-medium text-error">
-          {error}
-        </p>
-      ) : null}
-    </div>
+    <OutlinedTextField
+      {...shared}
+      value={current}
+      onValueChange={(next) => onChange?.(field.id, next)}
+    />
   );
 }
 
@@ -369,12 +247,13 @@ function PhotoField({
   label,
   imageSrc,
   editable,
+  error,
   onPick,
 }: {
   label: string;
   imageSrc?: string;
-  pending: boolean;
   editable: boolean;
+  error?: string | null;
   onPick: (previewUrl: string, file: File) => void;
 }) {
   const t = useTranslations('privatePanel.fields');
@@ -392,97 +271,51 @@ function PhotoField({
   };
 
   return (
-    <div
-      className={cn(
-        'flex w-full flex-col items-center gap-4 rounded-2xl border border-[#dbd8d1] px-4 pb-5 pt-4',
-        FIELD_SURFACE,
-        'dark:border-auth-input-border'
-      )}
-    >
-      <p className="w-full text-start text-sm font-bold text-[#404943] dark:text-home-filter-muted">
-        {label}
-      </p>
+    <div className="flex flex-col gap-1">
+      <div
+        className={cn(
+          'flex w-full flex-col items-center gap-4 rounded-2xl border border-[#dbd8d1] px-4 pb-5 pt-4',
+          FIELD_SURFACE,
+          'dark:border-auth-input-border',
+          error && 'border-error'
+        )}
+      >
+        <p className="w-full text-start text-sm font-bold text-[#404943] dark:text-home-filter-muted">
+          {label}
+        </p>
 
-      <Avatar className="size-24 bg-[#efede7] min-[720px]:size-[112px]">
-        {hasPhoto ? <AvatarImage src={imageSrc} alt={label} /> : null}
-        <AvatarFallback className="bg-[#efede7] text-[#7a807a]">
-          <AvatarUserIcon className="size-12" />
-        </AvatarFallback>
-      </Avatar>
+        <Avatar className="size-24 bg-[#efede7] min-[720px]:size-[112px]">
+          {hasPhoto ? <AvatarImage src={imageSrc} alt={label} /> : null}
+          <AvatarFallback className="bg-[#efede7] text-[#7a807a]">
+            <AvatarUserIcon className="size-12" />
+          </AvatarFallback>
+        </Avatar>
 
-      <p className="text-center text-xs font-medium leading-5 text-[#404943] dark:text-home-filter-muted">
-        {t('photosHintMax')}
-      </p>
+        <p className="text-center text-xs font-medium leading-5 text-[#404943] dark:text-home-filter-muted">
+          {t('photosHintMax')}
+        </p>
 
-      {editable ? (
-        <>
-          <UploadButton onClick={() => inputRef.current?.click()}>
-            {t('uploadPhoto')}
-          </UploadButton>
-          <input
-            ref={inputRef}
-            type="file"
-            accept="image/jpeg,image/png,image/webp,image/*"
-            className="sr-only"
-            aria-label={t('photosPickAria')}
-            onChange={onFile}
-          />
-        </>
+        {editable ? (
+          <>
+            <UploadButton onClick={() => inputRef.current?.click()}>
+              {t('uploadPhoto')}
+            </UploadButton>
+            <input
+              ref={inputRef}
+              type="file"
+              accept="image/jpeg,image/png,image/webp,image/*"
+              className="sr-only"
+              aria-label={t('photosPickAria')}
+              onChange={onFile}
+            />
+          </>
+        ) : null}
+      </div>
+      {error ? (
+        <p role="alert" className="text-start text-xs font-medium text-error">
+          {error}
+        </p>
       ) : null}
     </div>
-  );
-}
-
-function OutlinedShell({
-  label,
-  children,
-  endAdornment,
-  multiline,
-  pending,
-  asLabel,
-}: {
-  label: ReactNode;
-  children: ReactNode;
-  endAdornment?: React.ReactNode;
-  multiline?: boolean;
-  pending?: boolean;
-  asLabel?: boolean;
-}) {
-  const id = useId();
-  const Wrapper = asLabel ? 'label' : 'div';
-
-  return (
-    <Wrapper dir="rtl" className="relative block">
-      <div
-        id={id}
-        className={cn(
-          'w-full rounded-lg border border-solid',
-          INPUT_SURFACE,
-          multiline
-            ? 'min-h-[96px] px-3 py-3 text-start'
-            : 'flex h-12 items-center justify-start px-3 text-start',
-          endAdornment && 'pe-11',
-          pending
-            ? 'border-warning'
-            : 'border-[#707973] dark:border-auth-input-border'
-        )}
-      >
-        {children}
-      </div>
-      <span
-        className={cn(
-          'pointer-events-none absolute start-3 top-0 z-[1] -translate-y-1/2 px-1 text-xs font-medium',
-          'text-[#404943] dark:text-home-filter-muted',
-          FIELD_SURFACE
-        )}
-      >
-        {label}
-      </span>
-      {endAdornment ? (
-        <span className="pointer-events-none absolute end-3 top-1/2 -translate-y-1/2">
-          {endAdornment}
-        </span>
-      ) : null}
-    </Wrapper>
   );
 }

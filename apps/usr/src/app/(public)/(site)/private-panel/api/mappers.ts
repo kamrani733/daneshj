@@ -9,6 +9,7 @@ import {
 import { pad2 } from '@/lib/jalali';
 
 import type {
+  AcademicRecordUserDto,
   ActorInfo,
   DivisionCodeDto,
   PrivateOwnerTabName,
@@ -140,7 +141,7 @@ const ACADEMIC_GROUP_LABELS: Record<string, string> = {
 };
 
 const STUDY_STATUS_LABELS: Record<string, string> = {
-  '1': 'در حال تحصیل',
+  '1': 'دانشجو',
   '2': 'فارغ‌التحصیل',
 };
 
@@ -447,7 +448,7 @@ function mapOneAcademicRecord(
   item: unknown,
   index: number,
   statusLabel: string,
-  idPrefix: string
+  source: 'verified' | 'submitted'
 ): VisibilityAcademicRecord {
   const row = asRecord(item) ?? {};
   const degreeLevel = readString(row, 'degree_level');
@@ -458,12 +459,19 @@ function mapOneAcademicRecord(
     [DEGREE_LABELS[degreeLevel] ?? degreeLevel, fieldOfStudy]
       .filter(Boolean)
       .join(' ') || fieldOfStudy;
+  const apiId = typeof row.id === 'number' ? row.id : null;
 
   return {
-    id: String(row.id ?? `${idPrefix}-${index}`),
-    degree,
+    id: String(apiId ?? `${source}-${index}`),
+    apiId,
+    source,
+    academicGroup,
+    fieldOfStudy,
     university: readString(row, 'university'),
     faculty: readString(row, 'faculty'),
+    degreeLevel,
+    studyStatus,
+    degree,
     fieldGroup: ACADEMIC_GROUP_LABELS[academicGroup] ?? academicGroup,
     description: readString(row, 'degree_level_description'),
     endDate: readString(row, 'graduation_date'),
@@ -490,6 +498,46 @@ export function mapAcademicRecords(
       mapOneAcademicRecord(item, index, 'اظهاری', 'submitted')
     ),
   ];
+}
+
+export function toAcademicRecordUserDto(
+  record: Pick<
+    VisibilityAcademicRecord,
+    | 'apiId'
+    | 'academicGroup'
+    | 'fieldOfStudy'
+    | 'faculty'
+    | 'university'
+    | 'degreeLevel'
+    | 'description'
+    | 'studyStatus'
+    | 'endDate'
+  >
+): AcademicRecordUserDto {
+  const academicGroup = Number(record.academicGroup);
+  const degreeLevel = Number(record.degreeLevel);
+  const studyStatus = Number(record.studyStatus);
+
+  return {
+    id: record.apiId ?? 0,
+    academic_group:
+      academicGroup >= 1 && academicGroup <= 7
+        ? (academicGroup as AcademicRecordUserDto['academic_group'])
+        : null,
+    field_of_study: record.fieldOfStudy.trim() || null,
+    faculty: record.faculty.trim() || null,
+    university: record.university.trim() || null,
+    degree_level:
+      degreeLevel >= 1 && degreeLevel <= 6
+        ? (degreeLevel as AcademicRecordUserDto['degree_level'])
+        : null,
+    degree_level_description: record.description.trim() || null,
+    study_status:
+      studyStatus === 1 || studyStatus === 2
+        ? (studyStatus as AcademicRecordUserDto['study_status'])
+        : null,
+    graduation_date: record.endDate.trim() || null,
+  };
 }
 
 export function toPublicVisibilitySubmitBody(
@@ -716,7 +764,10 @@ export function toPrivateTabSubmitBody(
   tabName: PrivateOwnerTabName,
   privateData?: ProfileRetrieveData | null,
   savedValues: Record<string, string> = {},
-  options?: { academicDocuments?: PrivateSubmitDocument[] }
+  options?: {
+    academicDocuments?: PrivateSubmitDocument[];
+    academicRecords?: AcademicRecordUserDto[];
+  }
 ): PrivateTabSubmitByOwnerBodyDto {
   const body: PrivateTabSubmitByOwnerBodyDto = {};
 
@@ -834,6 +885,11 @@ export function toPrivateTabSubmitBody(
         file_path: doc.filePath,
         description: doc.description?.slice(0, 100) || null,
       }));
+    }
+
+    const academicRecords = options?.academicRecords ?? [];
+    if (academicRecords.length > 0) {
+      body.academic_record_submitted_user = academicRecords;
     }
   }
 

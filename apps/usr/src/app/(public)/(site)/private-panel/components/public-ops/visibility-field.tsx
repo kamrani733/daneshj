@@ -1,12 +1,15 @@
 'use client';
 
-import { Calendar, Check } from 'lucide-react';
+import { Check } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { useId, type ReactNode } from 'react';
 
 import type { VisibilityField } from '@private-panel/data/visibility-config';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { JalaliDatePicker } from '@/components/ui/jalali-date-picker';
+import {
+  OutlinedDateField,
+  OutlinedTextareaField,
+  OutlinedTextField,
+} from '@/components/ui/outlined-field';
 import { cn } from '@/lib/utils';
 
 export type VisibilityUiState =
@@ -86,7 +89,12 @@ export function VisibilityFieldCard({
 
   if (field.kind === 'toggle') {
     return (
-      <div className={cn(cardClass(state), 'gap-2.5 p-2.5 pt-2 min-[720px]:gap-3 min-[720px]:p-3')}>
+      <div
+        className={cn(
+          cardClass(state),
+          'gap-2.5 p-2.5 pt-2 min-[720px]:gap-3 min-[720px]:p-3'
+        )}
+      >
         <fieldset className="min-w-0 rounded-lg border border-[#707973] px-3 py-2.5 min-[720px]:py-3 dark:border-auth-input-border">
           <legend
             className={cn(
@@ -111,13 +119,37 @@ export function VisibilityFieldCard({
   }
 
   return (
-    <div className={cn(cardClass(state), 'gap-2.5 p-3 pt-2.5 min-[720px]:gap-3 min-[720px]:p-4 min-[720px]:pt-3')}>
+    <div
+      className={cn(
+        cardClass(state),
+        'gap-2.5 p-3 pt-2.5 min-[720px]:gap-3 min-[720px]:p-4 min-[720px]:pt-3'
+      )}
+    >
       {field.kind === 'textarea' ? (
-        <OutlinedTextarea label={label} value={value} readOnly />
+        <OutlinedTextareaField
+          label={label}
+          value={value}
+          readOnly
+          labelSurfaceClassName={CARD_BG}
+          surfaceClassName={INPUT_BG}
+        />
       ) : showCalendar ? (
-        <OutlinedDatePicker label={label} value={value} disabled />
+        <OutlinedDateField
+          label={label}
+          value={toPickerIsoValue(value)}
+          disabled
+          calendarPosition="start"
+          labelSurfaceClassName={CARD_BG}
+          surfaceClassName={INPUT_BG}
+        />
       ) : (
-        <OutlinedInput label={label} value={value} readOnly />
+        <OutlinedTextField
+          label={label}
+          value={value}
+          readOnly
+          labelSurfaceClassName={CARD_BG}
+          surfaceClassName={INPUT_BG}
+        />
       )}
 
       <VisibilityCheckbox
@@ -144,7 +176,6 @@ function cardClass(state: VisibilityUiState) {
   );
 }
 
-/** Shared visibility checkbox + caption used by field and record cards. */
 export function VisibilityCheckbox({
   label,
   caption,
@@ -211,61 +242,6 @@ export function VisibilityCheckbox({
   );
 }
 
-function OutlinedDatePicker({
-  label,
-  value,
-  onChange,
-  disabled,
-  error,
-}: {
-  label: string;
-  value: string;
-  onChange?: (value: string) => void;
-  disabled?: boolean;
-  error?: boolean;
-  errorId?: string;
-}) {
-  const id = useId();
-  const isoValue = toPickerIsoValue(value);
-
-  return (
-    <div className="relative">
-      <JalaliDatePicker
-        id={id}
-        value={isoValue}
-        onChange={(next) => onChange?.(next)}
-        disabled={disabled}
-        startAdornment={
-          <Calendar
-            className="size-5 shrink-0 text-[#404943] dark:text-home-filter-muted"
-            strokeWidth={1.75}
-            aria-hidden
-          />
-        }
-        triggerClassName={cn(
-          'peer h-12 rounded-lg border-solid border-[#707973]',
-          INPUT_BG,
-          'ps-3 pe-3 text-sm font-medium text-[#1a1c19]',
-          'dark:border-auth-input-border dark:text-home-filter-ink',
-          error &&
-            'border-error focus-visible:border-error focus-visible:ring-error/30'
-        )}
-      />
-      <label
-        htmlFor={id}
-        className={cn(
-          'pointer-events-none absolute start-3 top-0 z-[1] -translate-y-1/2 px-1 text-xs font-medium',
-          'text-[#404943] dark:text-home-filter-muted',
-          CARD_BG,
-          error && 'text-error'
-        )}
-      >
-        {label}
-      </label>
-    </div>
-  );
-}
-
 function toPickerIsoValue(value: string): string {
   const trimmed = value.trim();
   if (!trimmed) return '';
@@ -281,135 +257,4 @@ function toPickerIsoValue(value: string): string {
 
   if (/^\d{4}-\d{2}-\d{2}/.test(trimmed)) return trimmed.slice(0, 10);
   return '';
-}
-
-function OutlinedInput({
-  label,
-  value,
-  onChange,
-  endAdornment,
-  error,
-  errorId,
-  readOnly,
-}: {
-  label: string;
-  value: string;
-  onChange?: (value: string) => void;
-  endAdornment?: ReactNode;
-  error?: boolean;
-  errorId?: string;
-  readOnly?: boolean;
-}) {
-  const id = useId();
-
-  return (
-    <div className="relative">
-      <input
-        dir="rtl"
-        id={id}
-        value={value}
-        readOnly={readOnly}
-        tabIndex={readOnly ? -1 : undefined}
-        placeholder=" "
-        aria-invalid={error || undefined}
-        aria-describedby={errorId}
-        aria-readonly={readOnly || undefined}
-        onChange={(event) => {
-          if (readOnly) return;
-          onChange?.(event.target.value);
-        }}
-        className={cn(
-          'peer h-12 w-full rounded-lg border border-solid border-[#707973]',
-          INPUT_BG,
-          'px-3 text-start text-sm font-medium text-[#1a1c19] shadow-none',
-          'placeholder:text-transparent focus-visible:border-primary focus-visible:outline-none',
-          'focus-visible:ring-2 focus-visible:ring-primary/30',
-          endAdornment && 'ps-11',
-          'dark:border-auth-input-border dark:text-home-filter-ink',
-          readOnly && 'cursor-default opacity-90',
-          error &&
-            'border-error focus-visible:border-error focus-visible:ring-error/30'
-        )}
-      />
-      <label
-        htmlFor={id}
-        className={cn(
-          'pointer-events-none absolute start-3 top-0 z-[1] -translate-y-1/2 px-1 text-xs font-medium',
-          'text-[#404943] dark:text-home-filter-muted',
-          CARD_BG,
-          !readOnly && 'peer-focus:text-primary',
-          error && 'text-error peer-focus:text-error'
-        )}
-      >
-        {label}
-      </label>
-      {endAdornment ? (
-        <span className="pointer-events-none absolute end-3 top-1/2 -translate-y-1/2">
-          {endAdornment}
-        </span>
-      ) : null}
-    </div>
-  );
-}
-
-function OutlinedTextarea({
-  label,
-  value,
-  onChange,
-  error,
-  errorId,
-  readOnly,
-}: {
-  label: string;
-  value: string;
-  onChange?: (value: string) => void;
-  error?: boolean;
-  errorId?: string;
-  readOnly?: boolean;
-}) {
-  const id = useId();
-
-  return (
-    <div className="relative">
-      <textarea
-        dir="rtl"
-        id={id}
-        value={value}
-        readOnly={readOnly}
-        tabIndex={readOnly ? -1 : undefined}
-        placeholder=" "
-        rows={3}
-        aria-invalid={error || undefined}
-        aria-describedby={errorId}
-        aria-readonly={readOnly || undefined}
-        onChange={(event) => {
-          if (readOnly) return;
-          onChange?.(event.target.value);
-        }}
-        className={cn(
-          'peer w-full resize-none rounded-lg border border-solid border-[#707973]',
-          INPUT_BG,
-          'px-3 py-3 text-start text-sm font-medium leading-6 text-[#1a1c19] shadow-none',
-          'placeholder:text-transparent focus-visible:border-primary focus-visible:outline-none',
-          'focus-visible:ring-2 focus-visible:ring-primary/30',
-          'dark:border-auth-input-border dark:text-home-filter-ink',
-          readOnly && 'cursor-default opacity-90',
-          error &&
-            'border-error focus-visible:border-error focus-visible:ring-error/30'
-        )}
-      />
-      <label
-        htmlFor={id}
-        className={cn(
-          'pointer-events-none absolute start-3 top-0 z-[1] -translate-y-1/2 px-1 text-xs font-medium',
-          'text-[#404943] dark:text-home-filter-muted',
-          CARD_BG,
-          !readOnly && 'peer-focus:text-primary',
-          error && 'text-error peer-focus:text-error'
-        )}
-      >
-        {label}
-      </label>
-    </div>
-  );
 }

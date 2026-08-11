@@ -16,6 +16,7 @@ import {
   mapVisibilityFields,
   sanitizeValuesForPrivateSubmit,
   tabsAffectedByValues,
+  toAcademicRecordUserDto,
   toPrivateTabSubmitBody,
   uploadPrivatePanelFile,
   useManageVisibilityQuery,
@@ -47,10 +48,15 @@ import {
 import { cn } from '@/lib/utils';
 
 import {
+  AcademicRecordModal,
+  type AcademicRecordFormValues,
+} from './academic-record-modal';
+import {
   DocumentsPanel,
   type DocumentDraft,
 } from './documents-panel';
-import { ViewField, resolveViewControl } from './view-field';
+import { FieldsFloatingSaveBar } from './fields-floating-save-bar';
+import { resolveViewControl, ViewField } from './view-field';
 
 function readyDocuments(docs: DocumentDraft[]): DocumentDraft[] {
   return docs.filter(
@@ -481,7 +487,13 @@ export function FieldsSection({ accessToken }: FieldsSectionProps) {
   }
 
   return (
-    <div dir="rtl" className="flex w-full flex-col gap-6 text-start">
+    <div
+      dir="rtl"
+      className={cn(
+        'flex w-full flex-col gap-6 text-start',
+        mode === 'view' && isDirty && 'pb-24 min-[834px]:pb-0'
+      )}
+    >
       <ModeTabs mode={mode} onModeChange={setMode} t={t} />
 
       <IntroBullets t={t} />
@@ -591,6 +603,24 @@ export function FieldsSection({ accessToken }: FieldsSectionProps) {
                                   ? uploadDocumentFile
                                   : undefined
                               }
+                              editable={editable}
+                              accessToken={accessToken}
+                              privateData={privateData}
+                              onSubmitRecord={async (payload) => {
+                                await submitPrivateMutation.mutateAsync({
+                                  accessToken,
+                                  tabName: 'educational_information',
+                                  body: toPrivateTabSubmitBody(
+                                    draftValues,
+                                    'educational_information',
+                                    privateData,
+                                    savedValues,
+                                    {
+                                      academicRecords: payload,
+                                    }
+                                  ),
+                                });
+                              }}
                               t={t}
                               tVis={tVis}
                             />
@@ -644,7 +674,7 @@ export function FieldsSection({ accessToken }: FieldsSectionProps) {
                         </p>
                       ) : null}
 
-                      <div className="flex flex-wrap items-center justify-start gap-3">
+                      <div className="hidden flex-wrap items-center justify-start gap-3 min-[834px]:flex">
                         <Button
                           type="button"
                           disabled={!accessToken || isSaving || !isDirty}
@@ -689,6 +719,17 @@ export function FieldsSection({ accessToken }: FieldsSectionProps) {
           ))}
         </div>
       </Tabs>
+
+      {mode === 'view' && isDirty ? (
+        <FieldsFloatingSaveBar
+          disabled={!accessToken}
+          saving={isSaving}
+          onCancel={handleCancel}
+          onSave={() => {
+            void handleSave();
+          }}
+        />
+      ) : null}
 
       <LimitationsSection t={t} />
     </div>
@@ -1046,6 +1087,8 @@ function AcademicRecordsBlock({
   documents,
   onDocumentsChange,
   onUploadFile,
+  editable = false,
+  onSubmitRecord,
   reviewMode = false,
   t,
   tVis,
@@ -1054,35 +1097,110 @@ function AcademicRecordsBlock({
   documents: DocumentDraft[];
   onDocumentsChange: (documents: DocumentDraft[]) => void;
   onUploadFile?: (file: File) => Promise<string>;
+  editable?: boolean;
+  accessToken?: string | null;
+  privateData?: unknown;
+  onSubmitRecord: (
+    records: ReturnType<typeof toAcademicRecordUserDto>[]
+  ) => Promise<void>;
   reviewMode?: boolean;
   t: ReturnType<typeof useTranslations>;
   tVis: ReturnType<typeof useTranslations>;
 }) {
   const showDocumentUpload = records.length === 0;
+  const [modalOpen, setModalOpen] = useState(false);
+  const [editingRecord, setEditingRecord] =
+    useState<VisibilityAcademicRecord | null>(null);
+  const [modalSaving, setModalSaving] = useState(false);
+  const [modalError, setModalError] = useState<string | null>(null);
+
+  const openCreate = () => {
+    setEditingRecord(null);
+    setModalError(null);
+    setModalOpen(true);
+  };
+
+  const openEdit = (record: VisibilityAcademicRecord) => {
+    if (record.source !== 'submitted') return;
+    setEditingRecord(record);
+    setModalError(null);
+    setModalOpen(true);
+  };
+
+  const handleModalSave = async (values: AcademicRecordFormValues) => {
+    setModalSaving(true);
+    setModalError(null);
+    try {
+      const draft: VisibilityAcademicRecord = {
+        id: editingRecord?.id ?? 'new',
+        apiId: editingRecord?.apiId ?? null,
+        source: 'submitted',
+        academicGroup: values.academicGroup,
+        fieldOfStudy: values.fieldOfStudy,
+        university: values.university,
+        faculty: values.faculty,
+        degreeLevel: values.degreeLevel,
+        studyStatus: values.studyStatus,
+        degree: values.fieldOfStudy,
+        fieldGroup: values.academicGroup,
+        description: values.description,
+        endDate: values.endDate,
+        roleLabel: '',
+        statusLabel: 'اظهاری',
+        initiallyVisible: false,
+      };
+
+      const submitted = records.filter((record) => record.source === 'submitted');
+      const nextSubmitted = editingRecord
+        ? submitted.map((record) =>
+            record.id === editingRecord.id ? draft : record
+          )
+        : [...submitted, draft];
+
+      await onSubmitRecord(nextSubmitted.map((record) => toAcademicRecordUserDto(record)));
+      setModalOpen(false);
+      setEditingRecord(null);
+    } catch (error) {
+      setModalError(
+        getActorApiErrorMessage(error, t('academicRecordSaveFailed'))
+      );
+    } finally {
+      setModalSaving(false);
+    }
+  };
 
   return (
     <FieldsetBlock title={tVis('sections.academicRecords')}>
       <p className="text-justify text-sm font-medium leading-6 text-[#404943] dark:text-home-filter-muted">
         {t('academicIntro')}
       </p>
-      <div className="flex justify-start">
-        <Button
-          type="button"
-          className={cn(
-            'h-12 gap-2 !rounded-xl bg-[#008d63] px-4 text-sm font-medium text-white shadow-none',
-            'hover:bg-[#008d63]/90'
-          )}
-        >
-          <Plus className="size-5" strokeWidth={2} aria-hidden />
-          {t('addRecord')}
-        </Button>
-      </div>
+      {editable ? (
+        <div className="flex justify-end">
+          <Button
+            type="button"
+            onClick={openCreate}
+            className={cn(
+              'h-12 gap-2 !rounded-xl bg-[#008d63] px-4 text-sm font-medium text-white shadow-none',
+              'hover:bg-[#008d63]/90'
+            )}
+          >
+            <Plus className="size-5" strokeWidth={2} aria-hidden />
+            {t('addRecord')}
+          </Button>
+        </div>
+      ) : null}
 
       {records.length > 0 ? (
         <ul className="flex flex-col gap-4">
           {records.map((record) => (
             <li key={record.id}>
-              <AcademicRecordCard record={record} tVis={tVis} />
+              <AcademicRecordCard
+                record={record}
+                tVis={tVis}
+                editable={editable && record.source === 'submitted'}
+                onEdit={() => openEdit(record)}
+                editLabel={t('editRecord')}
+              />
             </li>
           ))}
         </ul>
@@ -1128,6 +1246,24 @@ function AcademicRecordsBlock({
           />
         </div>
       ) : null}
+
+      <AcademicRecordModal
+        open={modalOpen}
+        record={editingRecord}
+        saving={modalSaving}
+        error={modalError}
+        onOpenChange={(open) => {
+          if (modalSaving) return;
+          setModalOpen(open);
+          if (!open) {
+            setEditingRecord(null);
+            setModalError(null);
+          }
+        }}
+        onSave={(values) => {
+          void handleModalSave(values);
+        }}
+      />
     </FieldsetBlock>
   );
 }
@@ -1135,9 +1271,15 @@ function AcademicRecordsBlock({
 function AcademicRecordCard({
   record,
   tVis,
+  editable = false,
+  onEdit,
+  editLabel,
 }: {
   record: VisibilityAcademicRecord;
   tVis: ReturnType<typeof useTranslations>;
+  editable?: boolean;
+  onEdit?: () => void;
+  editLabel?: string;
 }) {
   const verified = record.statusLabel === 'تایید شده';
 
@@ -1175,6 +1317,18 @@ function AcademicRecordCard({
           ) : null}
           {record.statusLabel}
         </Badge>
+        {editable ? (
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            onClick={onEdit}
+            aria-label={editLabel}
+            className="ms-auto size-9 text-[#404943] hover:bg-[#ffdbcf]/40 hover:text-[#e06333] dark:text-home-filter-muted"
+          >
+            <Pencil className="size-4" strokeWidth={1.75} aria-hidden />
+          </Button>
+        ) : null}
       </div>
 
       <div className="flex flex-col gap-2 text-start text-sm leading-6 text-[#404943] min-[720px]:flex-row min-[720px]:justify-between min-[720px]:gap-8 dark:text-home-filter-muted">

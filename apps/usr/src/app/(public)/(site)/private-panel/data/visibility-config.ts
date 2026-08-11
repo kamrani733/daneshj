@@ -20,9 +20,15 @@ export type VisibilityFieldKind = 'text' | 'photo' | 'textarea' | 'toggle';
 
 export type VisibilityAcademicRecord = {
   id: string;
-  degree: string;
+  apiId: number | null;
+  source: 'verified' | 'submitted';
+  academicGroup: string;
+  fieldOfStudy: string;
   university: string;
   faculty: string;
+  degreeLevel: string;
+  studyStatus: string;
+  degree: string;
   fieldGroup: string;
   description: string;
   endDate: string;
@@ -463,11 +469,11 @@ export const VISIBILITY_FIELD_DEFS: VisibilityFieldDef[] = [
     section: 'educationExtra',
     kind: 'text',
     labelKey: 'studentNumber',
-    tabName: null,
-    apiSection: null,
+    tabName: 'educational_information',
+    apiSection: 'education_occupation_info_user',
     apiField: null,
     valueField: 'student_id',
-    locked: true,
+    hiddenCaptionKey: 'notDisplayed',
   },
   {
     id: 'eduCountry',

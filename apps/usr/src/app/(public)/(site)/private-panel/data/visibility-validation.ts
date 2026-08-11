@@ -69,6 +69,7 @@ const OCCUPATION = z.enum(
 
 const SHORT_TEXT = z.string().max(128, { error: 'tooLong' });
 const MEDIUM_TEXT = z.string().max(255, { error: 'tooLong' });
+const STUDENT_ID = z.string().max(10, { error: 'tooLong' });
 
 const FIELD_SCHEMAS: Record<string, z.ZodType<string>> = {
   firstName: NAME,
@@ -105,6 +106,7 @@ const FIELD_SCHEMAS: Record<string, z.ZodType<string>> = {
   workPhone: PHONE,
   username: HANDLE,
   gradEmploymentStatus: OCCUPATION,
+  studentNumber: STUDENT_ID,
   membershipType: SHORT_TEXT,
   membershipDate: DATE,
   membershipExpiry: DATE,
