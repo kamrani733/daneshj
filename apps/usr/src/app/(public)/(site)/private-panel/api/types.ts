@@ -90,6 +90,7 @@ export interface IdentityInfoUserDto {
   legal_last_name?: string | null;
   gender?: Gender | null;
   national_code?: string | null;
+  birth_date?: string | null;
   profile_picture_path?: string | null;
   electronic_card_picture_path?: string | null;
   about_me?: string | null;
@@ -105,6 +106,8 @@ export interface SocialInfoUserDto {
 
 export interface ContactInfoUserDto {
   id?: number;
+  mobile?: string | null;
+  email?: string | null;
   whatsapp_id?: string | null;
   telegram_id?: string | null;
   instagram_id?: string | null;

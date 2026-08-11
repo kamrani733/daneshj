@@ -6,6 +6,10 @@ import {
   type VisibilityField,
   type VisibilityFieldDef,
 } from '@private-panel/data/visibility-config';
+import {
+  normalizeIranianMobile,
+  normalizeWebsiteUrl,
+} from '@private-panel/data/visibility-validation';
 import { pad2 } from '@/lib/jalali';
 
 import type {
@@ -417,7 +421,9 @@ export function mapVisibilityFields(
       value,
       initiallyVisible: flag ?? false,
       selectedInitially: flag ?? false,
-      locked: def.locked,
+      locked:
+        Boolean(def.locked) ||
+        (def.id === 'mobile' && value.trim().length > 0),
       lockedCaptionKey: def.lockedCaptionKey,
       hiddenCaptionKey: def.hiddenCaptionKey,
       withCalendar: def.withCalendar,
@@ -610,6 +616,12 @@ function parsePrivateFieldValue(
   if (def.id === 'serviceProviderStatus') {
     if (trimmed === 'true' || trimmed === 'سرویس‌دهنده انفرادی') return true;
     if (trimmed === 'false' || trimmed === '') return false;
+  }
+  if (def.id === 'mobile' || def.id === 'workPhone') {
+    return normalizeIranianMobile(trimmed) ?? trimmed;
+  }
+  if (def.id === 'website') {
+    return normalizeWebsiteUrl(trimmed) ?? trimmed;
   }
   return trimmed;
 }

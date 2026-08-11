@@ -1,6 +1,6 @@
 'use client';
 
-import { FileImage, FileText, Trash2, X } from 'lucide-react';
+import { FileText, Trash2, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { cn } from '@/lib/utils';
@@ -29,24 +29,26 @@ type DocumentItemProps = {
   className?: string;
 };
 
-function FileKindIcon({ kind }: { kind: DocumentKind }) {
+function FileKindIcon({ kind, name }: { kind: DocumentKind; name?: string }) {
+  const isJpeg = /\.jpe?g$/i.test(name ?? '');
   if (kind === 'pdf') {
     return (
       <span
-        className="flex size-8 shrink-0 items-center justify-center rounded bg-[#fce8e6] text-[10px] font-bold text-[#ba1a1a]"
+        className="flex h-7 min-w-8 shrink-0 items-center justify-center rounded bg-[#fce8e6] px-1 text-[10px] font-bold text-[#ba1a1a]"
         aria-hidden
       >
         PDF
       </span>
     );
   }
-  if (kind === 'image') {
+  if (kind === 'image' || isJpeg) {
     return (
-      <FileImage
-        className="size-8 shrink-0 text-[#e06333]"
-        strokeWidth={1.5}
+      <span
+        className="flex h-7 min-w-9 shrink-0 items-center justify-center rounded bg-[#fce8e6] px-1 text-[10px] font-bold text-[#ba1a1a]"
         aria-hidden
-      />
+      >
+        JPEG
+      </span>
     );
   }
   return (
@@ -78,14 +80,28 @@ export function DocumentItem({
       >
         <div
           className={cn(
-            'flex h-12 items-center justify-start gap-2 rounded-xl border border-[#bfc9c1]',
-            'bg-transparent px-3 dark:border-auth-input-border'
+            'flex h-14 items-center gap-3 rounded-xl border border-[#bfc9c1]',
+            'bg-home-card px-3 dark:border-auth-input-border dark:bg-home-search-category'
           )}
         >
-          <FileKindIcon kind={item.kind} />
-          <span className="truncate text-sm font-medium text-[#171d19] dark:text-home-filter-ink">
-            {item.name}
-          </span>
+          <div className="flex min-w-0 flex-1 items-center gap-2">
+            <FileKindIcon kind={item.kind} name={item.name} />
+            <span className="truncate text-sm font-medium text-[#171d19] dark:text-home-filter-ink">
+              {item.name}
+            </span>
+          </div>
+          <button
+            type="button"
+            onClick={() => onRemove?.(item.id)}
+            className={cn(
+              'flex size-9 shrink-0 items-center justify-center rounded-lg border',
+              'border-[#c4c7c0] bg-transparent text-[#404943]',
+              'dark:border-auth-input-border dark:text-home-filter-muted'
+            )}
+            aria-label={t('remove')}
+          >
+            <Trash2 className="size-4" strokeWidth={1.75} />
+          </button>
         </div>
         <div className="flex items-center justify-start gap-5 px-1">
           <DecisionRadio
@@ -112,12 +128,12 @@ export function DocumentItem({
       <div
         className={cn(
           'flex h-14 items-center gap-3 rounded-xl border px-3',
-          'bg-transparent dark:border-auth-input-border',
+          'bg-home-card dark:border-auth-input-border dark:bg-home-search-category',
           isError ? 'border-[#ba1a1a]' : 'border-[#bfc9c1]'
         )}
       >
         <div className="flex min-w-0 max-w-[45%] items-center gap-2">
-          <FileKindIcon kind={item.kind} />
+          <FileKindIcon kind={item.kind} name={item.name} />
           <span className="truncate text-sm font-medium text-[#171d19] dark:text-home-filter-ink">
             {item.name}
           </span>
@@ -139,20 +155,24 @@ export function DocumentItem({
         <button
           type="button"
           onClick={() =>
-            item.state === 'done' ? onRemove?.(item.id) : onCancel?.(item.id)
+            item.state === 'uploading'
+              ? onCancel?.(item.id)
+              : onRemove?.(item.id)
           }
           className={cn(
-            'flex size-9 shrink-0 items-center justify-center rounded-full border',
+            'flex size-9 shrink-0 items-center justify-center rounded-lg border bg-transparent',
             isError
               ? 'border-[#ba1a1a] text-[#ba1a1a]'
-              : 'border-[#707973] text-[#404943] dark:border-auth-input-border dark:text-home-filter-muted'
+              : 'border-[#c4c7c0] text-[#404943] dark:border-auth-input-border dark:text-home-filter-muted'
           )}
-          aria-label={item.state === 'done' ? t('remove') : t('cancel')}
+          aria-label={
+            item.state === 'uploading' ? t('cancel') : t('remove')
+          }
         >
-          {item.state === 'done' ? (
-            <Trash2 className="size-4" strokeWidth={1.75} />
-          ) : (
+          {item.state === 'uploading' ? (
             <X className="size-4" strokeWidth={2} />
+          ) : (
+            <Trash2 className="size-4" strokeWidth={1.75} />
           )}
         </button>
       </div>

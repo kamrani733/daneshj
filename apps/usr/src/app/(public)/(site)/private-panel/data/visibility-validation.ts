@@ -14,6 +14,7 @@ export type VisibilityValidationErrorKey =
   | 'invalidName'
   | 'invalidGender'
   | 'invalidStatus'
+  | 'invalidNationalId'
   | 'notEditable';
 
 const NAME = z
@@ -26,7 +27,32 @@ const BIO = z.string().max(1000, { error: 'tooLong' });
 
 const EMAIL = z.email({ error: 'invalidEmail' }).max(254, { error: 'tooLong' });
 
-const URL_VALUE = z.url({ error: 'invalidUrl' }).max(500, { error: 'tooLong' });
+/** Accept bare domains (`example.com`) or full URLs; normalize to https. */
+export function normalizeWebsiteUrl(value: string): string | null {
+  const trimmed = value.trim();
+  if (!trimmed || trimmed.length > 500) return null;
+
+  const withProtocol = /^https?:\/\//i.test(trimmed)
+    ? trimmed
+    : `https://${trimmed}`;
+
+  try {
+    const url = new URL(withProtocol);
+    if (url.protocol !== 'http:' && url.protocol !== 'https:') return null;
+    const host = url.hostname;
+    if (!host || host.includes(' ')) return null;
+    if (host === 'localhost') return withProtocol;
+    if (!/^([a-z0-9-]+\.)+[a-z]{2,}$/i.test(host)) return null;
+    return withProtocol;
+  } catch {
+    return null;
+  }
+}
+
+const URL_VALUE = z.string().refine(
+  (value) => normalizeWebsiteUrl(value) != null,
+  { error: 'invalidUrl' }
+);
 
 const COUNTRY_CODE = z
   .string()
@@ -54,9 +80,26 @@ const LINK_OR_HANDLE = z
     { error: 'invalidUrl' }
   );
 
-const PHONE = z
-  .string()
-  .regex(/^(?:\+98|0)?9\d{9}$|^\+\d{8,15}$/, { error: 'invalidPhone' });
+const normalizeDigits = (value: string) =>
+  value
+    .replace(/[۰-۹]/g, (char) => String('۰۱۲۳۴۵۶۷۸۹'.indexOf(char)))
+    .replace(/[٠-٩]/g, (char) => String('٠١٢٣٤٥٦٧٨٩'.indexOf(char)))
+    .replace(/[\s-]/g, '');
+
+/** Accept 09…, 9…, +98…, 0098… — always return local `09xxxxxxxxx`. */
+export function normalizeIranianMobile(value: string): string | null {
+  let digits = normalizeDigits(value).replace(/^\+/, '');
+  if (digits.startsWith('0098')) digits = digits.slice(4);
+  else if (digits.startsWith('98')) digits = digits.slice(2);
+  if (/^09\d{9}$/.test(digits)) return digits;
+  if (/^9\d{9}$/.test(digits)) return `0${digits}`;
+  return null;
+}
+
+const IRANIAN_MOBILE = z.string().refine(
+  (value) => normalizeIranianMobile(value) != null,
+  { error: 'invalidPhone' }
+);
 
 const GENDER = z.enum(['1', '2', '3', 'مرد', 'زن', 'سایر'], {
   error: 'invalidGender',
@@ -71,11 +114,16 @@ const SHORT_TEXT = z.string().max(128, { error: 'tooLong' });
 const MEDIUM_TEXT = z.string().max(255, { error: 'tooLong' });
 const STUDENT_ID = z.string().max(10, { error: 'tooLong' });
 
+const NATIONAL_ID = z
+  .string()
+  .regex(/^\d{10}$/, { error: 'invalidNationalId' });
+
 const FIELD_SCHEMAS: Record<string, z.ZodType<string>> = {
   firstName: NAME,
   lastName: NAME,
   legalFirstName: NAME,
   legalLastName: NAME,
+  nationalId: NATIONAL_ID,
   birthDate: DATE,
   gender: GENDER,
   bio: BIO,
@@ -91,6 +139,7 @@ const FIELD_SCHEMAS: Record<string, z.ZodType<string>> = {
   eduDistrict: SHORT_TEXT,
   email: EMAIL,
   workEmail: EMAIL,
+  mobile: IRANIAN_MOBILE,
   whatsapp: HANDLE,
   telegram: HANDLE,
   instagram: HANDLE,
@@ -103,7 +152,7 @@ const FIELD_SCHEMAS: Record<string, z.ZodType<string>> = {
   workLinkedin: LINK_OR_HANDLE,
   github: HANDLE,
   website: URL_VALUE,
-  workPhone: PHONE,
+  workPhone: IRANIAN_MOBILE,
   username: HANDLE,
   gradEmploymentStatus: OCCUPATION,
   studentNumber: STUDENT_ID,
@@ -138,6 +187,7 @@ function errorKeyFromZod(error: z.ZodError): VisibilityValidationErrorKey {
     case 'invalidName':
     case 'invalidGender':
     case 'invalidStatus':
+    case 'invalidNationalId':
     case 'notEditable':
       return message;
     default:

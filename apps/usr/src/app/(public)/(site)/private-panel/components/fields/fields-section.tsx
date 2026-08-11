@@ -1,6 +1,6 @@
 'use client';
 
-import { Check, Loader2, Pencil, Plus, Stamp } from 'lucide-react';
+import { Check, Loader2, Pencil, Plus, Stamp, Trash2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import {
   useEffect,
@@ -45,6 +45,11 @@ import {
   TabsList,
   TabsTrigger,
 } from '@/components/ui/tabs';
+import {
+  dateToJalali,
+  formatJalaliDisplay,
+  parseIsoDate,
+} from '@/lib/jalali';
 import { cn } from '@/lib/utils';
 
 import {
@@ -129,6 +134,27 @@ export function FieldsSection({ accessToken }: FieldsSectionProps) {
     () => mapPendingFieldRequests(privateData),
     [privateData]
   );
+
+  const applyServerFields = (
+    nextFields: VisibilityField[],
+    dataUpdatedAt: number
+  ) => {
+    const nextValues = valuesFromFields(nextFields);
+    setDraftValues(nextValues);
+    setSavedValues(nextValues);
+    setPendingPhotoFiles({});
+    setFieldErrors({});
+    setFormError(null);
+    setHydratedKey(dataUpdatedAt);
+  };
+
+  const refreshFieldsFromServer = async () => {
+    const refreshed = await visibilityQuery.refetch();
+    if (refreshed.data) {
+      applyServerFields(refreshed.data.fields, refreshed.dataUpdatedAt);
+    }
+    return refreshed;
+  };
 
   const uploadDocumentFile = async (file: File) => {
     if (!accessToken || !isPrivateFileUploadConfigured()) {
@@ -251,6 +277,17 @@ export function FieldsSection({ accessToken }: FieldsSectionProps) {
     providerDocuments,
     savedProviderDocuments,
   ]);
+
+  const isFieldsLoading =
+    Boolean(accessToken) &&
+    !visibilityQuery.isError &&
+    (isSaving ||
+      submitPrivateMutation.isPending ||
+      reviewMutation.isPending ||
+      visibilityQuery.isPending ||
+      visibilityQuery.isPlaceholderData ||
+      hydratedKey === null ||
+      (visibilityQuery.isFetching && !isDirty));
 
   const categoryFields = useMemo(
     () => fields.filter((field) => field.category === category),
@@ -424,8 +461,6 @@ export function FieldsSection({ accessToken }: FieldsSectionProps) {
           })
         )
       );
-      setSavedValues(submitValues);
-      setDraftValues((prev) => ({ ...prev, ...submitValues }));
       setPendingPhotoFiles({});
       if (academicDocsDirty) {
         setSavedAcademicDocuments(academicReady);
@@ -433,6 +468,7 @@ export function FieldsSection({ accessToken }: FieldsSectionProps) {
       }
       setSavedProviderDocuments(nextProviderDocuments);
       setFormError(null);
+      await refreshFieldsFromServer();
     } catch (error) {
       setFormError(getActorApiErrorMessage(error, t('saveFailed')));
     } finally {
@@ -479,6 +515,7 @@ export function FieldsSection({ accessToken }: FieldsSectionProps) {
         rejectedRequests: rejected,
       });
       setReviewDecisions({});
+      await refreshFieldsFromServer();
     } catch (error) {
       setFormError(getActorApiErrorMessage(error, t('reviewFailed')));
     } finally {
@@ -506,10 +543,32 @@ export function FieldsSection({ accessToken }: FieldsSectionProps) {
       >
         <div
           className={cn(
-            'overflow-hidden rounded-3xl border-2 border-[#bfc9c1]',
-            'bg-transparent dark:border-auth-input-border'
+            'relative overflow-hidden rounded-3xl border-2 border-[#bfc9c1]',
+            'bg-transparent dark:border-auth-input-border',
+            isFieldsLoading && 'min-h-[320px]'
           )}
         >
+          {isFieldsLoading ? (
+            <div
+              className={cn(
+                'absolute inset-0 z-20 flex flex-col items-center justify-center gap-3',
+                'bg-[#f8f8f0]/85 backdrop-blur-[1px]',
+                'dark:bg-home-card/80'
+              )}
+              role="status"
+              aria-live="polite"
+              aria-busy="true"
+            >
+              <Loader2
+                className="size-8 animate-spin text-[#008d63]"
+                strokeWidth={2}
+                aria-hidden
+              />
+              <p className="text-sm font-medium text-[#404943] dark:text-home-filter-muted">
+                {t('loading')}
+              </p>
+            </div>
+          ) : null}
           <div className="-mx-1 overflow-x-auto overscroll-x-contain px-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             <TabsList
               className={cn(
@@ -620,6 +679,7 @@ export function FieldsSection({ accessToken }: FieldsSectionProps) {
                                     }
                                   ),
                                 });
+                                await refreshFieldsFromServer();
                               }}
                               t={t}
                               tVis={tVis}
@@ -981,7 +1041,7 @@ function IdentityCategoryBlocks({
                 key={field.id}
                 field={{ ...field, imageSrc: src, value: src }}
                 label={tVis(`fields.${field.labelKey}`)}
-                editable={editable}
+                editable={editable && !field.locked}
                 value={src}
                 error={fieldErrorMessage(fieldErrors, field.id, tVis)}
                 onChange={onChange}
@@ -999,7 +1059,7 @@ function IdentityCategoryBlocks({
               key={field.id}
               field={field}
               label={tVis(`fields.${field.labelKey}`)}
-              editable={editable}
+              editable={editable && !field.locked}
               value={values[field.id] ?? field.value}
               values={values}
               error={fieldErrorMessage(fieldErrors, field.id, tVis)}
@@ -1014,7 +1074,7 @@ function IdentityCategoryBlocks({
                 key={field.id}
                 field={field}
                 label={tVis(`fields.${field.labelKey}`)}
-                editable={editable}
+                editable={editable && !field.locked}
                 value={values[field.id] ?? field.value}
                 values={values}
                 error={fieldErrorMessage(fieldErrors, field.id, tVis)}
@@ -1107,12 +1167,13 @@ function AcademicRecordsBlock({
   t: ReturnType<typeof useTranslations>;
   tVis: ReturnType<typeof useTranslations>;
 }) {
-  const showDocumentUpload = records.length === 0;
   const [modalOpen, setModalOpen] = useState(false);
   const [editingRecord, setEditingRecord] =
     useState<VisibilityAcademicRecord | null>(null);
   const [modalSaving, setModalSaving] = useState(false);
   const [modalError, setModalError] = useState<string | null>(null);
+  const [recordsHidden, setRecordsHidden] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const openCreate = () => {
     setEditingRecord(null);
@@ -1125,6 +1186,25 @@ function AcademicRecordsBlock({
     setEditingRecord(record);
     setModalError(null);
     setModalOpen(true);
+  };
+
+  const handleDeleteRecord = async (record: VisibilityAcademicRecord) => {
+    if (record.source !== 'submitted' || deletingId) return;
+    setDeletingId(record.id);
+    try {
+      const nextSubmitted = records
+        .filter(
+          (item) => item.source === 'submitted' && item.id !== record.id
+        )
+        .map((item) => toAcademicRecordUserDto(item));
+      await onSubmitRecord(nextSubmitted);
+    } catch (error) {
+      setModalError(
+        getActorApiErrorMessage(error, t('academicRecordDeleteFailed'))
+      );
+    } finally {
+      setDeletingId(null);
+    }
   };
 
   const handleModalSave = async (values: AcademicRecordFormValues) => {
@@ -1141,7 +1221,9 @@ function AcademicRecordsBlock({
         faculty: values.faculty,
         degreeLevel: values.degreeLevel,
         studyStatus: values.studyStatus,
-        degree: values.fieldOfStudy,
+        degree: [values.degreeLevel, values.fieldOfStudy]
+          .filter(Boolean)
+          .join(' '),
         fieldGroup: values.academicGroup,
         description: values.description,
         endDate: values.endDate,
@@ -1157,7 +1239,9 @@ function AcademicRecordsBlock({
           )
         : [...submitted, draft];
 
-      await onSubmitRecord(nextSubmitted.map((record) => toAcademicRecordUserDto(record)));
+      await onSubmitRecord(
+        nextSubmitted.map((record) => toAcademicRecordUserDto(record))
+      );
       setModalOpen(false);
       setEditingRecord(null);
     } catch (error) {
@@ -1174,78 +1258,119 @@ function AcademicRecordsBlock({
       <p className="text-justify text-sm font-medium leading-6 text-[#404943] dark:text-home-filter-muted">
         {t('academicIntro')}
       </p>
-      {editable ? (
+
+      {records.length > 0 ? (
         <div className="flex justify-end">
           <Button
             type="button"
-            onClick={openCreate}
+            variant="outline"
+            onClick={() => setRecordsHidden((prev) => !prev)}
             className={cn(
-              'h-12 gap-2 !rounded-xl bg-[#008d63] px-4 text-sm font-medium text-white shadow-none',
-              'hover:bg-[#008d63]/90'
+              'h-11 !rounded-xl border border-[#e06333] bg-transparent px-4',
+              'text-sm font-medium text-[#e06333] shadow-none',
+              'hover:bg-[#ffdbcf]/40 hover:text-[#e06333]',
+              recordsHidden && 'bg-[#ffdbcf]/50'
             )}
           >
-            <Plus className="size-5" strokeWidth={2} aria-hidden />
-            {t('addRecord')}
+            {recordsHidden ? t('showAcademicRecords') : t('hideAcademicRecords')}
           </Button>
         </div>
       ) : null}
 
-      {records.length > 0 ? (
-        <ul className="flex flex-col gap-4">
-          {records.map((record) => (
-            <li key={record.id}>
-              <AcademicRecordCard
-                record={record}
-                tVis={tVis}
-                editable={editable && record.source === 'submitted'}
-                onEdit={() => openEdit(record)}
-                editLabel={t('editRecord')}
-              />
-            </li>
-          ))}
-        </ul>
+      {modalError && !modalOpen ? (
+        <p role="alert" className="text-start text-sm font-medium text-error">
+          {modalError}
+        </p>
       ) : null}
 
-      {showDocumentUpload ? (
-        <div
-          className={cn(
-            'relative mt-2 flex flex-col gap-6 rounded-3xl border border-[#dbd8d1]',
-            'bg-[#f8f8f0] px-4 pb-6 pt-8',
-            'min-[720px]:px-8 min-[720px]:pb-8',
-            'dark:border-auth-input-border dark:bg-home-stat-card'
-          )}
-        >
-          <h4 className="absolute -top-3 start-4 bg-[#f8f8f0] px-1 text-base font-bold text-[#404943] dark:bg-home-stat-card dark:text-primary-100 min-[720px]:start-8">
-            {t('academicDocumentsTitle')}
-          </h4>
-
-          <ul className="flex flex-col gap-4">
-            <BulletText tone="muted">{t('academicDocumentsHint')}</BulletText>
-            <BulletText>
-              {t('academicSampleBefore')}
-              <button
-                type="button"
-                className="text-warning underline-offset-2 hover:underline"
+      <div
+        className={cn(
+          'flex flex-col gap-4',
+          records.length > 0 &&
+            recordsHidden &&
+            'pointer-events-none opacity-40'
+        )}
+      >
+        {records.length > 0 ? (
+          <ul
+            className={cn(
+              'overflow-hidden rounded-2xl border border-[#dbd8d1] bg-home-card',
+              'dark:border-auth-input-border dark:bg-home-search-category'
+            )}
+          >
+            {records.map((record, index) => (
+              <li
+                key={record.id}
+                className={cn(
+                  index > 0 && 'border-t border-[#dbd8d1] dark:border-auth-input-border'
+                )}
               >
-                {t('academicSampleLink')}
-              </button>
-              {t('academicSampleAfter')}
-            </BulletText>
-            <BulletText tone="muted">{t('academicDocumentsPrivate')}</BulletText>
+                <AcademicRecordCard
+                  record={record}
+                  t={t}
+                  editable={editable && record.source === 'submitted'}
+                  deleting={deletingId === record.id}
+                  onEdit={() => openEdit(record)}
+                  onDelete={() => {
+                    void handleDeleteRecord(record);
+                  }}
+                  editLabel={t('editRecord')}
+                  deleteLabel={t('deleteRecord')}
+                />
+              </li>
+            ))}
           </ul>
+        ) : null}
 
-          <DocumentsPanel
-            dropLabel={t('dropHere')}
-            dropOrLabel={t('dropOr')}
-            uploadLabel={t('uploadFile')}
-            reviewMode={reviewMode}
-            wide
-            documents={documents}
-            onDocumentsChange={onDocumentsChange}
-            onUploadFile={onUploadFile}
-          />
-        </div>
-      ) : null}
+        {editable ? (
+          <div className="flex justify-end">
+            <Button
+              type="button"
+              onClick={openCreate}
+              className={cn(
+                'h-11 gap-2 !rounded-xl bg-[#e7e8e0] px-4 text-sm font-medium text-[#404943] shadow-none',
+                'hover:bg-[#dbd8d1] dark:bg-home-stat-card dark:text-home-filter-ink dark:hover:bg-home-card'
+              )}
+            >
+              <Plus className="size-5" strokeWidth={2} aria-hidden />
+              {t('addRecord')}
+            </Button>
+          </div>
+        ) : null}
+      </div>
+
+      <div className="flex flex-col gap-5">
+        <h4 className="text-start text-base font-bold text-[#404943] dark:text-primary-100">
+          {t('academicDocumentsTitle')}
+        </h4>
+
+        <ul className="flex flex-col gap-3">
+          <BulletText tone="muted">{t('academicDocumentsHint')}</BulletText>
+          <BulletText>
+            {t('academicSampleBefore')}
+            <button
+              type="button"
+              className="text-[#00639a] underline-offset-2 hover:underline dark:text-primary-100"
+            >
+              {t('academicSampleLink')}
+            </button>
+            {t('academicSampleAfter')}
+          </BulletText>
+          <BulletText tone="muted">{t('academicDocumentsPrivate')}</BulletText>
+        </ul>
+
+        <DocumentsPanel
+          dropLabel={t('dropHere')}
+          dropOrLabel={t('dropOr')}
+          uploadLabel={t('uploadFile')}
+          reviewMode={reviewMode}
+          wide
+          showDropzone={editable || reviewMode}
+          documents={documents}
+          onDocumentsChange={onDocumentsChange}
+          onUploadFile={editable || reviewMode ? onUploadFile : undefined}
+        />
+      </div>
 
       <AcademicRecordModal
         open={modalOpen}
@@ -1268,27 +1393,47 @@ function AcademicRecordsBlock({
   );
 }
 
+function formatAcademicDate(value: string): string {
+  const trimmed = value.trim();
+  if (!trimmed) return '';
+  const dateOnly = parseIsoDate(trimmed.slice(0, 10));
+  if (dateOnly && /^\d{4}-\d{2}-\d{2}/.test(trimmed)) {
+    return formatJalaliDisplay(dateOnly);
+  }
+  const parsed = new Date(trimmed);
+  if (!Number.isNaN(parsed.getTime())) {
+    return formatJalaliDisplay(dateToJalali(parsed));
+  }
+  return trimmed;
+}
+
 function AcademicRecordCard({
   record,
-  tVis,
+  t,
   editable = false,
+  deleting = false,
   onEdit,
+  onDelete,
   editLabel,
+  deleteLabel,
 }: {
   record: VisibilityAcademicRecord;
-  tVis: ReturnType<typeof useTranslations>;
+  t: ReturnType<typeof useTranslations>;
   editable?: boolean;
+  deleting?: boolean;
   onEdit?: () => void;
+  onDelete?: () => void;
   editLabel?: string;
+  deleteLabel?: string;
 }) {
   const verified = record.statusLabel === 'تایید شده';
+  const endDate = formatAcademicDate(record.endDate);
 
   return (
     <article
       className={cn(
-        'flex flex-col gap-3 rounded-2xl border border-[#dbd8d1] bg-transparent p-4',
-        'min-[720px]:gap-3.5 min-[720px]:p-5',
-        'dark:border-auth-input-border'
+        'flex flex-col gap-3 bg-transparent p-4',
+        'min-[720px]:gap-3.5 min-[720px]:p-5'
       )}
     >
       <div className="flex flex-wrap items-center justify-start gap-2">
@@ -1308,7 +1453,7 @@ function AcademicRecordCard({
           className={cn(
             'h-7 gap-1 rounded-full border-0 px-2.5 text-xs font-medium',
             verified
-              ? 'bg-primary-subtle text-primary-700 dark:bg-primary/20 dark:text-primary-100'
+              ? 'bg-[#008d63]/15 text-[#008d63] dark:bg-primary/20 dark:text-primary-100'
               : 'bg-[#ffdbcf] text-[#72351f]'
           )}
         >
@@ -1318,20 +1463,44 @@ function AcademicRecordCard({
           {record.statusLabel}
         </Badge>
         {editable ? (
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            onClick={onEdit}
-            aria-label={editLabel}
-            className="ms-auto size-9 text-[#404943] hover:bg-[#ffdbcf]/40 hover:text-[#e06333] dark:text-home-filter-muted"
-          >
-            <Pencil className="size-4" strokeWidth={1.75} aria-hidden />
-          </Button>
+          <div className="ms-auto flex items-center gap-2">
+            <button
+              type="button"
+              onClick={onEdit}
+              disabled={deleting}
+              aria-label={editLabel}
+              className={cn(
+                'flex size-9 shrink-0 items-center justify-center rounded-lg border',
+                'border-[#c4c7c0] bg-transparent text-[#404943]',
+                'hover:border-[#e06333] hover:text-[#e06333]',
+                'disabled:opacity-50 dark:border-auth-input-border dark:text-home-filter-muted'
+              )}
+            >
+              <Pencil className="size-4" strokeWidth={1.75} aria-hidden />
+            </button>
+            <button
+              type="button"
+              onClick={onDelete}
+              disabled={deleting}
+              aria-label={deleteLabel}
+              className={cn(
+                'flex size-9 shrink-0 items-center justify-center rounded-lg border',
+                'border-[#c4c7c0] bg-transparent text-[#404943]',
+                'hover:border-[#ba1a1a] hover:text-[#ba1a1a]',
+                'disabled:opacity-50 dark:border-auth-input-border dark:text-home-filter-muted'
+              )}
+            >
+              {deleting ? (
+                <Loader2 className="size-4 animate-spin" aria-hidden />
+              ) : (
+                <Trash2 className="size-4" strokeWidth={1.75} aria-hidden />
+              )}
+            </button>
+          </div>
         ) : null}
       </div>
 
-      <div className="flex flex-col gap-2 text-start text-sm leading-6 text-[#404943] min-[720px]:flex-row min-[720px]:justify-between min-[720px]:gap-8 dark:text-home-filter-muted">
+      <div className="flex flex-col gap-2 text-start text-sm leading-6 text-[#404943] min-[720px]:flex-row min-[720px]:justify-between min-[720px]:gap-10 dark:text-home-filter-muted">
         <div className="flex min-w-0 flex-col gap-1">
           {[record.university, record.faculty].filter(Boolean).length > 0 ? (
             <p>
@@ -1339,18 +1508,12 @@ function AcademicRecordCard({
             </p>
           ) : null}
           {record.fieldGroup ? (
-            <p>
-              {tVis('fields.recordFieldGroup')}: {record.fieldGroup}
-            </p>
+            <p>{t('academicFieldGroup', { value: record.fieldGroup })}</p>
           ) : null}
         </div>
-        <div className="flex min-w-0 flex-col gap-1 min-[720px]:max-w-[320px]">
+        <div className="flex min-w-0 flex-col gap-1 min-[720px]:max-w-[340px] min-[720px]:text-end">
           {record.description ? <p>{record.description}</p> : null}
-          {record.endDate ? (
-            <p>
-              {tVis('fields.recordGraduationDate')}: {record.endDate}
-            </p>
-          ) : null}
+          {endDate ? <p>{t('academicEndDate', { date: endDate })}</p> : null}
         </div>
       </div>
     </article>
@@ -1384,7 +1547,7 @@ function FieldGrid({
               key={field.id}
               field={field}
               label={tVis(`fields.${field.labelKey}`)}
-              editable={editable}
+              editable={editable && !field.locked}
               value={values[field.id] ?? field.value}
               values={values}
               error={fieldErrorMessage(fieldErrors, field.id, tVis)}
@@ -1398,7 +1561,7 @@ function FieldGrid({
           key={field.id}
           field={field}
           label={tVis(`fields.${field.labelKey}`)}
-          editable={editable}
+          editable={editable && !field.locked}
           value={values[field.id] ?? field.value}
           values={values}
           error={fieldErrorMessage(fieldErrors, field.id, tVis)}

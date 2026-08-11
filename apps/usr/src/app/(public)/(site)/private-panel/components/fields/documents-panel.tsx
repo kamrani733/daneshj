@@ -26,6 +26,7 @@ type DocumentsPanelProps = {
   uploadLabel: string;
   reviewMode?: boolean;
   wide?: boolean;
+  showDropzone?: boolean;
   className?: string;
   documents: DocumentDraft[];
   onDocumentsChange: (documents: DocumentDraft[]) => void;
@@ -49,6 +50,7 @@ export function DocumentsPanel({
   uploadLabel,
   reviewMode = false,
   wide = false,
+  showDropzone = true,
   className,
   documents,
   onDocumentsChange,
@@ -183,7 +185,7 @@ export function DocumentsPanel({
         </ul>
       ) : null}
 
-      {documents.length < MAX_FILES ? (
+      {showDropzone && documents.length < MAX_FILES ? (
         <UploadDropzone
           label={dropLabel}
           orLabel={dropOrLabel}
