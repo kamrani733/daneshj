@@ -885,13 +885,13 @@
       "recordDeclared": "اظهاری",
       "limitations": {
         "title": "محدودی {n}",
+        "blockedTitle": "محدودی حساب",
+        "blockedBody": "حساب شما در حال حاضر مسدود است. جزئیات دلیل، حوزه و بازه محدودی هنوز از سرویس Actor در دسترس نیست.",
         "reasonLabel": "دلیل",
-        "reasonValue": "در این قسمت دلیل محدودی  برای رفع ابهام کاربر شرح داده می‌شود",
         "scopeLabel": "حوزه محدودی",
-        "scopeValue": "حوزه محدودی یک",
         "rangeLabel": "بازه محدودی",
-        "rangeValue": "1404/12/05 تا  1405/02/05",
-        "requestLift": "درخواست رفع محدودی"
+        "requestLift": "درخواست رفع محدودی",
+        "detailsUnavailable": "—"
       }
     },
     "publicOps": {
@@ -1010,7 +1010,7 @@
           "invalidName": "نام واردشده معتبر نیست.",
           "invalidGender": "مقدار جنسیت معتبر نیست.",
           "invalidStatus": "وضعیت انتخاب‌شده معتبر نیست.",
-          "invalidNationalId": "کد ملی باید ۱۰ رقم باشد.",
+          "invalidNationalId": "کد ملی باید ۱۰ رقم باشد (اعداد فارسی یا انگلیسی).",
           "notEditable": "این فیلد قابل ویرایش نیست.",
           "nothingToSave": "تغییری برای ارسال به سرور وجود ندارد.",
           "formHasErrors": "لطفاً خطاهای فرم را برطرف کنید و دوباره ذخیره کنید."

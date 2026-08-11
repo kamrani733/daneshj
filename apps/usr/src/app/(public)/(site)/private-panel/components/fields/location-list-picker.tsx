@@ -48,10 +48,14 @@ export function LocationListPicker({
 }: LocationListPickerProps) {
   const [open, setOpen] = useState(false);
 
-  const selectedLabel = useMemo(
-    () => options.find((option) => option.value === value)?.label ?? '',
-    [options, value]
-  );
+  const selectedLabel = useMemo(() => {
+    if (!value) return '';
+    return (
+      options.find((option) => option.value === value)?.label ??
+      options.find((option) => option.label === value)?.label ??
+      ''
+    );
+  }, [options, value]);
 
   const resolvedTone: OutlinedFieldTone =
     tone ?? (error ? 'error' : pending ? 'warning' : 'default');

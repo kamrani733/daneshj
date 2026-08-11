@@ -114,9 +114,17 @@ const SHORT_TEXT = z.string().max(128, { error: 'tooLong' });
 const MEDIUM_TEXT = z.string().max(255, { error: 'tooLong' });
 const STUDENT_ID = z.string().max(10, { error: 'tooLong' });
 
-const NATIONAL_ID = z
-  .string()
-  .regex(/^\d{10}$/, { error: 'invalidNationalId' });
+/** Accept Persian/Arabic digits; return ASCII 10-digit national id or null. */
+export function normalizeNationalId(value: string): string | null {
+  const digits = normalizeDigits(value.trim());
+  if (!/^\d{10}$/.test(digits)) return null;
+  return digits;
+}
+
+const NATIONAL_ID = z.string().refine(
+  (value) => normalizeNationalId(value) != null,
+  { error: 'invalidNationalId' }
+);
 
 const FIELD_SCHEMAS: Record<string, z.ZodType<string>> = {
   firstName: NAME,

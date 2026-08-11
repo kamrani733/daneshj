@@ -19,6 +19,7 @@ import {
   toAcademicRecordUserDto,
   toPrivateTabSubmitBody,
   uploadPrivatePanelFile,
+  useActorInfoQuery,
   useManageVisibilityQuery,
   useReviewPrivateChangesByOwnerMutation,
   useSubmitPrivateTabByOwnerMutation,
@@ -791,7 +792,7 @@ export function FieldsSection({ accessToken }: FieldsSectionProps) {
         />
       ) : null}
 
-      <LimitationsSection t={t} />
+      <LimitationsSection accessToken={accessToken} t={t} />
     </div>
   );
 }
@@ -1625,86 +1626,52 @@ function BulletText({
 }
 
 function LimitationsSection({
+  accessToken,
   t,
 }: {
+  accessToken?: string | null;
   t: ReturnType<typeof useTranslations>;
 }) {
-  const items = [1, 2] as const;
+  const actorInfoQuery = useActorInfoQuery({ accessToken });
+  const isBlocked = Boolean(actorInfoQuery.data?.blockStatus);
+
+  if (!accessToken || actorInfoQuery.isLoading || !isBlocked) {
+    return null;
+  }
 
   return (
     <div className="flex flex-col gap-6">
-      {items.map((n) => (
-        <div
-          key={n}
-          className={cn(
-            'relative rounded-3xl border border-[#dbd8d1] bg-[#f8f8f0] px-4 pb-6 pt-8',
-            'min-[720px]:px-8 min-[720px]:pb-8',
-            'dark:border-auth-input-border dark:bg-home-stat-card'
-          )}
-        >
-          <h3 className="absolute -top-3 start-4 bg-[#f8f8f0] px-1 text-base font-semibold text-[#ba1a1a] dark:bg-home-stat-card">
-            {t('limitations.title', { n })}
-          </h3>
+      <div
+        className={cn(
+          'relative rounded-3xl border border-[#dbd8d1] bg-[#f8f8f0] px-4 pb-6 pt-8',
+          'min-[720px]:px-8 min-[720px]:pb-8',
+          'dark:border-auth-input-border dark:bg-home-stat-card'
+        )}
+      >
+        <h3 className="absolute -top-3 start-4 bg-[#f8f8f0] px-1 text-base font-semibold text-[#ba1a1a] dark:bg-home-stat-card">
+          {t('limitations.blockedTitle')}
+        </h3>
 
-          <div className="flex flex-col gap-6">
-            <div className="grid grid-cols-1 gap-4 min-[720px]:grid-cols-3">
-              <ReadOnlyChip
-                label={t('limitations.reasonLabel')}
-                value={t('limitations.reasonValue')}
-                wide
-              />
-              <ReadOnlyChip
-                label={t('limitations.scopeLabel')}
-                value={t('limitations.scopeValue')}
-              />
-              <ReadOnlyChip
-                label={t('limitations.rangeLabel')}
-                value={t('limitations.rangeValue')}
-              />
-            </div>
-            <div className="flex justify-start">
-              <Button
-                type="button"
-                variant="outline"
-                className={cn(
-                  'h-12 w-full max-w-[176px] !rounded-xl border border-[#e06333]',
-                  'bg-transparent px-4 text-sm font-medium text-[#e06333] shadow-none',
-                  'hover:bg-[#ffdbcf]/40 hover:text-[#e06333]'
-                )}
-              >
-                {t('limitations.requestLift')}
-              </Button>
-            </div>
+        <div className="flex flex-col gap-6">
+          <p className="text-justify text-sm font-medium leading-6 text-[#404943] dark:text-home-filter-muted">
+            {t('limitations.blockedBody')}
+          </p>
+          <div className="flex justify-start">
+            <Button
+              type="button"
+              variant="outline"
+              disabled
+              className={cn(
+                'h-12 w-full max-w-[176px] !rounded-xl border border-[#e06333]',
+                'bg-transparent px-4 text-sm font-medium text-[#e06333] shadow-none',
+                'disabled:opacity-50'
+              )}
+            >
+              {t('limitations.requestLift')}
+            </Button>
           </div>
         </div>
-      ))}
-    </div>
-  );
-}
-
-function ReadOnlyChip({
-  label,
-  value,
-  wide = false,
-}: {
-  label: string;
-  value: string;
-  wide?: boolean;
-}) {
-  return (
-    <div
-      className={cn(
-        'relative rounded border border-[#dbd8d1] bg-transparent px-3 pb-2 pt-3',
-        'dark:border-auth-input-border',
-        wide && 'min-[720px]:col-span-1'
-      )}
-    >
-      <span className="absolute -top-2 start-2 bg-[#f8f8f0] px-1 text-xs font-bold text-[#404943] dark:bg-home-stat-card dark:text-home-filter-muted">
-        {label}
-      </span>
-      <p className="text-start text-sm font-medium text-[#404943] dark:text-home-filter-ink">
-        {value}
-      </p>
+      </div>
     </div>
   );
 }

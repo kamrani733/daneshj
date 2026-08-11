@@ -8,6 +8,7 @@ import {
 } from '@private-panel/data/visibility-config';
 import {
   normalizeIranianMobile,
+  normalizeNationalId,
   normalizeWebsiteUrl,
 } from '@private-panel/data/visibility-validation';
 import { pad2 } from '@/lib/jalali';
@@ -82,7 +83,10 @@ function unwrapFieldValue(raw: unknown): unknown {
 
 function isWrappedPending(raw: unknown): boolean {
   if (raw == null || typeof raw !== 'object' || Array.isArray(raw)) return false;
-  return Boolean((raw as Record<string, unknown>).pending);
+  const field = raw as Record<string, unknown>;
+  if (field.pending !== true) return false;
+  const requestId = Number(field.request_id);
+  return Number.isFinite(requestId) && requestId > 0;
 }
 
 function readPending(
@@ -116,15 +120,6 @@ function readFlag(
   return Boolean(value);
 }
 
-const GENDER_LABELS: Record<string, string> = {
-  '1': 'مرد',
-  '2': 'زن',
-  '3': 'سایر',
-  Male: 'مرد',
-  Female: 'زن',
-  Other: 'سایر',
-};
-
 const DEGREE_LABELS: Record<string, string> = {
   '1': 'کاردانی',
   '2': 'کارشناسی',
@@ -147,14 +142,6 @@ const ACADEMIC_GROUP_LABELS: Record<string, string> = {
 const STUDY_STATUS_LABELS: Record<string, string> = {
   '1': 'دانشجو',
   '2': 'فارغ‌التحصیل',
-};
-
-const OCCUPATION_STATUS_LABELS: Record<string, string> = {
-  '1': 'دانشجو',
-  '2': 'فارغ‌التحصیل',
-  '3': 'مدرسه',
-  '4': 'ورود',
-  '5': 'سایر',
 };
 
 function formatIsoAsDateOnly(raw: string): string | null {
@@ -180,12 +167,8 @@ function formatIsoAsDateOnly(raw: string): string | null {
 
 function formatDisplayValue(def: VisibilityFieldDef, raw: string): string {
   if (!raw) return '';
-  if (def.id === 'gender') return GENDER_LABELS[raw] ?? raw;
-  if (def.id === 'gradEmploymentStatus') {
-    return OCCUPATION_STATUS_LABELS[raw] ?? raw;
-  }
   if (def.id === 'serviceProviderStatus') {
-    if (raw === 'true') return 'سرویس‌دهنده انفرادی';
+    if (raw === 'true') return 'true';
     if (raw === 'false') return '';
   }
   if (
@@ -619,6 +602,9 @@ function parsePrivateFieldValue(
   }
   if (def.id === 'mobile' || def.id === 'workPhone') {
     return normalizeIranianMobile(trimmed) ?? trimmed;
+  }
+  if (def.id === 'nationalId') {
+    return normalizeNationalId(trimmed) ?? trimmed;
   }
   if (def.id === 'website') {
     return normalizeWebsiteUrl(trimmed) ?? trimmed;

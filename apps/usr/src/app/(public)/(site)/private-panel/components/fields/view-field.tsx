@@ -183,6 +183,10 @@ export function ViewField({
 
   if (control === 'select') {
     const options = optionsForField(field.id, values);
+    const selectedLabel =
+      options.find((option) => option.value === current)?.label ??
+      options.find((option) => option.label === current)?.label ??
+      current;
     const useListPicker =
       canEdit && (options.length > 0 || CASCADE_SELECT_IDS.has(field.id));
     if (useListPicker) {
@@ -218,7 +222,7 @@ export function ViewField({
     return (
       <OutlinedDisplayField
         {...shared}
-        value={current}
+        value={selectedLabel}
         endAdornment={
           <ChevronDown
             className="size-5 text-[#404943] dark:text-home-filter-muted"
