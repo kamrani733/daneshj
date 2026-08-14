@@ -7,12 +7,12 @@ import type {
   OtherInfoContent,
   ServiceCatalog,
 } from '@public-panel/data/public-panel-ui';
+import { EmptyState } from '@/components/panel';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
 
 import { CatalogSection } from './section';
 import { DiscountOfferCard } from './discount-offer-card';
-import { EmptyState } from '../shared/empty-state';
 import { NewsOfferCard } from './news-offer-card';
 import { NewsletterOfferCard } from './newsletter-offer-card';
 import { OtherInfoPanel } from './other-info-panel';

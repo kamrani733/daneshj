@@ -1,4 +1,8 @@
-import type { PanelSocialLink } from '@/components/panel';
+import type {
+  PanelAcademicRecord,
+  PanelEducationAddress,
+  PanelSocialLink,
+} from '@/components/panel';
 import type { PrivatePanelProfile } from '@private-panel/data/private-panel-ui';
 import { COUNTRY_OPTIONS } from '@private-panel/data/geo';
 import {
@@ -14,14 +18,11 @@ import {
 } from '@private-panel/data/visibility-validation';
 import {
   EMPTY_PUBLIC_PANEL,
-  type AcademicRecord,
-  type EducationAddress,
   type PublicPanelProfile,
 } from '@public-panel/data/public-panel-ui';
 import {
-  formatJalaliDisplay,
+  formatAcademicDate,
   pad2,
-  parseIsoDate,
 } from '@/lib/jalali';
 
 import type {
@@ -387,7 +388,7 @@ function divisionPlaceName(row: Record<string, unknown> | null): string {
 
 function mapEducationAddress(
   publicData: ProfileRetrieveData | null | undefined
-): EducationAddress {
+): PanelEducationAddress {
   const education = pickSection(publicData, 'education_occupation_info_user');
   const divisions = asArray(
     education?.education_occupation_info_user_division_code ??
@@ -410,34 +411,30 @@ function mapEducationAddress(
   };
 }
 
-function formatPublicDate(raw: string): string {
-  const iso = formatIsoAsDateOnly(raw);
-  if (!iso) return raw;
-  const jalali = parseIsoDate(iso);
-  return jalali ? formatJalaliDisplay(jalali) : raw;
+export function toPanelAcademicRecord(
+  record: VisibilityAcademicRecord
+): PanelAcademicRecord {
+  const isGraduate =
+    record.studyStatus === '2' || record.roleLabel.includes('فارغ');
+
+  return {
+    id: record.id,
+    degree: record.degree,
+    university: [record.university, record.faculty].filter(Boolean).join('، '),
+    fieldGroup: record.fieldGroup,
+    description: record.description,
+    endDate: formatAcademicDate(record.endDate),
+    role: isGraduate ? 'graduate' : 'student',
+    roleLabel: record.roleLabel,
+    status: record.source === 'verified' ? 'verified' : 'declared',
+    statusLabel: record.statusLabel,
+  };
 }
 
 function mapPublicAcademicRecords(
   publicData: ProfileRetrieveData | null | undefined
-): AcademicRecord[] {
-  return mapAcademicRecords(publicData).map((record) => {
-    const university = [record.university, record.faculty]
-      .filter(Boolean)
-      .join('، ');
-    const isGraduate =
-      record.studyStatus === '2' || record.roleLabel.includes('فارغ');
-
-    return {
-      id: record.id,
-      degree: record.degree,
-      university,
-      fieldGroup: record.fieldGroup,
-      description: record.description,
-      endDate: formatPublicDate(record.endDate),
-      status: record.source === 'verified' ? 'verified' : 'declared',
-      role: isGraduate ? 'graduate' : 'student',
-    };
-  });
+): PanelAcademicRecord[] {
+  return mapAcademicRecords(publicData).map(toPanelAcademicRecord);
 }
 
 function collectSocialLinks(

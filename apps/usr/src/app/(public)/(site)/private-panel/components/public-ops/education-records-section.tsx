@@ -1,14 +1,14 @@
 'use client';
 
-import { Check } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import fa from '@messages/fa.json';
+import { toPanelAcademicRecord } from '@private-panel/api';
 import type {
   VisibilityAcademicRecord,
   VisibilityField,
 } from '@private-panel/data/visibility-config';
-import { Badge } from '@/components/ui/badge';
+import { AcademicRecordCard } from '@/components/panel';
 import { formatFaNumber } from '@/lib/format-fa';
 import { cn } from '@/lib/utils';
 
@@ -78,60 +78,26 @@ export function EducationRecordsSection({
 
           return (
             <li key={record.id}>
-              <article
+              <AcademicRecordCard
+                record={toPanelAcademicRecord(record)}
                 className={cn(
-                  'flex flex-col gap-2.5 rounded-xl border bg-[#f8f8f0] p-3 dark:bg-home-search-category',
-                  'min-[720px]:gap-3 min-[720px]:p-4',
+                  'rounded-xl border bg-[#f8f8f0] p-3 dark:bg-home-search-category',
+                  'min-[720px]:p-4',
                   state === 'visible' && 'border-[#dae6da]',
                   state === 'pendingRemoval' && 'border-warning/50',
                   state === 'hidden' && 'border-[#dbdbd3] dark:border-border'
                 )}
-              >
-                <div className="flex flex-wrap items-center gap-1.5 min-[720px]:gap-2">
-                  <h4 className="text-sm font-bold text-content dark:text-home-filter-ink min-[720px]:text-base">
-                    {record.degree}
-                  </h4>
-                  <Badge
-                    variant="outline"
-                    className="h-6 rounded-full border-primary px-2 text-[10px] font-medium text-primary min-[720px]:h-7 min-[720px]:px-2.5 min-[720px]:text-xs dark:border-primary-100 dark:text-primary-100"
-                  >
-                    {record.roleLabel}
-                  </Badge>
-                  <Badge
-                    variant="secondary"
-                    className="h-6 gap-1 rounded-full border-0 bg-primary-subtle px-2 text-[10px] font-medium text-primary-700 min-[720px]:h-7 min-[720px]:px-2.5 min-[720px]:text-xs dark:bg-primary/20 dark:text-primary-100"
-                  >
-                    <Check className="size-3.5" strokeWidth={2.5} aria-hidden />
-                    {record.statusLabel}
-                  </Badge>
-                </div>
-
-                <div className="flex flex-col gap-2 text-start text-xs leading-6 text-home-filter-muted min-[720px]:flex-row min-[720px]:justify-between min-[720px]:gap-8 min-[720px]:text-sm dark:text-home-filter-ink">
-                  <div className="flex min-w-0 flex-col gap-1">
-                    <p>
-                      {record.university}، {record.faculty}
-                    </p>
-                    <p>
-                      {t('fields.recordFieldGroup')}: {record.fieldGroup}
-                    </p>
-                  </div>
-                  <div className="flex min-w-0 flex-col gap-1 min-[720px]:max-w-[320px]">
-                    <p>{record.description}</p>
-                    <p>
-                      {t('fields.recordGraduationDate')}: {record.endDate}
-                    </p>
-                  </div>
-                </div>
-
-                <VisibilityCheckbox
-                  label={record.degree}
-                  caption={caption}
-                  state={state}
-                  selected={selected}
-                  locked={false}
-                  onToggle={() => onToggleRecord(record.id)}
-                />
-              </article>
+                footer={
+                  <VisibilityCheckbox
+                    label={record.degree}
+                    caption={caption}
+                    state={state}
+                    selected={selected}
+                    locked={false}
+                    onToggle={() => onToggleRecord(record.id)}
+                  />
+                }
+              />
             </li>
           );
         })}

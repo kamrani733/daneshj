@@ -9,6 +9,7 @@ import {
   type CommentSort,
   type PanelComment,
 } from '@public-panel/data/public-panel-ui';
+import { EmptyState } from '@/components/panel';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { SearchField } from '@/components/ui/search-field';
@@ -16,7 +17,6 @@ import { formatFaNumber } from '@/lib/format-fa';
 import { cn } from '@/lib/utils';
 
 import { CommentCard } from './card';
-import { EmptyState } from '../shared/empty-state';
 import { SectionTitle } from '../shared/section-title';
 
 const COMMENT_MAX_LENGTH = 1500;

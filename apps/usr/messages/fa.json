@@ -621,6 +621,25 @@
     "seeMore": "مشاهده بیشتر",
     "seeLess": "مشاهده کمتر",
     "copied": "محتوا کپی شد",
+    "educationAddress": {
+      "title": "آدرس محل تحصیل/شغل",
+      "country": "کشور:",
+      "province": "استان:",
+      "city": "شهر/شهرستان:",
+      "district": "منطقه/روستا:"
+    },
+    "academicRecord": {
+      "fieldGroup": "حوزه / گروه: {value}",
+      "endDate": "تاریخ پایان تحصیل: {date}",
+      "status": {
+        "verified": "تایید شده",
+        "declared": "اظهاری"
+      },
+      "role": {
+        "graduate": "فارغ‌التحصیل",
+        "student": "دانشجو"
+      }
+    },
     "social": {
       "email": "ایمیل",
       "telegram": "تلگرام",
@@ -679,25 +698,6 @@
       "bodyLine2": "خبرنامه، رویداد، معرفی برنامه‌های دانشگاهی"
     },
     "academicRecords": "سوابق تحصیلی «{username}» ({count})",
-    "educationAddress": {
-      "title": "آدرس محل تحصیل/شغل",
-      "country": "کشور:",
-      "province": "استان:",
-      "city": "شهر/شهرستان:",
-      "district": "منطقه/روستا:"
-    },
-    "academicRecord": {
-      "fieldGroup": "حوزه / گروه: {value}",
-      "endDate": "تاریخ پایان تحصیل : {date}",
-      "status": {
-        "verified": "تایید شده",
-        "declared": "اظهاری"
-      },
-      "role": {
-        "graduate": "فارغ‌التحصیل",
-        "student": "دانشجو"
-      }
-    },
     "serviceInfo": "اطلاعات سرویس دهندگی",
     "tabs": {
       "services": "سرویس‌های من ({count})",
@@ -845,8 +845,6 @@
       "deleteRecord": "حذف سابقه",
       "academicRecordSaveFailed": "ذخیره سابقه تحصیلی با خطا مواجه شد.",
       "academicRecordDeleteFailed": "حذف سابقه تحصیلی با خطا مواجه شد.",
-      "academicEndDate": "تاریخ پایان تحصیل: {date}",
-      "academicFieldGroup": "حوزه / گروه: {value}",
       "academicModal": {
         "title": "سابقه‌ی تحصیلی اظهاری",
         "academicGroup": "حوزه/گروه",

@@ -1,6 +1,6 @@
 'use client';
 
-import { Check, Loader2, Pencil, Plus, Stamp, Trash2 } from 'lucide-react';
+import { Loader2, Pencil, Plus, Stamp, Trash2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import {
   useEffect,
@@ -17,6 +17,7 @@ import {
   sanitizeValuesForPrivateSubmit,
   tabsAffectedByValues,
   toAcademicRecordUserDto,
+  toPanelAcademicRecord,
   toPrivateTabSubmitBody,
   uploadPrivatePanelFile,
   useActorInfoQuery,
@@ -38,7 +39,7 @@ import {
   validateVisibilityValues,
   type VisibilityValidationErrorKey,
 } from '@private-panel/data/visibility-validation';
-import { Badge } from '@/components/ui/badge';
+import { AcademicRecordCard, PanelLoadingOverlay } from '@/components/panel';
 import { Button } from '@/components/ui/button';
 import {
   Tabs,
@@ -46,11 +47,6 @@ import {
   TabsList,
   TabsTrigger,
 } from '@/components/ui/tabs';
-import {
-  dateToJalali,
-  formatJalaliDisplay,
-  parseIsoDate,
-} from '@/lib/jalali';
 import { cn } from '@/lib/utils';
 
 import {
@@ -550,25 +546,10 @@ export function FieldsSection({ accessToken }: FieldsSectionProps) {
           )}
         >
           {isFieldsLoading ? (
-            <div
-              className={cn(
-                'absolute inset-0 z-20 flex flex-col items-center justify-center gap-3',
-                'bg-[#f8f8f0]/85 backdrop-blur-[1px]',
-                'dark:bg-home-card/80'
-              )}
-              role="status"
-              aria-live="polite"
-              aria-busy="true"
-            >
-              <Loader2
-                className="size-8 animate-spin text-[#008d63]"
-                strokeWidth={2}
-                aria-hidden
-              />
-              <p className="text-sm font-medium text-[#404943] dark:text-home-filter-muted">
-                {t('loading')}
-              </p>
-            </div>
+            <PanelLoadingOverlay
+              message={t('loading')}
+              className="bg-[#f8f8f0]/85 dark:bg-home-card/80"
+            />
           ) : null}
           <div className="-mx-1 overflow-x-auto overscroll-x-contain px-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             <TabsList
@@ -1307,16 +1288,36 @@ function AcademicRecordsBlock({
                 )}
               >
                 <AcademicRecordCard
-                  record={record}
-                  t={t}
-                  editable={editable && record.source === 'submitted'}
-                  deleting={deletingId === record.id}
-                  onEdit={() => openEdit(record)}
-                  onDelete={() => {
-                    void handleDeleteRecord(record);
-                  }}
-                  editLabel={t('editRecord')}
-                  deleteLabel={t('deleteRecord')}
+                  record={toPanelAcademicRecord(record)}
+                  className="bg-transparent p-4 min-[720px]:p-5"
+                  actions={
+                    editable && record.source === 'submitted' ? (
+                      <>
+                        <RecordIconButton
+                          label={t('editRecord')}
+                          disabled={deletingId === record.id}
+                          hoverClassName="hover:border-[#e06333] hover:text-[#e06333]"
+                          onClick={() => openEdit(record)}
+                        >
+                          <Pencil className="size-4" strokeWidth={1.75} aria-hidden />
+                        </RecordIconButton>
+                        <RecordIconButton
+                          label={t('deleteRecord')}
+                          disabled={deletingId === record.id}
+                          hoverClassName="hover:border-[#ba1a1a] hover:text-[#ba1a1a]"
+                          onClick={() => {
+                            void handleDeleteRecord(record);
+                          }}
+                        >
+                          {deletingId === record.id ? (
+                            <Loader2 className="size-4 animate-spin" aria-hidden />
+                          ) : (
+                            <Trash2 className="size-4" strokeWidth={1.75} aria-hidden />
+                          )}
+                        </RecordIconButton>
+                      </>
+                    ) : undefined
+                  }
                 />
               </li>
             ))}
@@ -1394,130 +1395,34 @@ function AcademicRecordsBlock({
   );
 }
 
-function formatAcademicDate(value: string): string {
-  const trimmed = value.trim();
-  if (!trimmed) return '';
-  const dateOnly = parseIsoDate(trimmed.slice(0, 10));
-  if (dateOnly && /^\d{4}-\d{2}-\d{2}/.test(trimmed)) {
-    return formatJalaliDisplay(dateOnly);
-  }
-  const parsed = new Date(trimmed);
-  if (!Number.isNaN(parsed.getTime())) {
-    return formatJalaliDisplay(dateToJalali(parsed));
-  }
-  return trimmed;
-}
-
-function AcademicRecordCard({
-  record,
-  t,
-  editable = false,
-  deleting = false,
-  onEdit,
-  onDelete,
-  editLabel,
-  deleteLabel,
+function RecordIconButton({
+  label,
+  disabled,
+  hoverClassName,
+  onClick,
+  children,
 }: {
-  record: VisibilityAcademicRecord;
-  t: ReturnType<typeof useTranslations>;
-  editable?: boolean;
-  deleting?: boolean;
-  onEdit?: () => void;
-  onDelete?: () => void;
-  editLabel?: string;
-  deleteLabel?: string;
+  label: string;
+  disabled?: boolean;
+  hoverClassName: string;
+  onClick: () => void;
+  children: ReactNode;
 }) {
-  const verified = record.statusLabel === 'تایید شده';
-  const endDate = formatAcademicDate(record.endDate);
-
   return (
-    <article
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      aria-label={label}
       className={cn(
-        'flex flex-col gap-3 bg-transparent p-4',
-        'min-[720px]:gap-3.5 min-[720px]:p-5'
+        'flex size-9 shrink-0 items-center justify-center rounded-lg border',
+        'border-[#c4c7c0] bg-transparent text-[#404943]',
+        hoverClassName,
+        'disabled:opacity-50 dark:border-auth-input-border dark:text-home-filter-muted'
       )}
     >
-      <div className="flex flex-wrap items-center justify-start gap-2">
-        <h4 className="text-sm font-bold text-[#171d19] dark:text-home-filter-ink min-[720px]:text-base">
-          {record.degree || '\u00a0'}
-        </h4>
-        {record.roleLabel ? (
-          <Badge
-            variant="outline"
-            className="h-7 rounded-full border-[#008d63] px-2.5 text-xs font-medium text-[#008d63] dark:border-primary-100 dark:text-primary-100"
-          >
-            {record.roleLabel}
-          </Badge>
-        ) : null}
-        <Badge
-          variant="secondary"
-          className={cn(
-            'h-7 gap-1 rounded-full border-0 px-2.5 text-xs font-medium',
-            verified
-              ? 'bg-[#008d63]/15 text-[#008d63] dark:bg-primary/20 dark:text-primary-100'
-              : 'bg-[#ffdbcf] text-[#72351f]'
-          )}
-        >
-          {verified ? (
-            <Check className="size-3.5" strokeWidth={2.5} aria-hidden />
-          ) : null}
-          {record.statusLabel}
-        </Badge>
-        {editable ? (
-          <div className="ms-auto flex items-center gap-2">
-            <button
-              type="button"
-              onClick={onEdit}
-              disabled={deleting}
-              aria-label={editLabel}
-              className={cn(
-                'flex size-9 shrink-0 items-center justify-center rounded-lg border',
-                'border-[#c4c7c0] bg-transparent text-[#404943]',
-                'hover:border-[#e06333] hover:text-[#e06333]',
-                'disabled:opacity-50 dark:border-auth-input-border dark:text-home-filter-muted'
-              )}
-            >
-              <Pencil className="size-4" strokeWidth={1.75} aria-hidden />
-            </button>
-            <button
-              type="button"
-              onClick={onDelete}
-              disabled={deleting}
-              aria-label={deleteLabel}
-              className={cn(
-                'flex size-9 shrink-0 items-center justify-center rounded-lg border',
-                'border-[#c4c7c0] bg-transparent text-[#404943]',
-                'hover:border-[#ba1a1a] hover:text-[#ba1a1a]',
-                'disabled:opacity-50 dark:border-auth-input-border dark:text-home-filter-muted'
-              )}
-            >
-              {deleting ? (
-                <Loader2 className="size-4 animate-spin" aria-hidden />
-              ) : (
-                <Trash2 className="size-4" strokeWidth={1.75} aria-hidden />
-              )}
-            </button>
-          </div>
-        ) : null}
-      </div>
-
-      <div className="flex flex-col gap-2 text-start text-sm leading-6 text-[#404943] min-[720px]:flex-row min-[720px]:justify-between min-[720px]:gap-10 dark:text-home-filter-muted">
-        <div className="flex min-w-0 flex-col gap-1">
-          {[record.university, record.faculty].filter(Boolean).length > 0 ? (
-            <p>
-              {[record.university, record.faculty].filter(Boolean).join('، ')}
-            </p>
-          ) : null}
-          {record.fieldGroup ? (
-            <p>{t('academicFieldGroup', { value: record.fieldGroup })}</p>
-          ) : null}
-        </div>
-        <div className="flex min-w-0 flex-col gap-1 min-[720px]:max-w-[340px] min-[720px]:text-end">
-          {record.description ? <p>{record.description}</p> : null}
-          {endDate ? <p>{t('academicEndDate', { date: endDate })}</p> : null}
-        </div>
-      </div>
-    </article>
+      {children}
+    </button>
   );
 }
 

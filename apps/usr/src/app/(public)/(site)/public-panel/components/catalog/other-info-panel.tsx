@@ -6,10 +6,10 @@ import { useTranslations } from 'next-intl';
 import type { ReactNode } from 'react';
 
 import type { OtherInfoContent } from '@public-panel/data/public-panel-ui';
+import { EmptyState } from '@/components/panel';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
-import { EmptyState } from '../shared/empty-state';
 import { TitleUnderline } from '../shared/title-underline';
 
 type OtherInfoPanelProps = {

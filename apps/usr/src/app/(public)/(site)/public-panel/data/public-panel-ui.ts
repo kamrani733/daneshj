@@ -1,6 +1,8 @@
 /** Public-panel types/paths (page UI + site menu). */
 
 import type {
+  PanelAcademicRecord,
+  PanelEducationAddress,
   PanelProfileIdentity,
   PanelSocialLink,
   SocialNetwork,
@@ -8,29 +10,10 @@ import type {
 
 export type { PanelSocialLink as PublicPanelSocialLink, SocialNetwork };
 
-export type AcademicRecordStatus = 'verified' | 'declared';
-export type AcademicRecordRole = 'graduate' | 'student';
-
-export type EducationAddress = {
-  country: string;
-  province: string;
-  city: string;
-  district: string;
-};
-
-export type AcademicRecord = {
-  id: string;
-  /** e.g. کارشناسی حقوق */
-  degree: string;
-  /** e.g. دانشگاه علامه طباطبایی، دانشکده حقوق */
-  university: string;
-  /** e.g. علوم انسانی */
-  fieldGroup: string;
-  description: string;
-  endDate: string;
-  status: AcademicRecordStatus;
-  role: AcademicRecordRole;
-};
+export type AcademicRecordStatus = PanelAcademicRecord['status'];
+export type AcademicRecordRole = PanelAcademicRecord['role'];
+export type EducationAddress = PanelEducationAddress;
+export type AcademicRecord = PanelAcademicRecord;
 
 export type DiscountOffer = {
   id: string;

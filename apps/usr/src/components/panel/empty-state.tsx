@@ -8,7 +8,6 @@ type EmptyStateProps = {
   className?: string;
 };
 
-/** Shared empty illustration + message. */
 export function EmptyState({
   message,
   imageSrc = '/images/public-panel/empty-state-box.png',

@@ -52,6 +52,7 @@ export {
   mapPrivatePanelProfile,
   mapPublicPanelProfile,
   mapVisibilityFields,
+  toPanelAcademicRecord,
   sanitizeValuesForPrivateSubmit,
   tabsAffectedBySelection,
   tabsAffectedByValues,
