@@ -31,3 +31,26 @@ export type PanelProfileIdentity = {
   electronicCardHref: string;
   socialLinks: PanelSocialLink[];
 };
+
+export type PanelAcademicRecordStatus = 'verified' | 'declared';
+export type PanelAcademicRecordRole = 'graduate' | 'student';
+
+export type PanelEducationAddress = {
+  country: string;
+  province: string;
+  city: string;
+  district: string;
+};
+
+export type PanelAcademicRecord = {
+  id: string;
+  degree: string;
+  university: string;
+  fieldGroup?: string;
+  description?: string;
+  endDate?: string;
+  role: PanelAcademicRecordRole;
+  roleLabel?: string;
+  status: PanelAcademicRecordStatus;
+  statusLabel?: string;
+};

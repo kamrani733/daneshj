@@ -15,6 +15,10 @@ export const interactiveOpsQueryKeys = {
     [...interactiveOpsQueryKeys.all, 'likees', filters] as const,
   dislikers: (filters: Omit<TargetQueryPayload, 'accessToken'>) =>
     [...interactiveOpsQueryKeys.all, 'dislikers', filters] as const,
+  dislikees: (filters: Omit<ActorQueryPayload, 'accessToken'>) =>
+    [...interactiveOpsQueryKeys.all, 'dislikees', filters] as const,
+  averageScore: (targetId: number, targetType: number) =>
+    [...interactiveOpsQueryKeys.all, 'average-score', targetType, targetId] as const,
   panelStats: (targetId: number, targetType: number) =>
     [...interactiveOpsQueryKeys.all, 'panel-stats', targetType, targetId] as const,
 };

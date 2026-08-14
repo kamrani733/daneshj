@@ -136,7 +136,41 @@ export interface ActorQueryPayload {
   actorId: number;
 }
 
+export interface InteractivePerson {
+  id: string;
+  actorId: number;
+  username: string;
+  displayName: string;
+  avatarSrc?: string;
+}
+
 export interface InteractiveCountResult {
+  count: number;
+  people: InteractivePerson[];
+  message: string | null;
+}
+
+export type ScoreTargetType = 2 | 3 | 4 | 5 | 6;
+
+export interface ScoreRequestDto {
+  actor_type: InteractiveActorType;
+  actor_id: number;
+  target_type: ScoreTargetType;
+  target_id: number;
+  score: number;
+}
+
+export interface ScorePayload {
+  accessToken?: string | null;
+  actorType: InteractiveActorType;
+  actorId: number;
+  targetType: ScoreTargetType;
+  targetId: number;
+  score: number;
+}
+
+export interface AverageScoreResult {
+  average: number | null;
   count: number;
   message: string | null;
 }

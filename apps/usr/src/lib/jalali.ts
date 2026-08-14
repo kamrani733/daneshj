@@ -198,3 +198,18 @@ export function buildJalaliMonthGrid(year: number, month: number): CalendarCell[
 
   return cells;
 }
+
+/** ISO or datetime string → Jalali display, or original text if unparsable. */
+export function formatAcademicDate(value: string | null | undefined): string {
+  const trimmed = value?.trim() ?? '';
+  if (!trimmed) return '';
+  const dateOnly = parseIsoDate(trimmed.slice(0, 10));
+  if (dateOnly && /^\d{4}-\d{2}-\d{2}/.test(trimmed)) {
+    return formatJalaliDisplay(dateOnly);
+  }
+  const parsed = new Date(trimmed);
+  if (!Number.isNaN(parsed.getTime())) {
+    return formatJalaliDisplay(dateToJalali(parsed));
+  }
+  return trimmed;
+}

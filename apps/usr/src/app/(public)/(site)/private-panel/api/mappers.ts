@@ -1,5 +1,6 @@
 import type { PanelSocialLink } from '@/components/panel';
 import type { PrivatePanelProfile } from '@private-panel/data/private-panel-ui';
+import { COUNTRY_OPTIONS } from '@private-panel/data/geo';
 import {
   VISIBILITY_FIELD_DEFS,
   type VisibilityAcademicRecord,
@@ -11,7 +12,17 @@ import {
   normalizeNationalId,
   normalizeWebsiteUrl,
 } from '@private-panel/data/visibility-validation';
-import { pad2 } from '@/lib/jalali';
+import {
+  EMPTY_PUBLIC_PANEL,
+  type AcademicRecord,
+  type EducationAddress,
+  type PublicPanelProfile,
+} from '@public-panel/data/public-panel-ui';
+import {
+  formatJalaliDisplay,
+  pad2,
+  parseIsoDate,
+} from '@/lib/jalali';
 
 import type {
   AcademicRecordUserDto,
@@ -361,6 +372,124 @@ export function mapPrivatePanelProfile(
     avatarSrc,
     electronicCardHref,
     socialLinks,
+  };
+}
+
+function countryLabel(code: string): string {
+  if (!code) return '';
+  return COUNTRY_OPTIONS.find((option) => option.value === code)?.label ?? code;
+}
+
+function divisionPlaceName(row: Record<string, unknown> | null): string {
+  if (!row) return '';
+  return readString(row, 'other') || readString(row, 'normalized_code');
+}
+
+function mapEducationAddress(
+  publicData: ProfileRetrieveData | null | undefined
+): EducationAddress {
+  const education = pickSection(publicData, 'education_occupation_info_user');
+  const divisions = asArray(
+    education?.education_occupation_info_user_division_code ??
+      publicData?.education_occupation_info_user_division_code
+  )
+    .map((item) => asRecord(item))
+    .filter((row): row is Record<string, unknown> => Boolean(row));
+
+  const sorted = [...divisions].sort(
+    (a, b) => Number(a.level ?? 0) - Number(b.level ?? 0)
+  );
+  const byLevel = (level: number) =>
+    sorted.find((row) => Number(row.level) === level);
+
+  return {
+    country: countryLabel(readString(education, 'country_code')),
+    province: divisionPlaceName(byLevel(1) ?? sorted[0] ?? null),
+    city: divisionPlaceName(byLevel(2) ?? sorted[1] ?? null),
+    district: divisionPlaceName(byLevel(3) ?? sorted[2] ?? null),
+  };
+}
+
+function formatPublicDate(raw: string): string {
+  const iso = formatIsoAsDateOnly(raw);
+  if (!iso) return raw;
+  const jalali = parseIsoDate(iso);
+  return jalali ? formatJalaliDisplay(jalali) : raw;
+}
+
+function mapPublicAcademicRecords(
+  publicData: ProfileRetrieveData | null | undefined
+): AcademicRecord[] {
+  return mapAcademicRecords(publicData).map((record) => {
+    const university = [record.university, record.faculty]
+      .filter(Boolean)
+      .join('، ');
+    const isGraduate =
+      record.studyStatus === '2' || record.roleLabel.includes('فارغ');
+
+    return {
+      id: record.id,
+      degree: record.degree,
+      university,
+      fieldGroup: record.fieldGroup,
+      description: record.description,
+      endDate: formatPublicDate(record.endDate),
+      status: record.source === 'verified' ? 'verified' : 'declared',
+      role: isGraduate ? 'graduate' : 'student',
+    };
+  });
+}
+
+function collectSocialLinks(
+  contact: Record<string, unknown> | null
+): PanelSocialLink[] {
+  const links: PanelSocialLink[] = [];
+  const candidates: Array<[PanelSocialLink['network'], string]> = [
+    ['email', readString(contact, 'email')],
+    ['telegram', readString(contact, 'telegram_id')],
+    ['instagram', readString(contact, 'instagram_id')],
+    ['x', readString(contact, 'twitter_id')],
+    ['whatsapp', readString(contact, 'whatsapp_id')],
+    ['linkedin', readString(contact, 'linkedin_id')],
+    ['website', readString(contact, 'website')],
+  ];
+  for (const [network, value] of candidates) {
+    const href = socialHref(network, value);
+    if (href) links.push({ network, href });
+  }
+  return links;
+}
+
+export function mapPublicPanelProfile(
+  actorId: number,
+  publicData: ProfileRetrieveData | null | undefined
+): PublicPanelProfile {
+  const identity = mapPrivatePanelProfile(undefined, publicData);
+  const ourUser = pickSection(publicData, 'our_user');
+  const social = pickSection(publicData, 'social_info_user');
+  const contact = pickSection(publicData, 'contact_info_user');
+  const socialLinks = collectSocialLinks(contact);
+  const locationParts = [
+    countryLabel(readString(social, 'country_code')),
+    ...asArray(social?.social_info_user_division_code)
+      .map((item) => divisionPlaceName(asRecord(item)))
+      .filter(Boolean),
+  ].filter(Boolean);
+
+  const isProvider =
+    readString(ourUser, 'is_individual_service_provider') === 'true';
+
+  return {
+    ...EMPTY_PUBLIC_PANEL,
+    ...identity,
+    actorId,
+    actorType: 1,
+    location: locationParts.join('، ') || identity.location,
+    providerBadgeKey: isProvider ? 'individualProvider' : identity.providerBadgeKey,
+    socialLinks,
+    serviceSocialLinks: socialLinks,
+    academicRecords: mapPublicAcademicRecords(publicData),
+    educationAddress: mapEducationAddress(publicData),
   };
 }
 

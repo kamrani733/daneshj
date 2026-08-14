@@ -1,23 +1,27 @@
 import { interactiveOpsHttpClient } from '@/shared/api/interactive-ops-http';
 
 import {
+  mapAverageScore,
   mapInteractiveCount,
   toActorQuery,
   toFollowBody,
   toLikeBody,
   toLikeStatus,
+  toScoreBody,
   toShareBody,
   toTargetQuery,
 } from './transformers';
 import type {
   ActorQueryPayload,
   ApiResponse,
+  AverageScoreResult,
   FollowPayload,
   FollowResult,
   InteractiveCountResult,
   InteractiveListDataDto,
   LikePayload,
   LikeResult,
+  ScorePayload,
   SharePayload,
   ShareResult,
   TargetQueryPayload,
@@ -169,6 +173,48 @@ export async function getDislikers(
     toTargetQuery(payload)
   );
   return mapInteractiveCount(data, message);
+}
+
+/** GET /interactive-ops/like/dislikees/ — USR1-53-1N13 */
+export async function getDislikees(
+  payload: ActorQueryPayload
+): Promise<InteractiveCountResult> {
+  const { data, message } = await getInteractiveOps<InteractiveListDataDto>(
+    '/interactive-ops/like/dislikees/',
+    payload.accessToken,
+    toActorQuery(payload)
+  );
+  return mapInteractiveCount(data, message);
+}
+
+/** POST /interactive-ops/score — Usr1-53-1N6 */
+export async function submitScore(
+  payload: ScorePayload
+): Promise<{ score: number; message: string | null }> {
+  const { data, message } = await postInteractiveOps<InteractiveListDataDto>(
+    '/interactive-ops/score',
+    payload.accessToken,
+    toScoreBody(payload)
+  );
+  const score = typeof data?.score === 'number' ? data.score : payload.score;
+  return { score, message };
+}
+
+/** GET /interactive-ops/score/average — USR1-53-1N7 */
+export async function getAverageScore(payload: {
+  accessToken?: string | null;
+  targetId: number;
+  targetType: ScorePayload['targetType'];
+}): Promise<AverageScoreResult> {
+  const { data, message } = await getInteractiveOps<InteractiveListDataDto>(
+    '/interactive-ops/score/average',
+    payload.accessToken,
+    {
+      target_id: payload.targetId,
+      target_type: payload.targetType,
+    }
+  );
+  return mapAverageScore(data, message);
 }
 
 /** POST /interactive-ops/share — USR1-53-1N4 / 1N5 */

@@ -14,6 +14,7 @@ export type StatsPeopleKind = 'followers' | 'following' | 'likers' | 'liked';
 
 export type StatsPerson = {
   id: string;
+  actorId?: number;
   username: string;
   displayName: string;
   avatarSrc?: string;
@@ -69,6 +70,8 @@ type StatsPeopleDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   people?: StatsPerson[];
+  loading?: boolean;
+  onPersonAction?: (person: StatsPerson, nextFollowing?: boolean) => void;
 };
 
 /** Followers / following / likers / liked people list. */
@@ -76,7 +79,9 @@ export function StatsPeopleDialog({
   kind,
   open,
   onOpenChange,
-  people = MOCK_STATS_PEOPLE,
+  people = [],
+  loading = false,
+  onPersonAction,
 }: StatsPeopleDialogProps) {
   const t = useTranslations('publicPanel');
   const tDialog = useTranslations('publicPanel.statsDialog');
@@ -105,13 +110,16 @@ export function StatsPeopleDialog({
   function handleAction(person: StatsPerson) {
     if (kind === 'followers' || kind === 'following' || kind === 'liked') {
       setItems((prev) => prev.filter((p) => p.id !== person.id));
+      onPersonAction?.(person, false);
       return;
     }
+    const nextFollowing = !person.isFollowing;
     setItems((prev) =>
       prev.map((p) =>
-        p.id === person.id ? { ...p, isFollowing: !p.isFollowing } : p
+        p.id === person.id ? { ...p, isFollowing: nextFollowing } : p
       )
     );
+    onPersonAction?.(person, nextFollowing);
   }
 
   return (
@@ -145,7 +153,11 @@ export function StatsPeopleDialog({
         placeholder={tDialog('searchPlaceholder')}
       />
 
-      {filtered.length === 0 ? (
+      {loading ? (
+        <p className="py-8 text-center text-sm font-medium text-neutral-600 dark:text-home-filter-muted">
+          {tDialog('loading')}
+        </p>
+      ) : filtered.length === 0 ? (
         <p className="py-8 text-center text-sm font-medium text-neutral-600 dark:text-home-filter-muted">
           {tDialog('emptySearch')}
         </p>
@@ -257,7 +269,7 @@ type StatsShareDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   shareUrl: string;
-  onShared?: () => void;
+  onShared?: (reason: string) => void;
 };
 
 /** Share-panel dialog opened from the share action. */
@@ -275,7 +287,7 @@ export function StatsShareDialog({
     try {
       await navigator.clipboard.writeText(shareUrl);
       setCopied(true);
-      onShared?.();
+      onShared?.(reason.trim());
       window.setTimeout(() => setCopied(false), 1500);
     } catch {
       /* ignore */

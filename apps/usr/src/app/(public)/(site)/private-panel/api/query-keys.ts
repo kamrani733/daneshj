@@ -21,6 +21,8 @@ export const actorQueryKeys = {
     [...actorQueryKeys.all, 'public-panel', 'owner'] as const,
   publicPanelVisitor: (actorId: number) =>
     [...actorQueryKeys.all, 'public-panel', 'visitor', actorId] as const,
+  publicPanelProfile: (actorId: number) =>
+    [...actorQueryKeys.all, 'public-panel', 'profile', actorId] as const,
   publicTab: (tabName: ProfileTabName) =>
     [...actorQueryKeys.all, 'public-tab', tabName] as const,
   serviceTitles: (

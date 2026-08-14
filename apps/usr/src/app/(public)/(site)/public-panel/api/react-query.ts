@@ -4,6 +4,8 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import {
   followEntity,
+  getAverageScore,
+  getDislikees,
   getDislikers,
   getFollowers,
   getFollowings,
@@ -11,6 +13,7 @@ import {
   getLikers,
   reactToEntity,
   shareEntity,
+  submitScore,
 } from './interactive-ops';
 import { interactiveOpsQueryKeys } from './query-keys';
 import type {
@@ -20,6 +23,7 @@ import type {
   InteractiveTargetType,
   LikePayload,
   PanelInteractiveStats,
+  ScorePayload,
   SharePayload,
   TargetQueryPayload,
 } from './types';
@@ -173,8 +177,16 @@ export function usePanelInteractiveStatsQuery(
     thumbsDown: dislikers.data?.count ?? fallback?.thumbsDown ?? 0,
   };
 
+  const people = {
+    followers: followers.data?.people ?? [],
+    following: followings.data?.people ?? [],
+    likers: likers.data?.people ?? [],
+    liked: likees.data?.people ?? [],
+  };
+
   return {
     stats,
+    people,
     isLoading,
     refetchAll: async () => {
       await Promise.all([
@@ -197,6 +209,12 @@ export function useFollowMutation() {
         queryKey: interactiveOpsQueryKeys.followers({
           targetId: variables.targetId,
           targetType: variables.targetType,
+        }),
+      });
+      void queryClient.invalidateQueries({
+        queryKey: interactiveOpsQueryKeys.followings({
+          actorId: variables.actorId,
+          actorType: variables.actorType,
         }),
       });
       void queryClient.invalidateQueries({
@@ -239,5 +257,57 @@ export function useLikeMutation() {
 export function useShareMutation() {
   return useMutation({
     mutationFn: (payload: SharePayload) => shareEntity(payload),
+  });
+}
+
+export function useDislikeesQuery(
+  payload: Omit<ActorQueryPayload, 'accessToken'> & {
+    accessToken?: string | null;
+  },
+  enabled = true
+) {
+  const { accessToken, ...filters } = payload;
+  return useQuery({
+    queryKey: interactiveOpsQueryKeys.dislikees(filters),
+    queryFn: () => getDislikees({ ...filters, accessToken }),
+    enabled: enabled && canQueryInteractiveOps() && filters.actorId > 0,
+  });
+}
+
+export function useAverageScoreQuery(
+  payload: {
+    accessToken?: string | null;
+    targetId: number;
+    targetType: ScorePayload['targetType'];
+  },
+  enabled = true
+) {
+  return useQuery({
+    queryKey: interactiveOpsQueryKeys.averageScore(
+      payload.targetId,
+      payload.targetType
+    ),
+    queryFn: () =>
+      getAverageScore({
+        accessToken: payload.accessToken,
+        targetId: payload.targetId,
+        targetType: payload.targetType,
+      }),
+    enabled: enabled && canQueryInteractiveOps() && payload.targetId > 0,
+  });
+}
+
+export function useScoreMutation() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (payload: ScorePayload) => submitScore(payload),
+    onSuccess: (_data, variables) => {
+      void queryClient.invalidateQueries({
+        queryKey: interactiveOpsQueryKeys.averageScore(
+          variables.targetId,
+          variables.targetType
+        ),
+      });
+    },
   });
 }

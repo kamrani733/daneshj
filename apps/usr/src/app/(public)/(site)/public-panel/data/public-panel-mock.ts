@@ -16,7 +16,7 @@ export type {
   SocialNetwork,
 } from './public-panel-ui';
 
-export { COMMENT_MAX_LENGTH, PUBLIC_PANEL_PATH } from './public-panel-ui';
+export { COMMENT_MAX_LENGTH, EMPTY_PUBLIC_PANEL, PUBLIC_PANEL_PATH } from './public-panel-ui';
 
 export const MOCK_PUBLIC_PANEL: PublicPanelProfile = {
   actorId: 46,

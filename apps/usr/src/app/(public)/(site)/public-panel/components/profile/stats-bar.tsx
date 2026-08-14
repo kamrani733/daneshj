@@ -95,7 +95,7 @@ export function ProfileStatsBar({
     setShareUrl(window.location.href);
   }, []);
 
-  const { stats } = usePanelInteractiveStatsQuery(
+  const { stats, people, isLoading } = usePanelInteractiveStatsQuery(
     {
       accessToken,
       targetId: profile.actorId,
@@ -186,7 +186,7 @@ export function ProfileStatsBar({
     }
   }
 
-  async function handleShareConfirm() {
+  async function handleShareConfirm(reason?: string) {
     setShares((value) => value + 1);
     if (!canInteract || !viewerActorId || !accessToken) return;
     try {
@@ -198,9 +198,49 @@ export function ProfileStatsBar({
         targetId: profile.actorId,
         platform: SHARE_PLATFORM.inSite,
         url: shareUrl,
+        reason,
       });
     } catch {
       setShares((value) => Math.max(0, value - 1));
+    }
+  }
+
+  async function handlePeopleAction(
+    person: { actorId?: number; id: string; isFollowing?: boolean },
+    nextFollowing?: boolean
+  ) {
+    if (!accessToken || viewerActorId == null || viewerActorId <= 0) return;
+    const targetId = person.actorId ?? Number(person.id);
+    if (!Number.isFinite(targetId) || targetId <= 0) return;
+
+    if (peopleKind === 'liked') {
+      await likeMutation.mutateAsync({
+        accessToken,
+        actorType: ACTOR_TYPE.user,
+        actorId: viewerActorId,
+        targetType: TARGET_TYPE.user,
+        targetId,
+        likeStatus: LIKE_STATUS.none,
+      });
+      return;
+    }
+
+    if (
+      peopleKind === 'following' ||
+      peopleKind === 'likers' ||
+      peopleKind === 'followers'
+    ) {
+      const isActive =
+        peopleKind === 'likers' ? Boolean(nextFollowing) : false;
+      if (peopleKind === 'followers' && !isOwnProfile) return;
+      await followMutation.mutateAsync({
+        accessToken,
+        actorType: ACTOR_TYPE.user,
+        actorId: viewerActorId,
+        targetType: TARGET_TYPE.user,
+        targetId,
+        isActive,
+      });
     }
   }
 
@@ -339,6 +379,11 @@ export function ProfileStatsBar({
       <StatsPeopleDialog
         kind={peopleKind}
         open={peopleKind != null}
+        people={peopleKind ? people[peopleKind] : []}
+        loading={isLoading && peopleKind != null}
+        onPersonAction={(person, nextFollowing) => {
+          void handlePeopleAction(person, nextFollowing);
+        }}
         onOpenChange={(next) => {
           if (!next) setPeopleKind(null);
         }}
@@ -348,7 +393,9 @@ export function ProfileStatsBar({
         open={shareOpen}
         onOpenChange={setShareOpen}
         shareUrl={shareUrl}
-        onShared={() => void handleShareConfirm()}
+        onShared={(reason) => {
+          void handleShareConfirm(reason);
+        }}
       />
     </div>
   );

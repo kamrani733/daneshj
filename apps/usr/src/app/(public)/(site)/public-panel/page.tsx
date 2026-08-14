@@ -1,24 +1,28 @@
 import { getSession } from '@daneshjoam/auth';
 
-import { MOCK_PUBLIC_PANEL } from '@public-panel/data/public-panel-mock';
-
 import { PublicPanelView } from './components/view';
 
-export default async function PublicPanelPage() {
+function parseActorId(raw: string | undefined): number | null {
+  if (!raw) return null;
+  const value = Number.parseInt(raw, 10);
+  return Number.isFinite(value) && value > 0 ? value : null;
+}
+
+export default async function PublicPanelPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ actor_id?: string }>;
+}) {
   const session = await getSession();
-  const viewerActorId = session?.user?.id
-    ? Number.parseInt(session.user.id, 10)
-    : null;
+  const params = await searchParams;
+  const viewerActorId = parseActorId(session?.user?.id);
+  const actorId = parseActorId(params.actor_id) ?? viewerActorId;
 
   return (
     <PublicPanelView
-      profile={MOCK_PUBLIC_PANEL}
       accessToken={session?.accessToken}
-      viewerActorId={
-        viewerActorId != null && Number.isFinite(viewerActorId)
-          ? viewerActorId
-          : null
-      }
+      actorId={actorId}
+      viewerActorId={viewerActorId}
     />
   );
 }
