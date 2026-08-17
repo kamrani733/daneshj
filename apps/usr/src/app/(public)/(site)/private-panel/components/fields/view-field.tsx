@@ -18,11 +18,7 @@ import {
   OutlinedTextField,
 } from '@/components/ui/outlined-field';
 import { UploadButton } from '@/components/ui/upload-button';
-import {
-  dateToJalali,
-  formatJalaliDisplay,
-  parseIsoDate,
-} from '@/lib/jalali';
+import { dateToJalali, formatJalaliDisplay, parseIsoDate } from '@/lib/jalali';
 import { cn } from '@/lib/utils';
 
 import { LocationListPicker } from './location-list-picker';
@@ -97,6 +93,7 @@ type ViewFieldProps = {
   value?: string;
   values?: FieldOptionsContext;
   error?: string | null;
+  showPending?: boolean;
   onChange?: (id: string, value: string) => void;
   onPhotoPick?: (id: string, previewUrl: string, file: File) => void;
 };
@@ -108,12 +105,13 @@ export function ViewField({
   value,
   values,
   error,
+  showPending = false,
   onChange,
   onPhotoPick,
 }: ViewFieldProps) {
   const control = resolveViewControl(field);
   const required = isRequiredField(field);
-  const pending = Boolean(field.pending);
+  const pending = showPending && Boolean(field.pending);
   const canEdit = editable;
   const current = value ?? field.value;
   const shared = {
@@ -264,7 +262,7 @@ function PhotoField({
   const inputRef = useRef<HTMLInputElement>(null);
   const hasPhoto =
     Boolean(imageSrc?.trim()) &&
-    !imageSrc!.includes('/images/public-panel/avatar.png');
+    !imageSrc?.includes('/images/public-panel/avatar.png');
 
   const onFile = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -281,7 +279,7 @@ function PhotoField({
           'flex w-full flex-col items-center gap-4 rounded-2xl border border-[#dbd8d1] px-4 pb-5 pt-4',
           FIELD_SURFACE,
           'dark:border-auth-input-border',
-          error && 'border-error'
+          error && 'border-error',
         )}
       >
         <p className="w-full text-start text-sm font-bold text-[#404943] dark:text-home-filter-muted">
