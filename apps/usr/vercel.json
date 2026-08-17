@@ -2,5 +2,15 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "installCommand": "pnpm install --frozen-lockfile",
   "buildCommand": "pnpm exec next build",
-  "framework": "nextjs"
+  "framework": "nextjs",
+  "env": {
+    "NEXT_PUBLIC_API_URL": "http://dev.stella.webpanel.systems:3009",
+    "AUTH_API_URL": "http://dev.stella.webpanel.systems:3009",
+    "NEXT_PUBLIC_NOTIFICATION_API_URL": "/api",
+    "NOTIFICATION_API_URL": "http://dev.stella.webpanel.systems:4002",
+    "NEXT_PUBLIC_INTERACTIVE_OPS_API_URL": "/api",
+    "INTERACTIVE_OPS_API_URL": "http://dev.stella.webpanel.systems:5001",
+    "NEXT_PUBLIC_ACTOR_API_URL": "/api",
+    "ACTOR_API_URL": "http://dev.stella.webpanel.systems:3008"
+  }
 }

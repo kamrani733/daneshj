@@ -113,13 +113,13 @@ export const CATEGORY_TO_TAB: Record<
   VisibilityCategoryId,
   VisibilityTabName | null
 > = {
-    identity: 'identity_information',
-    social: 'social_information',
-    contact: 'contact_information',
-    account: 'user_information',
-    education: 'educational_information',
-    provider: null,
-  };
+  identity: 'identity_information',
+  social: 'social_information',
+  contact: 'contact_information',
+  account: 'user_information',
+  education: 'educational_information',
+  provider: null,
+};
 
 export const VISIBILITY_FIELD_DEFS: VisibilityFieldDef[] = [
   {
@@ -717,9 +717,9 @@ export const VISIBILITY_FIELD_DEFS: VisibilityFieldDef[] = [
 ];
 
 export function academicRecordSelectionSeed(
-  records: VisibilityAcademicRecord[]
+  records: VisibilityAcademicRecord[],
 ): Record<string, boolean> {
   return Object.fromEntries(
-    records.map((record) => [record.id, record.initiallyVisible])
+    records.map((record) => [record.id, record.initiallyVisible]),
   );
 }

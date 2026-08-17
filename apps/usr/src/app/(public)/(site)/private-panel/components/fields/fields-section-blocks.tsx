@@ -355,7 +355,6 @@ export function AcademicRecordsBlock({
                           onClick={() => openEdit(record)}
                         >
                           <Pencil
-                            fill="black"
                             className="size-4"
                             strokeWidth={1.75}
                             aria-hidden
@@ -376,7 +375,6 @@ export function AcademicRecordsBlock({
                             />
                           ) : (
                             <Trash2
-                              fill="black"
                               className="size-4"
                               strokeWidth={1.75}
                               aria-hidden

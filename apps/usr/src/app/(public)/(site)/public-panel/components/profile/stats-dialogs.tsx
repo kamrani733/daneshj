@@ -101,7 +101,7 @@ export function StatsPeopleDialog({
     return items.filter(
       (person) =>
         person.username.toLowerCase().includes(q) ||
-        person.displayName.toLowerCase().includes(q)
+        person.displayName.toLowerCase().includes(q),
     );
   }, [items, query]);
 
@@ -116,8 +116,8 @@ export function StatsPeopleDialog({
     const nextFollowing = !person.isFollowing;
     setItems((prev) =>
       prev.map((p) =>
-        p.id === person.id ? { ...p, isFollowing: nextFollowing } : p
-      )
+        p.id === person.id ? { ...p, isFollowing: nextFollowing } : p,
+      ),
     );
     onPersonAction?.(person, nextFollowing);
   }
@@ -130,7 +130,7 @@ export function StatsPeopleDialog({
       title={tDialog(TITLE_KEY[kind])}
       className={cn(
         'flex max-h-[85vh] max-w-[420px] flex-col gap-4 overflow-hidden p-4',
-        'dark:bg-home-search-category sm:max-w-[480px]'
+        'dark:bg-home-search-category sm:max-w-[480px]',
       )}
     >
       <h2 className="ps-10 text-start text-base font-bold leading-7 text-home-filter-ink">
@@ -168,7 +168,7 @@ export function StatsPeopleDialog({
               key={person.id}
               className={cn(
                 'flex items-center gap-3 rounded-2xl bg-home-stat-card p-3',
-                'shadow-[0_1px_2px_rgba(0,0,0,0.06)]'
+                'shadow-[0_1px_2px_rgba(0,0,0,0.06)]',
               )}
             >
               <Avatar className="size-12 shrink-0 bg-border">
@@ -245,7 +245,7 @@ function PeopleActionButton({
           'h-9 shrink-0 rounded-full px-3 text-sm font-medium shadow-none',
           following
             ? 'border-border text-home-filter-ink hover:bg-black/5 dark:hover:bg-white/5'
-            : 'bg-primary text-primary-foreground hover:bg-primary-hover dark:bg-primary-100 dark:text-primary-900 dark:hover:bg-primary-100/90'
+            : 'bg-primary text-primary-foreground hover:bg-primary-hover dark:bg-primary-100 dark:text-primary-900 dark:hover:bg-primary-100/90',
         )}
       >
         {following ? labels.unfollow : labels.follow}
@@ -308,7 +308,7 @@ export function StatsShareDialog({
       title={t('shareTitle')}
       className={cn(
         'flex max-w-[420px] flex-col gap-5',
-        'dark:bg-home-search-category sm:max-w-[480px]'
+        'dark:bg-home-search-category sm:max-w-[480px]',
       )}
     >
       <h2 className="text-start text-base font-bold text-home-filter-ink">
@@ -328,7 +328,7 @@ export function StatsShareDialog({
             'w-full resize-none rounded-xl border border-home-filter-muted bg-transparent px-3 py-3',
             'text-start text-sm text-home-filter-ink placeholder:text-neutral-600',
             'dark:border-border dark:placeholder:text-home-filter-muted',
-            'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30'
+            'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30',
           )}
         />
       </label>
@@ -362,18 +362,18 @@ export function StatsShareDialog({
               type="button"
               aria-label={target.id}
               onClick={() => {
-                onShared?.();
+                onShared?.(reason.trim());
                 if (typeof window !== 'undefined') {
                   window.open(
                     target.href(shareUrl, reason),
                     '_blank',
-                    'noopener,noreferrer'
+                    'noopener,noreferrer',
                   );
                 }
               }}
               className={cn(
                 'inline-flex size-12 items-center justify-center rounded-full text-white',
-                target.className
+                target.className,
               )}
             >
               {target.icon}
@@ -392,7 +392,12 @@ const SHARE_TARGETS = [
     href: (url: string, text: string) =>
       `https://wa.me/?text=${encodeURIComponent([text, url].filter(Boolean).join('\n'))}`,
     icon: (
-      <svg viewBox="0 0 24 24" className="size-6" fill="currentColor" aria-hidden>
+      <svg
+        viewBox="0 0 24 24"
+        className="size-6"
+        fill="currentColor"
+        aria-hidden
+      >
         <path d="M12 2.2A9.7 9.7 0 0 0 2.5 11.8c0 1.7.5 3.3 1.3 4.7L2.2 22l5.6-1.5a9.7 9.7 0 0 0 14.1-8.7A9.7 9.7 0 0 0 12 2.2Z" />
       </svg>
     ),
@@ -403,7 +408,12 @@ const SHARE_TARGETS = [
     href: (url: string, text: string) =>
       `https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`,
     icon: (
-      <svg viewBox="0 0 24 24" className="size-6" fill="currentColor" aria-hidden>
+      <svg
+        viewBox="0 0 24 24"
+        className="size-6"
+        fill="currentColor"
+        aria-hidden
+      >
         <path d="M21.5 4.5 3.7 11.2c-1.2.5-1.2 1.7-.2 2.1l4.4 1.4 1.7 5.3c.3.9 1.2 1.1 1.8.4l2.5-2.7 4.7 3.5c.9.6 1.8.2 2.1-.8L22.8 5.8c.3-1.1-.6-2-1.3-1.3Z" />
       </svg>
     ),
@@ -431,7 +441,15 @@ const SHARE_TARGETS = [
     href: (url: string) => url,
     icon: (
       <svg viewBox="0 0 24 24" className="size-6" fill="none" aria-hidden>
-        <rect x="3.5" y="3.5" width="17" height="17" rx="5" stroke="currentColor" strokeWidth="1.5" />
+        <rect
+          x="3.5"
+          y="3.5"
+          width="17"
+          height="17"
+          rx="5"
+          stroke="currentColor"
+          strokeWidth="1.5"
+        />
         <circle cx="12" cy="12" r="4" stroke="currentColor" strokeWidth="1.5" />
         <circle cx="17.5" cy="6.5" r="1" fill="currentColor" />
       </svg>
