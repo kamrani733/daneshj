@@ -33,7 +33,7 @@ export function ProfileHeroCard({ profile }: ProfileHeroCardProps) {
     <article
       className={cn(
         'relative w-full overflow-hidden rounded-[24px] bg-home-card',
-        'shadow-home-elevation-2 dark:bg-home-search-category'
+        'shadow-home-elevation-2 dark:bg-home-search-category',
       )}
     >
       {showProvider ? (
@@ -43,7 +43,7 @@ export function ProfileHeroCard({ profile }: ProfileHeroCardProps) {
             'absolute start-0 top-3 z-20 h-10 rounded-none rounded-e-[10px]',
             'px-3 text-xs font-semibold leading-5 tracking-[0.0094em]',
             'shadow-home-elevation-3',
-            'min-[834px]:top-[15px] min-[834px]:h-[55px] min-[834px]:px-5 min-[834px]:text-base min-[834px]:leading-6'
+            'min-[834px]:top-[15px] min-[834px]:h-[55px] min-[834px]:px-5 min-[834px]:text-base min-[834px]:leading-6',
           )}
         >
           {t(`providerBadge.${profile.providerBadgeKey}`)}
@@ -52,29 +52,29 @@ export function ProfileHeroCard({ profile }: ProfileHeroCardProps) {
 
       <div
         className={cn(
-          'relative flex flex-col items-center gap-5 px-4 py-6',
-          'min-[834px]:gap-6 min-[834px]:px-[54px] min-[834px]:py-8'
+          'relative flex flex-col gap-5 px-4 py-6',
+          'min-[834px]:gap-6 min-[834px]:px-[54px] min-[834px]:py-8',
         )}
       >
         <div
           className={cn(
             'flex w-full flex-col items-center gap-5',
             showAbout &&
-              'min-[834px]:flex-row min-[834px]:items-center min-[834px]:justify-between min-[834px]:gap-7'
+              'min-[834px]:flex-row min-[834px]:items-center min-[834px]:justify-between min-[834px]:gap-7',
           )}
         >
           <div
             className={cn(
               'flex w-full flex-col items-center gap-4',
               showAbout &&
-                'min-[834px]:w-auto min-[834px]:shrink-0 min-[834px]:flex-row min-[834px]:gap-10'
+                'min-[834px]:w-auto min-[834px]:shrink-0 min-[834px]:flex-row min-[834px]:gap-10',
             )}
           >
             <Avatar
               className={cn(
                 'size-[120px] ring-[3px] ring-warning-50',
                 'min-[834px]:size-[160px] min-[834px]:ring-4',
-                showAbout && 'min-[1100px]:size-[200px]'
+                showAbout && 'min-[1100px]:size-[200px]',
               )}
             >
               <AvatarImage src={profile.avatarSrc} alt={profile.displayName} />
@@ -114,7 +114,7 @@ export function ProfileHeroCard({ profile }: ProfileHeroCardProps) {
                   'h-11 w-full max-w-[240px] rounded-full border-border bg-home-scene px-4',
                   'text-sm font-medium text-home-filter-muted shadow-none',
                   'hover:bg-home-scene dark:border-home-filter-border dark:bg-transparent dark:text-content',
-                  'min-[834px]:h-12 min-[834px]:w-auto min-[834px]:min-w-[169px]'
+                  'min-[834px]:h-12 min-[834px]:w-auto min-[834px]:min-w-[169px]',
                 )}
               >
                 <Link
@@ -137,7 +137,7 @@ export function ProfileHeroCard({ profile }: ProfileHeroCardProps) {
               titleBgClassName="bg-home-card"
               className={cn(
                 'min-h-[120px] w-full border-primary-200/70 bg-home-card p-4 dark:border-primary/40 dark:bg-home-search-category',
-                'min-[834px]:min-h-[148px] min-[834px]:max-w-[590px] min-[834px]:flex-1 min-[834px]:p-6'
+                'min-[834px]:min-h-[148px] min-[834px]:max-w-[590px] min-[834px]:flex-1 min-[834px]:p-6',
               )}
               footer={
                 bioLong ? (
@@ -162,7 +162,7 @@ export function ProfileHeroCard({ profile }: ProfileHeroCardProps) {
           links={profile.socialLinks}
           variant="outline"
           size="md"
-          className="justify-center gap-4 min-[834px]:gap-6"
+          className="justify-start gap-4 min-[834px]:gap-6"
           dir="ltr"
         />
       </div>
