@@ -502,7 +502,7 @@ export function FieldsSection({ accessToken }: FieldsSectionProps) {
       >
         <div
           className={cn(
-            'relative overflow-hidden rounded-3xl border-2 border-[#bfc9c1]',
+            'relative overflow-hidden rounded-3xl border-2 border-border',
             'bg-transparent dark:border-auth-input-border',
             isFieldsLoading && 'min-h-[320px]',
           )}
@@ -510,14 +510,14 @@ export function FieldsSection({ accessToken }: FieldsSectionProps) {
           {isFieldsLoading ? (
             <PanelLoadingOverlay
               message={t('loading')}
-              className="bg-[#f8f8f0]/85 dark:bg-home-card/80"
+              className="bg-home-search-fill/85 dark:bg-home-card/80"
             />
           ) : null}
           <div className="-mx-1 overflow-x-auto overscroll-x-contain px-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             <TabsList
               className={cn(
                 'flex h-14 w-max min-w-full items-stretch justify-start gap-0',
-                'rounded-none border-b border-[#dbd8d1] bg-transparent p-0',
+                'rounded-none border-b border-home-carousel-inactive bg-transparent p-0',
                 'min-[720px]:h-16 dark:border-auth-input-border',
               )}
             >
@@ -527,10 +527,10 @@ export function FieldsSection({ accessToken }: FieldsSectionProps) {
                   value={id}
                   className={cn(
                     'h-full shrink-0 rounded-none border-0 border-b-2 border-transparent px-3',
-                    'justify-center text-xs font-medium text-[#404943] shadow-none',
-                    'hover:text-[#171d19] focus-visible:ring-primary/30',
-                    'data-[state=active]:border-b-[#008d63] data-[state=active]:bg-[#f8f8f0]',
-                    'data-[state=active]:font-bold data-[state=active]:text-[#171d19]',
+                    'justify-center text-xs font-medium text-home-filter-muted shadow-none',
+                    'hover:text-content focus-visible:ring-primary/30',
+                    'data-[state=active]:border-b-primary data-[state=active]:bg-home-search-fill',
+                    'data-[state=active]:font-bold data-[state=active]:text-content',
                     'data-[state=active]:shadow-none',
                     'dark:text-home-filter-ink dark:data-[state=active]:bg-home-stat-card',
                     'dark:data-[state=active]:border-b-primary-100 dark:data-[state=active]:text-primary-100',
@@ -679,42 +679,30 @@ export function FieldsSection({ accessToken }: FieldsSectionProps) {
                         </p>
                       ) : null}
 
-                      <div className="hidden flex-wrap items-center justify-start gap-3 min-[834px]:flex">
-                        <Button
-                          type="button"
-                          disabled={!accessToken || isSaving || !isDirty}
-                          onClick={() => void handleSave()}
-                          className={cn(
-                            'h-12 w-full max-w-[220px] gap-2 !rounded-2xl bg-[#008d63]',
-                            'px-4 text-base font-medium text-white shadow-none',
-                            'hover:bg-[#008d63]/90 disabled:opacity-60',
-                          )}
-                        >
-                          {isSaving ? (
-                            <Loader2
-                              className="size-5 animate-spin"
-                              aria-hidden
-                            />
-                          ) : (
-                            <Pencil
-                              className="size-6"
-                              strokeWidth={1.75}
-                              aria-hidden
-                            />
-                          )}
-                          {isSaving ? t('saving') : t('save')}
-                        </Button>
+                      <div className="hidden flex-wrap items-center justify-end gap-3 min-[834px]:flex">
                         {isDirty ? (
                           <Button
                             type="button"
                             variant="outline"
                             disabled={isSaving}
                             onClick={handleCancel}
-                            className="h-12 max-w-[160px] !rounded-2xl border-[#008d63] px-4 text-base font-medium text-[#008d63] shadow-none"
+                            className="h-12 max-w-[160px] border-none ml-10 !rounded-2xl px-4 text-base font-medium text-primary shadow-none"
                           >
                             {t('cancel')}
                           </Button>
                         ) : null}
+                        <Button
+                          type="button"
+                          disabled={!accessToken || isSaving || !isDirty}
+                          onClick={() => void handleSave()}
+                          className={cn(
+                            'h-12 w-full max-w-[220px] gap-2 !rounded-2xl bg-primary',
+                            'px-4 text-base font-medium text-white shadow-none',
+                            'hover:bg-primary/90 disabled:opacity-60',
+                          )}
+                        >
+                          {isSaving ? t('saving') : t('save')}
+                        </Button>
                       </div>
                     </>
                   )}

@@ -26,7 +26,9 @@ type VisibilityFieldCardProps = {
 };
 
 const CARD_BG = 'bg-[#f8f8f0] dark:bg-home-search-category';
-const INPUT_BG = 'bg-[#fffbff] dark:bg-auth-input-bg';
+const LOCKED_CARD_BG = 'bg-private-panel-locked-field';
+const INPUT_BG = 'dark:bg-auth-input-bg';
+const LOCKED_INPUT_BG = 'bg-private-panel-locked-field';
 
 export function resolveVisibilityState(
   field: VisibilityField,
@@ -48,6 +50,8 @@ export function VisibilityFieldCard({
   const state = resolveVisibilityState(field, selected);
   const locked = state === 'locked';
   const lockedMuted = locked && field.lockedCaptionKey === 'notDisplayed';
+  const cardBg = cardSurfaceClass(state);
+  const inputBg = inputSurfaceClass(state);
   const label = t(`fields.${field.labelKey}`);
   const caption =
     state === 'locked'
@@ -99,7 +103,7 @@ export function VisibilityFieldCard({
           <legend
             className={cn(
               'px-1 text-xs font-medium text-[#404943] dark:text-home-filter-muted',
-              CARD_BG
+              cardBg
             )}
           >
             {label}
@@ -130,8 +134,8 @@ export function VisibilityFieldCard({
           label={label}
           value={value}
           readOnly
-          labelSurfaceClassName={CARD_BG}
-          surfaceClassName={INPUT_BG}
+          labelSurfaceClassName={cardBg}
+          surfaceClassName={inputBg}
         />
       ) : showCalendar ? (
         <OutlinedDateField
@@ -139,16 +143,16 @@ export function VisibilityFieldCard({
           value={toPickerIsoValue(value)}
           disabled
           calendarPosition="start"
-          labelSurfaceClassName={CARD_BG}
-          surfaceClassName={INPUT_BG}
+          labelSurfaceClassName={cardBg}
+          surfaceClassName={inputBg}
         />
       ) : (
         <OutlinedTextField
           label={label}
           value={value}
           readOnly
-          labelSurfaceClassName={CARD_BG}
-          surfaceClassName={INPUT_BG}
+          labelSurfaceClassName={cardBg}
+          surfaceClassName={inputBg}
         />
       )}
 
@@ -168,12 +172,20 @@ export function VisibilityFieldCard({
 function cardClass(state: VisibilityUiState) {
   return cn(
     'flex min-w-0 flex-col rounded-xl border',
-    CARD_BG,
-    state === 'visible' && 'border-[#dae6da]',
+    cardSurfaceClass(state),
+    state === 'visible' && 'border-[#BFC9C1]',
     state === 'pendingRemoval' && 'border-warning/50',
     (state === 'hidden' || state === 'locked') &&
       'border-[#dbdbd3] dark:border-border'
   );
+}
+
+function cardSurfaceClass(state: VisibilityUiState) {
+  return state === 'locked' ? LOCKED_CARD_BG : CARD_BG;
+}
+
+function inputSurfaceClass(state: VisibilityUiState) {
+  return state === 'locked' ? LOCKED_INPUT_BG : INPUT_BG;
 }
 
 export function VisibilityCheckbox({

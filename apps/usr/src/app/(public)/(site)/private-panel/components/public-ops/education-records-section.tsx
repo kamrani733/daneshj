@@ -81,7 +81,7 @@ export function EducationRecordsSection({
               <AcademicRecordCard
                 record={toPanelAcademicRecord(record)}
                 className={cn(
-                  'rounded-xl border bg-[#f8f8f0] p-3 dark:bg-home-search-category',
+                  'rounded-xl border-[#707973] bg-[#f8f8f0] p-3 dark:bg-home-search-category',
                   'min-[720px]:p-4',
                   state === 'visible' && 'border-[#dae6da]',
                   state === 'pendingRemoval' && 'border-warning/50',

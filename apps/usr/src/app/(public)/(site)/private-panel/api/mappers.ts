@@ -530,9 +530,7 @@ export function mapVisibilityFields(
       value,
       initiallyVisible: flag ?? false,
       selectedInitially: flag ?? false,
-      locked:
-        Boolean(def.locked) ||
-        (def.id === 'mobile' && value.trim().length > 0),
+      locked: Boolean(def.locked),
       lockedCaptionKey: def.lockedCaptionKey,
       hiddenCaptionKey: def.hiddenCaptionKey,
       withCalendar: def.withCalendar,

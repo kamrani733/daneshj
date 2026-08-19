@@ -362,7 +362,7 @@ export function ManageVisibilityPanel({
                       key={section.key}
                       className={cn(
                         'flex w-full flex-col gap-3 rounded-xl border border-border',
-                        'bg-transparent px-2.5 pb-3 pt-1.5',
+                        'bg-[#f8f8f0] px-2.5 pb-3 pt-1.5',
                         'min-[720px]:gap-5 min-[720px]:rounded-[20px] min-[720px]:px-5 min-[720px]:pb-5 min-[720px]:pt-2',
                         'min-[834px]:rounded-3xl'
                       )}

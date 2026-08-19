@@ -154,6 +154,7 @@
   --color-home-card: #fafaf5;
   --color-home-search-fill: #f8f8f0;
   --color-home-search-category: #efede6;
+  --color-private-panel-locked-field: #F1EFE9;
   /* Stats KPI cards — light white · dark forest (Figma #062C22) */
   --color-home-stat-card: #ffffff;
   /* Notification charts — series flip in .dark (mint / peach) */
@@ -250,6 +251,7 @@
   --color-home-card: #0f1511;
   --color-home-search-fill: #171d19;
   --color-home-search-category: #1b211d;
+  --color-private-panel-locked-field: #1b211d;
   --color-home-stat-card: #062c22;
   --color-chart-series-a: #a9f2cd;
   --color-chart-series-b: #ffb59b;
@@ -456,6 +458,10 @@
 
   .bg-home-search-category {
     background-color: var(--color-home-search-category);
+  }
+
+  .bg-private-panel-locked-field {
+    background-color: var(--color-private-panel-locked-field);
   }
 
   .bg-home-stat-card {

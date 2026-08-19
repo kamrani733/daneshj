@@ -198,7 +198,8 @@ export const VISIBILITY_FIELD_DEFS: VisibilityFieldDef[] = [
     apiSection: 'identity_info_user',
     apiField: null,
     valueField: 'national_code',
-    hiddenCaptionKey: 'notDisplayed',
+    locked: true,
+    lockedCaptionKey: 'locked',
   },
   {
     id: 'birthDate',
@@ -313,7 +314,8 @@ export const VISIBILITY_FIELD_DEFS: VisibilityFieldDef[] = [
     apiSection: 'contact_info_user',
     apiField: null,
     valueField: 'mobile',
-    hiddenCaptionKey: 'notDisplayed',
+    locked: true,
+    lockedCaptionKey: 'locked',
   },
   {
     id: 'email',
@@ -473,7 +475,8 @@ export const VISIBILITY_FIELD_DEFS: VisibilityFieldDef[] = [
     apiSection: 'education_occupation_info_user',
     apiField: null,
     valueField: 'student_id',
-    hiddenCaptionKey: 'notDisplayed',
+    locked: true,
+    lockedCaptionKey: 'locked',
   },
   {
     id: 'eduCountry',
