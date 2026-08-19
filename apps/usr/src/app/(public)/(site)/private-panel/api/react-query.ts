@@ -161,10 +161,16 @@ export function useManageVisibilityQuery(
   return useQuery({
     queryKey: [...actorQueryKeys.all, 'manage-visibility'] as const,
     queryFn: async () => {
-      const [privateData, publicFlags] = await Promise.all([
+      const [privateData, publicPanelStatus] = await Promise.all([
         retrievePrivatePanelForOwner({ accessToken }),
-        retrievePublicPanelForOwner({ accessToken }),
+        getPublicPanelStatusByOwner({
+          accessToken,
+          actorType: ACTOR_TYPE_NAME.user,
+        }),
       ]);
+      const publicFlags = publicPanelStatus.isPublicPanelActive
+        ? await retrievePublicPanelForOwner({ accessToken })
+        : {};
       return {
         fields: mapVisibilityFields(privateData, publicFlags),
         records: mapAcademicRecords(privateData),

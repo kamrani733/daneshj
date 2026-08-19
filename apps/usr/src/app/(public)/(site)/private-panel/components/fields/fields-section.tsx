@@ -1,6 +1,5 @@
 'use client';
 
-import { Loader2, Pencil } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useEffect, useMemo, useState } from 'react';
 
