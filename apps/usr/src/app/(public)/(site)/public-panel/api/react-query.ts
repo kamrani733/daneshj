@@ -26,8 +26,8 @@ import type {
   ScorePayload,
   SharePayload,
   TargetQueryPayload,
-} from './types';
-import { TARGET_TYPE } from './types';
+} from '@public-panel/types/api';
+import { TARGET_TYPE } from '@public-panel/types/api';
 
 function canQueryInteractiveOps() {
   return Boolean(process.env.NEXT_PUBLIC_INTERACTIVE_OPS_API_URL);

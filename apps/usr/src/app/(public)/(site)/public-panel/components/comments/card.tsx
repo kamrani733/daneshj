@@ -24,7 +24,7 @@ import {
   TARGET_TYPE,
   useLikeMutation,
 } from '@public-panel/api';
-import type { PanelComment } from '@public-panel/data/public-panel-ui';
+import type { PanelComment } from '@public-panel/types/ui';
 import { AppDialog } from '@/components/ui/app-dialog';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';

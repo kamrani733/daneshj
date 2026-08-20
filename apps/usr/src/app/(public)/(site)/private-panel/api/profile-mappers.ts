@@ -12,10 +12,8 @@ import {
   type VisibilityField,
   type VisibilityFieldDef,
 } from '@private-panel/data/visibility-config';
-import {
-  EMPTY_PUBLIC_PANEL,
-  type PublicPanelProfile,
-} from '@public-panel/data/public-panel-ui';
+import { EMPTY_PUBLIC_PANEL } from '@public-panel/data/public-panel-ui';
+import type { PublicPanelProfile } from '@public-panel/types/ui';
 
 import {
   ACADEMIC_GROUP_LABELS,

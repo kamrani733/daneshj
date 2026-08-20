@@ -1,7 +1,7 @@
 import type {
   ActorQueryPayload,
   TargetQueryPayload,
-} from './types';
+} from '@public-panel/types/api';
 
 export const interactiveOpsQueryKeys = {
   all: ['interactive-ops'] as const,

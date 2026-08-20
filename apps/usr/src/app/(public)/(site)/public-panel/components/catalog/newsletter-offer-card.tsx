@@ -1,7 +1,7 @@
 import { Star } from 'lucide-react';
 import Image from 'next/image';
 
-import type { NewsletterItem } from '@public-panel/data/public-panel-ui';
+import type { NewsletterItem } from '@public-panel/types/ui';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
 

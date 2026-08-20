@@ -9,54 +9,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { SearchField } from '@/components/ui/search-field';
 import { cn } from '@/lib/utils';
-
-export type StatsPeopleKind = 'followers' | 'following' | 'likers' | 'liked';
-
-export type StatsPerson = {
-  id: string;
-  actorId?: number;
-  username: string;
-  displayName: string;
-  avatarSrc?: string;
-  /** For likers list: whether viewer already follows them. */
-  isFollowing?: boolean;
-};
-
-export const MOCK_STATS_PEOPLE: StatsPerson[] = [
-  {
-    id: '1',
-    username: 'نام کاربری',
-    displayName: 'نام و نام خانوادگی',
-  },
-  {
-    id: '2',
-    username: 'نام کاربری',
-    displayName: 'نام و نام خانوادگی',
-    avatarSrc: '/images/public-panel/avatar.png',
-    isFollowing: true,
-  },
-  {
-    id: '3',
-    username: 'نام کاربری',
-    displayName: 'نام و نام خانوادگی',
-    avatarSrc: '/images/public-panel/avatar.png',
-    isFollowing: false,
-  },
-  {
-    id: '4',
-    username: 'نام کاربری',
-    displayName: 'نام و نام خانوادگی',
-    avatarSrc: '/images/public-panel/avatar.png',
-    isFollowing: true,
-  },
-  {
-    id: '5',
-    username: 'نام کاربری',
-    displayName: 'نام و نام خانوادگی',
-    avatarSrc: '/images/public-panel/avatar.png',
-    isFollowing: false,
-  },
-];
+import type { StatsPeopleKind, StatsPerson } from '@public-panel/types/stats';
 
 const TITLE_KEY: Record<StatsPeopleKind, string> = {
   followers: 'followersTitle',

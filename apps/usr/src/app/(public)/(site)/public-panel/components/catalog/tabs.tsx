@@ -6,7 +6,7 @@ import { useTranslations } from 'next-intl';
 import type {
   OtherInfoContent,
   ServiceCatalog,
-} from '@public-panel/data/public-panel-ui';
+} from '@public-panel/types/ui';
 import { EmptyState } from '@/components/panel';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';

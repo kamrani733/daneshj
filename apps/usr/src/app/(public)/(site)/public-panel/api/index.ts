@@ -26,7 +26,12 @@ export {
   useScoreMutation,
   useShareMutation,
 } from './react-query';
-export { LIKE_STATUS, SHARE_PLATFORM, ACTOR_TYPE, TARGET_TYPE } from './types';
+export {
+  LIKE_STATUS,
+  SHARE_PLATFORM,
+  ACTOR_TYPE,
+  TARGET_TYPE,
+} from '@public-panel/types/api';
 export type {
   AverageScoreResult,
   FollowPayload,
@@ -39,4 +44,4 @@ export type {
   ScorePayload,
   SharePayload,
   SharePlatform,
-} from './types';
+} from '@public-panel/types/api';

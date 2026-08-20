@@ -11,19 +11,9 @@ import {
   type LucideIcon,
 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { useEffect, useState } from 'react';
 
-import {
-  ACTOR_TYPE,
-  LIKE_STATUS,
-  SHARE_PLATFORM,
-  TARGET_TYPE,
-  useFollowMutation,
-  useLikeMutation,
-  usePanelInteractiveStatsQuery,
-  useShareMutation,
-} from '@public-panel/api';
-import type { PublicPanelProfile } from '@public-panel/data/public-panel-ui';
+import { useProfileStatsBar } from '@public-panel/hooks/use-profile-stats-bar';
+import type { PublicPanelProfile } from '@public-panel/types/ui';
 import { Button } from '@/components/ui/button';
 import { formatFaNumber } from '@/lib/format-fa';
 import { cn } from '@/lib/utils';
@@ -31,7 +21,6 @@ import { cn } from '@/lib/utils';
 import {
   StatsPeopleDialog,
   StatsShareDialog,
-  type StatsPeopleKind,
 } from './stats-dialogs';
 
 type ProfileStatsBarProps = {
@@ -82,171 +71,7 @@ export function ProfileStatsBar({
   viewerActorId,
 }: ProfileStatsBarProps) {
   const t = useTranslations('publicPanel');
-  const [following, setFollowing] = useState(false);
-  const [reaction, setReaction] = useState<'like' | 'dislike' | 'none'>('none');
-  const [shares, setShares] = useState(profile.engagement.shares);
-  const [peopleKind, setPeopleKind] = useState<StatsPeopleKind | null>(null);
-  const [shareOpen, setShareOpen] = useState(false);
-  const [shareUrl, setShareUrl] = useState(
-    'https://www.daneshjooam.com/publicpanel/name&surname'
-  );
-
-  useEffect(() => {
-    setShareUrl(window.location.href);
-  }, []);
-
-  const { stats, people, isLoading } = usePanelInteractiveStatsQuery(
-    {
-      accessToken,
-      targetId: profile.actorId,
-      targetType: profile.actorType,
-      actorType: profile.actorType,
-    },
-    true,
-    {
-      followers: profile.stats.followers,
-      following: profile.stats.following,
-      likers: profile.stats.likers,
-      liked: profile.stats.liked,
-      thumbsUp: profile.engagement.thumbsUp,
-      thumbsDown: profile.engagement.thumbsDown,
-    }
-  );
-
-  const followMutation = useFollowMutation();
-  const likeMutation = useLikeMutation();
-  const shareMutation = useShareMutation();
-
-  const canInteract =
-    !!accessToken &&
-    viewerActorId != null &&
-    viewerActorId > 0 &&
-    viewerActorId !== profile.actorId;
-
-  const displayStats = {
-    followers: stats.followers,
-    following: stats.following,
-    likers: stats.likers,
-    liked: stats.liked,
-  };
-
-  async function handleFollow() {
-    const next = !following;
-    setFollowing(next);
-    if (!canInteract || !viewerActorId || !accessToken) return;
-    try {
-      const result = await followMutation.mutateAsync({
-        accessToken,
-        actorType: ACTOR_TYPE.user,
-        actorId: viewerActorId,
-        targetType: profile.actorType,
-        targetId: profile.actorId,
-        isActive: next,
-      });
-      setFollowing(result.isActive);
-    } catch {
-      setFollowing(!next);
-    }
-  }
-
-  async function handleReaction(next: 'like' | 'dislike') {
-    const likeStatus =
-      reaction === next
-        ? LIKE_STATUS.none
-        : next === 'like'
-          ? LIKE_STATUS.like
-          : LIKE_STATUS.dislike;
-    const previous = reaction;
-    setReaction(
-      likeStatus === LIKE_STATUS.none
-        ? 'none'
-        : likeStatus === LIKE_STATUS.like
-          ? 'like'
-          : 'dislike'
-    );
-    if (!canInteract || !viewerActorId || !accessToken) return;
-    try {
-      const result = await likeMutation.mutateAsync({
-        accessToken,
-        actorType: ACTOR_TYPE.user,
-        actorId: viewerActorId,
-        targetType: profile.actorType,
-        targetId: profile.actorId,
-        likeStatus,
-      });
-      setReaction(
-        result.status === LIKE_STATUS.like
-          ? 'like'
-          : result.status === LIKE_STATUS.dislike
-            ? 'dislike'
-            : 'none'
-      );
-    } catch {
-      setReaction(previous);
-    }
-  }
-
-  async function handleShareConfirm(reason?: string) {
-    setShares((value) => value + 1);
-    if (!canInteract || !viewerActorId || !accessToken) return;
-    try {
-      await shareMutation.mutateAsync({
-        accessToken,
-        actorType: ACTOR_TYPE.user,
-        actorId: viewerActorId,
-        targetType: profile.actorType as typeof TARGET_TYPE.user,
-        targetId: profile.actorId,
-        platform: SHARE_PLATFORM.inSite,
-        url: shareUrl,
-        reason,
-      });
-    } catch {
-      setShares((value) => Math.max(0, value - 1));
-    }
-  }
-
-  async function handlePeopleAction(
-    person: { actorId?: number; id: string; isFollowing?: boolean },
-    nextFollowing?: boolean
-  ) {
-    if (!accessToken || viewerActorId == null || viewerActorId <= 0) return;
-    const targetId = person.actorId ?? Number(person.id);
-    if (!Number.isFinite(targetId) || targetId <= 0) return;
-
-    if (peopleKind === 'liked') {
-      await likeMutation.mutateAsync({
-        accessToken,
-        actorType: ACTOR_TYPE.user,
-        actorId: viewerActorId,
-        targetType: TARGET_TYPE.user,
-        targetId,
-        likeStatus: LIKE_STATUS.none,
-      });
-      return;
-    }
-
-    if (
-      peopleKind === 'following' ||
-      peopleKind === 'likers' ||
-      peopleKind === 'followers'
-    ) {
-      const isActive =
-        peopleKind === 'likers' ? Boolean(nextFollowing) : false;
-      if (peopleKind === 'followers' && !isOwnProfile) return;
-      await followMutation.mutateAsync({
-        accessToken,
-        actorType: ACTOR_TYPE.user,
-        actorId: viewerActorId,
-        targetType: TARGET_TYPE.user,
-        targetId,
-        isActive,
-      });
-    }
-  }
-
-  const isOwnProfile =
-    viewerActorId != null && viewerActorId === profile.actorId;
-  const showActions = !isOwnProfile;
+  const vm = useProfileStatsBar({ profile, accessToken, viewerActorId });
 
   return (
     <div
@@ -262,11 +87,11 @@ export function ProfileStatsBar({
           <li key={key}>
             <button
               type="button"
-              onClick={() => setPeopleKind(key)}
+              onClick={() => vm.setPeopleKind(key)}
               className="flex min-w-0 flex-col items-center gap-1 rounded-xl text-center transition-colors hover:bg-black/[0.03] dark:hover:bg-white/[0.04] min-[834px]:w-[88px]"
             >
               <span className="text-xl font-bold leading-7 text-home-filter-ink min-[834px]:text-[28px] min-[834px]:leading-9 min-[1100px]:text-[34px] min-[1100px]:leading-[49px]">
-                {formatFaNumber(displayStats[key])}
+                {formatFaNumber(vm.displayStats[key])}
               </span>
               <span className="inline-flex items-center gap-1 whitespace-nowrap text-[10px] font-semibold leading-4 text-home-filter-muted dark:text-home-filter-ink min-[834px]:gap-1.5 min-[834px]:text-sm min-[834px]:leading-5 min-[1100px]:gap-2 min-[1100px]:text-[17px] min-[1100px]:leading-6">
                 {Icon === 'heartCheck' ? (
@@ -285,7 +110,7 @@ export function ProfileStatsBar({
         ))}
       </ul>
 
-      {showActions ? (
+      {vm.showActions ? (
         <div
           className={cn(
             /* mobile: reactions then follow, stacked & centered */
@@ -300,32 +125,33 @@ export function ProfileStatsBar({
             <li>
               <button
                 type="button"
-                disabled={likeMutation.isPending}
-                onClick={() => void handleReaction('like')}
+                disabled={vm.likeMutation.isPending}
+                onClick={() => void vm.handleReaction('like')}
                 className={cn(
                   'flex h-11 items-center gap-1 px-1 text-sm font-bold leading-6 text-home-filter-muted dark:text-home-filter-ink disabled:opacity-100',
                   'min-[834px]:h-12 min-[834px]:text-base min-[1100px]:h-14',
-                  reaction === 'like' && 'text-primary dark:text-primary-100'
+                  vm.reaction === 'like' &&
+                    'text-primary dark:text-primary-100'
                 )}
-                aria-pressed={reaction === 'like'}
+                aria-pressed={vm.reaction === 'like'}
               >
                 <ThumbsUp
                   className="size-6 shrink-0 min-[834px]:size-7 min-[1100px]:size-8"
                   strokeWidth={1.5}
                   aria-hidden
                 />
-                <span>{formatFaNumber(stats.thumbsUp)}</span>
+                <span>{formatFaNumber(vm.stats.thumbsUp)}</span>
               </button>
             </li>
             <li>
               <button
                 type="button"
-                disabled={likeMutation.isPending}
-                onClick={() => void handleReaction('dislike')}
+                disabled={vm.likeMutation.isPending}
+                onClick={() => void vm.handleReaction('dislike')}
                 className={cn(
                   'flex h-11 items-center gap-1 px-1 text-sm font-bold leading-6 text-home-filter-muted dark:text-home-filter-ink disabled:opacity-100',
                   'min-[834px]:h-12 min-[834px]:text-base min-[1100px]:h-14',
-                  reaction === 'dislike' && 'text-warning'
+                  vm.reaction === 'dislike' && 'text-warning'
                 )}
               >
                 <ThumbsDown
@@ -333,14 +159,14 @@ export function ProfileStatsBar({
                   strokeWidth={1.5}
                   aria-hidden
                 />
-                <span>{formatFaNumber(stats.thumbsDown)}</span>
+                <span>{formatFaNumber(vm.stats.thumbsDown)}</span>
               </button>
             </li>
             <li>
               <button
                 type="button"
-                disabled={shareMutation.isPending}
-                onClick={() => setShareOpen(true)}
+                disabled={vm.shareMutation.isPending}
+                onClick={() => vm.setShareOpen(true)}
                 className={cn(
                   'flex h-11 items-center gap-1 px-1 text-sm font-bold leading-6 text-home-filter-muted dark:text-home-filter-ink disabled:opacity-100',
                   'min-[834px]:h-12 min-[834px]:text-base min-[1100px]:h-14'
@@ -351,7 +177,7 @@ export function ProfileStatsBar({
                   strokeWidth={1.5}
                   aria-hidden
                 />
-                <span>{formatFaNumber(shares)}</span>
+                <span>{formatFaNumber(vm.shares)}</span>
               </button>
             </li>
           </ul>
@@ -359,42 +185,42 @@ export function ProfileStatsBar({
           <Button
             type="button"
             size="pillSm"
-            variant={following ? 'outline' : 'default'}
-            disabled={followMutation.isPending}
-            onClick={() => void handleFollow()}
+            variant={vm.following ? 'outline' : 'default'}
+            disabled={vm.followMutation.isPending}
+            onClick={() => void vm.handleFollow()}
             className={cn(
               'h-auto w-full max-w-[240px] shrink-0 rounded-full px-6 py-3.5 text-base font-medium leading-6',
               'min-[834px]:w-auto min-[834px]:min-w-[140px] min-[834px]:py-4',
               'min-[1100px]:min-w-[153px] disabled:opacity-100',
-              following
+              vm.following
                 ? 'border-primary text-primary dark:border-primary-100 dark:text-primary-100'
                 : 'bg-primary text-primary-foreground hover:bg-primary-hover disabled:bg-primary dark:bg-primary-100 dark:text-primary-900 dark:hover:bg-primary-100/90 dark:disabled:bg-primary-100'
             )}
           >
-            {following ? t('following') : t('follow')}
+            {vm.following ? t('following') : t('follow')}
           </Button>
         </div>
       ) : null}
 
       <StatsPeopleDialog
-        kind={peopleKind}
-        open={peopleKind != null}
-        people={peopleKind ? people[peopleKind] : []}
-        loading={isLoading && peopleKind != null}
+        kind={vm.peopleKind}
+        open={vm.peopleKind != null}
+        people={vm.peopleKind ? vm.people[vm.peopleKind] : []}
+        loading={vm.isLoading && vm.peopleKind != null}
         onPersonAction={(person, nextFollowing) => {
-          void handlePeopleAction(person, nextFollowing);
+          void vm.handlePeopleAction(person, nextFollowing);
         }}
         onOpenChange={(next) => {
-          if (!next) setPeopleKind(null);
+          if (!next) vm.setPeopleKind(null);
         }}
       />
 
       <StatsShareDialog
-        open={shareOpen}
-        onOpenChange={setShareOpen}
-        shareUrl={shareUrl}
+        open={vm.shareOpen}
+        onOpenChange={vm.setShareOpen}
+        shareUrl={vm.shareUrl}
         onShared={(reason) => {
-          void handleShareConfirm(reason);
+          void vm.handleShareConfirm(reason);
         }}
       />
     </div>

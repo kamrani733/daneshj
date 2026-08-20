@@ -25,7 +25,7 @@ import type {
   SharePayload,
   ShareResult,
   TargetQueryPayload,
-} from './types';
+} from '@public-panel/types/api';
 
 function formatApiResponseError(
   message: string | null | undefined,

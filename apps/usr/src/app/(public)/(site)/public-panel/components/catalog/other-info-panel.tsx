@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import type { ReactNode } from 'react';
 
-import type { OtherInfoContent } from '@public-panel/data/public-panel-ui';
+import type { OtherInfoContent } from '@public-panel/types/ui';
 import { EmptyState } from '@/components/panel';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';

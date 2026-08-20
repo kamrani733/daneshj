@@ -1,7 +1,7 @@
 import { Eye } from 'lucide-react';
 import Image from 'next/image';
 
-import type { NewsItem } from '@public-panel/data/public-panel-ui';
+import type { NewsItem } from '@public-panel/types/ui';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 

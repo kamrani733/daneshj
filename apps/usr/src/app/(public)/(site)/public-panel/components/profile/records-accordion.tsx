@@ -7,7 +7,7 @@ import { useState } from 'react';
 import type {
   AcademicRecord,
   EducationAddress,
-} from '@public-panel/data/public-panel-ui';
+} from '@public-panel/types/ui';
 import { AcademicRecordCard, EducationAddressCard } from '@/components/panel';
 import { formatFaNumber } from '@/lib/format-fa';
 import { cn } from '@/lib/utils';

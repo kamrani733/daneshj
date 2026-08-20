@@ -1,6 +1,6 @@
 /** Mock public panel owner until API exists. */
 
-import type { PublicPanelProfile } from './public-panel-ui';
+import type { PublicPanelProfile } from '@public-panel/types/ui';
 
 export type {
   AcademicRecord,
@@ -14,7 +14,7 @@ export type {
   PublicPanelSocialLink,
   ServiceCatalog,
   SocialNetwork,
-} from './public-panel-ui';
+} from '@public-panel/types/ui';
 
 export { COMMENT_MAX_LENGTH, EMPTY_PUBLIC_PANEL, PUBLIC_PANEL_PATH } from './public-panel-ui';
 

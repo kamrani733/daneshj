@@ -6,7 +6,7 @@ import type {
   OtherInfoContent,
   PublicPanelSocialLink,
   ServiceCatalog,
-} from '@public-panel/data/public-panel-ui';
+} from '@public-panel/types/ui';
 
 import { SocialLinksRow } from '@/components/panel';
 

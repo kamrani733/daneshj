@@ -8,7 +8,11 @@ import {
   type CommentKind,
   type CommentSort,
   type PanelComment,
-} from '@public-panel/data/public-panel-ui';
+} from '@public-panel/types/ui';
+import {
+  appendReply,
+  filterAndSortComments,
+} from '@public-panel/utils/comments';
 import { EmptyState } from '@/components/panel';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -237,28 +241,6 @@ export function CommentsSection({
   );
 }
 
-function appendReply(
-  comments: PanelComment[],
-  commentId: string,
-  reply: PanelComment
-): PanelComment[] {
-  return comments.map((comment) => {
-    if (comment.id === commentId) {
-      return {
-        ...comment,
-        replies: [...(comment.replies ?? []), { ...reply, replyToName: comment.authorName }],
-      };
-    }
-    if (comment.replies?.length) {
-      return {
-        ...comment,
-        replies: appendReply(comment.replies, commentId, reply),
-      };
-    }
-    return comment;
-  });
-}
-
 function CommentListPanel({
   kind,
   title,
@@ -293,24 +275,7 @@ function CommentListPanel({
   const [sort, setSort] = useState<CommentSort>('newest');
 
   const filtered = useMemo(() => {
-    const q = query.trim();
-    let list = comments;
-    if (q) {
-      list = list.filter(
-        (c) =>
-          c.body.includes(q) ||
-          c.authorName.includes(q) ||
-          c.authorHandle.includes(q) ||
-          c.quoteNote?.includes(q) ||
-          c.originalAuthorName?.includes(q)
-      );
-    }
-    const sorted = [...list];
-    if (sort === 'oldest') sorted.reverse();
-    if (sort === 'mostLiked') {
-      sorted.sort((a, b) => b.likes - a.likes);
-    }
-    return sorted;
+    return filterAndSortComments(comments, query, sort);
   }, [comments, query, sort]);
 
   return (

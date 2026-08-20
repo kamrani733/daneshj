@@ -1,7 +1,7 @@
 import { Star } from 'lucide-react';
 import Image from 'next/image';
 
-import type { DiscountOffer } from '@public-panel/data/public-panel-ui';
+import type { DiscountOffer } from '@public-panel/types/ui';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 

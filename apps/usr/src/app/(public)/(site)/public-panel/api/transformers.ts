@@ -14,8 +14,8 @@ import type {
   SharePayload,
   ShareRequestDto,
   TargetQueryPayload,
-} from './types';
-import { LIKE_STATUS, SHARE_PLATFORM } from './types';
+} from '@public-panel/types/api';
+import { LIKE_STATUS, SHARE_PLATFORM } from '@public-panel/types/api';
 
 function asRecord(value: unknown): Record<string, unknown> | null {
   if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
