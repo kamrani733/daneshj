@@ -40,8 +40,8 @@ import type {
   SubmitPrivateStateByOwnerPayload,
   SubmitPrivateTabByOwnerPayload,
   SubmitPublicTabByOwnerPayload,
-} from './types';
-import { ACTOR_TYPE_NAME } from './types';
+} from '../types/api';
+import { ACTOR_TYPE_NAME } from '../types/api';
 
 function canQueryActor() {
   return Boolean(process.env.NEXT_PUBLIC_ACTOR_API_URL);

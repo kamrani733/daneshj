@@ -2,7 +2,7 @@ import type {
   ActorTypeName,
   ListServiceTitlesPayload,
   ProfileTabName,
-} from './types';
+} from '@private-panel/types/api';
 
 export const privatePanelQueryKeys = {
   all: ['private-panel'] as const,

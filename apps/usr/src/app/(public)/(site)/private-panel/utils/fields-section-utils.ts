@@ -1,6 +1,5 @@
 import type { VisibilityField } from '@private-panel/data/visibility-config';
-
-import type { DocumentDraft } from './documents-panel';
+import type { DocumentDraft } from '@private-panel/types/documents';
 
 export type FieldsMode = 'view' | 'review';
 export type ReviewDecision = 'approve' | 'reject';

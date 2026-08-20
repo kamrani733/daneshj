@@ -1,6 +1,6 @@
 import { isApiError } from '@daneshjoam/api-client';
 
-import type { ApiResponse } from './types';
+import type { ApiResponse } from '@private-panel/types/api';
 
 export type ActorKnownErrorKey = 'internal' | 'unauthorized' | 'notFound';
 

@@ -29,12 +29,12 @@ import {
   readPending,
   readRecordList,
   readString,
-} from './mapper-utils';
+} from '@private-panel/utils/mapper-utils';
 import type {
   AcademicRecordUserDto,
   ActorInfo,
   ProfileRetrieveData,
-} from './types';
+} from '@private-panel/types/api';
 
 function resolvePrivateSection(
   privateData: ProfileRetrieveData | null | undefined,

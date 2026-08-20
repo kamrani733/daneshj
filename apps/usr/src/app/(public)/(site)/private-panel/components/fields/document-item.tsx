@@ -4,22 +4,11 @@ import { FileText, Trash2, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { cn } from '@/lib/utils';
-
-export type DocumentKind = 'pdf' | 'image' | 'other';
-
-export type DocumentReviewDecision = 'approve' | 'reject' | null;
-
-export type DocumentItemState = 'uploading' | 'error' | 'done' | 'review';
-
-export type DocumentItemModel = {
-  id: string;
-  name: string;
-  kind: DocumentKind;
-  state: DocumentItemState;
-  progress?: number;
-  errorKey?: 'maxSize' | 'uploadFailed';
-  decision?: DocumentReviewDecision;
-};
+import type {
+  DocumentItemModel,
+  DocumentKind,
+  DocumentReviewDecision,
+} from '@private-panel/types/documents';
 
 type DocumentItemProps = {
   item: DocumentItemModel;

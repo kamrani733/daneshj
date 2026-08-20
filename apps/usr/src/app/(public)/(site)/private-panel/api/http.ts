@@ -1,7 +1,7 @@
 import { actorHttpClient } from '@/shared/api/actor-http';
 
 import { formatApiResponseError } from './errors';
-import type { ApiResponse } from './types';
+import type { ApiResponse } from '@private-panel/types/api';
 
 export function assertApiSuccess<T>(
   response: ApiResponse<T>,

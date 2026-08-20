@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { VISIBILITY_FIELD_DEFS } from './visibility-config';
+import { VISIBILITY_FIELD_DEFS } from '@private-panel/data/visibility-config';
 
 export type VisibilityValidationErrorKey =
   | 'required'

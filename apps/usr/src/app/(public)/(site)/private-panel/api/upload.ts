@@ -2,7 +2,7 @@ import { actorHttpClient } from '@/shared/api/actor-http';
 
 import { formatApiResponseError } from './errors';
 import { requireAccessToken } from './http';
-import type { ApiResponse } from './types';
+import type { ApiResponse } from '@private-panel/types/api';
 
 function authHeaders(accessToken?: string | null) {
   return accessToken

@@ -74,11 +74,12 @@ export {
   toPrivateStateReviewBody,
   toPrivateStateSubmitBody,
 } from './transformers';
-export { ACTOR_TYPE_NAME } from './types';
+export { ACTOR_TYPE_NAME } from '../types/api';
 export type {
   ActorInfo,
   ActorInfoDataDto,
   ActorTypeName,
+  AcademicRecordUserDto,
   ApiResponse,
   Gender,
   ListServiceTitlesPayload,
@@ -94,4 +95,4 @@ export type {
   ServiceTitleItem,
   SubmitPrivateTabByOwnerPayload,
   SubmitPublicTabByOwnerPayload,
-} from './types';
+} from '../types/api';

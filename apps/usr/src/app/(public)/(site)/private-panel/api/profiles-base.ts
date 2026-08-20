@@ -9,7 +9,7 @@ import type {
   PublicPanelStatus,
   PublicPanelStatusDataDto,
   RequestPublicPanelChangeStatusPayload,
-} from './types';
+} from '@private-panel/types/api';
 
 /** GET /profiles_base/get_actor_info — All Actor */
 export async function getActorInfo(

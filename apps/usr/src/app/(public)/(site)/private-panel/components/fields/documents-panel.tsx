@@ -6,19 +6,16 @@ import { cn } from '@/lib/utils';
 
 import {
   DocumentItem,
-  type DocumentItemModel,
-  type DocumentKind,
-  type DocumentReviewDecision,
 } from './document-item';
+import type {
+  DocumentDraft,
+  DocumentKind,
+  DocumentReviewDecision,
+} from '@private-panel/types/documents';
 import { UploadDropzone } from './upload-dropzone';
 
 const MAX_BYTES = 1 * 1024 * 1024;
 const MAX_FILES = 5;
-
-export type DocumentDraft = DocumentItemModel & {
-  file?: File;
-  filePath?: string;
-};
 
 type DocumentsPanelProps = {
   dropLabel: string;
@@ -80,7 +77,7 @@ export function DocumentsPanel({
     if (accepted.length === 0) return;
 
     const nextItems = [...documents];
-    const queued: DocumentDraft[] = [];
+    const queued: Array<DocumentDraft & { file: File }> = [];
 
     for (const file of accepted) {
       const id = `${file.name}-${file.size}-${file.lastModified}-${Math.random().toString(36).slice(2, 7)}`;
@@ -97,7 +94,7 @@ export function DocumentsPanel({
         });
         continue;
       }
-      const draft: DocumentDraft = {
+      const draft: DocumentDraft & { file: File } = {
         id,
         name: file.name,
         kind,
@@ -115,7 +112,7 @@ export function DocumentsPanel({
       void (async () => {
         try {
           if (onUploadFile) {
-            const filePath = await onUploadFile(draft.file!);
+            const filePath = await onUploadFile(draft.file);
             patchDocument(draft.id, {
               progress: 100,
               state: reviewMode ? 'review' : 'done',

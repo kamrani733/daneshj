@@ -1,4 +1,4 @@
-import { ChevronDown, ChevronUp, Loader2, Stamp } from 'lucide-react';
+import { ChevronDown, ChevronUp } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
@@ -11,7 +11,7 @@ import {
 } from '@/components/ui/outlined-field';
 import { cn } from '@/lib/utils';
 
-import type { ReviewDecision } from './fields-section-utils';
+import type { ReviewDecision } from '@private-panel/utils/fields-section-utils';
 
 export function ReviewPendingList({
   requests,
@@ -23,6 +23,7 @@ export function ReviewPendingList({
   isSaving,
   formError,
   onSave,
+  onCancel,
   t,
   tVis,
 }: {
@@ -35,6 +36,7 @@ export function ReviewPendingList({
   isSaving: boolean;
   formError: string | null;
   onSave: () => void;
+  onCancel: () => void;
   t: ReturnType<typeof useTranslations>;
   tVis: ReturnType<typeof useTranslations>;
 }) {
@@ -70,52 +72,79 @@ export function ReviewPendingList({
           return (
             <li
               key={request.requestId}
-              className="rounded-2xl border border-[#dbd8d1] bg-[#f8f8f0] p-4 dark:border-auth-input-border dark:bg-home-stat-card min-[720px]:p-6"
+              className={cn(
+                'rounded-xl border border-[#dbd8d1] bg-[#f8f8f0]',
+                'px-4 pb-6 pt-4 dark:border-auth-input-border dark:bg-home-stat-card',
+                'min-[720px]:rounded-2xl min-[720px]:px-6 min-[720px]:pb-7 min-[720px]:pt-4',
+              )}
             >
-              <div className="grid grid-cols-1 gap-5 min-[720px]:grid-cols-2 min-[720px]:gap-8">
-                <OutlinedDisplayField
-                  label={t('previousValue')}
-                  value={request.previousValue || t('emptyValue')}
-                  multiline={request.kind === 'textarea'}
-                  surfaceClassName="bg-[#f8f8f0] dark:bg-home-stat-card"
-                  labelSurfaceClassName="bg-[#f8f8f0] dark:bg-home-stat-card"
-                />
-                {request.kind === 'textarea' ? (
-                  <OutlinedTextareaField
-                    label={`${t('newValue')} (${t('reviewPendingLabel')})`}
-                    value={draftValue}
-                    tone="warning"
-                    surfaceClassName="bg-[#f8f8f0] dark:bg-home-stat-card"
-                    labelSurfaceClassName="bg-[#f8f8f0] dark:bg-home-stat-card"
-                    onValueChange={(value) =>
-                      onReviewValueChange(request, value)
-                    }
-                  />
-                ) : (
-                  <OutlinedTextField
-                    label={`${t('newValue')} (${t('reviewPendingLabel')})`}
-                    value={draftValue}
-                    tone="warning"
-                    surfaceClassName="bg-[#f8f8f0] dark:bg-home-stat-card"
-                    labelSurfaceClassName="bg-[#f8f8f0] dark:bg-home-stat-card"
-                    onValueChange={(value) =>
-                      onReviewValueChange(request, value)
-                    }
-                  />
+              <div
+                className={cn(
+                  'grid grid-cols-1 gap-y-5',
+                  request.kind === 'textarea'
+                    ? 'gap-5'
+                    : 'gap-x-[100px] min-[720px]:grid-cols-2 min-[834px]:gap-x-[158px]',
                 )}
+              >
+                <div className="flex flex-col gap-3">
+                  <p className="text-start text-xs font-bold text-[#404943] dark:text-home-filter-muted">
+                    {t('previousValue')}
+                  </p>
+                  <OutlinedDisplayField
+                    label={label}
+                    value={request.previousValue || t('emptyValue')}
+                    multiline={request.kind === 'textarea'}
+                    surfaceClassName="bg-[#f8f8f0] dark:bg-home-stat-card"
+                    labelSurfaceClassName="bg-[#f8f8f0] dark:bg-home-stat-card"
+                    endAdornment={
+                      request.kind === 'textarea' ? undefined : (
+                        <ChevronDown
+                          className="size-5 text-[#404943] dark:text-home-filter-muted"
+                          strokeWidth={1.75}
+                          aria-hidden
+                        />
+                      )
+                    }
+                  />
+                </div>
+
+                <div className="flex flex-col gap-3">
+                  <p className="text-start text-xs font-bold text-[#404943] dark:text-home-filter-muted">
+                    {t('newValue')} ({t('reviewPendingLabel')})
+                  </p>
+                  {request.kind === 'textarea' ? (
+                    <OutlinedTextareaField
+                      label={label}
+                      value={draftValue}
+                      tone="warning"
+                      surfaceClassName="bg-[#f8f8f0] dark:bg-home-stat-card"
+                      labelSurfaceClassName="bg-[#f8f8f0] dark:bg-home-stat-card"
+                      onValueChange={(value) =>
+                        onReviewValueChange(request, value)
+                      }
+                    />
+                  ) : (
+                    <OutlinedTextField
+                      label={label}
+                      value={draftValue}
+                      tone="warning"
+                      surfaceClassName="bg-[#f8f8f0] dark:bg-home-stat-card"
+                      labelSurfaceClassName="bg-[#f8f8f0] dark:bg-home-stat-card"
+                      onValueChange={(value) =>
+                        onReviewValueChange(request, value)
+                      }
+                    />
+                  )}
+                </div>
               </div>
 
-              <p className="mt-2 text-start text-xs font-medium text-[#404943] dark:text-home-filter-muted">
-                {label}
-              </p>
-
               {edited ? (
-                <div className="mt-3 flex flex-col items-start gap-2">
+                <div className="mt-3 flex flex-col items-start gap-1">
                   <Button
                     type="button"
                     variant="ghost"
                     onClick={() => onReviewValueReset(request)}
-                    className="h-9 px-0 text-sm font-medium text-primary shadow-none hover:bg-transparent hover:text-primary/80"
+                    className="h-8 px-0 text-xs font-medium text-primary shadow-none hover:bg-transparent hover:text-primary/80"
                   >
                     {t('reviewReset')}
                   </Button>
@@ -167,8 +196,8 @@ export function ReviewPendingList({
                 </div>
               ) : null}
 
-              <div className="mt-4 flex items-center justify-start gap-5">
-                <label className="flex cursor-pointer items-center gap-2 text-sm">
+              <div className="mt-5 flex items-center justify-end gap-6">
+                <label className="flex cursor-pointer items-center gap-2 text-sm font-medium">
                   <span
                     className={cn(
                       decision === 'approve'
@@ -182,6 +211,7 @@ export function ReviewPendingList({
                     type="radio"
                     name={`review-${request.requestId}`}
                     checked={decision === 'approve'}
+                    className="size-5 accent-[#008d63]"
                     onChange={() =>
                       onDecisionChange(request.requestId, 'approve')
                     }
@@ -189,7 +219,7 @@ export function ReviewPendingList({
                 </label>
                 <label
                   className={cn(
-                    'flex items-center gap-2 text-sm',
+                    'flex items-center gap-2 text-sm font-medium',
                     edited ? 'cursor-not-allowed opacity-50' : 'cursor-pointer',
                   )}
                 >
@@ -207,6 +237,7 @@ export function ReviewPendingList({
                     name={`review-${request.requestId}`}
                     disabled={edited}
                     checked={decision === 'reject'}
+                    className="size-5 accent-[#ba1a1a]"
                     onChange={() => onDecisionChange(request.requestId, 'reject')}
                   />
                 </label>
@@ -222,19 +253,26 @@ export function ReviewPendingList({
         </p>
       ) : null}
 
-      <Button
-        type="button"
-        disabled={isSaving}
-        onClick={onSave}
-        className="h-12 w-full max-w-[220px] gap-2 !rounded-2xl bg-[#008d63] text-white shadow-none hover:bg-[#008d63]/90"
-      >
-        {isSaving ? (
-          <Loader2 className="size-5 animate-spin" aria-hidden />
-        ) : (
-          <Stamp className="size-5" strokeWidth={1.75} aria-hidden />
-        )}
-        {t('reviewSave')}
-      </Button>
+      <div className="flex w-full flex-col-reverse gap-3 min-[720px]:flex-row min-[720px]:items-center min-[720px]:justify-end min-[720px]:gap-[88px]">
+        <Button
+          type="button"
+          variant="ghost"
+          disabled={isSaving}
+          onClick={onCancel}
+          className="h-12 w-full px-4 text-base font-bold text-primary shadow-none hover:bg-transparent hover:text-primary/80 min-[720px]:w-auto"
+        >
+          {t('cancel')}
+        </Button>
+        <Button
+          type="button"
+          loading={isSaving}
+          disabled={isSaving}
+          onClick={onSave}
+          className="h-14 w-full !rounded-2xl bg-primary px-8 text-base font-bold text-white shadow-none hover:bg-primary/90 min-[720px]:w-[160px]"
+        >
+          {t('save')}
+        </Button>
+      </div>
     </div>
   );
 }

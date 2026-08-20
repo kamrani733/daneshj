@@ -20,7 +20,7 @@ import type {
   SubmitPrivateStateByOwnerPayload,
   SubmitPrivateTabByOwnerPayload,
   SubmitPublicTabByOwnerPayload,
-} from './types';
+} from '@private-panel/types/api';
 
 /** GET /profiles_user/private/retrieve-for-owner — Prf-2 */
 export async function retrievePrivatePanelForOwner(

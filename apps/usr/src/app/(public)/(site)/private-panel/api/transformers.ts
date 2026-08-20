@@ -12,7 +12,7 @@ import type {
   ServiceTitleItem,
   ServiceTitleListItemDto,
   SubmitPrivateStateByOwnerPayload,
-} from './types';
+} from '@private-panel/types/api';
 
 export function mapActorInfo(data: ActorInfoDataDto): ActorInfo {
   return {

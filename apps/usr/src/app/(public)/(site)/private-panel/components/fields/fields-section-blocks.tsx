@@ -11,7 +11,7 @@ import {
   type VisibilityAcademicRecord,
   type VisibilityField,
 } from '@private-panel/data/visibility-config';
-import type { VisibilityValidationErrorKey } from '@private-panel/data/visibility-validation';
+import type { VisibilityValidationErrorKey } from '@private-panel/utils/visibility-validation';
 import { AcademicRecordCard } from '@/components/panel';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -20,7 +20,8 @@ import {
   AcademicRecordModal,
   type AcademicRecordFormValues,
 } from './academic-record-modal';
-import { DocumentsPanel, type DocumentDraft } from './documents-panel';
+import { DocumentsPanel } from './documents-panel';
+import type { DocumentDraft } from '@private-panel/types/documents';
 import { resolveViewControl, ViewField } from './view-field';
 
 function fieldErrorMessage(

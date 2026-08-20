@@ -6,7 +6,7 @@ import type {
   ListServiceTitlesPayload,
   ServiceTitleItem,
   ServiceTitleListItemDto,
-} from './types';
+} from '@private-panel/types/api';
 
 /** GET /service_titles/service-title/list-to-all — Prf-9 */
 export async function listServiceTitlesToAll(

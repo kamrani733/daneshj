@@ -3,13 +3,13 @@ import {
   normalizeIranianMobile,
   normalizeNationalId,
   normalizeWebsiteUrl,
-} from '@private-panel/data/visibility-validation';
+} from '@private-panel/utils/visibility-validation';
 
 import {
   asArray,
   asRecord,
   pickSection,
-} from './mapper-utils';
+} from '@private-panel/utils/mapper-utils';
 import type {
   AcademicRecordUserDto,
   DivisionCodeDto,
@@ -18,7 +18,7 @@ import type {
   ProfileRetrieveData,
   ProfileTabName,
   PublicTabSubmitByOwnerBodyDto,
-} from './types';
+} from '@private-panel/types/api';
 
 const PRIVATE_OWNER_TABS: PrivateOwnerTabName[] = [
   'identity_information',

@@ -4,7 +4,7 @@ import { useTranslations } from 'next-intl';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
 
-import type { FieldsMode } from './fields-section-utils';
+import type { FieldsMode } from '@private-panel/utils/fields-section-utils';
 
 export function ModeTabs({
   mode,

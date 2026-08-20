@@ -1,7 +1,7 @@
 import { pad2 } from '@/lib/jalali';
 import type { VisibilityFieldDef } from '@private-panel/data/visibility-config';
 
-import type { ProfileRetrieveData } from './types';
+import type { ProfileRetrieveData } from '@private-panel/types/api';
 
 export function asRecord(value: unknown): Record<string, unknown> | null {
   if (typeof value === 'object' && value !== null && !Array.isArray(value)) {

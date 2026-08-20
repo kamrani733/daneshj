@@ -16,8 +16,8 @@ import {
   pickSection,
   readRecordList,
   unwrapFieldValue,
-} from './mapper-utils';
-import type { ProfileRetrieveData } from './types';
+} from '@private-panel/utils/mapper-utils';
+import type { ProfileRetrieveData } from '@private-panel/types/api';
 
 export type PendingFieldRequest = {
   requestId: number;
