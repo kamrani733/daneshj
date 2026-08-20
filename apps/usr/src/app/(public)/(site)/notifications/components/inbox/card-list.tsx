@@ -3,7 +3,7 @@
 import type { ReactNode } from 'react';
 import { useTranslations } from 'next-intl';
 
-import type { NotificationRecord } from '@notifications/data/notifications-ui';
+import type { NotificationRecord } from '@notifications/types/ui';
 import {
   Card,
   CardContent,

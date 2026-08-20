@@ -69,4 +69,4 @@ export type {
   StatisticsRatioStat,
   StatisticsReportResult,
   UnreadCounts,
-} from './types';
+} from '@notifications/types/api';

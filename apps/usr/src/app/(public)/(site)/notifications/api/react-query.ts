@@ -27,7 +27,7 @@ import type {
   GetDetailedStatusReportPayload,
   GetStatisticsReportPayload,
   ListNotificationsPayload,
-} from './types';
+} from '@notifications/types/api';
 
 function canFetch(accessToken: string | null | undefined) {
   return !!accessToken;

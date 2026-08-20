@@ -1,17 +1,12 @@
 /** Notifications list filter — Figma Notification filter toolbar panel. */
 
-export type NotificationFilterStatus = 'read' | 'unread';
+import type {
+  FilterCategoryOption,
+  NotificationFilterStatus,
+  NotificationsFilterValues,
+} from '@notifications/types/filters';
 
-export type NotificationsFilterValues = {
-  sentStart: string;
-  sentEnd: string;
-  readStart: string;
-  readEnd: string;
-  /** Empty = no status filter; both = no filter */
-  statuses: NotificationFilterStatus[];
-  /** Selected category option ids (leaf and/or parent). */
-  categoryIds: string[];
-};
+export type * from '@notifications/types/filters';
 
 export const EMPTY_NOTIFICATION_FILTERS: NotificationsFilterValues = {
   sentStart: '',
@@ -20,14 +15,6 @@ export const EMPTY_NOTIFICATION_FILTERS: NotificationsFilterValues = {
   readEnd: '',
   statuses: [],
   categoryIds: [],
-};
-
-export type FilterCategoryOption = {
-  id: string;
-  /** Numeric id for API main/sub category when known */
-  apiId?: number;
-  labelKey: string;
-  children?: FilterCategoryOption[];
 };
 
 /**

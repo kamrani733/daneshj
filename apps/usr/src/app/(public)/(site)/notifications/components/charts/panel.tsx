@@ -8,9 +8,9 @@ import {
   getNotificationApiErrorMessage,
   useChartsReportQuery,
 } from '@notifications/api';
-import type { ChartPeriod } from '@notifications/data/charts';
-import { chartPeriodToDateRange } from '@notifications/lib/chart-period-range';
-import { formatChartLegendValue } from '@notifications/lib/format-chart-legend';
+import type { ChartPeriod } from '@notifications/types/charts';
+import { chartPeriodToDateRange } from '@notifications/utils/chart-period-range';
+import { formatChartLegendValue } from '@notifications/utils/format-chart-legend';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
 import { formatFaNumber } from '@/lib/format-fa';

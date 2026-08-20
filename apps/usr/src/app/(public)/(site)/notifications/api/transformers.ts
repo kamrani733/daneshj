@@ -39,9 +39,9 @@ import type {
   StatisticsReportResult,
   UnreadCountData,
   UnreadCounts,
-} from './types';
-import { formatChartDateLabel } from '../lib/chart-period-range';
-import { splitSentAt } from '../lib/format-notification-datetime';
+} from '@notifications/types/api';
+import { formatChartDateLabel } from '@notifications/utils/chart-period-range';
+import { splitSentAt } from '@notifications/utils/format-notification-datetime';
 
 function toNotificationType(value: string): NotificationType {
   return value === 'manual' ? 'manual' : 'system';
@@ -567,7 +567,18 @@ export function mergeActorSettingsIntoEventStates(
 
     next[eventId] = SETTINGS_CHANNELS.map((channel) => {
       const fromApi = byChannel.get(channel);
-      const fallback = next[eventId]!.find((c) => c.channel === channel)!;
+      const fallback = next[eventId]?.find((c) => c.channel === channel);
+      if (!fallback) {
+        return fromApi
+          ? { ...fromApi }
+          : {
+              channel,
+              isEnabled: false,
+              receivePeriod: 'at_moment',
+              receiveTimeStart: null,
+              receiveTimeEnd: null,
+            };
+      }
       return fromApi ? { ...fromApi } : { ...fallback };
     });
   }

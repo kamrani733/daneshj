@@ -9,13 +9,14 @@ import {
   type NotificationItem,
   type NotificationType,
 } from '@notifications/api';
-import type { NotificationRecord } from '@notifications/data/notifications-ui';
+import type { NotificationRecord } from '@notifications/types/ui';
+import type { NotificationsFilterValues } from '@notifications/types/filters';
 import {
   EMPTY_NOTIFICATION_FILTERS,
   resolveApiCategoryIds,
   resolveIsReadFilter,
-  type NotificationsFilterValues,
 } from '@notifications/data/notifications-filter-data';
+import { useMobilePagedItems } from '@notifications/hooks';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -65,9 +66,6 @@ export function NotificationsPageView({
     EMPTY_NOTIFICATION_FILTERS
   );
   const [page, setPage] = useState(1);
-  const [mobilePages, setMobilePages] = useState<
-    Record<number, NotificationRecord[]>
-  >({});
 
   const categoryIds = resolveApiCategoryIds(filters.categoryIds);
   const listQuery = useNotificationsListQuery({
@@ -84,32 +82,28 @@ export function NotificationsPageView({
   });
   const markOne = useMarkNotificationAsReadMutation();
 
-  const pageItems = (listQuery.data?.items ?? []).map(toRecord);
+  const pageItems = useMemo(
+    () => (listQuery.data?.items ?? []).map(toRecord),
+    [listQuery.data?.items]
+  );
   const totalPages = Math.max(listQuery.data?.totalPages ?? 1, 1);
   const hasUnreadManual = (listQuery.data?.unreadCounts.manual ?? 0) > 0;
   const isListLoading =
     listQuery.isPending || (listQuery.isFetching && pageItems.length === 0);
   const canLoadMore = page < totalPages;
-  const mobileItems = useMemo(
-    () =>
-      Array.from({ length: page }, (_, index) => index + 1).flatMap(
-        (pageNumber) => mobilePages[pageNumber] ?? []
-      ),
-    [mobilePages, page]
+  const resetKey = useMemo(
+    () => JSON.stringify({ tab, query, filters }),
+    [tab, query, filters]
   );
+  const { mobileItems } = useMobilePagedItems({
+    page,
+    pageItems,
+    resetKey,
+  });
 
   useEffect(() => {
     setPage(1);
-    setMobilePages({});
-  }, [tab, query, filters]);
-
-  useEffect(() => {
-    if (!listQuery.data) return;
-    setMobilePages((prev) => ({
-      ...prev,
-      [page]: listQuery.data.items.map(toRecord),
-    }));
-  }, [listQuery.data, page]);
+  }, [resetKey]);
 
   async function handleRowSelect(item: NotificationRecord) {
     if (item.status !== 'unread') return;

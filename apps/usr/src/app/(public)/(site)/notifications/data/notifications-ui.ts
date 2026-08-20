@@ -1,22 +1,8 @@
-/** Shared notifications UI types/paths (bell panel + list page). */
+/** Shared notifications paths and default helpers. */
 
-export type NotificationStatus = 'unread' | 'read';
+import type { NotificationStatus } from '@notifications/types/ui';
 
-/** Full page row — Figma Notifications #100:5489 */
-export type NotificationRecord = {
-  id: string;
-  subject: string;
-  body: string;
-  date: string;
-  time: string;
-  status: NotificationStatus;
-  kind: 'manual' | 'system';
-  mainCategory: string;
-  subCategory: string;
-  link: string;
-  readDate: string | null;
-  readTime: string | null;
-};
+export type * from '@notifications/types/ui';
 
 export const NOTIFICATIONS_PATH = '/notifications';
 

@@ -1,18 +1,6 @@
-export type ChartPeriod = 'day' | 'week' | 'month' | 'season' | 'year';
+import type { ChartPeriod } from '@notifications/types/charts';
 
-export type BarPoint = {
-  label: string;
-  value: number;
-};
-
-export type DonutSlice = {
-  key: 'primary' | 'other';
-  value: number;
-};
-
-export type LegendDisplay =
-  | { kind: 'percent'; value: number }
-  | { kind: 'count'; value: number };
+export type * from '@notifications/types/charts';
 
 export const CHART_PERIODS: ChartPeriod[] = [
   'day',

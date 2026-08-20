@@ -3,9 +3,7 @@
 import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 
-import {
-  FILTER_CATEGORY_TREE,
-} from '@notifications/data/notifications-filter-data';
+import { FILTER_CATEGORY_TREE } from '@notifications/data/notifications-filter-data';
 import type {
   ReportChannel,
   ReportPriority,

@@ -1,6 +1,6 @@
 import { isApiError } from '@daneshjoam/api-client';
 
-import type { ApiResponse } from './types';
+import type { ApiResponse } from '@notifications/types/api';
 
 export type NotificationKnownErrorKey =
   | 'internal'

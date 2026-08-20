@@ -6,10 +6,10 @@ import { useTranslations } from 'next-intl';
 
 import {
   useDetailedStatusReportQuery,
-  type DetailedStatusReportItem,
   type ReportOrdering,
 } from '@notifications/api';
 import { resolveApiCategoryIds } from '@notifications/data/notifications-filter-data';
+import { useMobilePagedItems } from '@notifications/hooks';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
 import { cn } from '@/lib/utils';
@@ -39,9 +39,6 @@ export function NotificationsReportsPanel({
     EMPTY_REPORTS_FILTERS
   );
   const [page, setPage] = useState(1);
-  const [mobilePages, setMobilePages] = useState<
-    Record<number, DetailedStatusReportItem[]>
-  >({});
 
   const categoryIds = resolveApiCategoryIds(filters.categoryIds);
 
@@ -59,42 +56,34 @@ export function NotificationsReportsPanel({
     subCategoryId: categoryIds.subCategoryId,
   });
 
-  const pageItems = reportQuery.data?.items ?? [];
+  const pageItems = useMemo(
+    () => reportQuery.data?.items ?? [],
+    [reportQuery.data?.items]
+  );
   const totalPages = Math.max(reportQuery.data?.totalPages ?? 1, 1);
   const isLoading =
     reportQuery.isPending ||
     (reportQuery.isFetching && pageItems.length === 0);
   const canLoadMore = page < totalPages;
 
-  const mobileItems = useMemo(
+  const resetKey = useMemo(
     () =>
-      Array.from({ length: page }, (_, index) => index + 1).flatMap(
-        (pageNumber) => mobilePages[pageNumber] ?? []
-      ),
-    [mobilePages, page]
+      JSON.stringify({
+        query,
+        ordering,
+        filters,
+      }),
+    [query, ordering, filters]
   );
+  const { mobileItems } = useMobilePagedItems({
+    page,
+    pageItems,
+    resetKey,
+  });
 
   useEffect(() => {
     setPage(1);
-    setMobilePages({});
-  }, [
-    query,
-    ordering,
-    filters.priority,
-    filters.status,
-    filters.channel,
-    filters.sentStart,
-    filters.sentEnd,
-    filters.categoryIds,
-  ]);
-
-  useEffect(() => {
-    if (!reportQuery.data) return;
-    setMobilePages((prev) => ({
-      ...prev,
-      [page]: reportQuery.data.items,
-    }));
-  }, [reportQuery.data, page]);
+  }, [resetKey]);
 
   return (
     <section className="overflow-hidden rounded-xl bg-home-search-fill ring-1 ring-border/40">

@@ -3,7 +3,7 @@ import type {
   GetDetailedStatusReportPayload,
   GetStatisticsReportPayload,
   ListNotificationsPayload,
-} from './types';
+} from '@notifications/types/api';
 
 export const notificationQueryKeys = {
   all: ['notifications'] as const,

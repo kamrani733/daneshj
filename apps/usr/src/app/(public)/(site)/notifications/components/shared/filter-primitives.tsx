@@ -4,9 +4,7 @@ import { Calendar, ChevronDown } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useState, type ReactNode } from 'react';
 
-import {
-  type FilterCategoryOption,
-} from '@notifications/data/notifications-filter-data';
+import type { FilterCategoryOption } from '@notifications/types/filters';
 import { Button } from '@/components/ui/button';
 import { JalaliDatePicker } from '@/components/ui/jalali-date-picker';
 import { cn } from '@/lib/utils';
@@ -243,9 +241,9 @@ export function CategoryTree({
                 <span className="size-6 shrink-0" aria-hidden />
               )}
             </div>
-            {hasChildren && isOpen ? (
+            {hasChildren && isOpen && option.children ? (
               <CategoryTree
-                options={option.children!}
+                options={option.children}
                 selected={selected}
                 onToggle={onToggle}
                 depth={depth + 1}

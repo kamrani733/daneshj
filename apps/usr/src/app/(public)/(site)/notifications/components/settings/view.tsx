@@ -1,73 +1,17 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { ChevronLeft } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { NOTIFICATIONS_PATH } from '@notifications/data/notifications-ui';
-import {
-  useActorSettingsQuery,
-  useApplyActorSettingsMutation,
-  getNotificationApiErrorMessage,
-  mergeActorSettingsIntoEventStates,
-  toActorChannelSettingRequest,
-} from '@notifications/api';
-import {
-  SETTINGS_SECTIONS,
-  buildDefaultEventStates,
-  flattenSettingsEvents,
-  getCategoryIdByEventId,
-  type ChannelSettingState,
-  type NotificationChannel,
-} from '@notifications/data/settings-mock';
+import { useNotificationsSettings } from '@notifications/hooks';
+import { SETTINGS_SECTIONS } from '@notifications/data/settings-mock';
 import { Spinner } from '@/components/ui/spinner';
 
 import { AccentMark } from '@/components/site/accent-mark';
 import { SettingsCategoryAccordion } from './category-accordion';
 import { SettingsFloatingActions } from './floating-actions';
-
-function cloneState(state: Record<string, ChannelSettingState[]>) {
-  const next: Record<string, ChannelSettingState[]> = {};
-  for (const [eventId, channels] of Object.entries(state)) {
-    next[eventId] = channels.map((channel) => ({ ...channel }));
-  }
-  return next;
-}
-
-function isDirty(
-  current: Record<string, ChannelSettingState[]>,
-  baseline: Record<string, ChannelSettingState[]>
-) {
-  return JSON.stringify(current) !== JSON.stringify(baseline);
-}
-
-function collectChangedSettings(
-  current: Record<string, ChannelSettingState[]>,
-  baseline: Record<string, ChannelSettingState[]>
-) {
-  const settings: Array<{
-    categoryId: number;
-    channels: ReturnType<typeof toActorChannelSettingRequest>;
-  }> = [];
-
-  for (const eventItem of flattenSettingsEvents()) {
-    const currentChannels = current[eventItem.id];
-    const baselineChannels = baseline[eventItem.id];
-    if (!currentChannels || !baselineChannels) continue;
-    if (JSON.stringify(currentChannels) === JSON.stringify(baselineChannels)) {
-      continue;
-    }
-    const categoryId = getCategoryIdByEventId(eventItem.id);
-    if (categoryId == null) continue;
-    settings.push({
-      categoryId,
-      channels: toActorChannelSettingRequest(currentChannels),
-    });
-  }
-
-  return settings;
-}
 
 type NotificationsSettingsViewProps = {
   accessToken?: string | null;
@@ -79,66 +23,7 @@ export function NotificationsSettingsView({
 }: NotificationsSettingsViewProps) {
   const t = useTranslations('notifications.settings');
   const tRoot = useTranslations('notifications');
-  const [openId, setOpenId] = useState<string | null>(null);
-  const [baseline, setBaseline] = useState(buildDefaultEventStates);
-  const [eventStates, setEventStates] = useState(() =>
-    cloneState(buildDefaultEventStates())
-  );
-  const [saveError, setSaveError] = useState<string | null>(null);
-
-  const settingsQuery = useActorSettingsQuery(accessToken);
-  const applyMutation = useApplyActorSettingsMutation();
-
-  useEffect(() => {
-    if (!settingsQuery.data) return;
-    const merged = mergeActorSettingsIntoEventStates(
-      buildDefaultEventStates(),
-      settingsQuery.data
-    );
-    setBaseline(cloneState(merged));
-    setEventStates(cloneState(merged));
-  }, [settingsQuery.data]);
-
-  const dirty = isDirty(eventStates, baseline);
-
-  const updateChannel = (
-    eventId: string,
-    channel: NotificationChannel,
-    patch: Partial<ChannelSettingState>
-  ) => {
-    setSaveError(null);
-    setEventStates((prev) => ({
-      ...prev,
-      [eventId]: (prev[eventId] ?? []).map((item) =>
-        item.channel === channel ? { ...item, ...patch } : item
-      ),
-    }));
-  };
-
-  const handleCancel = () => {
-    setSaveError(null);
-    setEventStates(cloneState(baseline));
-  };
-
-  const handleSave = async () => {
-    setSaveError(null);
-    const settings = collectChangedSettings(eventStates, baseline);
-    if (settings.length === 0) return;
-
-    try {
-      await applyMutation.mutateAsync({
-        accessToken: accessToken ?? '',
-        settings,
-      });
-      setBaseline(cloneState(eventStates));
-    } catch (error) {
-      setSaveError(
-        getNotificationApiErrorMessage(error, t('saveFailed'), (key) =>
-          tRoot(`apiErrors.${key}`)
-        )
-      );
-    }
-  };
+  const vm = useNotificationsSettings({ accessToken });
 
   return (
     <div className="mx-auto flex w-full max-w-[1364px] flex-col gap-6 px-4 py-4 min-[1200px]:px-0">
@@ -191,7 +76,7 @@ export function NotificationsSettingsView({
         </div>
       </header>
 
-      {settingsQuery.isLoading ? (
+      {vm.settingsQuery.isLoading ? (
         <div className="flex items-center justify-center gap-2 py-16 text-home-filter-muted">
           <Spinner className="size-5" />
           <span className="text-sm">{t('loading')}</span>
@@ -199,7 +84,7 @@ export function NotificationsSettingsView({
       ) : (
         <div
           className={
-            dirty ? 'flex flex-col gap-10 pb-24' : 'flex flex-col gap-10'
+            vm.dirty ? 'flex flex-col gap-10 pb-24' : 'flex flex-col gap-10'
           }
         >
           {SETTINGS_SECTIONS.map((section) => (
@@ -213,21 +98,21 @@ export function NotificationsSettingsView({
                   <SettingsCategoryAccordion
                     key={category.id}
                     category={category}
-                    open={openId === category.id}
+                    open={vm.openId === category.id}
                     onToggle={() =>
-                      setOpenId((current) =>
+                      vm.setOpenId((current) =>
                         current === category.id ? null : category.id
                       )
                     }
-                    eventStates={eventStates}
+                    eventStates={vm.eventStates}
                     onEnabledChange={(eventId, channel, isEnabled) =>
-                      updateChannel(eventId, channel, { isEnabled })
+                      vm.updateChannel(eventId, channel, { isEnabled })
                     }
                     onPeriodChange={(eventId, channel, receivePeriod) =>
-                      updateChannel(eventId, channel, { receivePeriod })
+                      vm.updateChannel(eventId, channel, { receivePeriod })
                     }
                     onTimeChange={(eventId, channel, field, value) =>
-                      updateChannel(eventId, channel, {
+                      vm.updateChannel(eventId, channel, {
                         [field]: value || null,
                       })
                     }
@@ -239,19 +124,19 @@ export function NotificationsSettingsView({
         </div>
       )}
 
-      {saveError ? (
+      {vm.saveError ? (
         <p className="text-sm text-destructive" role="alert">
-          {saveError}
+          {vm.saveError}
         </p>
       ) : null}
 
-      {dirty ? (
+      {vm.dirty ? (
         <SettingsFloatingActions
-          onCancel={handleCancel}
+          onCancel={vm.handleCancel}
           onSave={() => {
-            void handleSave();
+            void vm.handleSave();
           }}
-          saving={applyMutation.isPending}
+          saving={vm.applyMutation.isPending}
         />
       ) : null}
     </div>

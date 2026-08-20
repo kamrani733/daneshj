@@ -43,7 +43,7 @@ import type {
   StatisticsReportResult,
   UnreadCountData,
   UnreadCounts,
-} from './types';
+} from '@notifications/types/api';
 
 function assertApiSuccess<T>(response: ApiResponse<T>, requireData = true): T {
   if (!response.success || (requireData && response.data == null)) {

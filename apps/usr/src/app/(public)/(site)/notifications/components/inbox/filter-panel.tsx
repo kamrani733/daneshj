@@ -6,9 +6,11 @@ import { useEffect, useState } from 'react';
 import {
   EMPTY_NOTIFICATION_FILTERS,
   FILTER_CATEGORY_TREE,
-  type NotificationFilterStatus,
-  type NotificationsFilterValues,
 } from '@notifications/data/notifications-filter-data';
+import type {
+  NotificationFilterStatus,
+  NotificationsFilterValues,
+} from '@notifications/types/filters';
 import { Button } from '@/components/ui/button';
 
 import {

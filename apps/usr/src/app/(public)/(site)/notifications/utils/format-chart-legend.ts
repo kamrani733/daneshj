@@ -1,4 +1,4 @@
-import type { LegendDisplay } from '@notifications/data/charts';
+import type { LegendDisplay } from '@notifications/types/charts';
 import { formatFaNumber } from '@/lib/format-fa';
 
 export function formatChartLegendValue(display: LegendDisplay): string {

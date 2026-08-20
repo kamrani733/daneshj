@@ -6,7 +6,7 @@ import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
 import { FilterAltIcon } from '@/components/icons/material-icons';
-import type { NotificationsFilterValues } from '@notifications/data/notifications-filter-data';
+import type { NotificationsFilterValues } from '@notifications/types/filters';
 import { SETTINGS_PATH } from '@notifications/data/settings-mock';
 import { Button } from '@/components/ui/button';
 import { SearchField } from '@/components/ui/search-field';
