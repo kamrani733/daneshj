@@ -18,6 +18,7 @@ import {
   type PrivateOwnerTabName,
 } from '@private-panel/api';
 import {
+  CATEGORY_TO_TAB,
   VISIBILITY_CATEGORIES,
   VISIBILITY_SECTIONS,
   type VisibilityCategoryId,
@@ -79,6 +80,7 @@ export function FieldsSection({ accessToken }: FieldsSectionProps) {
   const [reviewDecisions, setReviewDecisions] = useState<
     Record<number, ReviewDecision>
   >({});
+  const [reviewValues, setReviewValues] = useState<Record<number, string>>({});
   const [academicDocuments, setAcademicDocuments] = useState<DocumentDraft[]>(
     [],
   );
@@ -102,6 +104,21 @@ export function FieldsSection({ accessToken }: FieldsSectionProps) {
   const pendingRequests = useMemo(
     () => mapPendingFieldRequests(privateData),
     [privateData],
+  );
+  const pendingCounts = useMemo(
+    () =>
+      pendingRequests.reduce(
+        (acc, request) => {
+          acc[request.category] = (acc[request.category] ?? 0) + 1;
+          return acc;
+        },
+        {} as Partial<Record<VisibilityCategoryId, number>>,
+      ),
+    [pendingRequests],
+  );
+  const categoryPendingRequests = useMemo(
+    () => pendingRequests.filter((request) => request.category === category),
+    [pendingRequests, category],
   );
 
   const applyServerFields = (
@@ -452,12 +469,33 @@ export function FieldsSection({ accessToken }: FieldsSectionProps) {
 
   async function handleReviewSave() {
     if (!accessToken || isSaving) return;
+    const editedRequests = pendingRequests.filter(
+      (request) =>
+        request.fieldId &&
+        (reviewValues[request.requestId] ?? request.newValue) !==
+          request.newValue,
+    );
+    const editedRequestIds = new Set(
+      editedRequests.map((request) => request.requestId),
+    );
     const confirmed = Object.entries(reviewDecisions)
-      .filter(([, decision]) => decision === 'approve')
-      .map(([id]) => ({ request_id: Number(id) }));
+      .filter(
+        ([id, decision]) =>
+          decision === 'approve' && !editedRequestIds.has(Number(id)),
+      )
+      .map(([id]) => ({ request_id: Number(id), request_type: 1 as const }));
+    confirmed.push(
+      ...editedRequests.map((request) => ({
+        request_id: request.requestId,
+        request_type: 1 as const,
+      })),
+    );
     const rejected = Object.entries(reviewDecisions)
-      .filter(([, decision]) => decision === 'reject')
-      .map(([id]) => ({ request_id: Number(id) }));
+      .filter(
+        ([id, decision]) =>
+          decision === 'reject' && !editedRequestIds.has(Number(id)),
+      )
+      .map(([id]) => ({ request_id: Number(id), request_type: 1 as const }));
 
     if (confirmed.length === 0 && rejected.length === 0) {
       setFormError(t('nothingToSave'));
@@ -472,7 +510,43 @@ export function FieldsSection({ accessToken }: FieldsSectionProps) {
         confirmedRequests: confirmed,
         rejectedRequests: rejected,
       });
+
+      if (editedRequests.length > 0) {
+        const valuesForSubmit = { ...savedValues };
+        for (const request of editedRequests) {
+          if (request.fieldId) {
+            valuesForSubmit[request.fieldId] =
+              reviewValues[request.requestId] ?? request.newValue;
+          }
+        }
+        const privateTabs = new Set(
+          tabsAffectedByValues(valuesForSubmit, savedValues),
+        );
+        for (const request of editedRequests) {
+          const tabName = request.tabName ?? CATEGORY_TO_TAB[request.category];
+          if (tabName && tabName !== 'user_information') {
+            privateTabs.add(tabName as PrivateOwnerTabName);
+          }
+        }
+
+        await Promise.all(
+          [...privateTabs].map((tabName: PrivateOwnerTabName) =>
+            submitPrivateMutation.mutateAsync({
+              accessToken,
+              tabName,
+              body: toPrivateTabSubmitBody(
+                sanitizeValuesForPrivateSubmit(valuesForSubmit),
+                tabName,
+                privateData,
+                savedValues,
+              ),
+            }),
+          ),
+        );
+      }
+
       setReviewDecisions({});
+      setReviewValues({});
       await refreshFieldsFromServer();
     } catch (error) {
       setFormError(getActorApiErrorMessage(error, t('reviewFailed')));
@@ -536,8 +610,11 @@ export function FieldsSection({ accessToken }: FieldsSectionProps) {
                     'min-[720px]:px-4 min-[720px]:text-sm',
                   )}
                 >
-                  <span className="whitespace-nowrap">
+                  <span className="flex items-center gap-2 whitespace-nowrap">
                     {tVis(`categories.${id}`)}
+                    {mode === 'review' && pendingCounts[id] ? (
+                      <span className="size-2 rounded-full bg-[#ba1a1a]" />
+                    ) : null}
                   </span>
                 </TabsTrigger>
               ))}
@@ -556,14 +633,39 @@ export function FieldsSection({ accessToken }: FieldsSectionProps) {
                 >
                   {mode === 'review' ? (
                     <ReviewPendingList
-                      requests={pendingRequests}
+                      requests={categoryPendingRequests}
                       decisions={reviewDecisions}
+                      reviewValues={reviewValues}
                       onDecisionChange={(requestId, decision) =>
                         setReviewDecisions((prev) => ({
                           ...prev,
                           [requestId]: decision,
                         }))
                       }
+                      onReviewValueChange={(request, value) => {
+                        setReviewValues((prev) => ({
+                          ...prev,
+                          [request.requestId]: value,
+                        }));
+                        setReviewDecisions((prev) => ({
+                          ...prev,
+                          [request.requestId]: 'approve',
+                        }));
+                        if (formError) setFormError(null);
+                      }}
+                      onReviewValueReset={(request) => {
+                        setReviewValues((prev) => {
+                          const next = { ...prev };
+                          delete next[request.requestId];
+                          return next;
+                        });
+                        setReviewDecisions((prev) => {
+                          const next = { ...prev };
+                          delete next[request.requestId];
+                          return next;
+                        });
+                        if (formError) setFormError(null);
+                      }}
                       isSaving={isSaving}
                       formError={formError}
                       onSave={handleReviewSave}

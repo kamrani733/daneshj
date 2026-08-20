@@ -177,10 +177,12 @@ export interface ChangeStateRecordBodyDto {
 
 export interface ConfirmedRequestItemDto {
   request_id: number;
+  request_type?: 1 | 2;
 }
 
 export interface RejectedRequestItemDto {
   request_id: number;
+  request_type?: 1 | 2;
   reason?: string;
   new_value?: string;
 }
@@ -274,9 +276,9 @@ export interface RequestPublicPanelChangeStatusPayload extends AccessTokenPayloa
   action: PublicPanelStatusAction;
 }
 
-export interface RetrievePrivatePanelForOwnerPayload extends AccessTokenPayload {}
+export type RetrievePrivatePanelForOwnerPayload = AccessTokenPayload;
 
-export interface RetrievePublicPanelForOwnerPayload extends AccessTokenPayload {}
+export type RetrievePublicPanelForOwnerPayload = AccessTokenPayload;
 
 export interface RetrievePublicPanelForVisitorPayload extends AccessTokenPayload {
   actorId: number;
