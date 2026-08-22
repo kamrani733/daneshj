@@ -37,6 +37,7 @@ function fieldErrorMessage(
 export function IdentityCategoryBlocks({
   fields,
   editable,
+  showPending,
   values,
   fieldErrors,
   onChange,
@@ -46,6 +47,7 @@ export function IdentityCategoryBlocks({
 }: {
   fields: VisibilityField[];
   editable: boolean;
+  showPending: boolean;
   values: Record<string, string>;
   fieldErrors: Record<string, VisibilityValidationErrorKey>;
   onChange: (id: string, value: string) => void;
@@ -79,6 +81,7 @@ export function IdentityCategoryBlocks({
                 field={{ ...field, imageSrc: src, value: src }}
                 label={tVis(`fields.${field.labelKey}`)}
                 editable={editable && !field.locked}
+                showPending={showPending}
                 value={src}
                 error={fieldErrorMessage(fieldErrors, field.id, tVis)}
                 onChange={onChange}
@@ -97,6 +100,7 @@ export function IdentityCategoryBlocks({
               field={field}
               label={tVis(`fields.${field.labelKey}`)}
               editable={editable && !field.locked}
+              showPending={showPending}
               value={values[field.id] ?? field.value}
               values={values}
               error={fieldErrorMessage(fieldErrors, field.id, tVis)}
@@ -112,6 +116,7 @@ export function IdentityCategoryBlocks({
                 field={field}
                 label={tVis(`fields.${field.labelKey}`)}
                 editable={editable && !field.locked}
+                showPending={showPending}
                 value={values[field.id] ?? field.value}
                 values={values}
                 error={fieldErrorMessage(fieldErrors, field.id, tVis)}
@@ -128,6 +133,7 @@ export function IdentityCategoryBlocks({
 export function ProviderBlocks({
   fields,
   editable,
+  showPending,
   values,
   fieldErrors,
   onChange,
@@ -139,6 +145,7 @@ export function ProviderBlocks({
 }: {
   fields: VisibilityField[];
   editable: boolean;
+  showPending: boolean;
   values: Record<string, string>;
   fieldErrors: Record<string, VisibilityValidationErrorKey>;
   onChange: (id: string, value: string) => void;
@@ -154,6 +161,7 @@ export function ProviderBlocks({
         <FieldGrid
           fields={fields}
           editable={editable}
+          showPending={showPending}
           values={values}
           fieldErrors={fieldErrors}
           onChange={onChange}
@@ -489,6 +497,7 @@ function RecordIconButton({
 export function FieldGrid({
   fields,
   editable,
+  showPending,
   values,
   fieldErrors,
   onChange,
@@ -496,6 +505,7 @@ export function FieldGrid({
 }: {
   fields: VisibilityField[];
   editable: boolean;
+  showPending: boolean;
   values: Record<string, string>;
   fieldErrors: Record<string, VisibilityValidationErrorKey>;
   onChange: (id: string, value: string) => void;
@@ -516,6 +526,7 @@ export function FieldGrid({
               field={field}
               label={tVis(`fields.${field.labelKey}`)}
               editable={editable && !field.locked}
+              showPending={showPending}
               value={values[field.id] ?? field.value}
               values={values}
               error={fieldErrorMessage(fieldErrors, field.id, tVis)}
@@ -530,6 +541,7 @@ export function FieldGrid({
           field={field}
           label={tVis(`fields.${field.labelKey}`)}
           editable={editable && !field.locked}
+          showPending={showPending}
           value={values[field.id] ?? field.value}
           values={values}
           error={fieldErrorMessage(fieldErrors, field.id, tVis)}

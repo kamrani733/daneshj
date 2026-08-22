@@ -17,7 +17,11 @@ import {
   ProviderBlocks,
 } from './fields-section-blocks';
 import { FieldsFloatingSaveBar } from './fields-floating-save-bar';
-import { IntroBullets, ModeTabs } from './fields-section-header';
+import {
+  IntroBullets,
+  ModeTabs,
+  ReviewIntroBullets,
+} from './fields-section-header';
 import { FieldsLimitationsSection } from './fields-limitations-section';
 import { ReviewPendingList } from './review-pending-list';
 import { useFieldsSectionController } from '@private-panel/hooks/use-fields-section-controller';
@@ -25,11 +29,13 @@ import { useFieldsSectionController } from '@private-panel/hooks/use-fields-sect
 type FieldsSectionProps = {
   accessToken?: string | null;
   targetActorId?: number | null;
+  username: string;
 };
 
 export function FieldsSection({
   accessToken,
   targetActorId,
+  username,
 }: FieldsSectionProps) {
   const vm = useFieldsSectionController({ accessToken, targetActorId });
 
@@ -43,7 +49,11 @@ export function FieldsSection({
     >
       <ModeTabs mode={vm.mode} onModeChange={vm.setMode} t={vm.t} />
 
-      <IntroBullets t={vm.t} />
+      {targetActorId ? (
+        <ReviewIntroBullets t={vm.t} username={username} />
+      ) : (
+        <IntroBullets t={vm.t} />
+      )}
 
       <Tabs
         value={vm.category}
@@ -98,7 +108,11 @@ export function FieldsSection({
                       tVis={vm.tVis}
                     />
                   ) : (
-                    <FieldsEditView accessToken={accessToken} vm={vm} />
+                    <FieldsEditView
+                      accessToken={accessToken}
+                      vm={vm}
+                      showPending={Boolean(targetActorId)}
+                    />
                   )}
                 </div>
               )}
@@ -173,9 +187,11 @@ function CategoryTabs({
 function FieldsEditView({
   accessToken,
   vm,
+  showPending,
 }: {
   accessToken?: string | null;
   vm: FieldsController;
+  showPending: boolean;
 }) {
   return (
     <>
@@ -190,6 +206,7 @@ function FieldsEditView({
               key={section.key}
               fields={sectionFields}
               editable={vm.editable}
+              showPending={showPending}
               values={vm.values}
               fieldErrors={vm.fieldErrors}
               onChange={vm.onFieldChange}
@@ -222,6 +239,7 @@ function FieldsEditView({
               key={section.key}
               fields={sectionFields}
               editable={vm.editable}
+              showPending={showPending}
               values={vm.values}
               fieldErrors={vm.fieldErrors}
               onChange={vm.onFieldChange}
@@ -244,6 +262,7 @@ function FieldsEditView({
             <FieldGrid
               fields={sectionFields}
               editable={vm.editable}
+              showPending={showPending}
               values={vm.values}
               fieldErrors={vm.fieldErrors}
               onChange={vm.onFieldChange}

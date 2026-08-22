@@ -1,8 +1,9 @@
-import { ChevronDown, ChevronUp, FileText } from 'lucide-react';
+import { ChevronDown, ChevronUp, FileText, RefreshCw } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
 import type { PendingFieldRequest } from '@private-panel/api';
+import { EmptyState } from '@/components/panel';
 import { Button } from '@/components/ui/button';
 import {
   OutlinedDisplayField,
@@ -108,9 +109,11 @@ export function ReviewPendingList({
 
   if (requests.length === 0) {
     return (
-      <p className="text-sm font-medium leading-6 text-[#404943] dark:text-home-filter-muted">
-        {t('reviewEmpty')}
-      </p>
+      <EmptyState
+        message={t('reviewEmpty')}
+        imageSrc="/images/private-panel/Emptystate1.svg"
+        className="min-h-[360px] rounded-none bg-transparent dark:bg-transparent"
+      />
     );
   }
 
@@ -231,8 +234,9 @@ export function ReviewPendingList({
                     type="button"
                     variant="ghost"
                     onClick={() => onReviewValueReset(request)}
-                    className="h-8 px-0 text-xs font-medium text-primary shadow-none hover:bg-transparent hover:text-primary/80"
+                    className="h-8 gap-1 px-0 text-xs font-medium text-primary shadow-none hover:bg-transparent hover:text-primary/80"
                   >
+                    <RefreshCw className="size-4" strokeWidth={1.75} aria-hidden />
                     {t('reviewReset')}
                   </Button>
                   <p className="text-start text-xs font-medium text-[#404943] dark:text-home-filter-muted">

@@ -49,7 +49,11 @@ export function PrivatePanelView({
 
       <PrivatePanelHeading displayName={profile?.displayName ?? ''} />
       {profile ? <ProfileHeroCard profile={profile} /> : null}
-      <PrivatePanelTabs accessToken={accessToken} targetActorId={targetActorId} />
+      <PrivatePanelTabs
+        accessToken={accessToken}
+        targetActorId={targetActorId}
+        username={profile?.username || profile?.displayName || t('titleUserFallback')}
+      />
     </main>
   );
 }

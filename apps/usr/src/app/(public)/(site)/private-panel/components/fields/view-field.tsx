@@ -129,6 +129,7 @@ export function ViewField({
         label={label}
         imageSrc={field.imageSrc || current}
         editable={canEdit}
+        pending={pending}
         error={error}
         onPick={(previewUrl, file) => {
           if (onPhotoPick) {
@@ -249,12 +250,14 @@ function PhotoField({
   label,
   imageSrc,
   editable,
+  pending,
   error,
   onPick,
 }: {
   label: string;
   imageSrc?: string;
   editable: boolean;
+  pending: boolean;
   error?: string | null;
   onPick: (previewUrl: string, file: File) => void;
 }) {
@@ -279,6 +282,7 @@ function PhotoField({
           'flex w-full flex-col items-center gap-4 rounded-2xl border border-[#dbd8d1] px-4 pb-5 pt-4',
           FIELD_SURFACE,
           'dark:border-auth-input-border',
+          pending && 'border-[#e06333] dark:border-[#e06333]',
           error && 'border-error',
         )}
       >

@@ -56,6 +56,14 @@ export function ModeTabs({
 }
 
 export function IntroBullets({ t }: { t: ReturnType<typeof useTranslations> }) {
+  return <OwnerIntroBullets t={t} />;
+}
+
+export function OwnerIntroBullets({
+  t,
+}: {
+  t: ReturnType<typeof useTranslations>;
+}) {
   return (
     <ul className="flex w-full flex-col gap-4">
       {[0, 1, 2].map((index) => (
@@ -74,6 +82,30 @@ export function IntroBullets({ t }: { t: ReturnType<typeof useTranslations> }) {
             ) : (
               t(`intro.p${index + 1}` as 'intro.p1' | 'intro.p3')
             )}
+          </p>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+export function ReviewIntroBullets({
+  t,
+  username,
+}: {
+  t: ReturnType<typeof useTranslations>;
+  username: string;
+}) {
+  return (
+    <ul className="flex w-full flex-col gap-4">
+      {[1, 2, 3].map((index) => (
+        <li key={index} className="flex w-full items-start gap-2.5">
+          <span
+            aria-hidden
+            className="mt-2 size-1.5 shrink-0 rounded-full bg-[#008d63]"
+          />
+          <p className="min-w-0 flex-1 text-justify text-sm font-medium leading-6 text-[#171d19] dark:text-home-filter-ink">
+            {t(`reviewIntro.p${index}` as 'reviewIntro.p1', { username })}
           </p>
         </li>
       ))}
