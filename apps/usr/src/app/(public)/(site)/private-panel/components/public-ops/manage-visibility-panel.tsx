@@ -74,13 +74,15 @@ function partitionFields(fields: VisibilityField[]) {
 
 type ManageVisibilityPanelProps = {
   accessToken?: string | null;
+  targetActorId?: number | null;
 };
 
 export function ManageVisibilityPanel({
   accessToken,
+  targetActorId,
 }: ManageVisibilityPanelProps) {
   const t = useTranslations('privatePanel.publicOps.manageVisibility');
-  const visibilityQuery = useManageVisibilityQuery(accessToken);
+  const visibilityQuery = useManageVisibilityQuery(accessToken, targetActorId);
   const submitPublicMutation = useSubmitPublicTabByOwnerMutation();
   const [isSaving, setIsSaving] = useState(false);
 
@@ -180,6 +182,11 @@ export function ManageVisibilityPanel({
     if (!accessToken || isSaving) return;
 
     setFormError(null);
+    if (targetActorId) {
+      setFormError(t('validation.nothingToSave'));
+      return;
+    }
+
     const publicTabs = tabsAffectedBySelection(selection, savedSelection);
 
     if (publicTabs.length === 0) {
@@ -414,7 +421,7 @@ export function ManageVisibilityPanel({
                   <Button
                     type="button"
                     loading={isSaving}
-                    disabled={!isDirty || !accessToken}
+                    disabled={!isDirty || !accessToken || Boolean(targetActorId)}
                     onClick={() => {
                       void handleSave();
                     }}

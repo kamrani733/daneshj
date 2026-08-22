@@ -1,4 +1,4 @@
-import { ChevronDown, ChevronUp } from 'lucide-react';
+import { ChevronDown, ChevronUp, FileText } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
@@ -12,6 +12,68 @@ import {
 import { cn } from '@/lib/utils';
 
 import type { ReviewDecision } from '@private-panel/utils/fields-section-utils';
+
+function fileNameFromPath(value: string) {
+  const trimmed = value.trim();
+  if (!trimmed) return '';
+  try {
+    const url = new URL(trimmed);
+    return decodeURIComponent(url.pathname.split('/').filter(Boolean).pop() ?? trimmed);
+  } catch {
+    return decodeURIComponent(trimmed.split('/').filter(Boolean).pop() ?? trimmed);
+  }
+}
+
+function isImagePath(value: string) {
+  return /\.(avif|gif|jpe?g|png|webp)$/i.test(value.split('?')[0] ?? '');
+}
+
+function isPdfPath(value: string) {
+  return /\.pdf$/i.test(value.split('?')[0] ?? '');
+}
+
+function ReviewFilePreview({ value }: { value: string }) {
+  const name = fileNameFromPath(value);
+  const isPdf = isPdfPath(value);
+
+  return (
+    <div className="flex h-12 min-w-0 items-center gap-2 rounded-lg border border-[#bfc9c1] bg-home-card px-3 dark:border-auth-input-border dark:bg-home-search-category">
+      {isPdf ? (
+        <span className="flex h-7 min-w-8 shrink-0 items-center justify-center rounded bg-[#fce8e6] px-1 text-[10px] font-bold text-[#ba1a1a]">
+          PDF
+        </span>
+      ) : (
+        <FileText
+          className="size-7 shrink-0 text-[#404943] dark:text-home-filter-muted"
+          strokeWidth={1.5}
+          aria-hidden
+        />
+      )}
+      <span className="truncate text-sm font-medium text-content dark:text-home-filter-ink">
+        {name || value || '\u00a0'}
+      </span>
+    </div>
+  );
+}
+
+function ReviewPhotoPreview({ value, label }: { value: string; label: string }) {
+  return (
+    <div className="flex min-h-[150px] items-center justify-center rounded-xl border border-[#bfc9c1] bg-home-card p-3 dark:border-auth-input-border dark:bg-home-search-category">
+      {value && isImagePath(value) ? (
+        <img
+          src={value}
+          alt={label}
+          className="size-32 rounded-full object-cover"
+          loading="lazy"
+        />
+      ) : (
+        <span className="max-w-full truncate text-sm font-medium text-[#707973]">
+          {value || '\u00a0'}
+        </span>
+      )}
+    </div>
+  );
+}
 
 export function ReviewPendingList({
   requests,
@@ -90,29 +152,54 @@ export function ReviewPendingList({
                   <p className="text-start text-xs font-bold text-[#404943] dark:text-home-filter-muted">
                     {t('previousValue')}
                   </p>
-                  <OutlinedDisplayField
-                    label={label}
-                    value={request.previousValue || t('emptyValue')}
-                    multiline={request.kind === 'textarea'}
-                    surfaceClassName="bg-[#f8f8f0] dark:bg-home-stat-card"
-                    labelSurfaceClassName="bg-[#f8f8f0] dark:bg-home-stat-card"
-                    endAdornment={
-                      request.kind === 'textarea' ? undefined : (
-                        <ChevronDown
-                          className="size-5 text-[#404943] dark:text-home-filter-muted"
-                          strokeWidth={1.75}
-                          aria-hidden
-                        />
-                      )
-                    }
-                  />
+                  {request.kind === 'photo' ? (
+                    <ReviewPhotoPreview
+                      value={request.previousValue}
+                      label={label}
+                    />
+                  ) : request.renderAsFile ? (
+                    <ReviewFilePreview value={request.previousValue} />
+                  ) : (
+                    <OutlinedDisplayField
+                      label={label}
+                      value={request.previousValue || t('emptyValue')}
+                      multiline={request.kind === 'textarea'}
+                      surfaceClassName="bg-[#f8f8f0] dark:bg-home-stat-card"
+                      labelSurfaceClassName="bg-[#f8f8f0] dark:bg-home-stat-card"
+                      endAdornment={
+                        request.kind === 'textarea' ? undefined : (
+                          <ChevronDown
+                            className="size-5 text-[#404943] dark:text-home-filter-muted"
+                            strokeWidth={1.75}
+                            aria-hidden
+                          />
+                        )
+                      }
+                    />
+                  )}
                 </div>
 
                 <div className="flex flex-col gap-3">
                   <p className="text-start text-xs font-bold text-[#404943] dark:text-home-filter-muted">
                     {t('newValue')} ({t('reviewPendingLabel')})
                   </p>
-                  {request.kind === 'textarea' ? (
+                  {request.kind === 'photo' ? (
+                    <div className="flex flex-col gap-3">
+                      <ReviewPhotoPreview value={draftValue} label={label} />
+                      <OutlinedTextField
+                        label={label}
+                        value={draftValue}
+                        tone="warning"
+                        surfaceClassName="bg-[#f8f8f0] dark:bg-home-stat-card"
+                        labelSurfaceClassName="bg-[#f8f8f0] dark:bg-home-stat-card"
+                        onValueChange={(value) =>
+                          onReviewValueChange(request, value)
+                        }
+                      />
+                    </div>
+                  ) : request.renderAsFile ? (
+                    <ReviewFilePreview value={draftValue} />
+                  ) : request.kind === 'textarea' ? (
                     <OutlinedTextareaField
                       label={label}
                       value={draftValue}

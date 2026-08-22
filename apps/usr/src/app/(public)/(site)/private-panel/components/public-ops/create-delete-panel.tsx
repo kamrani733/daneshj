@@ -21,11 +21,18 @@ type DialogStep = 'confirm' | 'success';
 
 type CreateDeletePanelProps = {
   accessToken?: string | null;
+  targetActorId?: number | null;
 };
 
-export function CreateDeletePanel({ accessToken }: CreateDeletePanelProps) {
+export function CreateDeletePanel({
+  accessToken,
+  targetActorId,
+}: CreateDeletePanelProps) {
   const t = useTranslations('privatePanel.publicOps.createDelete');
-  const statusQuery = usePublicPanelStatusByOwnerQuery({ accessToken });
+  const statusQuery = usePublicPanelStatusByOwnerQuery({
+    accessToken,
+    actorId: targetActorId,
+  });
   const requestMutation = useRequestPublicPanelChangeStatusMutation();
 
   const hasPanel = Boolean(statusQuery.data?.isPublicPanelActive);
@@ -57,6 +64,7 @@ export function CreateDeletePanel({ accessToken }: CreateDeletePanelProps) {
       await requestMutation.mutateAsync({
         accessToken,
         actorType: ACTOR_TYPE_NAME.user,
+        actorId: targetActorId,
         action: hasPanel ? 'DELETE' : 'CREATE',
       });
       setRequestSubmitted(true);

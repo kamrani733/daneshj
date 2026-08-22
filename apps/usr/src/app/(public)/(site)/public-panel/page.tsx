@@ -4,7 +4,8 @@ import { PublicPanelView } from './components/view';
 
 function parseActorId(raw: string | undefined): number | null {
   if (!raw) return null;
-  const value = Number.parseInt(raw, 10);
+  const match = raw.match(/\d+/);
+  const value = match ? Number.parseInt(match[0], 10) : Number.NaN;
   return Number.isFinite(value) && value > 0 ? value : null;
 }
 

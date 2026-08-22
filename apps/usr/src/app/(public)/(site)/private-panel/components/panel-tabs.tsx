@@ -27,9 +27,13 @@ const TAB_ITEMS: {
 
 type PrivatePanelTabsProps = {
   accessToken?: string | null;
+  targetActorId?: number | null;
 };
 
-export function PrivatePanelTabs({ accessToken }: PrivatePanelTabsProps) {
+export function PrivatePanelTabs({
+  accessToken,
+  targetActorId,
+}: PrivatePanelTabsProps) {
   const t = useTranslations('privatePanel');
 
   return (
@@ -73,10 +77,13 @@ export function PrivatePanelTabs({ accessToken }: PrivatePanelTabsProps) {
       </TabsList>
 
       <TabsContent value="fields" className="mt-0">
-        <FieldsSection accessToken={accessToken} />
+        <FieldsSection accessToken={accessToken} targetActorId={targetActorId} />
       </TabsContent>
       <TabsContent value="publicOps" className="mt-0">
-        <PublicOpsSection accessToken={accessToken} />
+        <PublicOpsSection
+          accessToken={accessToken}
+          targetActorId={targetActorId}
+        />
       </TabsContent>
       <TabsContent value="guide" className="mt-0">
         <GuideSection />

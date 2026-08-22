@@ -12,6 +12,7 @@ import {
   STUDY_STATUS_LABELS,
   asRecord,
   formatIsoAsDateOnly,
+  formatDisplayValue,
   isWrappedPending,
   pickSection,
   readRecordList,
@@ -30,6 +31,7 @@ export type PendingFieldRequest = {
   labelKey: string | null;
   newValue: string;
   previousValue: string;
+  renderAsFile?: boolean;
   academicRecord?: {
     key: string;
     fields: Array<{
@@ -53,9 +55,19 @@ const ACADEMIC_RECORD_PENDING_SECTIONS = [
   'academic_record_submitted_user',
 ] as const;
 
+const ACADEMIC_DOCUMENT_PENDING_SECTIONS = ['academic_document_user'] as const;
+
 function stringifyPendingValue(value: unknown): string {
   if (value == null || typeof value === 'object') return '';
   return String(value);
+}
+
+function formatPendingValue(
+  def: VisibilityFieldDef | undefined,
+  value: unknown
+): string {
+  const raw = stringifyPendingValue(value);
+  return def ? formatDisplayValue(def, raw) : raw;
 }
 
 function findPendingDef(
@@ -162,7 +174,6 @@ export function mapPendingFieldRequests(
       const requestId = Number(wrapped.request_id);
       if (!Number.isFinite(requestId) || requestId <= 0) continue;
       const def = findPendingDef(sectionKey, apiField);
-      if (def?.kind === 'photo') continue;
       const newValue = unwrapFieldValue(wrapped.new_value ?? wrapped.value);
       const previousValue = unwrapFieldValue(wrapped.previous_value);
       items.push({
@@ -174,8 +185,8 @@ export function mapPendingFieldRequests(
         fieldId: def?.id ?? null,
         kind: def?.kind ?? 'text',
         labelKey: def?.labelKey ?? null,
-        newValue: stringifyPendingValue(newValue),
-        previousValue: stringifyPendingValue(previousValue),
+        newValue: formatPendingValue(def, newValue),
+        previousValue: formatPendingValue(def, previousValue),
       });
     }
   }
@@ -192,6 +203,50 @@ export function mapPendingFieldRequests(
           `${sectionKey}-${apiId ?? index}`
         )
       );
+    });
+  }
+
+  for (const sectionKey of ACADEMIC_DOCUMENT_PENDING_SECTIONS) {
+    const documents = readRecordList(privateData, sectionKey);
+    documents.forEach((item, index) => {
+      const row = asRecord(item);
+      if (!row) return;
+      for (const apiField of ['file_path', 'description']) {
+        const raw = row[apiField];
+        if (!isWrappedPending(raw)) continue;
+        const wrapped = asRecord(raw) ?? {};
+        const requestId = Number(wrapped.request_id);
+        if (!Number.isFinite(requestId) || requestId <= 0) continue;
+        const newValue = unwrapFieldValue(wrapped.new_value ?? wrapped.value);
+        const previousValue = unwrapFieldValue(wrapped.previous_value);
+        items.push({
+          requestId,
+          sectionKey,
+          apiField,
+          category: 'education',
+          tabName: 'educational_information',
+          fieldId: null,
+          kind: apiField === 'description' ? 'textarea' : 'text',
+          labelKey: null,
+          newValue: stringifyPendingValue(newValue),
+          previousValue: stringifyPendingValue(previousValue),
+          renderAsFile: apiField === 'file_path',
+          academicRecord: {
+            key: `${sectionKey}-${index}`,
+            fields: Object.entries(row).flatMap(([field, value]) => {
+              if (field === 'id') return [];
+              return [
+                {
+                  apiField: field,
+                  labelKey: null,
+                  value: stringifyPendingValue(unwrapFieldValue(value)),
+                  pending: isWrappedPending(value),
+                },
+              ];
+            }),
+          },
+        });
+      }
     });
   }
 

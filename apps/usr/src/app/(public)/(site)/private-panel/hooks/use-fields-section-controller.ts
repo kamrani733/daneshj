@@ -43,14 +43,16 @@ import {
 
 type UseFieldsSectionControllerPayload = {
   accessToken?: string | null;
+  targetActorId?: number | null;
 };
 
 export function useFieldsSectionController({
   accessToken,
+  targetActorId,
 }: UseFieldsSectionControllerPayload) {
   const t = useTranslations('privatePanel.fields');
   const tVis = useTranslations('privatePanel.publicOps.manageVisibility');
-  const visibilityQuery = useManageVisibilityQuery(accessToken);
+  const visibilityQuery = useManageVisibilityQuery(accessToken, targetActorId);
   const submitPrivateMutation = useSubmitPrivateTabByOwnerMutation();
   const reviewMutation = useReviewPrivateChangesByOwnerMutation();
 
@@ -402,6 +404,7 @@ export function useFieldsSectionController({
         [...privateTabs].map((tabName: PrivateOwnerTabName) =>
           submitPrivateMutation.mutateAsync({
             accessToken,
+            actorId: targetActorId,
             tabName,
             body: toPrivateTabSubmitBody(
               submitValues,
@@ -491,6 +494,7 @@ export function useFieldsSectionController({
     try {
       await reviewMutation.mutateAsync({
         accessToken,
+        actorId: targetActorId,
         confirmedRequests: confirmed,
         rejectedRequests: rejected,
       });
@@ -517,6 +521,7 @@ export function useFieldsSectionController({
           [...privateTabs].map((tabName: PrivateOwnerTabName) =>
             submitPrivateMutation.mutateAsync({
               accessToken,
+              actorId: targetActorId,
               tabName,
               body: toPrivateTabSubmitBody(
                 sanitizeValuesForPrivateSubmit(valuesForSubmit),
@@ -548,6 +553,7 @@ export function useFieldsSectionController({
   async function submitAcademicRecord(payload: AcademicRecordUserDto[]) {
     await submitPrivateMutation.mutateAsync({
       accessToken,
+      actorId: targetActorId,
       tabName: 'educational_information',
       body: toPrivateTabSubmitBody(
         draftValues,

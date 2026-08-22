@@ -11,6 +11,8 @@ import {
 } from './transformers';
 import type {
   MutationResult,
+  PrivateTabSubmitByAdminBodyDto,
+  PrivateTabSubmitByOwnerBodyDto,
   ProfileRetrieveData,
   RetrievePrivatePanelForOwnerPayload,
   RetrievePublicPanelForOwnerPayload,
@@ -71,7 +73,7 @@ export async function submitPrivateTabByAdmin(payload: {
   accessToken?: string | null;
   actorId: number;
   tabName: SubmitPrivateTabByOwnerPayload['tabName'] | 'user_information';
-  body: Record<string, unknown>;
+  body: PrivateTabSubmitByAdminBodyDto | PrivateTabSubmitByOwnerBodyDto;
 }): Promise<MutationResult> {
   requireAccessToken(payload.accessToken);
   const { message } = await patchActor(

@@ -3,6 +3,7 @@
 import { useTranslations } from 'next-intl';
 
 import { usePrivatePanelProfileQuery } from '@private-panel/api';
+import type { PrivatePanelProfile } from '@private-panel/data/private-panel-ui';
 import { PanelLoadingOverlay, ProfileHeroCard } from '@/components/panel';
 
 import { PrivatePanelHeading } from './page-heading';
@@ -10,11 +11,31 @@ import { PrivatePanelTabs } from './panel-tabs';
 
 type PrivatePanelViewProps = {
   accessToken?: string | null;
+  targetActorId?: number | null;
 };
-export function PrivatePanelView({ accessToken }: PrivatePanelViewProps) {
+
+function temporaryAdminProfile(actorId: number): PrivatePanelProfile {
+  return {
+    displayName: `کاربر ${actorId}`,
+    username: `user-${actorId}`,
+    roleLabelKey: 'normal',
+    location: '',
+    bio: '',
+    avatarSrc: '',
+    electronicCardHref: '#',
+    socialLinks: [],
+  };
+}
+
+export function PrivatePanelView({
+  accessToken,
+  targetActorId,
+}: PrivatePanelViewProps) {
   const t = useTranslations('privatePanel');
-  const profileQuery = usePrivatePanelProfileQuery(accessToken);
-  const profile = profileQuery.data;
+  const profileQuery = usePrivatePanelProfileQuery(accessToken, targetActorId);
+  const profile =
+    profileQuery.data ??
+    (targetActorId ? temporaryAdminProfile(targetActorId) : undefined);
   const isLoading =
     profileQuery.isFetching &&
     (profileQuery.isPlaceholderData || !profile?.displayName);
@@ -28,7 +49,7 @@ export function PrivatePanelView({ accessToken }: PrivatePanelViewProps) {
 
       <PrivatePanelHeading displayName={profile?.displayName ?? ''} />
       {profile ? <ProfileHeroCard profile={profile} /> : null}
-      <PrivatePanelTabs accessToken={accessToken} />
+      <PrivatePanelTabs accessToken={accessToken} targetActorId={targetActorId} />
     </main>
   );
 }

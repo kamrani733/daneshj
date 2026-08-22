@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 const SESSION_COOKIE = 'session';
 
-const protectedPaths = ['/dashboard'];
+const protectedPaths = ['/dashboard', '/private-panel'];
 
 /** Guest-only auth routes — logged-in users should not enter or start these flows. */
 const guestAuthPaths = ['/login', '/forgot-password', '/register'];
@@ -26,11 +26,17 @@ function matchesPath(pathname: string, paths: string[]) {
 }
 
 export default function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl;
+  const { pathname, searchParams } = request.nextUrl;
   const authenticated = hasValidSession(request);
 
   if (authenticated && matchesPath(pathname, guestAuthPaths)) {
-    return NextResponse.redirect(new URL('/public-panel', request.url));
+    const nextPath = searchParams.get('next');
+    const redirectPath =
+      nextPath?.startsWith('/') && !nextPath.startsWith('//')
+        ? nextPath
+        : '/public-panel';
+
+    return NextResponse.redirect(new URL(redirectPath, request.url));
   }
 
   if (matchesPath(pathname, protectedPaths) && !authenticated) {

@@ -24,10 +24,14 @@ import { useFieldsSectionController } from '@private-panel/hooks/use-fields-sect
 
 type FieldsSectionProps = {
   accessToken?: string | null;
+  targetActorId?: number | null;
 };
 
-export function FieldsSection({ accessToken }: FieldsSectionProps) {
-  const vm = useFieldsSectionController({ accessToken });
+export function FieldsSection({
+  accessToken,
+  targetActorId,
+}: FieldsSectionProps) {
+  const vm = useFieldsSectionController({ accessToken, targetActorId });
 
   return (
     <div
@@ -64,7 +68,6 @@ export function FieldsSection({ accessToken }: FieldsSectionProps) {
           ) : null}
 
           <CategoryTabs
-            mode={vm.mode}
             pendingCounts={vm.pendingCounts}
             tVis={vm.tVis}
           />
@@ -123,11 +126,9 @@ export function FieldsSection({ accessToken }: FieldsSectionProps) {
 type FieldsController = ReturnType<typeof useFieldsSectionController>;
 
 function CategoryTabs({
-  mode,
   pendingCounts,
   tVis,
 }: {
-  mode: FieldsController['mode'];
   pendingCounts: FieldsController['pendingCounts'];
   tVis: FieldsController['tVis'];
 }) {
@@ -158,7 +159,7 @@ function CategoryTabs({
           >
             <span className="flex items-center gap-2 whitespace-nowrap">
               {tVis(`categories.${id}`)}
-              {mode === 'review' && pendingCounts[id] ? (
+              {pendingCounts[id] ? (
                 <span className="size-2 rounded-full bg-[#ba1a1a]" />
               ) : null}
             </span>

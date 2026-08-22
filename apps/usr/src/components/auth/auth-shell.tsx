@@ -7,7 +7,7 @@ import localFont from 'next/font/local';
 import { useTranslations } from 'next-intl';
 import { useSyncExternalStore } from 'react';
 
-import { ThemeToggle } from '@/components/theme-toggle';
+import { TemporaryAdminLoginButton } from '@/components/site/temporary-admin-login-button';
 import { cn } from '@/lib/utils';
 import { AuthPageBackground, FormPattern } from './auth-background';
 import {
@@ -298,7 +298,7 @@ function AuthPanelChrome({
 
           </Link>
         ) : null}
-        <ThemeToggle />
+        <TemporaryAdminLoginButton />
       </div>
 
       <AuthLogo />

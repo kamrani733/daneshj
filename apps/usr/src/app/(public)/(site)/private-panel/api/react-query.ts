@@ -12,17 +12,25 @@ import {
   mapVisibilityFields,
 } from './mappers';
 import {
+  changePublicPanelStatusByAdmin,
   getActorInfo,
+  getPublicPanelStatusByAdmin,
   getPublicPanelStatusByOwner,
   requestPublicPanelChangeStatus,
 } from './profiles-base';
 import {
+  retrievePrivatePanelForAdmin,
   retrievePrivatePanelForOwner,
+  retrievePublicPanelForAdmin,
   retrievePublicPanelForOwner,
   retrievePublicPanelForVisitor,
+  reviewPrivateChangesByAdmin,
   reviewPrivateChangesByOwner,
+  reviewPrivateStateByAdmin,
   reviewPrivateStateByOwner,
+  submitPrivateStateByAdmin,
   submitPrivateStateByOwner,
+  submitPrivateTabByAdmin,
   submitPrivateTabByOwner,
   submitPublicTabByOwner,
 } from './profiles-user';
@@ -43,6 +51,22 @@ import type {
 } from '../types/api';
 import { ACTOR_TYPE_NAME } from '../types/api';
 
+type AdminTargetPayload = {
+  actorId?: number | null;
+};
+
+type SubmitPrivateTabPayload = SubmitPrivateTabByOwnerPayload &
+  AdminTargetPayload;
+
+type SubmitPrivateStatePayload = SubmitPrivateStateByOwnerPayload &
+  AdminTargetPayload;
+
+type ReviewPrivateChangesPayload = ReviewPrivateChangesByOwnerPayload &
+  AdminTargetPayload;
+
+type ReviewPrivateStatePayload = ReviewPrivateStateByOwnerPayload &
+  AdminTargetPayload;
+
 function canQueryActor() {
   return Boolean(process.env.NEXT_PUBLIC_ACTOR_API_URL);
 }
@@ -62,9 +86,29 @@ const EMPTY_PROFILE: PrivatePanelProfile = {
   socialLinks: [],
 };
 
+function temporaryAdminProfile(actorId: number): PrivatePanelProfile {
+  return {
+    ...EMPTY_PROFILE,
+    displayName: `کاربر ${actorId}`,
+    username: `user-${actorId}`,
+  };
+}
+
 async function fetchPrivatePanelProfile(
-  accessToken: string
+  accessToken: string,
+  actorId?: number | null
 ): Promise<PrivatePanelProfile> {
+  if (actorId) {
+    const privateData = await retrievePrivatePanelForAdmin({
+      accessToken,
+      actorId,
+    });
+    const profile = mapPrivatePanelProfile(undefined, privateData);
+    return profile.displayName || profile.username
+      ? profile
+      : temporaryAdminProfile(actorId);
+  }
+
   const [actorInfoResult, privateData] = await Promise.all([
     getActorInfo({
       accessToken,
@@ -76,14 +120,15 @@ async function fetchPrivatePanelProfile(
 }
 
 export function usePrivatePanelProfileQuery(
-  accessToken: string | null | undefined
+  accessToken: string | null | undefined,
+  actorId?: number | null
 ) {
   return useQuery({
-    queryKey: privatePanelQueryKeys.profile(),
-    queryFn: () => fetchPrivatePanelProfile(accessToken ?? ''),
+    queryKey: privatePanelQueryKeys.profile(actorId),
+    queryFn: () => fetchPrivatePanelProfile(accessToken ?? '', actorId),
     enabled: canFetch(accessToken),
     staleTime: 60_000,
-    placeholderData: EMPTY_PROFILE,
+    placeholderData: actorId ? temporaryAdminProfile(actorId) : EMPTY_PROFILE,
   });
 }
 
@@ -115,34 +160,50 @@ export function usePublicPanelStatusByOwnerQuery(
 ) {
   const actorType = payload.actorType ?? ACTOR_TYPE_NAME.user;
   return useQuery({
-    queryKey: actorQueryKeys.publicPanelStatus(actorType),
+    queryKey: actorQueryKeys.publicPanelStatus(actorType, payload.actorId),
     queryFn: () =>
-      getPublicPanelStatusByOwner({
-        accessToken: payload.accessToken,
-        actorType,
-      }),
+      payload.actorId
+        ? getPublicPanelStatusByAdmin({
+            accessToken: payload.accessToken,
+            actorType,
+            actorId: payload.actorId,
+          })
+        : getPublicPanelStatusByOwner({
+            accessToken: payload.accessToken,
+            actorType,
+          }),
     enabled: enabled && canFetch(payload.accessToken),
   });
 }
 
 export function usePrivatePanelForOwnerQuery(
   accessToken: string | null | undefined,
+  actorId?: number | null,
   enabled = true
 ) {
   return useQuery({
-    queryKey: actorQueryKeys.privatePanelOwner(),
-    queryFn: () => retrievePrivatePanelForOwner({ accessToken }),
+    queryKey: actorQueryKeys.privatePanelOwner(actorId),
+    queryFn: () =>
+      actorId
+        ? retrievePrivatePanelForAdmin({ accessToken, actorId })
+        : retrievePrivatePanelForOwner({ accessToken }),
     enabled: enabled && canFetch(accessToken),
   });
 }
 
 export function usePublicPanelForOwnerQuery(
   accessToken: string | null | undefined,
+  actorId?: number | null,
   enabled = true
 ) {
   return useQuery({
-    queryKey: actorQueryKeys.publicPanelOwner(),
-    queryFn: () => retrievePublicPanelForOwner({ accessToken }),
+    queryKey: actorId
+      ? actorQueryKeys.publicPanelAdmin(actorId)
+      : actorQueryKeys.publicPanelOwner(),
+    queryFn: () =>
+      actorId
+        ? retrievePublicPanelForAdmin({ accessToken, actorId })
+        : retrievePublicPanelForOwner({ accessToken }),
     enabled: enabled && canFetch(accessToken),
   });
 }
@@ -156,20 +217,31 @@ const EMPTY_MANAGE_VISIBILITY = {
 
 export function useManageVisibilityQuery(
   accessToken: string | null | undefined,
+  actorId?: number | null,
   enabled = true
 ) {
   return useQuery({
-    queryKey: [...actorQueryKeys.all, 'manage-visibility'] as const,
+    queryKey: actorQueryKeys.manageVisibility(actorId),
     queryFn: async () => {
       const [privateData, publicPanelStatus] = await Promise.all([
-        retrievePrivatePanelForOwner({ accessToken }),
-        getPublicPanelStatusByOwner({
-          accessToken,
-          actorType: ACTOR_TYPE_NAME.user,
-        }),
+        actorId
+          ? retrievePrivatePanelForAdmin({ accessToken, actorId })
+          : retrievePrivatePanelForOwner({ accessToken }),
+        actorId
+          ? getPublicPanelStatusByAdmin({
+              accessToken,
+              actorType: ACTOR_TYPE_NAME.user,
+              actorId,
+            })
+          : getPublicPanelStatusByOwner({
+              accessToken,
+              actorType: ACTOR_TYPE_NAME.user,
+            }),
       ]);
       const publicFlags = publicPanelStatus.isPublicPanelActive
-        ? await retrievePublicPanelForOwner({ accessToken })
+        ? await (actorId
+            ? retrievePublicPanelForAdmin({ accessToken, actorId })
+            : retrievePublicPanelForOwner({ accessToken }))
         : {};
       return {
         fields: mapVisibilityFields(privateData, publicFlags),
@@ -238,10 +310,20 @@ export function useRequestPublicPanelChangeStatusMutation() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (payload: RequestPublicPanelChangeStatusPayload) =>
-      requestPublicPanelChangeStatus(payload),
+      payload.actorId
+        ? changePublicPanelStatusByAdmin({
+            accessToken: payload.accessToken,
+            actorType: payload.actorType,
+            action: payload.action,
+            actorId: payload.actorId,
+          })
+        : requestPublicPanelChangeStatus(payload),
     onSuccess: async (_data, variables) => {
       await queryClient.invalidateQueries({
-        queryKey: actorQueryKeys.publicPanelStatus(variables.actorType),
+        queryKey: actorQueryKeys.publicPanelStatus(
+          variables.actorType,
+          variables.actorId
+        ),
       });
     },
   });
@@ -250,17 +332,24 @@ export function useRequestPublicPanelChangeStatusMutation() {
 export function useSubmitPrivateTabByOwnerMutation() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (payload: SubmitPrivateTabByOwnerPayload) =>
-      submitPrivateTabByOwner(payload),
-    onSuccess: () => {
+    mutationFn: (payload: SubmitPrivateTabPayload) =>
+      payload.actorId
+        ? submitPrivateTabByAdmin({
+            accessToken: payload.accessToken,
+            actorId: payload.actorId,
+            tabName: payload.tabName,
+            body: payload.body,
+          })
+        : submitPrivateTabByOwner(payload),
+    onSuccess: (_data, variables) => {
       void queryClient.invalidateQueries({
-        queryKey: actorQueryKeys.privatePanelOwner(),
+        queryKey: actorQueryKeys.privatePanelOwner(variables.actorId),
       });
       void queryClient.invalidateQueries({
-        queryKey: [...actorQueryKeys.all, 'manage-visibility'],
+        queryKey: actorQueryKeys.manageVisibility(variables.actorId),
       });
       void queryClient.invalidateQueries({
-        queryKey: privatePanelQueryKeys.profile(),
+        queryKey: privatePanelQueryKeys.profile(variables.actorId),
       });
       void queryClient.invalidateQueries({
         queryKey: [...actorQueryKeys.all, 'public-panel'],
@@ -272,11 +361,20 @@ export function useSubmitPrivateTabByOwnerMutation() {
 export function useSubmitPrivateStateByOwnerMutation() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (payload: SubmitPrivateStateByOwnerPayload) =>
-      submitPrivateStateByOwner(payload),
-    onSuccess: async () => {
+    mutationFn: (payload: SubmitPrivateStatePayload) =>
+      payload.actorId
+        ? submitPrivateStateByAdmin({
+            accessToken: payload.accessToken,
+            actorId: payload.actorId,
+            action: payload.action,
+            tabName: payload.tabName,
+            sectionName: payload.sectionName,
+            objectId: payload.objectId,
+          })
+        : submitPrivateStateByOwner(payload),
+    onSuccess: async (_data, variables) => {
       await queryClient.invalidateQueries({
-        queryKey: actorQueryKeys.privatePanelOwner(),
+        queryKey: actorQueryKeys.privatePanelOwner(variables.actorId),
       });
     },
   });
@@ -285,18 +383,25 @@ export function useSubmitPrivateStateByOwnerMutation() {
 export function useReviewPrivateChangesByOwnerMutation() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (payload: ReviewPrivateChangesByOwnerPayload) =>
-      reviewPrivateChangesByOwner(payload),
-    onSuccess: async () => {
+    mutationFn: (payload: ReviewPrivateChangesPayload) =>
+      payload.actorId
+        ? reviewPrivateChangesByAdmin({
+            accessToken: payload.accessToken,
+            actorId: payload.actorId,
+            confirmedRequests: payload.confirmedRequests,
+            rejectedRequests: payload.rejectedRequests,
+          })
+        : reviewPrivateChangesByOwner(payload),
+    onSuccess: async (_data, variables) => {
       await Promise.all([
         queryClient.invalidateQueries({
-          queryKey: actorQueryKeys.privatePanelOwner(),
+          queryKey: actorQueryKeys.privatePanelOwner(variables.actorId),
         }),
         queryClient.invalidateQueries({
-          queryKey: [...actorQueryKeys.all, 'manage-visibility'],
+          queryKey: actorQueryKeys.manageVisibility(variables.actorId),
         }),
         queryClient.invalidateQueries({
-          queryKey: privatePanelQueryKeys.profile(),
+          queryKey: privatePanelQueryKeys.profile(variables.actorId),
         }),
       ]);
     },
@@ -306,11 +411,18 @@ export function useReviewPrivateChangesByOwnerMutation() {
 export function useReviewPrivateStateByOwnerMutation() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (payload: ReviewPrivateStateByOwnerPayload) =>
-      reviewPrivateStateByOwner(payload),
-    onSuccess: async () => {
+    mutationFn: (payload: ReviewPrivateStatePayload) =>
+      payload.actorId
+        ? reviewPrivateStateByAdmin({
+            accessToken: payload.accessToken,
+            actorId: payload.actorId,
+            confirmedRequests: payload.confirmedRequests,
+            rejectedRequests: payload.rejectedRequests,
+          })
+        : reviewPrivateStateByOwner(payload),
+    onSuccess: async (_data, variables) => {
       await queryClient.invalidateQueries({
-        queryKey: actorQueryKeys.privatePanelOwner(),
+        queryKey: actorQueryKeys.privatePanelOwner(variables.actorId),
       });
     },
   });
@@ -329,7 +441,7 @@ export function useSubmitPublicTabByOwnerMutation() {
         queryKey: actorQueryKeys.publicTab(variables.tabName),
       });
       void queryClient.invalidateQueries({
-        queryKey: [...actorQueryKeys.all, 'manage-visibility'],
+        queryKey: actorQueryKeys.manageVisibility(),
       });
       void queryClient.invalidateQueries({
         queryKey: [...actorQueryKeys.all, 'public-panel'],

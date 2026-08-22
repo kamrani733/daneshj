@@ -20,10 +20,14 @@ const SUB_TABS: PublicOpsSubTab[] = ['manageVisibility', 'createDelete'];
 
 type PublicOpsSectionProps = {
   accessToken?: string | null;
+  targetActorId?: number | null;
 };
 
 /** Public panel operations — underline sub-tabs + panels. */
-export function PublicOpsSection({ accessToken }: PublicOpsSectionProps) {
+export function PublicOpsSection({
+  accessToken,
+  targetActorId,
+}: PublicOpsSectionProps) {
   const t = useTranslations('privatePanel.publicOps');
 
   return (
@@ -62,11 +66,17 @@ export function PublicOpsSection({ accessToken }: PublicOpsSectionProps) {
       </div>
 
       <TabsContent value="manageVisibility" className="mt-0">
-        <ManageVisibilityPanel accessToken={accessToken} />
+        <ManageVisibilityPanel
+          accessToken={accessToken}
+          targetActorId={targetActorId}
+        />
       </TabsContent>
 
       <TabsContent value="createDelete" className="mt-0">
-        <CreateDeletePanel accessToken={accessToken} />
+        <CreateDeletePanel
+          accessToken={accessToken}
+          targetActorId={targetActorId}
+        />
       </TabsContent>
     </Tabs>
   );

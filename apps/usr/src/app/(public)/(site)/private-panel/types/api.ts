@@ -269,11 +269,13 @@ export interface GetActorInfoPayload extends AccessTokenPayload {
 
 export interface GetPublicPanelStatusByOwnerPayload extends AccessTokenPayload {
   actorType: ActorTypeName;
+  actorId?: number | null;
 }
 
 export interface RequestPublicPanelChangeStatusPayload extends AccessTokenPayload {
   actorType: ActorTypeName;
   action: PublicPanelStatusAction;
+  actorId?: number | null;
 }
 
 export type RetrievePrivatePanelForOwnerPayload = AccessTokenPayload;
