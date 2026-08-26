@@ -34,6 +34,70 @@ import type {
   ProfileRetrieveData,
 } from '@private-panel/types/api';
 
+const TRANSLATION_SECTION_BY_PARENT: Record<string, string> = {
+  identity_info_user: 'identity_info_user_translation',
+  social_info_user: 'social_info_user_translation',
+};
+
+const TRANSLATED_FIELDS_BY_SECTION: Record<string, Set<string>> = {
+  identity_info_user: new Set([
+    'first_name',
+    'last_name',
+    'legal_first_name',
+    'legal_last_name',
+    'about_me',
+  ]),
+  social_info_user: new Set(['military_status', 'marital_status']),
+};
+
+function pickPreferredTranslationRow(
+  privateData: ProfileRetrieveData | null | undefined,
+  parent: Record<string, unknown> | null,
+  translationKey: string,
+  fieldKey?: string
+): Record<string, unknown> | null {
+  const nested = asArray(parent?.[translationKey]);
+  const rows = nested.length > 0 ? nested : readRecordList(privateData, translationKey);
+  const records = rows
+    .map((item) => {
+      const row = asRecord(item);
+      const data = asRecord(row?.data);
+      return row && data ? { ...row, ...data } : row;
+    })
+    .filter((item): item is Record<string, unknown> => Boolean(item));
+  const candidates = fieldKey
+    ? records.filter((item) => fieldKey in item)
+    : records;
+  return (
+    candidates.find((item) => readString(item, 'target_language') === 'fa') ??
+    candidates.find((item) => readString(item, 'target_language') === 'en') ??
+    candidates[0] ??
+    null
+  );
+}
+
+function resolvePrivateFieldSection(
+  privateData: ProfileRetrieveData | null | undefined,
+  def: VisibilityFieldDef
+): Record<string, unknown> | null {
+  const section = resolvePrivateSection(privateData, def);
+  if (!def.valueField || !def.apiSection) return section;
+
+  const translationKey = TRANSLATION_SECTION_BY_PARENT[def.apiSection];
+  const translatedFields = TRANSLATED_FIELDS_BY_SECTION[def.apiSection];
+  if (!translationKey || !translatedFields?.has(def.valueField)) return section;
+
+  const translation = pickPreferredTranslationRow(
+    privateData,
+    section,
+    translationKey,
+    def.valueField
+  );
+  if (!translation || !(def.valueField in translation)) return section;
+
+  return translation;
+}
+
 function resolvePrivateSection(
   privateData: ProfileRetrieveData | null | undefined,
   def: VisibilityFieldDef
@@ -78,7 +142,10 @@ function resolvePrivateSection(
                 : null;
 
   if (sectionKey) {
-    return pickSection(privateData, sectionKey);
+    return (
+      pickSection(privateData, sectionKey) ??
+      asRecord(readRecordList(privateData, sectionKey)[0])
+    );
   }
 
   for (const key of [
@@ -99,7 +166,7 @@ function readPrivateValue(
   def: VisibilityFieldDef
 ): string {
   if (!def.valueField) return '';
-  const section = resolvePrivateSection(privateData, def);
+  const section = resolvePrivateFieldSection(privateData, def);
   if (!section) return '';
   return formatDisplayValue(def, readString(section, def.valueField));
 }
@@ -109,8 +176,39 @@ function readPrivatePending(
   def: VisibilityFieldDef
 ): boolean {
   if (!def.valueField) return false;
-  const section = resolvePrivateSection(privateData, def);
+  const section = resolvePrivateFieldSection(privateData, def);
   return readPending(section, def.valueField);
+}
+
+function readPublicFlag(
+  publicFlags: ProfileRetrieveData | null | undefined,
+  def: VisibilityFieldDef
+): boolean | null {
+  const direct = readFlag(publicFlags, def.apiSection, def.apiField);
+  if (direct != null || !def.apiSection || !def.apiField) return direct;
+
+  const translationKey = TRANSLATION_SECTION_BY_PARENT[def.apiSection];
+  const translatedFields = TRANSLATED_FIELDS_BY_SECTION[def.apiSection];
+  if (!translationKey || !translatedFields?.has(def.apiField)) return null;
+  return readFlag(publicFlags, translationKey, def.apiField);
+}
+
+function readTranslatedString(
+  privateData: ProfileRetrieveData | null | undefined,
+  primary: Record<string, unknown> | null,
+  translationKey: string,
+  key: string
+): string {
+  const translation = pickPreferredTranslationRow(
+    privateData,
+    primary,
+    translationKey,
+    key
+  );
+  if (translation && (!primary || !(key in primary) || readPending(translation, key))) {
+    return readString(translation, key);
+  }
+  return readString(primary, key) || readString(translation, key);
 }
 
 function socialHref(
@@ -150,8 +248,18 @@ export function mapPrivatePanelProfile(
   const contact = pickSection(privateData, 'contact_info_user');
   const divisions = asArray(social?.social_info_user_division_code);
 
-  const firstName = readString(identity, 'first_name');
-  const lastName = readString(identity, 'last_name');
+  const firstName = readTranslatedString(
+    privateData,
+    identity,
+    'identity_info_user_translation',
+    'first_name'
+  );
+  const lastName = readTranslatedString(
+    privateData,
+    identity,
+    'identity_info_user_translation',
+    'last_name'
+  );
   const displayName =
     [firstName, lastName].filter(Boolean).join(' ') ||
     actorInfo?.name ||
@@ -212,7 +320,12 @@ export function mapPrivatePanelProfile(
       ? 'individualProvider'
       : null,
     location: locationParts.join('،'),
-    bio: readString(identity, 'about_me'),
+    bio: readTranslatedString(
+      privateData,
+      identity,
+      'identity_info_user_translation',
+      'about_me'
+    ),
     avatarSrc,
     electronicCardHref,
     socialLinks,
@@ -355,14 +468,29 @@ function mapMembershipRole(
   return 'normal';
 }
 
+type VisibilityFieldsOptions = {
+  submitter?: 'owner' | 'admin';
+};
+
+function isFieldLockedForSubmitter(
+  def: VisibilityFieldDef,
+  submitter: 'owner' | 'admin'
+): boolean {
+  if (submitter === 'admin' && def.id === 'nationalId') return true;
+  return Boolean(def.locked);
+}
+
 export function mapVisibilityFields(
   privateData: ProfileRetrieveData | null | undefined,
-  publicFlags: ProfileRetrieveData | null | undefined
+  publicFlags: ProfileRetrieveData | null | undefined,
+  options: VisibilityFieldsOptions = {}
 ): VisibilityField[] {
+  const submitter = options.submitter ?? 'owner';
   return VISIBILITY_FIELD_DEFS.map((def) => {
-    const flag = readFlag(publicFlags, def.apiSection, def.apiField);
+    const flag = readPublicFlag(publicFlags, def);
     const value = readPrivateValue(privateData, def);
     const imageSrc = def.kind === 'photo' && value ? value : undefined;
+    const locked = isFieldLockedForSubmitter(def, submitter);
 
     return {
       id: def.id,
@@ -373,8 +501,9 @@ export function mapVisibilityFields(
       value,
       initiallyVisible: flag ?? false,
       selectedInitially: flag ?? false,
-      locked: Boolean(def.locked),
-      lockedCaptionKey: def.lockedCaptionKey,
+      locked,
+      lockedCaptionKey:
+        locked && def.id === 'nationalId' ? 'locked' : def.lockedCaptionKey,
       hiddenCaptionKey: def.hiddenCaptionKey,
       withCalendar: def.withCalendar,
       imageSrc,

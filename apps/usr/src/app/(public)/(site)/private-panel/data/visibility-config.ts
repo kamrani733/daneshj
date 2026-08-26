@@ -196,10 +196,8 @@ export const VISIBILITY_FIELD_DEFS: VisibilityFieldDef[] = [
     labelKey: 'nationalId',
     tabName: 'identity_information',
     apiSection: 'identity_info_user',
-    apiField: null,
+    apiField: 'national_code',
     valueField: 'national_code',
-    locked: true,
-    lockedCaptionKey: 'locked',
   },
   {
     id: 'birthDate',
@@ -404,6 +402,8 @@ export const VISIBILITY_FIELD_DEFS: VisibilityFieldDef[] = [
     apiSection: 'membership_type_user',
     apiField: 'membership_type',
     valueField: 'membership_type',
+    locked: true,
+    lockedCaptionKey: 'notDisplayed',
   },
   {
     id: 'membershipDate',
@@ -452,6 +452,8 @@ export const VISIBILITY_FIELD_DEFS: VisibilityFieldDef[] = [
     apiSection: 'our_user',
     apiField: 'is_individual_service_provider',
     valueField: 'is_individual_service_provider',
+    locked: true,
+    lockedCaptionKey: 'notDisplayed',
   },
   {
     id: 'gradEmploymentStatus',

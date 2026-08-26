@@ -14,11 +14,18 @@ import type {
   SubmitPrivateStateByOwnerPayload,
 } from '@private-panel/types/api';
 
+function readApiString(value: unknown): string {
+  if (value == null || typeof value === 'object') return '';
+  if (typeof value === 'boolean') return value ? 'true' : 'false';
+  return String(value);
+}
+
 export function mapActorInfo(data: ActorInfoDataDto): ActorInfo {
   return {
-    username: data.username,
-    name: data.name ?? '',
-    membership: data.membership ?? data.membership_type ?? '',
+    username: readApiString(data.username),
+    name: readApiString(data.name),
+    membership:
+      readApiString(data.membership) || readApiString(data.membership_type),
     isDeleted: Boolean(data.is_deleted),
     blockStatus: Boolean(data.block_status),
     isPublicPanelActive: Boolean(data.is_public_panel_active),

@@ -27,6 +27,48 @@ const PRIVATE_OWNER_TABS: PrivateOwnerTabName[] = [
   'educational_information',
 ];
 
+const IDENTITY_TRANSLATION_FIELDS = new Set([
+  'first_name',
+  'last_name',
+  'legal_first_name',
+  'legal_last_name',
+  'about_me',
+]);
+
+const OWNER_IDENTITY_TRANSLATION_FIELDS = new Set([
+  'first_name',
+  'last_name',
+  'about_me',
+]);
+
+const ADMIN_IDENTITY_TRANSLATION_FIELDS = new Set([
+  'legal_first_name',
+  'legal_last_name',
+]);
+
+const SOCIAL_TRANSLATION_FIELDS = new Set([
+  'military_status',
+  'marital_status',
+]);
+
+function publicFlagSectionForDef(def: VisibilityFieldDef): string {
+  if (
+    def.apiSection === 'identity_info_user' &&
+    def.apiField &&
+    IDENTITY_TRANSLATION_FIELDS.has(def.apiField)
+  ) {
+    return 'identity_info_user_translation';
+  }
+  if (
+    def.apiSection === 'social_info_user' &&
+    def.apiField &&
+    SOCIAL_TRANSLATION_FIELDS.has(def.apiField)
+  ) {
+    return 'social_info_user_translation';
+  }
+  return def.apiSection ?? '';
+}
+
 export function toPublicVisibilitySubmitBody(
   selection: Record<string, boolean>,
   tabName: ProfileTabName | string
@@ -37,7 +79,9 @@ export function toPublicVisibilitySubmitBody(
     if (def.tabName !== tabName || !def.apiSection || !def.apiField) continue;
     if (def.locked) continue;
 
-    const sectionKey = def.apiSection as keyof PublicTabSubmitByOwnerBodyDto;
+    const sectionKey = publicFlagSectionForDef(
+      def
+    ) as keyof PublicTabSubmitByOwnerBodyDto;
     const section = (body[sectionKey] ??= {}) as Record<string, boolean>;
     section[def.apiField] = Boolean(selection[def.id]);
   }
@@ -119,6 +163,94 @@ const PRIVATE_SUBMIT_SECTIONS = new Set([
   'education_occupation_info_user_division_code',
 ]);
 
+function pickIdentityTranslation(
+  privateData: ProfileRetrieveData | null | undefined
+): Record<string, unknown> | null {
+  const identity = pickSection(privateData, 'identity_info_user');
+  const rows = asArray(identity?.identity_info_user_translation);
+  const records = rows
+    .map((item) => asRecord(item))
+    .filter((item): item is Record<string, unknown> => Boolean(item));
+  return (
+    records.find((item) => item.target_language === 'fa') ??
+    records.find((item) => item.target_language === 'en') ??
+    records[0] ??
+    null
+  );
+}
+
+function pickSocialTranslation(
+  privateData: ProfileRetrieveData | null | undefined
+): Record<string, unknown> | null {
+  const social = pickSection(privateData, 'social_info_user');
+  const rows = asArray(social?.social_info_user_translation);
+  const records = rows
+    .map((item) => asRecord(item))
+    .filter((item): item is Record<string, unknown> => Boolean(item));
+  return (
+    records.find((item) => item.target_language === 'fa') ??
+    records.find((item) => item.target_language === 'en') ??
+    records[0] ??
+    null
+  );
+}
+
+function getIdentitySubmitSection(
+  body: PrivateTabSubmitByOwnerBodyDto,
+  identityId: number | undefined
+): Record<string, unknown> {
+  return (body.identity_info_user ??= {
+    ...(identityId != null ? { id: identityId } : {}),
+  }) as Record<string, unknown>;
+}
+
+function getIdentityTranslationSubmitSection(
+  body: PrivateTabSubmitByOwnerBodyDto,
+  privateData: ProfileRetrieveData | null | undefined,
+  identityId: number | undefined
+): Record<string, unknown> {
+  const identitySection = getIdentitySubmitSection(body, identityId);
+  const existing = pickIdentityTranslation(privateData);
+  const currentRows = asArray(identitySection.identity_info_user_translation);
+  const row = (asRecord(currentRows[0]) ?? {
+    ...(typeof existing?.id === 'number' ? { id: existing.id } : {}),
+    target_language:
+      typeof existing?.target_language === 'string'
+        ? existing.target_language
+        : 'fa',
+  }) as Record<string, unknown>;
+  identitySection.identity_info_user_translation = [row];
+  return row;
+}
+
+function getSocialSubmitSection(
+  body: PrivateTabSubmitByOwnerBodyDto,
+  socialId: number | undefined
+): Record<string, unknown> {
+  return (body.social_info_user ??= {
+    ...(socialId != null ? { id: socialId } : {}),
+  }) as Record<string, unknown>;
+}
+
+function getSocialTranslationSubmitSection(
+  body: PrivateTabSubmitByOwnerBodyDto,
+  privateData: ProfileRetrieveData | null | undefined,
+  socialId: number | undefined
+): Record<string, unknown> {
+  const socialSection = getSocialSubmitSection(body, socialId);
+  const existing = pickSocialTranslation(privateData);
+  const currentRows = asArray(socialSection.social_info_user_translation);
+  const row = (asRecord(currentRows[0]) ?? {
+    ...(typeof existing?.id === 'number' ? { id: existing.id } : {}),
+    target_language:
+      typeof existing?.target_language === 'string'
+        ? existing.target_language
+        : 'fa',
+  }) as Record<string, unknown>;
+  socialSection.social_info_user_translation = [row];
+  return row;
+}
+
 export function tabsAffectedByValues(
   values: Record<string, string>,
   savedValues: Record<string, string>
@@ -197,6 +329,8 @@ export type PrivateSubmitDocument = {
   description?: string;
 };
 
+type PrivateSubmitter = 'owner' | 'admin';
+
 export function toPrivateTabSubmitBody(
   values: Record<string, string>,
   tabName: PrivateOwnerTabName,
@@ -205,9 +339,11 @@ export function toPrivateTabSubmitBody(
   options?: {
     academicDocuments?: PrivateSubmitDocument[];
     academicRecords?: AcademicRecordUserDto[];
+    submitter?: PrivateSubmitter;
   }
 ): PrivateTabSubmitByOwnerBodyDto {
   const body: PrivateTabSubmitByOwnerBodyDto = {};
+  const submitter = options?.submitter ?? 'owner';
 
   const sectionIds: Partial<Record<string, number>> = {};
   for (const key of [
@@ -253,6 +389,48 @@ export function toPrivateTabSubmitBody(
       sectionKey !== 'contact_info_user' &&
       sectionKey !== 'education_occupation_info_user'
     ) {
+      continue;
+    }
+
+    if (
+      def.id === 'email' ||
+      def.id === 'mobile' ||
+      def.id === 'membershipType' ||
+      def.id === 'levelChangeMethod' ||
+      def.id === 'serviceProviderStatus'
+    ) {
+      continue;
+    }
+    if (submitter === 'admin' && def.id === 'nationalId') continue;
+
+    if (
+      sectionKey === 'identity_info_user' &&
+      IDENTITY_TRANSLATION_FIELDS.has(def.valueField)
+    ) {
+      const allowedTranslationFields =
+        submitter === 'admin'
+          ? ADMIN_IDENTITY_TRANSLATION_FIELDS
+          : OWNER_IDENTITY_TRANSLATION_FIELDS;
+      if (!allowedTranslationFields.has(def.valueField)) continue;
+      const section = getIdentityTranslationSubmitSection(
+        body,
+        privateData,
+        sectionIds.identity_info_user
+      );
+      section[def.valueField] = parsed;
+      continue;
+    }
+
+    if (
+      sectionKey === 'social_info_user' &&
+      SOCIAL_TRANSLATION_FIELDS.has(def.valueField)
+    ) {
+      const section = getSocialTranslationSubmitSection(
+        body,
+        privateData,
+        sectionIds.social_info_user
+      );
+      section[def.valueField] = parsed;
       continue;
     }
 

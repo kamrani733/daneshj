@@ -94,6 +94,17 @@ export interface IdentityInfoUserDto {
   profile_picture_path?: string | null;
   electronic_card_picture_path?: string | null;
   about_me?: string | null;
+  identity_info_user_translation?: IdentityInfoUserTranslationDto[];
+}
+
+export interface IdentityInfoUserTranslationDto {
+  id?: number;
+  target_language?: string;
+  first_name?: string | null;
+  last_name?: string | null;
+  legal_first_name?: string | null;
+  legal_last_name?: string | null;
+  about_me?: string | null;
 }
 
 export interface SocialInfoUserDto {
@@ -101,7 +112,15 @@ export interface SocialInfoUserDto {
   military_status?: string | null;
   marital_status?: string | null;
   country_code?: string;
+  social_info_user_translation?: SocialInfoUserTranslationDto[];
   social_info_user_division_code?: DivisionCodeDto[];
+}
+
+export interface SocialInfoUserTranslationDto {
+  id?: number;
+  target_language?: string;
+  military_status?: string | null;
+  marital_status?: string | null;
 }
 
 export interface ContactInfoUserDto {
@@ -212,7 +231,9 @@ export interface PublicTabSubmitByOwnerBodyDto {
   our_user?: FieldVisibilityFlags;
   membership_type_user?: FieldVisibilityFlags;
   identity_info_user?: FieldVisibilityFlags;
+  identity_info_user_translation?: FieldVisibilityFlags;
   social_info_user?: FieldVisibilityFlags;
+  social_info_user_translation?: FieldVisibilityFlags;
   social_info_user_division_code?: FieldVisibilityFlags;
   contact_info_user?: FieldVisibilityFlags;
   education_occupation_info_user?: FieldVisibilityFlags;

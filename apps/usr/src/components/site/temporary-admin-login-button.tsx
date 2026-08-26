@@ -13,7 +13,7 @@ type TemporaryAdminLoginButtonProps = {
   className?: string;
 };
 
-const TEMPORARY_ADMIN_ACTOR_ID = 46;
+const TEMPORARY_ADMIN_ACTOR_ID = 2;
 const TEMPORARY_ADMIN_PANEL_PATH = `${PRIVATE_PANEL_PATH}?actor_id=${TEMPORARY_ADMIN_ACTOR_ID}`;
 
 export function TemporaryAdminLoginButton({

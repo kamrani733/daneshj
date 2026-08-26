@@ -91,9 +91,9 @@ export function ReviewPendingList({
   tVis,
 }: {
   requests: PendingFieldRequest[];
-  decisions: Record<number, ReviewDecision>;
-  reviewValues: Record<number, string>;
-  onDecisionChange: (requestId: number, decision: ReviewDecision) => void;
+  decisions: Record<string, ReviewDecision>;
+  reviewValues: Record<string, string>;
+  onDecisionChange: (requestKey: string, decision: ReviewDecision) => void;
   onReviewValueChange: (request: PendingFieldRequest, value: string) => void;
   onReviewValueReset: (request: PendingFieldRequest) => void;
   isSaving: boolean;
@@ -124,71 +124,120 @@ export function ReviewPendingList({
           const label = request.labelKey
             ? tVis(`fields.${request.labelKey}`)
             : request.apiField;
-          const draftValue = reviewValues[request.requestId] ?? request.newValue;
+          const draftValue = reviewValues[request.requestKey] ?? request.newValue;
           const edited = draftValue !== request.newValue;
           const decision = edited
             ? 'approve'
-            : decisions[request.requestId];
+            : decisions[request.requestKey];
           const recordKey = request.academicRecord?.key;
           const recordExpanded = recordKey
             ? Boolean(expandedRecords[recordKey])
             : false;
+          const isCreateRecord = request.requestType === 2;
 
           return (
             <li
-              key={request.requestId}
+              key={request.requestKey}
               className={cn(
                 'rounded-xl border border-[#dbd8d1] bg-[#f8f8f0]',
                 'px-4 pb-6 pt-4 dark:border-auth-input-border dark:bg-home-stat-card',
                 'min-[720px]:rounded-2xl min-[720px]:px-6 min-[720px]:pb-7 min-[720px]:pt-4',
               )}
             >
-              <div
-                className={cn(
-                  'grid grid-cols-1 gap-y-5',
-                  request.kind === 'textarea'
-                    ? 'gap-5'
-                    : 'gap-x-[100px] min-[720px]:grid-cols-2 min-[834px]:gap-x-[158px]',
-                )}
-              >
-                <div className="flex flex-col gap-3">
-                  <p className="text-start text-xs font-bold text-[#404943] dark:text-home-filter-muted">
-                    {t('previousValue')}
-                  </p>
-                  {request.kind === 'photo' ? (
-                    <ReviewPhotoPreview
-                      value={request.previousValue}
-                      label={label}
-                    />
-                  ) : request.renderAsFile ? (
-                    <ReviewFilePreview value={request.previousValue} />
-                  ) : (
-                    <OutlinedDisplayField
-                      label={label}
-                      value={request.previousValue || t('emptyValue')}
-                      multiline={request.kind === 'textarea'}
-                      surfaceClassName="bg-[#f8f8f0] dark:bg-home-stat-card"
-                      labelSurfaceClassName="bg-[#f8f8f0] dark:bg-home-stat-card"
-                      endAdornment={
-                        request.kind === 'textarea' ? undefined : (
-                          <ChevronDown
-                            className="size-5 text-[#404943] dark:text-home-filter-muted"
-                            strokeWidth={1.75}
-                            aria-hidden
-                          />
-                        )
-                      }
-                    />
-                  )}
-                </div>
-
+              {isCreateRecord && request.academicRecord ? (
                 <div className="flex flex-col gap-3">
                   <p className="text-start text-xs font-bold text-[#404943] dark:text-home-filter-muted">
                     {t('newValue')} ({t('reviewPendingLabel')})
                   </p>
-                  {request.kind === 'photo' ? (
-                    <div className="flex flex-col gap-3">
-                      <ReviewPhotoPreview value={draftValue} label={label} />
+                  <div className="grid grid-cols-1 gap-4 rounded-2xl border border-[#dbd8d1] bg-transparent p-4 dark:border-auth-input-border min-[720px]:grid-cols-2">
+                    {request.academicRecord.fields.map((field) => (
+                      <OutlinedDisplayField
+                        key={field.apiField}
+                        label={
+                          field.labelKey
+                            ? tVis(`fields.${field.labelKey}`)
+                            : field.apiField
+                        }
+                        value={field.value || t('emptyValue')}
+                        tone="warning"
+                        surfaceClassName="bg-transparent"
+                        labelSurfaceClassName="bg-[#f8f8f0] dark:bg-home-stat-card"
+                      />
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <div
+                  className={cn(
+                    'grid grid-cols-1 gap-y-5',
+                    request.kind === 'textarea'
+                      ? 'gap-5'
+                      : 'gap-x-[100px] min-[720px]:grid-cols-2 min-[834px]:gap-x-[158px]',
+                  )}
+                >
+                  <div className="flex flex-col gap-3">
+                    <p className="text-start text-xs font-bold text-[#404943] dark:text-home-filter-muted">
+                      {t('previousValue')}
+                    </p>
+                    {request.kind === 'photo' ? (
+                      <ReviewPhotoPreview
+                        value={request.previousValue}
+                        label={label}
+                      />
+                    ) : request.renderAsFile ? (
+                      <ReviewFilePreview value={request.previousValue} />
+                    ) : (
+                      <OutlinedDisplayField
+                        label={label}
+                        value={request.previousValue || t('emptyValue')}
+                        multiline={request.kind === 'textarea'}
+                        surfaceClassName="bg-[#f8f8f0] dark:bg-home-stat-card"
+                        labelSurfaceClassName="bg-[#f8f8f0] dark:bg-home-stat-card"
+                        endAdornment={
+                          request.kind === 'textarea' ? undefined : (
+                            <ChevronDown
+                              className="size-5 text-[#404943] dark:text-home-filter-muted"
+                              strokeWidth={1.75}
+                              aria-hidden
+                            />
+                          )
+                        }
+                      />
+                    )}
+                  </div>
+
+                  <div className="flex flex-col gap-3">
+                    <p className="text-start text-xs font-bold text-[#404943] dark:text-home-filter-muted">
+                      {t('newValue')} ({t('reviewPendingLabel')})
+                    </p>
+                    {request.kind === 'photo' ? (
+                      <div className="flex flex-col gap-3">
+                        <ReviewPhotoPreview value={draftValue} label={label} />
+                        <OutlinedTextField
+                          label={label}
+                          value={draftValue}
+                          tone="warning"
+                          surfaceClassName="bg-[#f8f8f0] dark:bg-home-stat-card"
+                          labelSurfaceClassName="bg-[#f8f8f0] dark:bg-home-stat-card"
+                          onValueChange={(value) =>
+                            onReviewValueChange(request, value)
+                          }
+                        />
+                      </div>
+                    ) : request.renderAsFile ? (
+                      <ReviewFilePreview value={draftValue} />
+                    ) : request.kind === 'textarea' ? (
+                      <OutlinedTextareaField
+                        label={label}
+                        value={draftValue}
+                        tone="warning"
+                        surfaceClassName="bg-[#f8f8f0] dark:bg-home-stat-card"
+                        labelSurfaceClassName="bg-[#f8f8f0] dark:bg-home-stat-card"
+                        onValueChange={(value) =>
+                          onReviewValueChange(request, value)
+                        }
+                      />
+                    ) : (
                       <OutlinedTextField
                         label={label}
                         value={draftValue}
@@ -199,34 +248,10 @@ export function ReviewPendingList({
                           onReviewValueChange(request, value)
                         }
                       />
-                    </div>
-                  ) : request.renderAsFile ? (
-                    <ReviewFilePreview value={draftValue} />
-                  ) : request.kind === 'textarea' ? (
-                    <OutlinedTextareaField
-                      label={label}
-                      value={draftValue}
-                      tone="warning"
-                      surfaceClassName="bg-[#f8f8f0] dark:bg-home-stat-card"
-                      labelSurfaceClassName="bg-[#f8f8f0] dark:bg-home-stat-card"
-                      onValueChange={(value) =>
-                        onReviewValueChange(request, value)
-                      }
-                    />
-                  ) : (
-                    <OutlinedTextField
-                      label={label}
-                      value={draftValue}
-                      tone="warning"
-                      surfaceClassName="bg-[#f8f8f0] dark:bg-home-stat-card"
-                      labelSurfaceClassName="bg-[#f8f8f0] dark:bg-home-stat-card"
-                      onValueChange={(value) =>
-                        onReviewValueChange(request, value)
-                      }
-                    />
-                  )}
+                    )}
+                  </div>
                 </div>
-              </div>
+              )}
 
               {edited ? (
                 <div className="mt-3 flex flex-col items-start gap-1">
@@ -245,7 +270,7 @@ export function ReviewPendingList({
                 </div>
               ) : null}
 
-              {request.academicRecord && recordKey ? (
+              {!isCreateRecord && request.academicRecord && recordKey ? (
                 <div className="mt-5">
                   <button
                     type="button"
@@ -300,11 +325,11 @@ export function ReviewPendingList({
                   </span>
                   <input
                     type="radio"
-                    name={`review-${request.requestId}`}
+                    name={`review-${request.requestKey}`}
                     checked={decision === 'approve'}
                     className="size-5 accent-[#008d63]"
                     onChange={() =>
-                      onDecisionChange(request.requestId, 'approve')
+                      onDecisionChange(request.requestKey, 'approve')
                     }
                   />
                 </label>
@@ -325,11 +350,11 @@ export function ReviewPendingList({
                   </span>
                   <input
                     type="radio"
-                    name={`review-${request.requestId}`}
+                    name={`review-${request.requestKey}`}
                     disabled={edited}
                     checked={decision === 'reject'}
                     className="size-5 accent-[#ba1a1a]"
-                    onChange={() => onDecisionChange(request.requestId, 'reject')}
+                    onChange={() => onDecisionChange(request.requestKey, 'reject')}
                   />
                 </label>
               </div>

@@ -55,6 +55,7 @@ export function useFieldsSectionController({
   const visibilityQuery = useManageVisibilityQuery(accessToken, targetActorId);
   const submitPrivateMutation = useSubmitPrivateTabByOwnerMutation();
   const reviewMutation = useReviewPrivateChangesByOwnerMutation();
+  const privateSubmitter = targetActorId ? 'admin' : 'owner';
 
   const [mode, setMode] = useState<FieldsMode>('view');
   const [category, setCategory] = useState<VisibilityCategoryId>('identity');
@@ -67,9 +68,9 @@ export function useFieldsSectionController({
     Record<string, VisibilityValidationErrorKey>
   >({});
   const [reviewDecisions, setReviewDecisions] = useState<
-    Record<number, ReviewDecision>
+    Record<string, ReviewDecision>
   >({});
-  const [reviewValues, setReviewValues] = useState<Record<number, string>>({});
+  const [reviewValues, setReviewValues] = useState<Record<string, string>>({});
   const [academicDocuments, setAcademicDocuments] = useState<DocumentDraft[]>(
     [],
   );
@@ -86,13 +87,21 @@ export function useFieldsSectionController({
     Record<string, File>
   >({});
 
-  const fields =
-    visibilityQuery.data?.fields ?? mapVisibilityFields(null, null);
+  const fields = (
+    visibilityQuery.data?.fields ?? mapVisibilityFields(null, null)
+  ).map((field) =>
+    field.id === 'email' || field.id === 'mobile'
+      ? { ...field, locked: true, lockedCaptionKey: 'locked' as const }
+      : field,
+  );
   const records = visibilityQuery.data?.records ?? [];
   const privateData = visibilityQuery.data?.privateData;
   const pendingRequests = useMemo(
-    () => mapPendingFieldRequests(privateData),
-    [privateData],
+    () =>
+      mapPendingFieldRequests(privateData, {
+        viewer: targetActorId ? 'Admin' : 'Owner',
+      }),
+    [privateData, targetActorId],
   );
   const pendingCounts = useMemo(
     () =>
@@ -411,14 +420,17 @@ export function useFieldsSectionController({
               tabName,
               privateData,
               savedValues,
-              tabName === 'educational_information' && academicDocsDirty
-                ? {
-                    academicDocuments: academicReady.map((doc) => ({
-                      filePath: doc.filePath,
-                      description: doc.name,
-                    })),
-                  }
-                : undefined,
+              {
+                submitter: privateSubmitter,
+                ...(tabName === 'educational_information' && academicDocsDirty
+                  ? {
+                      academicDocuments: academicReady.map((doc) => ({
+                        filePath: doc.filePath,
+                        description: doc.name,
+                      })),
+                    }
+                  : {}),
+              },
             ),
           }),
         ),
@@ -459,30 +471,54 @@ export function useFieldsSectionController({
     const editedRequests = pendingRequests.filter(
       (request) =>
         request.fieldId &&
-        (reviewValues[request.requestId] ?? request.newValue) !==
+        (reviewValues[request.requestKey] ?? request.newValue) !==
           request.newValue,
     );
-    const editedRequestIds = new Set(
-      editedRequests.map((request) => request.requestId),
+    const editedRequestKeys = new Set(
+      editedRequests.map((request) => request.requestKey),
+    );
+    const pendingRequestByKey = new Map(
+      pendingRequests.map((request) => [
+        request.requestKey,
+        request,
+      ]),
     );
     const confirmed = Object.entries(reviewDecisions)
       .filter(
-        ([id, decision]) =>
-          decision === 'approve' && !editedRequestIds.has(Number(id)),
+        ([key, decision]) =>
+          decision === 'approve' && !editedRequestKeys.has(key),
       )
-      .map(([id]) => ({ request_id: Number(id), request_type: 1 as const }));
+      .flatMap(([key]) => {
+        const request = pendingRequestByKey.get(key);
+        if (!request) return [];
+        return [
+          {
+            request_id: request.requestId,
+            request_type: request.requestType ?? 1,
+          },
+        ];
+      });
     confirmed.push(
       ...editedRequests.map((request) => ({
         request_id: request.requestId,
-        request_type: 1 as const,
+        request_type: request.requestType ?? 1,
       })),
     );
     const rejected = Object.entries(reviewDecisions)
       .filter(
-        ([id, decision]) =>
-          decision === 'reject' && !editedRequestIds.has(Number(id)),
+        ([key, decision]) =>
+          decision === 'reject' && !editedRequestKeys.has(key),
       )
-      .map(([id]) => ({ request_id: Number(id), request_type: 1 as const }));
+      .flatMap(([key]) => {
+        const request = pendingRequestByKey.get(key);
+        if (!request) return [];
+        return [
+          {
+            request_id: request.requestId,
+            request_type: request.requestType ?? 1,
+          },
+        ];
+      });
 
     if (confirmed.length === 0 && rejected.length === 0) {
       setFormError(t('nothingToSave'));
@@ -504,7 +540,7 @@ export function useFieldsSectionController({
         for (const request of editedRequests) {
           if (request.fieldId) {
             valuesForSubmit[request.fieldId] =
-              reviewValues[request.requestId] ?? request.newValue;
+              reviewValues[request.requestKey] ?? request.newValue;
           }
         }
         const privateTabs = new Set(
@@ -528,6 +564,7 @@ export function useFieldsSectionController({
                 tabName,
                 privateData,
                 savedValues,
+                { submitter: privateSubmitter },
               ),
             }),
           ),
@@ -560,7 +597,7 @@ export function useFieldsSectionController({
         'educational_information',
         privateData,
         savedValues,
-        { academicRecords: payload },
+        { academicRecords: payload, submitter: privateSubmitter },
       ),
     });
     await refreshFieldsFromServer();
@@ -599,10 +636,10 @@ export function useFieldsSectionController({
       requests: categoryPendingRequests,
       decisions: reviewDecisions,
       values: reviewValues,
-      onDecisionChange: (requestId: number, decision: ReviewDecision) =>
+      onDecisionChange: (requestKey: string, decision: ReviewDecision) =>
         setReviewDecisions((prev) => ({
           ...prev,
-          [requestId]: decision,
+          [requestKey]: decision,
         })),
       onValueChange: (
         request: (typeof categoryPendingRequests)[number],
@@ -610,23 +647,23 @@ export function useFieldsSectionController({
       ) => {
         setReviewValues((prev) => ({
           ...prev,
-          [request.requestId]: value,
+          [request.requestKey]: value,
         }));
         setReviewDecisions((prev) => ({
           ...prev,
-          [request.requestId]: 'approve',
+          [request.requestKey]: 'approve',
         }));
         if (formError) setFormError(null);
       },
       onValueReset: (request: (typeof categoryPendingRequests)[number]) => {
         setReviewValues((prev) => {
           const next = { ...prev };
-          delete next[request.requestId];
+          delete next[request.requestKey];
           return next;
         });
         setReviewDecisions((prev) => {
           const next = { ...prev };
-          delete next[request.requestId];
+          delete next[request.requestKey];
           return next;
         });
         if (formError) setFormError(null);

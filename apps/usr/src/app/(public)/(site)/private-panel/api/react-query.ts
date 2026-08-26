@@ -244,7 +244,9 @@ export function useManageVisibilityQuery(
             : retrievePublicPanelForOwner({ accessToken }))
         : {};
       return {
-        fields: mapVisibilityFields(privateData, publicFlags),
+        fields: mapVisibilityFields(privateData, publicFlags, {
+          submitter: actorId ? 'admin' : 'owner',
+        }),
         records: mapAcademicRecords(privateData),
         privateData,
         publicFlags,
