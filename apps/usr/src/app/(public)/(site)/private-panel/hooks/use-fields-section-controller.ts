@@ -46,6 +46,27 @@ type UseFieldsSectionControllerPayload = {
   targetActorId?: number | null;
 };
 
+const ALWAYS_LOCKED_FIELD_IDS = new Set([
+  'email',
+  'mobile',
+  'username',
+  'membershipType',
+  'membershipDate',
+  'membershipExpiry',
+  'levelChangeMethod',
+  'serviceProviderStatus',
+]);
+
+const ADMIN_LOCKED_FIELD_IDS = new Set([
+  'avatar',
+  'electronicCardPhoto',
+  'firstName',
+  'lastName',
+  'nationalId',
+  'birthDate',
+  'bio',
+]);
+
 export function useFieldsSectionController({
   accessToken,
   targetActorId,
@@ -90,7 +111,8 @@ export function useFieldsSectionController({
   const fields = (
     visibilityQuery.data?.fields ?? mapVisibilityFields(null, null)
   ).map((field) =>
-    field.id === 'email' || field.id === 'mobile'
+    ALWAYS_LOCKED_FIELD_IDS.has(field.id) ||
+    (Boolean(targetActorId) && ADMIN_LOCKED_FIELD_IDS.has(field.id))
       ? { ...field, locked: true, lockedCaptionKey: 'locked' as const }
       : field,
   );

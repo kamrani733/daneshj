@@ -402,8 +402,6 @@ export const VISIBILITY_FIELD_DEFS: VisibilityFieldDef[] = [
     apiSection: 'membership_type_user',
     apiField: 'membership_type',
     valueField: 'membership_type',
-    locked: true,
-    lockedCaptionKey: 'notDisplayed',
   },
   {
     id: 'membershipDate',
@@ -439,8 +437,6 @@ export const VISIBILITY_FIELD_DEFS: VisibilityFieldDef[] = [
     apiSection: 'membership_type_user',
     apiField: 'membership_level_change_method',
     valueField: 'membership_level_change_method',
-    locked: true,
-    lockedCaptionKey: 'notDisplayed',
   },
   {
     id: 'serviceProviderStatus',
@@ -452,8 +448,6 @@ export const VISIBILITY_FIELD_DEFS: VisibilityFieldDef[] = [
     apiSection: 'our_user',
     apiField: 'is_individual_service_provider',
     valueField: 'is_individual_service_provider',
-    locked: true,
-    lockedCaptionKey: 'notDisplayed',
   },
   {
     id: 'gradEmploymentStatus',
@@ -475,10 +469,8 @@ export const VISIBILITY_FIELD_DEFS: VisibilityFieldDef[] = [
     labelKey: 'studentNumber',
     tabName: 'educational_information',
     apiSection: 'education_occupation_info_user',
-    apiField: null,
+    apiField: 'student_id',
     valueField: 'student_id',
-    locked: true,
-    lockedCaptionKey: 'locked',
   },
   {
     id: 'eduCountry',

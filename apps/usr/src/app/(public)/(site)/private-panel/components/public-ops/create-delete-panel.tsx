@@ -36,13 +36,40 @@ export function CreateDeletePanel({
   const requestMutation = useRequestPublicPanelChangeStatusMutation();
 
   const hasPanel = Boolean(statusQuery.data?.isPublicPanelActive);
+  const isAdminAccess = Boolean(targetActorId);
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [step, setStep] = useState<DialogStep>('confirm');
   const [requestSubmitted, setRequestSubmitted] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const paragraphs = hasPanel ? COPY.deleteParagraphs : COPY.createParagraphs;
+  const paragraphs = isAdminAccess
+    ? COPY.adminParagraphs
+    : hasPanel
+      ? COPY.deleteParagraphs
+      : COPY.createParagraphs;
+  const buttonLabel = isAdminAccess
+    ? COPY.adminAction
+    : hasPanel
+      ? t('requestDelete')
+      : t('requestCreate');
+  const confirmTitle = isAdminAccess
+    ? hasPanel
+      ? COPY.adminDeleteConfirm
+      : COPY.adminCreateConfirm
+    : hasPanel
+      ? t('deleteConfirm')
+      : t('createConfirm');
+  const confirmAction = isAdminAccess
+    ? COPY.adminAction
+    : hasPanel
+      ? t('deleteAction')
+      : t('createAction');
+  const successTitle = isAdminAccess
+    ? COPY.adminSuccess
+    : hasPanel
+      ? t('deleteSuccess')
+      : t('createSuccess');
 
   function openConfirm() {
     if (requestSubmitted || requestMutation.isPending) return;
@@ -70,11 +97,15 @@ export function CreateDeletePanel({
       setRequestSubmitted(true);
       setStep('success');
     } catch (error) {
+      const message = getActorApiErrorMessage(
+        error,
+        isAdminAccess ? COPY.adminNoPendingRequest : t('createConfirm')
+      );
       setErrorMessage(
-        getActorApiErrorMessage(
-          error,
-          hasPanel ? t('deleteConfirm') : t('createConfirm')
-        )
+        isAdminAccess &&
+          message.toLowerCase().includes('there are no requests')
+          ? COPY.adminNoPendingRequest
+          : message
       );
     }
   }
@@ -83,12 +114,12 @@ export function CreateDeletePanel({
     <div className="flex w-full flex-col gap-4 min-[720px]:gap-6">
       <section
         className={cn(
-          'flex flex-col gap-5 rounded-2xl border border-border bg-home-card p-4',
+          'flex flex-col gap-7 rounded-2xl border border-border bg-home-card p-4',
           'dark:bg-home-search-category',
-          'min-[720px]:gap-6 min-[720px]:p-5 min-[834px]:p-6'
+          'min-[720px]:gap-8 min-[720px]:p-6 min-[834px]:px-10 min-[834px]:py-9'
         )}
       >
-        <ul className="flex list-disc flex-col gap-3 pe-5 text-justify text-sm font-medium leading-7 text-home-filter-muted marker:text-home-filter-muted dark:text-home-filter-ink">
+        <ul className="flex list-disc flex-col gap-3 pe-5 text-justify text-sm font-medium leading-7 text-home-filter-muted marker:text-home-filter-muted dark:text-home-filter-ink min-[720px]:gap-4">
           {paragraphs.map((paragraph) => (
             <li key={paragraph}>{paragraph}</li>
           ))}
@@ -107,22 +138,22 @@ export function CreateDeletePanel({
             'h-11 w-full self-stretch !rounded-full border-0 px-5 text-sm font-medium text-white shadow-none',
             'min-[720px]:h-12 min-[720px]:w-auto min-[720px]:self-end min-[720px]:px-8',
             'disabled:pointer-events-none disabled:opacity-50',
-            hasPanel
+            hasPanel && !isAdminAccess
               ? 'bg-warning hover:bg-warning/90'
               : 'bg-primary hover:bg-primary/90'
           )}
         >
-          {hasPanel ? t('requestDelete') : t('requestCreate')}
+          {buttonLabel}
         </Button>
       </section>
 
       <OpsConfirmDialog
         open={dialogOpen}
         step={step}
-        confirmTitle={hasPanel ? t('deleteConfirm') : t('createConfirm')}
-        confirmAction={hasPanel ? t('deleteAction') : t('createAction')}
+        confirmTitle={confirmTitle}
+        confirmAction={confirmAction}
         cancelLabel={t('cancel')}
-        successTitle={hasPanel ? t('deleteSuccess') : t('createSuccess')}
+        successTitle={successTitle}
         closeLabel={t('close')}
         errorMessage={errorMessage}
         confirming={requestMutation.isPending}

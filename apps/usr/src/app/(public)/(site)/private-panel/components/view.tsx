@@ -47,7 +47,10 @@ export function PrivatePanelView({
     >
       {isLoading ? <PanelLoadingOverlay message={t('loading')} /> : null}
 
-      <PrivatePanelHeading displayName={profile?.displayName ?? ''} />
+      <PrivatePanelHeading
+        displayName={profile?.displayName ?? ''}
+        isAdminAccess={Boolean(targetActorId)}
+      />
       {profile ? <ProfileHeroCard profile={profile} /> : null}
       <PrivatePanelTabs
         accessToken={accessToken}

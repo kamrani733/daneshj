@@ -37,7 +37,8 @@ export const MARITAL_OPTIONS: FieldOption[] = [
 export const OCCUPATION_OPTIONS: FieldOption[] = [
   { value: '1', label: 'دانشجو' },
   { value: '2', label: 'فارغ‌التحصیل' },
-  { value: '3', label: 'شاغل' },
+  { value: '3', label: 'مدرسه' },
+  { value: '4', label: 'ورودی' },
   { value: '5', label: 'سایر' },
 ];
 

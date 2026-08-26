@@ -49,6 +49,7 @@ export function VisibilityFieldCard({
   const t = useTranslations('privatePanel.publicOps.manageVisibility');
   const state = resolveVisibilityState(field, selected);
   const locked = state === 'locked';
+  const interactionLocked = locked || field.pending;
   const lockedMuted = locked && field.lockedCaptionKey === 'notDisplayed';
   const cardBg = cardSurfaceClass(state);
   const inputBg = inputSurfaceClass(state);
@@ -82,7 +83,7 @@ export function VisibilityFieldCard({
             caption={caption}
             state={state}
             selected={selected}
-            locked={locked}
+            locked={interactionLocked}
             lockedMuted={lockedMuted}
             onToggle={() => onToggle(field.id)}
           />
@@ -114,7 +115,7 @@ export function VisibilityFieldCard({
           caption={caption}
           state={state}
           selected={selected}
-          locked={locked}
+          locked={interactionLocked}
           lockedMuted={lockedMuted}
           onToggle={() => onToggle(field.id)}
         />
@@ -161,7 +162,7 @@ export function VisibilityFieldCard({
         caption={caption}
         state={state}
         selected={selected}
-        locked={locked}
+        locked={interactionLocked}
         lockedMuted={lockedMuted}
         onToggle={() => onToggle(field.id)}
       />
@@ -232,7 +233,7 @@ export function VisibilityCheckbox({
       <input
         type="checkbox"
         className="sr-only"
-        checked={selected && !locked}
+        checked={selected}
         disabled={locked}
         onChange={onToggle}
         aria-label={`${label} — ${caption}`}

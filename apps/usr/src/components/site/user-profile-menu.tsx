@@ -23,7 +23,7 @@ import { cn } from '@/lib/utils';
 
 export type UserProfileMenuProps = {
   displayName: string;
-  userType?: string;
+  userType?: 'user' | 'admin';
   triggerLabel: string;
   trigger: (props: {
     open: boolean;
@@ -65,7 +65,7 @@ export function UserProfileMenu({
   const [coords, setCoords] = useState<MenuCoords | null>(null);
   const [mounted, setMounted] = useState(false);
 
-  const typeLabel = userType?.trim() || t('userType');
+  const typeLabel = userType === 'admin' ? t('adminType') : t('userType');
   const headerLabel = ` ${displayName} ( ${typeLabel} )`;
 
   useEffect(() => {

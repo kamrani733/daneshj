@@ -139,32 +139,49 @@ export function ReviewPendingList({
             <li
               key={request.requestKey}
               className={cn(
-                'rounded-xl border border-[#dbd8d1] bg-[#f8f8f0]',
+                'mx-auto w-full max-w-[1000px] rounded-xl border border-[#dbd8d1] bg-[#f8f8f0]',
                 'px-4 pb-6 pt-4 dark:border-auth-input-border dark:bg-home-stat-card',
-                'min-[720px]:rounded-2xl min-[720px]:px-6 min-[720px]:pb-7 min-[720px]:pt-4',
+                'min-[720px]:rounded-2xl min-[720px]:px-6 min-[720px]:pb-7 min-[720px]:pt-5',
               )}
             >
               {isCreateRecord && request.academicRecord ? (
-                <div className="flex flex-col gap-3">
-                  <p className="text-start text-xs font-bold text-[#404943] dark:text-home-filter-muted">
-                    {t('newValue')} ({t('reviewPendingLabel')})
-                  </p>
-                  <div className="grid grid-cols-1 gap-4 rounded-2xl border border-[#dbd8d1] bg-transparent p-4 dark:border-auth-input-border min-[720px]:grid-cols-2">
-                    {request.academicRecord.fields.map((field) => (
-                      <OutlinedDisplayField
+                <div className="flex flex-col gap-4">
+                  {request.academicRecord.fields.map((field) => {
+                    const fieldLabel = field.labelKey
+                      ? tVis(`fields.${field.labelKey}`)
+                      : field.apiField;
+
+                    return (
+                      <div
                         key={field.apiField}
-                        label={
-                          field.labelKey
-                            ? tVis(`fields.${field.labelKey}`)
-                            : field.apiField
-                        }
-                        value={field.value || t('emptyValue')}
-                        tone="warning"
-                        surfaceClassName="bg-transparent"
-                        labelSurfaceClassName="bg-[#f8f8f0] dark:bg-home-stat-card"
-                      />
-                    ))}
-                  </div>
+                        className="grid grid-cols-1 gap-y-5 min-[720px]:grid-cols-2 min-[720px]:gap-x-[100px] min-[834px]:gap-x-[158px]"
+                      >
+                        <div className="flex flex-col gap-3">
+                          <p className="text-start text-xs font-bold text-[#404943] dark:text-home-filter-muted">
+                            {t('previousValue')}
+                          </p>
+                          <OutlinedDisplayField
+                            label={fieldLabel}
+                            value={field.previousValue || t('emptyValue')}
+                            surfaceClassName="bg-[#f8f8f0] dark:bg-home-stat-card"
+                            labelSurfaceClassName="bg-[#f8f8f0] dark:bg-home-stat-card"
+                          />
+                        </div>
+                        <div className="flex flex-col gap-3">
+                          <p className="text-start text-xs font-bold text-[#404943] dark:text-home-filter-muted">
+                            {t('newValue')} ({t('reviewPendingLabel')})
+                          </p>
+                          <OutlinedDisplayField
+                            label={fieldLabel}
+                            value={field.value || t('emptyValue')}
+                            tone="warning"
+                            surfaceClassName="bg-[#f8f8f0] dark:bg-home-stat-card"
+                            labelSurfaceClassName="bg-[#f8f8f0] dark:bg-home-stat-card"
+                          />
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               ) : (
                 <div

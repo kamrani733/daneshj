@@ -51,6 +51,16 @@ const SOCIAL_TRANSLATION_FIELDS = new Set([
   'marital_status',
 ]);
 
+const ADMIN_BLOCKED_FIELD_IDS = new Set([
+  'avatar',
+  'electronicCardPhoto',
+  'firstName',
+  'lastName',
+  'nationalId',
+  'birthDate',
+  'bio',
+]);
+
 function publicFlagSectionForDef(def: VisibilityFieldDef): string {
   if (
     def.apiSection === 'identity_info_user' &&
@@ -122,6 +132,7 @@ const OCCUPATION_SUBMIT: Record<string, number> = {
   'فارغ‌التحصیل': 2,
   مدرسه: 3,
   ورود: 4,
+  ورودی: 4,
   سایر: 5,
 };
 
@@ -401,7 +412,9 @@ export function toPrivateTabSubmitBody(
     ) {
       continue;
     }
-    if (submitter === 'admin' && def.id === 'nationalId') continue;
+    if (submitter === 'admin' && ADMIN_BLOCKED_FIELD_IDS.has(def.id)) {
+      continue;
+    }
 
     if (
       sectionKey === 'identity_info_user' &&

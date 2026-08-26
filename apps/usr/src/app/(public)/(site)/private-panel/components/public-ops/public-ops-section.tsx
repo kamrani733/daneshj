@@ -29,10 +29,13 @@ export function PublicOpsSection({
   targetActorId,
 }: PublicOpsSectionProps) {
   const t = useTranslations('privatePanel.publicOps');
+  const defaultSubTab: PublicOpsSubTab = targetActorId
+    ? 'createDelete'
+    : 'manageVisibility';
 
   return (
     <Tabs
-      defaultValue="manageVisibility"
+      defaultValue={defaultSubTab}
       className="flex w-full flex-col gap-3 min-[720px]:gap-6"
       dir="rtl"
     >

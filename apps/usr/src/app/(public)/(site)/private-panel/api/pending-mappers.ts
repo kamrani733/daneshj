@@ -46,6 +46,7 @@ export type PendingFieldRequest = {
       apiField: string;
       labelKey: string | null;
       value: string;
+      previousValue?: string;
       pending: boolean;
     }>;
   };
@@ -111,7 +112,7 @@ function isPendingForViewer(
   const pendingFor =
     readActorType(metadata.pending_for_actor_type) ??
     readActorType(metadata.pending_for);
-  return !pendingFor || pendingFor === viewer;
+  return pendingFor === viewer;
 }
 
 function findPendingDef(

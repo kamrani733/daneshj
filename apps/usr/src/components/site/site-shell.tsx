@@ -14,6 +14,9 @@ type SiteShellProps = {
 
 export async function SiteShell({ children }: SiteShellProps) {
   const session = await getSession();
+  const isUserSession =
+    session?.user.id.startsWith('User_') || session?.loginType === 1;
+  const userType = session ? (isUserSession ? 'user' : 'admin') : undefined;
 
   return (
     <div className="relative min-h-screen overflow-x-clip bg-home-scene" dir="rtl">
@@ -23,6 +26,7 @@ export async function SiteShell({ children }: SiteShellProps) {
       <SiteHeader
         isAuthenticated={!!session}
         userName={session?.user?.name?.trim() || undefined}
+        userType={userType}
         accessToken={session?.accessToken}
       />
       <SiteBgPattern />

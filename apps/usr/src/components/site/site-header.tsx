@@ -61,12 +61,14 @@ const NAV_LINKS: NavLink[] = [
 type SiteHeaderProps = {
   isAuthenticated?: boolean;
   userName?: string;
+  userType?: 'user' | 'admin';
   accessToken?: string | null;
 };
 
 export function SiteHeader({
   isAuthenticated = false,
   userName,
+  userType,
   accessToken,
 }: SiteHeaderProps) {
   const t = useTranslations('home.header');
@@ -86,6 +88,7 @@ export function SiteHeader({
         <HeaderIconGroup
           isAuthenticated={isAuthenticated}
           userName={userName}
+          userType={userType}
           profileLabel={t('profile')}
           loginLabel={tHome('login')}
           notificationsLabel={t('notifications')}
@@ -111,6 +114,7 @@ export function SiteHeader({
             <AuthEntryButton
               isAuthenticated={isAuthenticated}
               userName={userName}
+              userType={userType}
               profileLabel={t('profile')}
               loginLabel={tHome('login')}
             />
@@ -189,6 +193,7 @@ function HeaderLogo({ alt, size, className }: HeaderLogoProps) {
 type HeaderIconGroupProps = {
   isAuthenticated: boolean;
   userName?: string;
+  userType?: 'user' | 'admin';
   profileLabel: string;
   loginLabel: string;
   notificationsLabel: string;
@@ -199,6 +204,7 @@ type HeaderIconGroupProps = {
 function HeaderIconGroup({
   isAuthenticated,
   userName,
+  userType,
   profileLabel,
   loginLabel,
   notificationsLabel,
@@ -210,6 +216,7 @@ function HeaderIconGroup({
       <AuthEntryButton
         isAuthenticated={isAuthenticated}
         userName={userName}
+        userType={userType}
         profileLabel={profileLabel}
         loginLabel={loginLabel}
         size="sm"
@@ -229,6 +236,7 @@ type AuthEntryButtonProps = {
   profileLabel: string;
   loginLabel: string;
   userName?: string;
+  userType?: 'user' | 'admin';
   size?: 'sm' | 'md';
 };
 
@@ -237,6 +245,7 @@ function AuthEntryButton({
   profileLabel,
   loginLabel,
   userName,
+  userType,
   size = 'md',
 }: AuthEntryButtonProps) {
   if (!isAuthenticated) {
@@ -257,6 +266,7 @@ function AuthEntryButton({
   return (
     <UserProfileMenu
       displayName={userName?.trim() || 'نام و نام خانوادگی'}
+      userType={userType}
       triggerLabel={profileLabel}
       trigger={({ open, menuId, onToggle }) => (
         <IconButton

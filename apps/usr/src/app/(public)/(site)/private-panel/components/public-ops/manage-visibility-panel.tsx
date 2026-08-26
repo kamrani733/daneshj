@@ -168,7 +168,7 @@ export function ManageVisibilityPanel({
 
   function toggleField(id: string) {
     const field = fields.find((item) => item.id === id);
-    if (!field || field.locked) return;
+    if (!field || field.locked || field.pending) return;
     setSelection((prev) => ({ ...prev, [id]: !prev[id] }));
     if (formError) setFormError(null);
   }
