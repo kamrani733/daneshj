@@ -344,7 +344,7 @@ type PrivateSubmitter = 'owner' | 'admin';
 
 export function toPrivateTabSubmitBody(
   values: Record<string, string>,
-  tabName: PrivateOwnerTabName,
+  tabName: ProfileTabName,
   privateData?: ProfileRetrieveData | null,
   savedValues: Record<string, string> = {},
   options?: {
@@ -358,6 +358,7 @@ export function toPrivateTabSubmitBody(
 
   const sectionIds: Partial<Record<string, number>> = {};
   for (const key of [
+    'our_user',
     'identity_info_user',
     'social_info_user',
     'contact_info_user',
@@ -376,7 +377,6 @@ export function toPrivateTabSubmitBody(
       def.apiSection === 'education_occupation_info_user_division_code' ||
       def.apiSection === 'academic_record_verified_user' ||
       def.apiSection === 'academic_record_submitted_user' ||
-      def.apiSection === 'our_user' ||
       def.apiSection === 'membership_type_user'
     ) {
       continue;
@@ -388,6 +388,15 @@ export function toPrivateTabSubmitBody(
 
     const parsed = parsePrivateFieldValue(def, next);
     if (parsed === '' || parsed == null) continue;
+
+    if (def.id === 'serviceProviderStatus') {
+      if (submitter !== 'admin') continue;
+      const section = (body.our_user ??= {
+        ...(sectionIds.our_user != null ? { id: sectionIds.our_user } : {}),
+      }) as Record<string, unknown>;
+      section.is_individual_service_provider = parsed;
+      continue;
+    }
 
     const sectionKey = def.apiSection as
       | 'identity_info_user'
@@ -407,8 +416,7 @@ export function toPrivateTabSubmitBody(
       def.id === 'email' ||
       def.id === 'mobile' ||
       def.id === 'membershipType' ||
-      def.id === 'levelChangeMethod' ||
-      def.id === 'serviceProviderStatus'
+      def.id === 'levelChangeMethod'
     ) {
       continue;
     }
@@ -512,7 +520,13 @@ export function toPrivateTabSubmitBody(
       body.academic_document_user = academicDocuments.map((doc) => ({
         id: 0,
         file_path: doc.filePath,
-        description: doc.description?.slice(0, 100) || null,
+        academic_document_user_translation: [
+          {
+            id: 0,
+            target_language: 'fa',
+            description: doc.description?.slice(0, 100) || null,
+          },
+        ],
       }));
     }
 
@@ -527,6 +541,7 @@ export function toPrivateTabSubmitBody(
     'social_info_user',
     'contact_info_user',
     'education_occupation_info_user',
+    'our_user',
   ] as const) {
     const section = body[key] as Record<string, unknown> | undefined;
     if (!section) continue;

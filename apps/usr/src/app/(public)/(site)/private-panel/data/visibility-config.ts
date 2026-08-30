@@ -21,6 +21,8 @@ export type VisibilityFieldKind = 'text' | 'photo' | 'textarea' | 'toggle';
 export type VisibilityAcademicRecord = {
   id: string;
   apiId: number | null;
+  translationApiId?: number | null;
+  targetLanguage?: string;
   source: 'verified' | 'submitted';
   academicGroup: string;
   fieldOfStudy: string;

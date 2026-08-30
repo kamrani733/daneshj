@@ -274,6 +274,28 @@ function findAcademicRecordDef(
   );
 }
 
+function academicRecordTranslationRows(
+  row: Record<string, unknown>
+): Record<string, unknown>[] {
+  return [
+    ...readRecordList(row, 'academic_record_submitted_user_translation'),
+    ...readRecordList(row, 'academic_record_verified_user_translation'),
+  ]
+    .map((item) => asRecord(item))
+    .filter((item): item is Record<string, unknown> => Boolean(item));
+}
+
+function readAcademicRecordField(
+  row: Record<string, unknown>,
+  apiField: string
+): unknown {
+  if (apiField in row) return row[apiField];
+  for (const translation of academicRecordTranslationRows(row)) {
+    if (apiField in translation) return translation[apiField];
+  }
+  return undefined;
+}
+
 function formatAcademicRecordValue(
   apiField: string,
   raw: unknown
@@ -301,8 +323,18 @@ function mapPendingAcademicRecordFields(
   recordKey: string,
   viewer: PendingViewer
 ): PendingFieldRequest[] {
-  const contextFields = Object.entries(row).flatMap(([apiField, raw]) => {
-    if (apiField === 'id') return [];
+  const recordFields = [
+    'academic_group',
+    'field_of_study',
+    'faculty',
+    'university',
+    'degree_level',
+    'degree_level_description',
+    'study_status',
+    'graduation_date',
+  ];
+  const contextFields = recordFields.flatMap((apiField) => {
+    const raw = readAcademicRecordField(row, apiField);
     const def = findAcademicRecordDef(apiField);
     if (!def) return [];
     return [
@@ -315,8 +347,21 @@ function mapPendingAcademicRecordFields(
     ];
   });
 
-  return Object.entries(row).flatMap(([apiField, raw]) => {
-    if (apiField === 'id' || !isWrappedPending(raw)) return [];
+  const rawFields = [
+    ...Object.entries(row),
+    ...academicRecordTranslationRows(row).flatMap((translation) =>
+      Object.entries(translation)
+    ),
+  ];
+
+  return rawFields.flatMap(([apiField, raw]) => {
+    if (
+      apiField === 'id' ||
+      apiField === 'target_language' ||
+      !isWrappedPending(raw)
+    ) {
+      return [];
+    }
     const wrapped = asRecord(raw) ?? {};
     const requestId = Number(wrapped.request_id);
     if (!Number.isFinite(requestId) || requestId <= 0) return [];
@@ -349,6 +394,98 @@ function mapPendingAcademicRecordFields(
       },
     ];
   });
+}
+
+function documentTranslationRows(
+  row: Record<string, unknown>
+): Record<string, unknown>[] {
+  return readRecordList(row, 'academic_document_user_translation')
+    .map((item) => asRecord(item))
+    .filter((item): item is Record<string, unknown> => Boolean(item));
+}
+
+function documentCreateFields(row: Record<string, unknown>) {
+  return [
+    {
+      apiField: 'file_path',
+      labelKey: null,
+      value: stringifyPendingValue(unwrapFieldValue(row.file_path)),
+      pending: true,
+    },
+    ...documentTranslationRows(row).flatMap((translation) => {
+      const value = unwrapFieldValue(translation.description);
+      if (!value) return [];
+      return [
+        {
+          apiField: 'description',
+          labelKey: null,
+          value: stringifyPendingValue(value),
+          pending: true,
+        },
+      ];
+    }),
+  ].filter((field) => field.value);
+}
+
+function buildDocumentCreateRecordRequest(
+  row: Record<string, unknown>,
+  requestId: number
+): PendingFieldRequest | null {
+  const fields = documentCreateFields(row);
+  if (fields.length === 0) return null;
+  return {
+    requestId,
+    requestType: 2,
+    requestKey: pendingRequestKey(
+      'academic_document_user',
+      2,
+      requestId,
+      'create_record'
+    ),
+    sectionKey: 'academic_document_user',
+    apiField: 'create_record',
+    category: 'education',
+    tabName: 'educational_information',
+    fieldId: null,
+    kind: 'textarea',
+    labelKey: null,
+    newValue: fields.map((field) => field.value).filter(Boolean).join('\n'),
+    previousValue: '',
+    renderAsFile: true,
+    academicRecord: {
+      key: `academic_document_user-${requestId}`,
+      fields,
+    },
+  };
+}
+
+function mapPendingDocumentCreateRecord(
+  row: Record<string, unknown>,
+  viewer: PendingViewer
+): PendingFieldRequest | null {
+  const recordStatus = asRecord(row.record_status);
+  if (
+    recordStatus?.pending === true &&
+    recordStatus.is_pending_create === true
+  ) {
+    if (!isPendingForViewer(recordStatus, viewer)) return null;
+    const requestId = Number(recordStatus.request_id);
+    if (!Number.isFinite(requestId) || requestId <= 0) return null;
+    return buildDocumentCreateRecordRequest(row, requestId);
+  }
+
+  if (
+    row.request_type !== 'create_record' ||
+    !isPendingRecordStatus(row.status)
+  ) {
+    return null;
+  }
+  if (!isPendingForViewer(row, viewer)) return null;
+  const requestId = Number(row.request_id);
+  if (!Number.isFinite(requestId) || requestId <= 0) return null;
+  const data = asRecord(row.data);
+  if (!data) return null;
+  return buildDocumentCreateRecordRequest(data, requestId);
 }
 
 export function mapPendingFieldRequests(
@@ -413,6 +550,11 @@ export function mapPendingFieldRequests(
     documents.forEach((item, index) => {
       const row = asRecord(item);
       if (!row) return;
+      const createRecord = mapPendingDocumentCreateRecord(row, viewer);
+      if (createRecord) {
+        items.push(createRecord);
+        return;
+      }
       for (const apiField of ['file_path', 'description']) {
         const raw = row[apiField];
         if (!isWrappedPending(raw)) continue;

@@ -17,6 +17,7 @@ import {
   useSubmitPrivateTabByOwnerMutation,
   type AcademicRecordUserDto,
   type PrivateOwnerTabName,
+  type ProfileTabName,
 } from '@private-panel/api';
 import {
   CATEGORY_TO_TAB,
@@ -111,7 +112,8 @@ export function useFieldsSectionController({
   const fields = (
     visibilityQuery.data?.fields ?? mapVisibilityFields(null, null)
   ).map((field) =>
-    ALWAYS_LOCKED_FIELD_IDS.has(field.id) ||
+    (ALWAYS_LOCKED_FIELD_IDS.has(field.id) &&
+      !(targetActorId && field.id === 'serviceProviderStatus')) ||
     (Boolean(targetActorId) && ADMIN_LOCKED_FIELD_IDS.has(field.id))
       ? { ...field, locked: true, lockedCaptionKey: 'locked' as const }
       : field,
@@ -404,9 +406,16 @@ export function useFieldsSectionController({
     }
 
     const submitValues = sanitizeValuesForPrivateSubmit(valuesForSubmit);
-    const privateTabs = new Set(
+    const privateTabs = new Set<ProfileTabName>(
       tabsAffectedByValues(submitValues, savedValues),
     );
+    if (
+      targetActorId &&
+      (submitValues.serviceProviderStatus ?? '') !==
+        (savedValues.serviceProviderStatus ?? '')
+    ) {
+      privateTabs.add('user_information');
+    }
     const academicReady = readyDocuments(nextAcademicDocuments);
     const academicDocsDirty =
       documentsSignature(nextAcademicDocuments) !==
@@ -432,7 +441,7 @@ export function useFieldsSectionController({
     setIsSaving(true);
     try {
       await Promise.all(
-        [...privateTabs].map((tabName: PrivateOwnerTabName) =>
+        [...privateTabs].map((tabName: ProfileTabName) =>
           submitPrivateMutation.mutateAsync({
             accessToken,
             actorId: targetActorId,

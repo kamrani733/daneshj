@@ -519,10 +519,24 @@ function mapOneAcademicRecord(
   source: 'verified' | 'submitted'
 ): VisibilityAcademicRecord {
   const row = asRecord(item) ?? {};
+  const translationKey =
+    source === 'verified'
+      ? 'academic_record_verified_user_translation'
+      : 'academic_record_submitted_user_translation';
+  const translation = pickPreferredTranslationRow(
+    null,
+    row,
+    translationKey
+  );
+  const translationApiId =
+    typeof translation?.id === 'number' ? translation.id : null;
+  const targetLanguage = readString(translation, 'target_language') || 'fa';
   const degreeLevel = readString(row, 'degree_level');
   const academicGroup = readString(row, 'academic_group');
   const studyStatus = readString(row, 'study_status');
-  const fieldOfStudy = readString(row, 'field_of_study');
+  const fieldOfStudy =
+    readString(translation, 'field_of_study') ||
+    readString(row, 'field_of_study');
   const degree =
     [DEGREE_LABELS[degreeLevel] ?? degreeLevel, fieldOfStudy]
       .filter(Boolean)
@@ -532,16 +546,21 @@ function mapOneAcademicRecord(
   return {
     id: String(apiId ?? `${source}-${index}`),
     apiId,
+    translationApiId,
+    targetLanguage,
     source,
     academicGroup,
     fieldOfStudy,
-    university: readString(row, 'university'),
-    faculty: readString(row, 'faculty'),
+    university:
+      readString(translation, 'university') || readString(row, 'university'),
+    faculty: readString(translation, 'faculty') || readString(row, 'faculty'),
     degreeLevel,
     studyStatus,
     degree,
     fieldGroup: ACADEMIC_GROUP_LABELS[academicGroup] ?? academicGroup,
-    description: readString(row, 'degree_level_description'),
+    description:
+      readString(translation, 'degree_level_description') ||
+      readString(row, 'degree_level_description'),
     endDate: readString(row, 'graduation_date'),
     roleLabel: STUDY_STATUS_LABELS[studyStatus] ?? studyStatus,
     statusLabel,
@@ -572,6 +591,8 @@ export function toAcademicRecordUserDto(
   record: Pick<
     VisibilityAcademicRecord,
     | 'apiId'
+    | 'translationApiId'
+    | 'targetLanguage'
     | 'academicGroup'
     | 'fieldOfStudy'
     | 'faculty'
@@ -585,6 +606,14 @@ export function toAcademicRecordUserDto(
   const academicGroup = Number(record.academicGroup);
   const degreeLevel = Number(record.degreeLevel);
   const studyStatus = Number(record.studyStatus);
+  const translation = {
+    ...(record.translationApiId != null ? { id: record.translationApiId } : {}),
+    target_language: record.targetLanguage || 'fa',
+    field_of_study: record.fieldOfStudy.trim() || null,
+    faculty: record.faculty.trim() || null,
+    university: record.university.trim() || null,
+    degree_level_description: record.description.trim() || null,
+  };
 
   return {
     id: record.apiId ?? 0,
@@ -592,18 +621,15 @@ export function toAcademicRecordUserDto(
       academicGroup >= 1 && academicGroup <= 7
         ? (academicGroup as AcademicRecordUserDto['academic_group'])
         : null,
-    field_of_study: record.fieldOfStudy.trim() || null,
-    faculty: record.faculty.trim() || null,
-    university: record.university.trim() || null,
     degree_level:
       degreeLevel >= 1 && degreeLevel <= 6
         ? (degreeLevel as AcademicRecordUserDto['degree_level'])
         : null,
-    degree_level_description: record.description.trim() || null,
     study_status:
       studyStatus === 1 || studyStatus === 2
         ? (studyStatus as AcademicRecordUserDto['study_status'])
         : null,
     graduation_date: record.endDate.trim() || null,
+    academic_record_submitted_user_translation: [translation],
   };
 }

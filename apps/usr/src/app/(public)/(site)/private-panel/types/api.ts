@@ -145,18 +145,36 @@ export interface EducationOccupationInfoUserDto {
 export interface AcademicRecordUserDto {
   id?: number;
   academic_group?: AcademicGroup | null;
+  degree_level?: DegreeLevel | null;
+  study_status?: StudyStatus | null;
+  graduation_date?: string | null;
   field_of_study?: string | null;
   faculty?: string | null;
   university?: string | null;
-  degree_level?: DegreeLevel | null;
   degree_level_description?: string | null;
-  study_status?: StudyStatus | null;
-  graduation_date?: string | null;
+  academic_record_submitted_user_translation?: AcademicRecordUserTranslationDto[];
+  academic_record_verified_user_translation?: AcademicRecordUserTranslationDto[];
+}
+
+export interface AcademicRecordUserTranslationDto {
+  id?: number;
+  target_language?: string;
+  field_of_study?: string | null;
+  faculty?: string | null;
+  university?: string | null;
+  degree_level_description?: string | null;
 }
 
 export interface AcademicDocumentUserDto {
   id?: number;
   file_path?: string;
+  description?: string | null;
+  academic_document_user_translation?: AcademicDocumentUserTranslationDto[];
+}
+
+export interface AcademicDocumentUserTranslationDto {
+  id?: number;
+  target_language?: string;
   description?: string | null;
 }
 
@@ -167,6 +185,7 @@ export interface OurUserDto {
 
 /** YAML: PatchedUserAppConfigownerRequest */
 export interface PrivateTabSubmitByOwnerBodyDto {
+  our_user?: OurUserDto;
   identity_info_user?: IdentityInfoUserDto;
   social_info_user?: SocialInfoUserDto;
   contact_info_user?: ContactInfoUserDto;
@@ -308,7 +327,7 @@ export interface RetrievePublicPanelForVisitorPayload extends AccessTokenPayload
 }
 
 export interface SubmitPrivateTabByOwnerPayload extends AccessTokenPayload {
-  tabName: PrivateOwnerTabName;
+  tabName: ProfileTabName;
   body: PrivateTabSubmitByOwnerBodyDto;
 }
 

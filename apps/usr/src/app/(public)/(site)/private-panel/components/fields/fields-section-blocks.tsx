@@ -255,6 +255,8 @@ export function AcademicRecordsBlock({
       const draft: VisibilityAcademicRecord = {
         id: editingRecord?.id ?? 'new',
         apiId: editingRecord?.apiId ?? null,
+        translationApiId: editingRecord?.translationApiId ?? null,
+        targetLanguage: editingRecord?.targetLanguage ?? 'fa',
         source: 'submitted',
         academicGroup: values.academicGroup,
         fieldOfStudy: values.fieldOfStudy,
