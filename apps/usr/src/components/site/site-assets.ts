@@ -1,12 +1,12 @@
 /** Brand / chrome image paths shared across site shell, home, and panels. */
 
 export const SITE_IMAGES = {
-  heroBg: '/images/home/hero-bg.png',
-  heroBg1: '/images/home/hero-bg-1.png',
-  heroBg2: '/images/home/hero-bg-2.png',
-  heroBg3: '/images/home/hero-bg-3.png',
+  heroBg: '/images/placeholders/card-1.png',
+  heroBg1: '/images/placeholders/card-1.png',
+  heroBg2: '/images/placeholders/card-2.png',
+  heroBg3: '/images/placeholders/card-3.png',
   motivationBg: '/images/home/motivation-bg.png',
-  discountCard: '/images/home/discount-card.png',
+  discountCard: '/images/placeholders/card-4.png',
   logo: '/logo.svg',
   bgPattern: '/images/home/bg-pattern.svg',
   introPattern: '/images/home/intro-pattern.svg',

@@ -43,7 +43,7 @@ export type HeroSlideConfig = {
 export const HERO_SLIDES: HeroSlideConfig[] = [
   {
     id: '1',
-    imageSrc: '/images/home/hero-bg-1.png',
+    imageSrc: '/images/placeholders/card-1.png',
     image: { x: -79, y: -416, w: 1312, h: 1312 },
     text: { x: 876, y: 130, w: 372, gap: 48, align: 'end' },
     type: {
@@ -59,7 +59,7 @@ export const HERO_SLIDES: HeroSlideConfig[] = [
   },
   {
     id: '2',
-    imageSrc: '/images/home/hero-bg-2.png',
+    imageSrc: '/images/placeholders/card-2.png',
     image: { x: 1, y: -416, w: 1312, h: 1312 },
     text: { x: 81, y: 130, w: 400, gap: 48, align: 'start' },
     type: {
@@ -75,7 +75,7 @@ export const HERO_SLIDES: HeroSlideConfig[] = [
   },
   {
     id: '3',
-    imageSrc: '/images/home/hero-bg-3.png',
+    imageSrc: '/images/placeholders/card-3.png',
     image: { x: -148, y: -1128, w: 1608, h: 1608 },
     text: { x: 398, y: 261, w: 516, gap: 40, align: 'center' },
     type: {
