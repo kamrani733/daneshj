@@ -17,7 +17,7 @@ export function NewsOfferCard({ item, className }: NewsOfferCardProps) {
   return (
     <CatalogOfferCardShell
       className={cn(
-        'hover:bg-muted hover:shadow-[0_10px_24px_rgba(0,0,0,0.12)] dark:hover:bg-home-card',
+        'hover:bg-muted hover:shadow-[0_10px_24px_rgba(0,0,0,0.12)] dark:hover:bg-app-card',
         className
       )}
     >
@@ -40,11 +40,11 @@ export function NewsOfferCard({ item, className }: NewsOfferCardProps) {
       </div>
 
       <div className="flex flex-1 flex-col gap-2.5 p-3 transition-colors duration-200">
-        <h3 className="text-sm font-bold leading-5 text-home-filter-ink">
+        <h3 className="text-sm font-bold leading-5 text-app-filter-ink">
           {item.title}
         </h3>
 
-        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-home-filter-muted">
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-app-filter-muted">
           <span>{item.publisherType}</span>
           <span>{item.publishedAt}</span>
         </div>
@@ -58,11 +58,11 @@ export function NewsOfferCard({ item, className }: NewsOfferCardProps) {
           </Badge>
         </div>
 
-        <p className="line-clamp-3 text-xs leading-5 text-home-filter-muted">
+        <p className="line-clamp-3 text-xs leading-5 text-app-filter-muted">
           {item.summary}
         </p>
 
-        <p className="mt-auto pt-1 text-xs text-home-filter-muted">
+        <p className="mt-auto pt-1 text-xs text-app-filter-muted">
           {item.eventRange}
         </p>
       </div>

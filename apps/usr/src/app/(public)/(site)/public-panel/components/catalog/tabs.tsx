@@ -63,7 +63,7 @@ export function PublicPanelTabs({ catalog, otherInfo }: PublicPanelTabsProps) {
         {!hasServices ? (
           <EmptyState
             message={t('emptyServices')}
-            className="rounded-2xl bg-home-stat-card shadow-[0_1px_2px_rgba(0,0,0,0.06)] dark:bg-home-search-category"
+            className="rounded-2xl bg-app-stat-card shadow-[0_1px_2px_rgba(0,0,0,0.06)] dark:bg-app-search-category"
           />
         ) : (
           <>

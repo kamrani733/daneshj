@@ -31,16 +31,16 @@ export const UnderlineField = forwardRef<HTMLInputElement, UnderlineFieldProps>(
           ref={ref}
           placeholder={label}
           className={cn(
-            'h-14 rounded-t rounded-b-none border-0 border-b border-home-filter bg-home-card px-4 shadow-none',
-            'text-end text-base leading-6 text-home-filter-ink',
-            'placeholder:text-home-filter-muted',
-            'focus-visible:border-home-filter focus-visible:ring-2 focus-visible:ring-primary/30',
+            'h-14 rounded-t rounded-b-none border-0 border-b border-app-filter bg-app-card px-4 shadow-none',
+            'text-end text-base leading-6 text-app-filter-ink',
+            'placeholder:text-app-filter-muted',
+            'focus-visible:border-app-filter focus-visible:ring-2 focus-visible:ring-primary/30',
             inputClassName
           )}
           {...props}
         />
         {supporting ? (
-          <span className="px-4 pt-1 text-xs leading-4 tracking-[0.0083em] text-home-filter-muted">
+          <span className="px-4 pt-1 text-xs leading-4 tracking-[0.0083em] text-app-filter-muted">
             {supporting}
           </span>
         ) : null}

@@ -114,12 +114,12 @@ export function CreateDeletePanel({
     <div className="flex w-full flex-col gap-4 min-[720px]:gap-6">
       <section
         className={cn(
-          'flex flex-col gap-7 rounded-2xl border border-border bg-home-card p-4',
-          'dark:bg-home-search-category',
+          'flex flex-col gap-7 rounded-2xl border border-border bg-app-card p-4',
+          'dark:border-auth-input-border dark:bg-app-card',
           'min-[720px]:gap-8 min-[720px]:p-6 min-[834px]:px-10 min-[834px]:py-9'
         )}
       >
-        <ul className="flex list-disc flex-col gap-3 pe-5 text-justify text-sm font-medium leading-7 text-home-filter-muted marker:text-home-filter-muted dark:text-home-filter-ink min-[720px]:gap-4">
+        <ul className="flex list-disc flex-col gap-3 pe-5 text-justify text-sm font-medium leading-7 text-app-filter-muted marker:text-app-filter-muted dark:text-app-filter-ink min-[720px]:gap-4">
           {paragraphs.map((paragraph) => (
             <li key={paragraph}>{paragraph}</li>
           ))}
@@ -139,8 +139,8 @@ export function CreateDeletePanel({
             'min-[720px]:h-12 min-[720px]:w-auto min-[720px]:self-end min-[720px]:px-8',
             'disabled:pointer-events-none disabled:opacity-50',
             hasPanel && !isAdminAccess
-              ? 'bg-warning hover:bg-warning/90'
-              : 'bg-primary hover:bg-primary/90'
+              ? 'bg-warning hover:bg-warning/90 dark:bg-warning dark:text-white dark:hover:bg-warning/90'
+              : 'bg-primary hover:bg-primary/90 dark:bg-primary-100 dark:text-primary-900 dark:hover:bg-primary-100/90'
           )}
         >
           {buttonLabel}

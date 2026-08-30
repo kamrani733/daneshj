@@ -65,7 +65,7 @@ export const SearchField = React.forwardRef<HTMLInputElement, SearchFieldProps>(
         <span className="sr-only">{label}</span>
         <Search
           className={cn(
-            'pointer-events-none absolute top-1/2 -translate-y-1/2 text-home-filter-muted',
+            'pointer-events-none absolute top-1/2 -translate-y-1/2 text-app-filter-muted',
             styles.icon
           )}
           strokeWidth={1.5}
@@ -76,12 +76,12 @@ export const SearchField = React.forwardRef<HTMLInputElement, SearchFieldProps>(
           type="search"
           dir={dir}
           className={cn(
-            'h-full w-full rounded-full border border-home-filter-border bg-home-search-fill',
-            'text-start font-medium text-home-filter-ink shadow-none outline-none',
-            'placeholder:text-home-filter-muted',
-            'focus-visible:border-home-filter-border focus-visible:ring-0',
-            'dark:border-home-filter-border dark:bg-home-search-fill dark:text-home-filter-ink',
-            'dark:placeholder:text-home-filter-muted dark:focus-visible:border-home-filter-border',
+            'h-full w-full rounded-full border border-app-filter-border bg-app-search-fill',
+            'text-start font-medium text-app-filter-ink shadow-none outline-none',
+            'placeholder:text-app-filter-muted',
+            'focus-visible:border-app-filter-border focus-visible:ring-0',
+            'dark:border-app-filter-border dark:bg-app-search-fill dark:text-app-filter-ink',
+            'dark:placeholder:text-app-filter-muted dark:focus-visible:border-app-filter-border',
             '[&::-webkit-search-cancel-button]:appearance-none',
             styles.input,
             styles.pad,

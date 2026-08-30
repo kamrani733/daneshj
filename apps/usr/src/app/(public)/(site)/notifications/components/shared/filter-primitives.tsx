@@ -42,11 +42,11 @@ export function FilterField({
         aria-expanded={open}
         aria-controls={controlsId}
         onClick={onToggle}
-        className="justify-between gap-3 text-home-filter-ink hover:bg-black/[0.04] dark:hover:bg-white/5"
+        className="justify-between gap-3 text-app-filter-ink hover:bg-black/[0.04] dark:hover:bg-white/5"
       >
         <ChevronDown
           className={cn(
-            'size-6 shrink-0 text-home-filter-muted transition-transform',
+            'size-6 shrink-0 text-app-filter-muted transition-transform',
             open && 'rotate-180'
           )}
           aria-hidden
@@ -120,7 +120,7 @@ function FilterDateField({
 }) {
   return (
     <div className="relative flex w-full min-w-0 flex-1 flex-col gap-1">
-      <span className="absolute -top-2 end-3 z-10 rounded-sm bg-white px-1.5 text-xs leading-4 text-home-filter-ink dark:bg-home-card dark:text-home-filter-ink">
+      <span className="absolute -top-2 end-3 z-10 rounded-sm bg-white px-1.5 text-xs leading-4 text-app-filter-ink dark:bg-app-card dark:text-app-filter-ink">
         {label}
       </span>
       <JalaliDatePicker
@@ -129,13 +129,13 @@ function FilterDateField({
         placeholder={placeholder}
         startAdornment={
           <Calendar
-            className="size-5 shrink-0 text-home-filter-ink"
+            className="size-5 shrink-0 text-app-filter-ink"
             strokeWidth={1.5}
             aria-hidden
           />
         }
       />
-      <span className="px-1 text-xs leading-4 tracking-[0.0083em] text-home-filter-muted">
+      <span className="px-1 text-xs leading-4 tracking-[0.0083em] text-app-filter-muted">
         {hint}
       </span>
     </div>
@@ -158,7 +158,7 @@ export function FilterCheckbox({
   return (
     <label
       className={cn(
-        'flex cursor-pointer items-center gap-2 text-sm font-medium leading-5 text-home-filter-ink',
+        'flex cursor-pointer items-center gap-2 text-sm font-medium leading-5 text-app-filter-ink',
         className
       )}
     >
@@ -167,9 +167,9 @@ export function FilterCheckbox({
         checked={checked}
         onChange={onChange}
         className={cn(
-          'size-4 shrink-0 rounded-[2px] border-home-filter-border bg-transparent',
+          'size-4 shrink-0 rounded-[2px] border-app-filter-border bg-transparent',
           'accent-primary checked:border-primary',
-          'dark:border-home-filter-muted dark:accent-primary'
+          'dark:border-app-filter-muted dark:accent-primary'
         )}
       />
       <span className="min-w-0 flex-1 truncate text-start">{label}</span>
@@ -227,7 +227,7 @@ export function CategoryTree({
                   aria-expanded={isOpen}
                   aria-label={t(option.labelKey)}
                   onClick={() => toggleExpand(option.id)}
-                  className="flex size-6 shrink-0 items-center justify-center text-home-filter-muted"
+                  className="flex size-6 shrink-0 items-center justify-center text-app-filter-muted"
                 >
                   <ChevronDown
                     className={cn(

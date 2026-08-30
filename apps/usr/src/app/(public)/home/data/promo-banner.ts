@@ -71,19 +71,19 @@ export const PROMO_TONE_CLASS: Record<
   { surface: string; text: string; action: string }
 > = {
   primary: {
-    surface: 'bg-home-promo-primary',
-    text: 'text-home-promo-primary',
-    action: 'bg-home-promo-primary-action',
+    surface: 'bg-app-promo-primary',
+    text: 'text-app-promo-primary',
+    action: 'bg-app-promo-primary-action',
   },
   invite: {
-    surface: 'bg-home-promo-invite',
-    text: 'text-home-promo-invite',
-    action: 'bg-home-promo-invite-action',
+    surface: 'bg-app-promo-invite',
+    text: 'text-app-promo-invite',
+    action: 'bg-app-promo-invite-action',
   },
   reward: {
-    surface: 'bg-home-promo-reward',
-    text: 'text-home-promo-reward',
-    action: 'bg-home-promo-reward-action',
+    surface: 'bg-app-promo-reward',
+    text: 'text-app-promo-reward',
+    action: 'bg-app-promo-reward-action',
   },
 };
 

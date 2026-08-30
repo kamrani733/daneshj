@@ -53,11 +53,11 @@ export function PublicOpsSection({
               value={id}
               className={cn(
                 'h-auto shrink-0 rounded-none border-0 border-b-2 border-transparent px-0 pb-2.5',
-                'justify-center text-[11px] font-medium text-home-filter-muted shadow-none',
+                'justify-center text-[11px] font-medium text-app-filter-muted shadow-none',
                 'hover:text-primary focus-visible:ring-primary/30',
                 'data-[state=active]:border-b-primary data-[state=active]:bg-transparent',
                 'data-[state=active]:text-primary data-[state=active]:shadow-none',
-                'dark:text-home-filter-ink dark:data-[state=active]:border-b-primary-100',
+                'dark:text-app-filter-ink dark:data-[state=active]:border-b-primary-100',
                 'dark:data-[state=active]:text-primary-100',
                 'min-[720px]:pb-3 min-[720px]:text-sm'
               )}

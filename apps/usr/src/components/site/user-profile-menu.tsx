@@ -129,7 +129,7 @@ export function UserProfileMenu({
             dir="rtl"
             style={{ top: coords.top, left: coords.left, zIndex: 9999 }}
             className={cn(
-              'fixed w-[264px] rounded bg-home-search-category py-2 text-right shadow-home-elevation-2'
+              'fixed w-[264px] rounded bg-app-search-category py-2 text-right shadow-app-elevation-2'
             )}
           >
             <div className="border-b-2 border-[#BFC9C1] px-3 py-4 text-base leading-6 tracking-[0.0094em] text-content dark:border-border">

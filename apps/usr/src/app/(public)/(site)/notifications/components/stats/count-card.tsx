@@ -21,7 +21,7 @@ export function StatCountCard({ stat, className }: StatCountCardProps) {
   return (
     <article
       className={cn(
-        'flex h-full flex-col gap-3 rounded-xl bg-home-stat-card p-4 shadow-sm ring-1 ring-border/30 dark:ring-primary-800/60 min-[720px]:gap-4 min-[720px]:p-5',
+        'flex h-full flex-col gap-3 rounded-xl bg-app-stat-card p-4 shadow-sm ring-1 ring-border/30 dark:ring-primary-800/60 min-[720px]:gap-4 min-[720px]:p-5',
         className
       )}
     >

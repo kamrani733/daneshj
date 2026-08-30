@@ -24,15 +24,15 @@ export function FieldsLimitationsSection({
         className={cn(
           'relative rounded-3xl border border-[#dbd8d1] bg-[#f8f8f0] px-4 pb-6 pt-8',
           'min-[720px]:px-8 min-[720px]:pb-8',
-          'dark:border-auth-input-border dark:bg-home-stat-card',
+          'dark:border-warning-50 dark:bg-app-card',
         )}
       >
-        <h3 className="absolute -top-3 start-4 bg-[#f8f8f0] px-1 text-base font-semibold text-[#ba1a1a] dark:bg-home-stat-card">
+        <h3 className="absolute -top-3 start-4 bg-[#f8f8f0] px-1 text-base font-semibold text-[#ba1a1a] dark:bg-app-card dark:text-warning-100">
           {t('limitations.blockedTitle')}
         </h3>
 
         <div className="flex flex-col gap-6">
-          <p className="text-justify text-sm font-medium leading-6 text-[#404943] dark:text-home-filter-muted">
+          <p className="text-justify text-sm font-medium leading-6 text-[#404943] dark:text-app-filter-muted">
             {t('limitations.blockedBody')}
           </p>
           <div className="flex justify-start">
@@ -43,6 +43,7 @@ export function FieldsLimitationsSection({
               className={cn(
                 'h-12 w-full max-w-[176px] !rounded-xl border border-[#e06333]',
                 'bg-transparent px-4 text-sm font-medium text-[#e06333] shadow-none',
+                'dark:border-warning-100 dark:text-warning-100',
                 'disabled:opacity-50',
               )}
             >

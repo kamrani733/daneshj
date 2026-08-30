@@ -110,7 +110,7 @@ export function HomeSearchResults({
       {items.length === 0 ? (
         <div
           dir="rtl"
-          className="relative z-0 flex min-h-[200px] w-full flex-col items-center justify-center gap-2 rounded-xl border border-home-filter bg-home-card px-6 py-12 text-center"
+          className="relative z-0 flex min-h-[200px] w-full flex-col items-center justify-center gap-2 rounded-xl border border-app-filter bg-app-card px-6 py-12 text-center"
         >
           <p className="text-base font-medium text-content">{t('emptyTitle')}</p>
           <p className="text-sm text-content-muted">{t('emptyBody')}</p>

@@ -15,8 +15,8 @@ export function PanelLoadingOverlay({
     <div
       className={cn(
         'absolute inset-0 z-20 flex min-h-[320px] flex-col items-center justify-center gap-3',
-        'bg-home-scene/70 backdrop-blur-[1px]',
-        'dark:bg-home-card/80',
+        'bg-app-scene/70 backdrop-blur-[1px]',
+        'dark:bg-app-card/80',
         className
       )}
       role="status"
@@ -28,7 +28,7 @@ export function PanelLoadingOverlay({
         strokeWidth={2}
         aria-hidden
       />
-      <p className="text-sm font-medium text-[#404943] dark:text-home-filter-muted">
+      <p className="text-sm font-medium text-[#404943] dark:text-app-filter-muted">
         {message}
       </p>
     </div>

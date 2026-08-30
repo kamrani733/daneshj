@@ -45,16 +45,16 @@ export function NotificationsStatsView({
       breadcrumbCurrentKey="stats.breadcrumbCurrent"
     >
       {!canQuery ? (
-        <div className="flex min-h-[160px] items-center justify-center rounded-xl bg-home-stat-card px-4 text-center text-sm text-home-filter-muted">
+        <div className="flex min-h-[160px] items-center justify-center rounded-xl bg-app-stat-card px-4 text-center text-sm text-app-filter-muted">
           {t('authRequired')}
         </div>
       ) : isLoading ? (
-        <div className="flex min-h-[220px] items-center justify-center rounded-xl bg-home-stat-card">
+        <div className="flex min-h-[220px] items-center justify-center rounded-xl bg-app-stat-card">
           <Spinner className="size-8 text-primary" />
         </div>
       ) : errorMessage ? (
-        <div className="flex min-h-[160px] flex-col items-center justify-center gap-3 rounded-xl bg-home-stat-card px-4 text-center">
-          <p className="text-sm text-home-filter-muted">{errorMessage}</p>
+        <div className="flex min-h-[160px] flex-col items-center justify-center gap-3 rounded-xl bg-app-stat-card px-4 text-center">
+          <p className="text-sm text-app-filter-muted">{errorMessage}</p>
           <Button
             type="button"
             variant="outline"

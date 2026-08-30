@@ -43,8 +43,8 @@ export function LocationListPicker({
   tone,
   onChange,
   className,
-  labelSurfaceClassName = 'bg-home-card dark:bg-auth-input-bg',
-  surfaceClassName = 'bg-home-card dark:bg-auth-input-bg',
+  labelSurfaceClassName = 'bg-app-card dark:bg-app-card',
+  surfaceClassName = 'bg-app-card dark:bg-app-search-category',
 }: LocationListPickerProps) {
   const [open, setOpen] = useState(false);
 
@@ -74,7 +74,7 @@ export function LocationListPicker({
         errorMessage={errorMessage}
         endAdornment={
           <ChevronDown
-            className="size-5 text-[#404943] dark:text-home-filter-muted"
+            className="size-5 text-[#404943] dark:text-app-filter-muted"
             strokeWidth={1.75}
             aria-hidden
           />
@@ -96,8 +96,8 @@ export function LocationListPicker({
               className={cn(
                 'w-full truncate text-start text-sm font-medium',
                 selectedLabel
-                  ? 'text-content dark:text-home-filter-ink'
-                  : 'text-home-filter-muted'
+                  ? 'text-content dark:text-app-filter-ink'
+                  : 'text-app-filter-muted'
               )}
             >
               {selectedLabel || placeholder || '\u00a0'}
@@ -111,7 +111,7 @@ export function LocationListPicker({
         className={cn(
           'w-[var(--radix-popover-trigger-width)] min-w-[220px] overflow-hidden p-0',
           'rounded-xl border border-[#dbd8d1] bg-[#f8f8f0] shadow-md',
-          'dark:border-auth-input-border dark:bg-home-stat-card'
+          'dark:border-auth-input-border dark:bg-app-search-category'
         )}
       >
         <LocationOptionList
@@ -165,9 +165,9 @@ export function LocationOptionList({
               className={cn(
                 'flex w-full items-center justify-start px-4 py-2.5 text-start text-sm font-medium',
                 'text-[#171d19] hover:bg-[#efede6]',
-                'dark:text-home-filter-ink dark:hover:bg-home-card',
+                'dark:text-app-filter-ink dark:hover:bg-white/5',
                 selected &&
-                  'bg-[#efede6] font-bold text-[#008d63] dark:bg-home-card dark:text-primary-100'
+                  'bg-[#efede6] font-bold text-[#008d63] dark:bg-app-card dark:text-primary-100'
               )}
             >
               {option.label}

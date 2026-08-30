@@ -54,7 +54,7 @@ export function PrivatePanelHeading({
         <p
           className={cn(
             'px-2 text-start text-sm font-semibold leading-5 tracking-[0.007em] text-[#707973]',
-            'dark:text-home-filter-ink'
+            'dark:text-app-filter-ink'
           )}
         >
           {displayName || t('titleUserFallback')}

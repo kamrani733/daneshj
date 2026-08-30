@@ -47,7 +47,7 @@ export function PrivatePanelTabs({
       <TabsList
         className={cn(
           'flex h-auto w-full items-center justify-between gap-1 rounded-[48px] p-3',
-          'bg-[#efede6] dark:bg-home-stat-card',
+          'bg-[#efede6] dark:bg-app-search-category',
           'min-[720px]:gap-2 min-[720px]:px-4 min-[720px]:py-3'
         )}
       >
@@ -61,7 +61,7 @@ export function PrivatePanelTabs({
               'hover:text-[#008d63] focus-visible:ring-primary/30',
               'data-[state=active]:bg-[#fafaf7] data-[state=active]:text-[#008d63]',
               'data-[state=active]:shadow-none',
-              'dark:text-primary-100 dark:data-[state=active]:bg-home-card',
+              'dark:text-primary-100 dark:data-[state=active]:bg-neutral-white dark:data-[state=active]:text-primary',
               'min-[720px]:h-12 min-[720px]:flex-row min-[720px]:gap-2',
               'min-[720px]:px-4 min-[720px]:text-lg min-[720px]:leading-6'
             )}

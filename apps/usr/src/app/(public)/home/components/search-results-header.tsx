@@ -36,7 +36,7 @@ export function SearchResultsHeader({
       <div className="flex h-8 w-full items-stretch justify-center py-1">
         <p
           dir="rtl"
-          className="w-full self-stretch text-right text-base font-medium leading-6 tracking-[0.0094em] text-home-filter-muted"
+          className="w-full self-stretch text-right text-base font-medium leading-6 tracking-[0.0094em] text-app-filter-muted"
         >
           {t('count', { count: formatFaNumber(count) })}
         </p>

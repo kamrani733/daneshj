@@ -145,7 +145,7 @@ function PromoDesktopSlide({
     >
       <div
         className={cn(
-          'absolute inset-x-0 top-0  rounded-3xl shadow-home-elevation-3',
+          'absolute inset-x-0 top-0  rounded-3xl shadow-app-elevation-3',
           tone.surface
         )}
         style={{ height: `${(PROMO_SURFACE.height / PROMO_FRAME.height) * 100}%` }}
@@ -156,7 +156,7 @@ function PromoDesktopSlide({
           width={516}
           height={258}
           aria-hidden
-          className="home-promo-pattern pointer-events-none absolute object-contain"
+          className="app-promo-pattern pointer-events-none absolute object-contain"
           style={surfaceStyle({ x: 796, y: 42, w: 516, h: 258 })}
         />
 
@@ -166,7 +166,7 @@ function PromoDesktopSlide({
           width={slide.decor.w}
           height={slide.decor.h}
           aria-hidden
-          className="home-promo-decor pointer-events-none absolute max-w-none object-contain"
+          className="app-promo-decor pointer-events-none absolute max-w-none object-contain"
           style={surfaceStyle(slide.decor)}
         />
 
@@ -213,7 +213,7 @@ function PromoMobileCard({
   return (
     <article
       className={cn(
-        'relative h-[405px] w-[361px] max-w-[calc(100%-2rem)] shrink-0 overflow-hidden rounded-3xl shadow-home-elevation-3',
+        'relative h-[405px] w-[361px] max-w-[calc(100%-2rem)] shrink-0 overflow-hidden rounded-3xl shadow-app-elevation-3',
         tone.surface
       )}
     >
@@ -223,7 +223,7 @@ function PromoMobileCard({
         width={decor.w}
         height={decor.h}
         aria-hidden
-        className="home-promo-decor pointer-events-none absolute object-contain opacity-60 dark:opacity-50"
+        className="app-promo-decor pointer-events-none absolute object-contain opacity-60 dark:opacity-50"
         style={{ left: decor.x, top: decor.y, width: decor.w, height: decor.h }}
       />
       <div className="relative z-10 flex h-full flex-col gap-4 p-6">

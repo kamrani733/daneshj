@@ -20,12 +20,12 @@ const buttonVariants = cva(
         ghost: "hover:bg-accent hover:text-accent-foreground",
         /** Home filter/sort toolbar — muted ink + soft hover */
         toolbar:
-          "text-home-filter-ink hover:bg-black/5 dark:hover:bg-white/10",
+          "text-app-filter-ink hover:bg-black/5 dark:hover:bg-white/10",
         soft: "bg-transparent text-primary hover:bg-primary/5",
         link: "text-primary underline-offset-4 hover:underline",
         /** Full-width menu row (sort options) */
         menuitem:
-          "h-12 w-full justify-start gap-3 rounded-none px-3 text-base font-normal leading-6 tracking-[0.0094em] text-home-filter-ink hover:bg-black/5 dark:hover:bg-white/10",
+          "h-12 w-full justify-start gap-3 rounded-none px-3 text-base font-normal leading-6 tracking-[0.0094em] text-app-filter-ink hover:bg-black/5 dark:hover:bg-white/10",
       },
       size: {
         default: "h-10 px-4 py-2",

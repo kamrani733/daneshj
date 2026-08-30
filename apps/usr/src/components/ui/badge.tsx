@@ -27,13 +27,13 @@ const badgeVariants = cva(
          * h32 · r8 · elev1 · #D3F4E1 / #005138
          */
         meta:
-          "h-8 rounded-[8px] border-0 bg-primary-subtle px-4 text-sm font-medium leading-5 tracking-[0.0071em] text-[#005138] shadow-home-elevation-1",
+          "h-8 rounded-[8px] border-0 bg-primary-subtle px-4 text-sm font-medium leading-5 tracking-[0.0071em] text-[#005138] shadow-app-elevation-1",
         /**
          * ProductDiscountCard Sell number — Figma «۱۳۸ خرید»
          * secondary-container / on-secondary-container
          */
         sell:
-          "h-8 rounded-[8px] border-0 bg-warning-50 px-3 text-sm font-medium leading-5 tracking-[0.0071em] text-warning-700 shadow-home-elevation-1",
+          "h-8 rounded-[8px] border-0 bg-warning-50 px-3 text-sm font-medium leading-5 tracking-[0.0071em] text-warning-700 shadow-app-elevation-1",
       },
     },
     defaultVariants: {

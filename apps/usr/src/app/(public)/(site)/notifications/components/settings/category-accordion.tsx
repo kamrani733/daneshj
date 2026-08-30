@@ -53,7 +53,7 @@ export function SettingsCategoryAccordion({
   const Chevron = open ? ChevronUp : ChevronDown;
 
   return (
-    <div className="rounded-2xl bg-home-search-fill px-4 py-4">
+    <div className="rounded-2xl bg-app-search-fill px-4 py-4">
       <h3>
         <button
           type="button"
@@ -64,11 +64,11 @@ export function SettingsCategoryAccordion({
           className="flex w-full items-center justify-between gap-3"
         >
           {/* RTL: first child = right (label), second = left (chevron) */}
-          <span className="text-base font-bold leading-6 tracking-[0.0094em] text-home-filter-ink">
+          <span className="text-base font-bold leading-6 tracking-[0.0094em] text-app-filter-ink">
             {t(`categories.${category.titleKey}`)}
           </span>
           <Chevron
-            className="size-6 shrink-0 text-home-filter-muted"
+            className="size-6 shrink-0 text-app-filter-muted"
             strokeWidth={1.5}
             aria-hidden
           />
@@ -128,7 +128,7 @@ function SettingsEventBlock({
 
   return (
     <div className="flex flex-col items-stretch gap-[22px]">
-      <h4 className="text-start text-base font-bold leading-6 tracking-[0.0094em] text-home-filter-ink">
+      <h4 className="text-start text-base font-bold leading-6 tracking-[0.0094em] text-app-filter-ink">
         {t(`events.${event.titleKey}`)}
       </h4>
       <div className="grid grid-cols-1 gap-6 min-[560px]:grid-cols-2 min-[960px]:grid-cols-4">

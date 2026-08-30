@@ -7,7 +7,7 @@ export function SiteBgPattern() {
   return (
     <div
       aria-hidden
-      className="home-bg-pattern pointer-events-none absolute inset-x-0 top-12 z-0 hidden h-[756px] opacity-40 min-[834px]:block lg:top-[88px]"
+      className="app-bg-pattern pointer-events-none absolute inset-x-0 top-12 z-0 hidden h-[756px] opacity-40 min-[834px]:block lg:top-[88px]"
     >
       <Image
         src={SITE_IMAGES.bgPattern}

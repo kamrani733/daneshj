@@ -58,7 +58,7 @@ export function NotificationsTable({
               key={col.key}
               style={{ width: col.width }}
               className={cn(
-                'h-auto bg-home-carousel-inactive px-1.5 py-2.5 text-center text-sm font-medium leading-5 tracking-[0.0071em] text-neutral-600 dark:text-muted-foreground',
+                'h-auto bg-app-carousel-inactive px-1.5 py-2.5 text-center text-sm font-medium leading-5 tracking-[0.0071em] text-neutral-600 dark:text-muted-foreground',
                 'border-y border-green-400 dark:border-border',
                 index === 0 && 'rounded-l-xl border-l',
                 index === COLUMNS.length - 1 && 'rounded-r-xl border-r'
@@ -150,8 +150,8 @@ function NotificationRow({
       className={cn(
         'border-0 text-sm font-medium leading-5 tracking-[0.0071em] text-green-700 hover:bg-transparent dark:text-muted-foreground',
         unread
-          ? 'bg-home-search-fill font-bold dark:bg-home-search-fill dark:text-content'
-          : 'bg-white dark:bg-home-search-category',
+          ? 'bg-app-search-fill font-bold dark:bg-app-search-fill dark:text-content'
+          : 'bg-white dark:bg-app-search-category',
         onSelect && 'cursor-pointer'
       )}
     >

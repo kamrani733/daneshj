@@ -50,7 +50,7 @@ export type AppDialogProps = {
 };
 
 const SHELL =
-  'rounded-[28px] border-0 bg-home-search-fill shadow-home-elevation-2 ring-0 dark:bg-home-stat-card';
+  'rounded-[28px] border-0 bg-app-search-fill shadow-app-elevation-2 ring-0 dark:bg-app-stat-card';
 
 /** Figma XR dialog: 404×160, min 280 / max 560, radius 28 */
 const CONFIRM_CONTENT = cn(
@@ -66,8 +66,8 @@ const CONTENT_SHELL = cn(
 
 const SHEET_SHELL = cn(
   'top-auto right-0 bottom-0 left-0 flex w-full max-w-none translate-x-0 translate-y-0 flex-col',
-  'rounded-t-3xl rounded-b-none border-0 bg-home-header p-5',
-  'pb-[max(1.25rem,env(safe-area-inset-bottom))] ring-0 shadow-home-elevation-3',
+  'rounded-t-3xl rounded-b-none border-0 bg-app-header p-5',
+  'pb-[max(1.25rem,env(safe-area-inset-bottom))] ring-0 shadow-app-elevation-3',
   'sm:max-w-none data-open:zoom-in-100 data-closed:zoom-out-100',
   'data-open:slide-in-from-bottom-4 data-closed:slide-out-to-bottom-4'
 );
@@ -82,7 +82,7 @@ const TEXT_DESTRUCTIVE =
   'h-auto border-0 bg-transparent px-0 py-2 text-sm font-medium text-error shadow-none hover:bg-transparent hover:text-error';
 
 const TEXT_MUTED =
-  'h-auto border-0 bg-transparent px-0 py-2 text-sm font-medium text-home-filter-ink shadow-none hover:bg-transparent hover:text-home-filter-ink dark:text-home-filter-ink';
+  'h-auto border-0 bg-transparent px-0 py-2 text-sm font-medium text-app-filter-ink shadow-none hover:bg-transparent hover:text-app-filter-ink dark:text-app-filter-ink';
 
 const PRIMARY_PILL =
   'h-11 min-w-[5.5rem] !rounded-full bg-primary px-8 text-sm font-medium text-white hover:bg-primary/90 dark:bg-primary-100 dark:text-primary-900 dark:hover:bg-primary-100/90';
@@ -131,7 +131,7 @@ export function AppDialog({
             ) : null}
             <AlertDialogTitle
               dir="rtl"
-              className="w-full text-right text-sm font-medium leading-7 text-home-filter-ink dark:text-primary-50"
+              className="w-full text-right text-sm font-medium leading-7 text-app-filter-ink dark:text-primary-50"
             >
               {title}
             </AlertDialogTitle>

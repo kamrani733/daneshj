@@ -77,16 +77,16 @@ export function CommentTransferFlow({
             </AvatarFallback>
           </Avatar>
           <div className="flex min-w-0 flex-1 flex-wrap items-center gap-x-2 gap-y-0.5 text-start">
-            <span className="text-sm font-bold text-home-filter-ink">
+            <span className="text-sm font-bold text-app-filter-ink">
               {t('ownerName')}
             </span>
-            <span className="text-xs text-neutral-600 dark:text-home-filter-muted">
+            <span className="text-xs text-neutral-600 dark:text-app-filter-muted">
               @{t('ownerHandle')}
             </span>
-            <span className="text-xs text-neutral-600 dark:text-home-filter-muted">
+            <span className="text-xs text-neutral-600 dark:text-app-filter-muted">
               ۱۴۰۳/۱۲/۰۵
             </span>
-            <span className="text-xs text-neutral-600 dark:text-home-filter-muted">
+            <span className="text-xs text-neutral-600 dark:text-app-filter-muted">
               ۱۴:۳۲
             </span>
           </div>
@@ -101,16 +101,16 @@ export function CommentTransferFlow({
               placeholder={t('notePlaceholder')}
               rows={3}
               className={cn(
-                'w-full resize-none rounded-xl border bg-home-stat-card px-3 py-3 text-start text-sm leading-6 text-home-filter-ink',
+                'w-full resize-none rounded-xl border bg-app-stat-card px-3 py-3 text-start text-sm leading-6 text-app-filter-ink',
                 'placeholder:text-neutral-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30',
-                'dark:bg-home-search-category dark:text-home-filter-ink dark:placeholder:text-home-filter-muted',
+                'dark:bg-app-search-category dark:text-app-filter-ink dark:placeholder:text-app-filter-muted',
                 note.trim()
                   ? 'border-primary pb-8 dark:border-primary-100'
                   : 'border-border'
               )}
             />
             {note.trim() ? (
-              <span className="pointer-events-none absolute bottom-3 end-3 text-[11px] text-neutral-600 dark:text-home-filter-muted">
+              <span className="pointer-events-none absolute bottom-3 end-3 text-[11px] text-neutral-600 dark:text-app-filter-muted">
                 {tChar('charCount', {
                   count: formatFaNumber(note.length),
                   max: formatFaNumber(NOTE_MAX_LENGTH),
@@ -123,7 +123,7 @@ export function CommentTransferFlow({
         </div>
 
         <div className="mt-5 flex items-center justify-between gap-3">
-          <span className="text-xs text-neutral-600 dark:text-home-filter-muted">
+          <span className="text-xs text-neutral-600 dark:text-app-filter-muted">
             {tChar('charCount', {
               count: formatFaNumber(note.length),
               max: formatFaNumber(NOTE_MAX_LENGTH),
@@ -238,11 +238,11 @@ function QuotedComment({ comment }: { comment: PanelComment }) {
             {name.slice(0, 2)}
           </AvatarFallback>
         </Avatar>
-        <span className="text-sm font-bold text-home-filter-ink">
+        <span className="text-sm font-bold text-app-filter-ink">
           {name} @{handle}
         </span>
       </div>
-      <p className="mt-3 text-start text-sm leading-[1.5] text-home-filter-ink">
+      <p className="mt-3 text-start text-sm leading-[1.5] text-app-filter-ink">
         {comment.body}
       </p>
     </div>

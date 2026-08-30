@@ -33,7 +33,7 @@ export function SearchFilterChip({
         'transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30',
         selected
           ? 'bg-warning-50 py-1.5 pe-4 ps-2 text-warning-700'
-          : 'border border-home-filter bg-home-card px-4 py-1.5 text-home-filter-muted'
+          : 'border border-app-filter bg-app-card px-4 py-1.5 text-app-filter-muted'
       )}
     >
       {selected ? <ChipCheckIcon className="text-warning-700" /> : null}

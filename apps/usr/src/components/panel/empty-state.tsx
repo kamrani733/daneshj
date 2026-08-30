@@ -16,7 +16,7 @@ export function EmptyState({
   return (
     <div
       className={cn(
-        'flex min-h-[220px] w-full flex-col items-center justify-center gap-4 rounded-xl bg-home-search-fill px-6 py-10 dark:bg-home-search-category',
+        'flex min-h-[220px] w-full flex-col items-center justify-center gap-4 rounded-xl bg-app-search-fill px-6 py-10 dark:bg-app-search-category',
         className
       )}
     >
@@ -27,7 +27,7 @@ export function EmptyState({
         height={160}
         className="size-40 object-contain opacity-90"
       />
-      <p className="text-center text-sm font-medium leading-5 text-home-filter-muted">
+      <p className="text-center text-sm font-medium leading-5 text-app-filter-muted">
         {message}
       </p>
     </div>

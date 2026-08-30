@@ -25,9 +25,9 @@ type VisibilityFieldCardProps = {
   onToggle: (id: string) => void;
 };
 
-const CARD_BG = 'bg-[#f8f8f0] dark:bg-home-search-category';
+const CARD_BG = 'bg-[#f8f8f0] dark:bg-app-card';
 const LOCKED_CARD_BG = 'bg-private-panel-locked-field';
-const INPUT_BG = 'dark:bg-auth-input-bg';
+const INPUT_BG = 'dark:bg-app-search-category';
 const LOCKED_INPUT_BG = 'bg-private-panel-locked-field';
 
 export function resolveVisibilityState(
@@ -49,7 +49,7 @@ export function VisibilityFieldCard({
   const t = useTranslations('privatePanel.publicOps.manageVisibility');
   const state = resolveVisibilityState(field, selected);
   const locked = state === 'locked';
-  const interactionLocked = locked || field.pending;
+  const interactionLocked = locked || Boolean(field.pending);
   const lockedMuted = locked && field.lockedCaptionKey === 'notDisplayed';
   const cardBg = cardSurfaceClass(state);
   const inputBg = inputSurfaceClass(state);
@@ -67,7 +67,7 @@ export function VisibilityFieldCard({
     return (
       <div className={cn(cardClass(state), 'overflow-hidden p-0')}>
         <div className="flex flex-col items-center gap-3 px-3 pb-3 pt-4 min-[720px]:px-4 min-[720px]:pt-5">
-          <p className="w-full text-start text-xs font-medium text-[#404943] dark:text-home-filter-muted">
+          <p className="w-full text-start text-xs font-medium text-[#404943] dark:text-app-filter-muted">
             {label}
           </p>
           <Avatar className="size-[72px] min-[720px]:size-24">
@@ -103,7 +103,7 @@ export function VisibilityFieldCard({
         <fieldset className="min-w-0 rounded-lg border border-[#707973] px-3 py-2.5 min-[720px]:py-3 dark:border-auth-input-border">
           <legend
             className={cn(
-              'px-1 text-xs font-medium text-[#404943] dark:text-home-filter-muted',
+              'px-1 text-xs font-medium text-[#404943] dark:text-app-filter-muted',
               cardBg
             )}
           >
@@ -220,9 +220,9 @@ export function VisibilityCheckbox({
           state === 'visible' && 'border-primary bg-primary text-white',
           state === 'pendingRemoval' && 'border-warning bg-transparent',
           state === 'hidden' &&
-            'border-[#707973] bg-transparent dark:border-home-filter-muted',
+            'border-[#707973] bg-transparent dark:border-app-filter-muted',
           locked &&
-            'border-[#707973] bg-transparent opacity-70 dark:border-home-filter-muted'
+            'border-[#707973] bg-transparent opacity-70 dark:border-app-filter-muted'
         )}
         aria-hidden
       >
@@ -233,7 +233,7 @@ export function VisibilityCheckbox({
       <input
         type="checkbox"
         className="sr-only"
-        checked={selected}
+        checked={Boolean(selected)}
         disabled={locked}
         onChange={onToggle}
         aria-label={`${label} — ${caption}`}
@@ -244,9 +244,9 @@ export function VisibilityCheckbox({
           'min-[720px]:text-xs',
           state === 'visible' && 'text-primary dark:text-primary-100',
           state === 'pendingRemoval' && 'text-warning',
-          state === 'hidden' && 'text-[#404943] dark:text-home-filter-muted',
+          state === 'hidden' && 'text-[#404943] dark:text-app-filter-muted',
           locked && !lockedMuted && 'text-error',
-          lockedMuted && 'text-[#404943] dark:text-home-filter-muted'
+          lockedMuted && 'text-[#404943] dark:text-app-filter-muted'
         )}
       >
         {caption}

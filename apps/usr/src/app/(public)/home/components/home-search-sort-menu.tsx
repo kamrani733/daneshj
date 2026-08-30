@@ -85,8 +85,8 @@ export function HomeSearchSortMenu({
         width: 280,
       }}
       className={cn(
-        'flex flex-col rounded bg-home-search-category py-2',
-        'shadow-home-elevation-2'
+        'flex flex-col rounded bg-app-search-category py-2',
+        'shadow-app-elevation-2'
       )}
     >
       {SEARCH_SORT_OPTIONS.map((option) => {

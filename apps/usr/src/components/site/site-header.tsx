@@ -79,7 +79,7 @@ export function SiteHeader({
   const closeNav = () => setOpenNav(null);
 
   return (
-    <header className="sticky top-0 z-50 bg-home-header shadow-home-elevation-1">
+    <header className="sticky top-0 z-50 bg-app-header shadow-app-elevation-1">
       {/* Mobile + tablet — avatar/notif | logo (center) | search + menu; desktop from lg */}
       <div
         dir="ltr"
@@ -306,7 +306,7 @@ function HeaderSearchMenuGroup({
         variant="toolbar"
         size="icon"
         aria-label={searchLabel}
-        className="size-10 shrink-0 rounded-full bg-home-search-category text-content hover:bg-home-search-category hover:opacity-90"
+        className="size-10 shrink-0 rounded-full bg-app-search-category text-content hover:bg-app-search-category hover:opacity-90"
       >
         <Search className="size-[23px]" strokeWidth={1.75} aria-hidden />
       </Button>
@@ -408,12 +408,12 @@ function MobileNavDrawer({ items, onClose, t }: MobileNavDrawerProps) {
   }, []);
 
   return (
-    <div className="fixed inset-0 z-[70] flex h-[100dvh] w-screen flex-col bg-home-header lg:hidden">
+    <div className="fixed inset-0 z-[70] flex h-[100dvh] w-screen flex-col bg-app-header lg:hidden">
       <button
         type="button"
         aria-label="بستن منو"
         onClick={onClose}
-        className="absolute left-4 top-4 z-10 inline-flex size-10 items-center justify-center rounded-full bg-home-search-category text-content transition-colors hover:bg-muted"
+        className="absolute left-4 top-4 z-10 inline-flex size-10 items-center justify-center rounded-full bg-app-search-category text-content transition-colors hover:bg-muted"
       >
         <X className="size-5" />
       </button>
@@ -457,7 +457,7 @@ function IconButton({
   'aria-controls': ariaControls,
 }: IconButtonProps) {
   const className = cn(
-    'rounded-full bg-home-search-category text-content hover:bg-home-search-category hover:opacity-90',
+    'rounded-full bg-app-search-category text-content hover:bg-app-search-category hover:opacity-90',
     size === 'sm' ? 'size-10' : 'size-14'
   );
   const iconClass = size === 'sm' ? 'size-[23px]' : 'size-8';
@@ -517,7 +517,7 @@ function NotificationButton({
             aria-expanded={open}
             aria-haspopup="dialog"
             className={cn(
-              'relative rounded-full bg-home-search-category text-content hover:bg-home-search-category hover:opacity-90',
+              'relative rounded-full bg-app-search-category text-content hover:bg-app-search-category hover:opacity-90',
               size === 'sm' ? 'size-10' : 'size-14',
               open && 'opacity-90'
             )}
@@ -614,7 +614,7 @@ export function HomeSearchCategoryBar({
             }}
             placeholder={t('placeholder')}
             className={cn(
-              'h-14 rounded-l-[28px] rounded-r-none border-border bg-home-search-category pl-12 text-end text-base leading-6 tracking-[0.0094em] shadow-none',
+              'h-14 rounded-l-[28px] rounded-r-none border-border bg-app-search-category pl-12 text-end text-base leading-6 tracking-[0.0094em] shadow-none',
               showClear ? 'pr-11' : 'pr-5',
               '[&::-webkit-search-cancel-button]:hidden [&::-webkit-search-decoration]:hidden'
             )}

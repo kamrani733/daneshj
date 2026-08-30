@@ -51,7 +51,7 @@ function AccordionTrigger({
       >
         {children}
         <ChevronDown
-          className="size-5 shrink-0 text-home-filter-muted transition-transform duration-200"
+          className="size-5 shrink-0 text-app-filter-muted transition-transform duration-200"
           strokeWidth={1.5}
           aria-hidden
         />
@@ -73,7 +73,7 @@ function AccordionContent({
     >
       <div
         className={cn(
-          'pb-4 pt-0 leading-6 text-home-filter-muted dark:text-home-filter-ink',
+          'pb-4 pt-0 leading-6 text-app-filter-muted dark:text-app-filter-ink',
           className
         )}
       >

@@ -139,10 +139,10 @@ export function SettingsTimePicker({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         showCloseButton={false}
-        className="w-[328px] max-w-[calc(100%-2rem)] gap-5 rounded-[28px] border-0 bg-[#FAFAF5] p-0 text-home-filter-ink shadow-home-elevation-3 ring-0 dark:bg-home-search-fill sm:max-w-[328px]"
+        className="w-[328px] max-w-[calc(100%-2rem)] gap-5 rounded-[28px] border-0 bg-[#FAFAF5] p-0 text-app-filter-ink shadow-app-elevation-3 ring-0 dark:bg-app-search-fill sm:max-w-[328px]"
       >
         <div className="flex flex-col gap-5 pb-5 pt-6">
-          <DialogTitle className="px-6 text-start text-xs font-medium leading-5 tracking-[0.0083em] text-home-filter-muted">
+          <DialogTitle className="px-6 text-start text-xs font-medium leading-5 tracking-[0.0083em] text-app-filter-muted">
             {title ?? (mode === 'clock' ? t('selectTitle') : t('enterTitle'))}
           </DialogTitle>
 
@@ -156,7 +156,7 @@ export function SettingsTimePicker({
                     value={faPad2(parts.hour12)}
                     onClick={() => setFocus('hour')}
                   />
-                  <span className="pt-4 text-[45px] font-normal leading-[52px] text-home-filter-ink">
+                  <span className="pt-4 text-[45px] font-normal leading-[52px] text-app-filter-ink">
                     :
                   </span>
                   <TimeChip
@@ -177,7 +177,7 @@ export function SettingsTimePicker({
                       setFocus('hour');
                     }}
                   />
-                  <span className="pt-3 text-[45px] font-normal leading-[52px] text-home-filter-ink">
+                  <span className="pt-3 text-[45px] font-normal leading-[52px] text-app-filter-ink">
                     :
                   </span>
                   <InputChip
@@ -202,7 +202,7 @@ export function SettingsTimePicker({
 
           {mode === 'clock' ? (
             <div className="flex justify-center px-6">
-              <div className="relative size-64 rounded-full bg-[#EAE7E1] dark:bg-home-search-category">
+              <div className="relative size-64 rounded-full bg-[#EAE7E1] dark:bg-app-search-category">
                 <svg
                   viewBox="0 0 256 256"
                   className="absolute inset-0 size-full"
@@ -232,7 +232,7 @@ export function SettingsTimePicker({
                           'absolute flex size-12 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full text-base leading-6',
                           selected
                             ? 'bg-primary text-white'
-                            : 'text-home-filter-ink hover:bg-black/5 dark:hover:bg-white/10'
+                            : 'text-app-filter-ink hover:bg-black/5 dark:hover:bg-white/10'
                         )}
                         style={{ left: point.x, top: point.y }}
                         aria-label={String(label)}
@@ -281,7 +281,7 @@ export function SettingsTimePicker({
               onClick={() =>
                 setMode((current) => (current === 'clock' ? 'input' : 'clock'))
               }
-              className="size-12 rounded-full text-home-filter-ink hover:bg-black/5 dark:hover:bg-white/10"
+              className="size-12 rounded-full text-app-filter-ink hover:bg-black/5 dark:hover:bg-white/10"
             >
               {mode === 'clock' ? (
                 <Keyboard className="size-6" strokeWidth={1.5} />
@@ -305,7 +305,7 @@ function PeriodToggle({
 }) {
   const t = useTranslations('notifications.settings.timePicker');
   return (
-    <div className="flex h-20 w-[52px] shrink-0 flex-col overflow-hidden rounded-lg border border-[#707973] bg-[#EAE7E1] dark:border-home-filter-border dark:bg-home-search-category">
+    <div className="flex h-20 w-[52px] shrink-0 flex-col overflow-hidden rounded-lg border border-[#707973] bg-[#EAE7E1] dark:border-app-filter-border dark:bg-app-search-category">
       <button
         type="button"
         onClick={() => onChange('am')}
@@ -313,7 +313,7 @@ function PeriodToggle({
           'flex flex-1 items-center justify-center text-base font-medium',
           period === 'am'
             ? 'bg-[#C1E9FB] text-[#244C5B] dark:bg-info-subtle dark:text-info'
-            : 'text-home-filter-muted'
+            : 'text-app-filter-muted'
         )}
       >
         {t('am')}
@@ -322,10 +322,10 @@ function PeriodToggle({
         type="button"
         onClick={() => onChange('pm')}
         className={cn(
-          'flex flex-1 items-center justify-center border-t border-[#707973] text-base font-medium dark:border-home-filter-border',
+          'flex flex-1 items-center justify-center border-t border-[#707973] text-base font-medium dark:border-app-filter-border',
           period === 'pm'
             ? 'bg-[#C1E9FB] text-[#244C5B] dark:bg-info-subtle dark:text-info'
-            : 'text-home-filter-muted'
+            : 'text-app-filter-muted'
         )}
       >
         {t('pm')}
@@ -351,7 +351,7 @@ function TimeChip({
         'flex h-20 w-24 items-center justify-center rounded-lg text-[57px] font-normal leading-[64px]',
         active
           ? 'bg-[#D3F4E1] text-[#005138] dark:bg-primary-subtle dark:text-primary-100'
-          : 'bg-[#EAE7E1] text-home-filter-ink dark:bg-home-search-category'
+          : 'bg-[#EAE7E1] text-app-filter-ink dark:bg-app-search-category'
       )}
     >
       {value}
@@ -384,11 +384,11 @@ function InputChip({
           'h-[72px] w-full rounded-lg text-center text-[45px] font-normal leading-[52px] outline-none',
           active
             ? 'border-2 border-primary bg-[#D3F4E1] text-[#005138] dark:bg-primary-subtle dark:text-primary-100'
-            : 'border-0 bg-[#EAE7E1] text-home-filter-ink dark:bg-home-search-category'
+            : 'border-0 bg-[#EAE7E1] text-app-filter-ink dark:bg-app-search-category'
         )}
         aria-label={label}
       />
-      <span className="text-center text-xs leading-4 text-home-filter-muted">
+      <span className="text-center text-xs leading-4 text-app-filter-muted">
         {label}
       </span>
     </div>

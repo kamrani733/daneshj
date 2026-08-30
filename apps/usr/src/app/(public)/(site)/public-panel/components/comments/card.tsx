@@ -205,7 +205,7 @@ export function CommentCard({
     return (
       <article
         className={cn(
-          'relative flex flex-col items-stretch gap-3 rounded-xl bg-home-stat-card p-4 shadow-[0_2px_4px_0_rgba(0,0,0,0.05)]',
+          'relative flex flex-col items-stretch gap-3 rounded-xl bg-app-stat-card p-4 shadow-[0_2px_4px_0_rgba(0,0,0,0.05)]',
           className
         )}
       >
@@ -215,7 +215,7 @@ export function CommentCard({
               <button
                 type="button"
                 aria-label={t('more')}
-                className="text-neutral-600 hover:text-home-filter-ink dark:text-home-filter-muted dark:hover:text-home-filter-ink"
+                className="text-neutral-600 hover:text-app-filter-ink dark:text-app-filter-muted dark:hover:text-app-filter-ink"
               >
                 <MoreVertical className="size-5" strokeWidth={1.5} />
               </button>
@@ -224,13 +224,13 @@ export function CommentCard({
               align="end"
               sideOffset={6}
               dir="rtl"
-              className="w-[240px] gap-0 rounded-xl border-0 bg-home-search-fill p-1 shadow-home-elevation-2 ring-0 dark:bg-home-search-category"
+              className="w-[240px] gap-0 rounded-xl border-0 bg-app-search-fill p-1 shadow-app-elevation-2 ring-0 dark:bg-app-search-category"
             >
               <ul className="flex flex-col py-1">
                 <li>
                   <button
                     type="button"
-                    className="flex h-11 w-full items-center px-3 text-start text-sm font-medium text-home-filter-ink hover:bg-black/[0.04] dark:hover:bg-white/10"
+                    className="flex h-11 w-full items-center px-3 text-start text-sm font-medium text-app-filter-ink hover:bg-black/[0.04] dark:hover:bg-white/10"
                     onClick={() => {
                       setMenuOpen(false);
                       setDeleteOpen(true);
@@ -242,7 +242,7 @@ export function CommentCard({
                 <li>
                   <button
                     type="button"
-                    className="flex h-11 w-full items-center px-3 text-start text-sm font-medium text-home-filter-ink hover:bg-black/[0.04] dark:hover:bg-white/10"
+                    className="flex h-11 w-full items-center px-3 text-start text-sm font-medium text-app-filter-ink hover:bg-black/[0.04] dark:hover:bg-white/10"
                     onClick={() => {
                       setMenuOpen(false);
                       setEditOpen(true);
@@ -254,7 +254,7 @@ export function CommentCard({
                 <li>
                   <button
                     type="button"
-                    className="flex h-11 w-full items-center px-3 text-start text-sm font-medium text-home-filter-ink hover:bg-black/[0.04] dark:hover:bg-white/10"
+                    className="flex h-11 w-full items-center px-3 text-start text-sm font-medium text-app-filter-ink hover:bg-black/[0.04] dark:hover:bg-white/10"
                     onClick={() => setMenuOpen(false)}
                   >
                     {tFlow('menuReport')}
@@ -314,21 +314,21 @@ export function CommentCard({
             {comment.authorAvatar ? (
               <AvatarImage src={comment.authorAvatar} alt={comment.authorName} />
             ) : null}
-            <AvatarFallback className="bg-home-stat-card text-base font-bold text-home-filter-ink dark:bg-home-search-category">
+            <AvatarFallback className="bg-app-stat-card text-base font-bold text-app-filter-ink dark:bg-app-search-category">
               {comment.authorName.slice(0, 2)}
             </AvatarFallback>
           </Avatar>
 
           <div className="flex min-w-0 flex-col items-start gap-0.5">
             <div className="flex flex-wrap items-center gap-2">
-              <h4 className="text-sm font-bold text-home-filter-ink">
+              <h4 className="text-sm font-bold text-app-filter-ink">
                 {comment.authorName}
               </h4>
-              <span className="text-xs text-neutral-600 dark:text-home-filter-muted">
+              <span className="text-xs text-neutral-600 dark:text-app-filter-muted">
                 @{comment.authorHandle}
               </span>
             </div>
-            <div className="flex flex-wrap items-center gap-2 text-xs text-neutral-600 dark:text-home-filter-muted">
+            <div className="flex flex-wrap items-center gap-2 text-xs text-neutral-600 dark:text-app-filter-muted">
               {comment.timeLabel ? <span>{comment.timeLabel}</span> : null}
               <span>{comment.createdAt}</span>
               <span aria-hidden>•</span>
@@ -338,7 +338,7 @@ export function CommentCard({
         </header>
 
         {comment.quoteNote ? (
-          <p className="w-full text-start text-sm leading-normal text-home-filter-ink">
+          <p className="w-full text-start text-sm leading-normal text-app-filter-ink">
             &quot;{comment.quoteNote}&quot;
           </p>
         ) : null}
@@ -349,12 +349,12 @@ export function CommentCard({
               <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-neutral-600 text-[12.8px] font-bold text-white">
                 {(comment.originalAuthorName ?? comment.authorName).slice(0, 2)}
               </div>
-              <span className="text-sm font-bold text-home-filter-ink">
+              <span className="text-sm font-bold text-app-filter-ink">
                 {comment.originalAuthorName ?? comment.authorName} @
                 {comment.originalAuthorHandle ?? comment.authorHandle}
               </span>
             </div>
-            <p className="w-full text-start text-sm leading-[1.5] text-home-filter-ink">
+            <p className="w-full text-start text-sm leading-[1.5] text-app-filter-ink">
               {comment.body}
             </p>
           </div>
@@ -373,8 +373,8 @@ export function CommentCard({
         featured
           ? 'border-s-[3px] border-s-warning bg-warning-10 dark:bg-surface-dark'
           : nested
-            ? 'bg-home-search-fill dark:bg-home-search-category'
-            : 'bg-home-stat-card',
+            ? 'bg-app-search-fill dark:bg-app-search-category'
+            : 'bg-app-stat-card',
         className
       )}
     >
@@ -391,20 +391,20 @@ export function CommentCard({
         <div className="flex min-w-0 flex-1 flex-col gap-3">
           <header className="flex w-full items-center justify-between gap-2">
             <div className="flex flex-wrap items-center gap-2">
-              <h4 className="text-sm font-bold text-home-filter-ink">
+              <h4 className="text-sm font-bold text-app-filter-ink">
                 {comment.authorName}
               </h4>
-              <span className="text-xs font-medium text-neutral-600 dark:text-home-filter-muted">
+              <span className="text-xs font-medium text-neutral-600 dark:text-app-filter-muted">
                 @{comment.authorHandle}
               </span>
-              <span className="text-xs font-medium text-neutral-600 dark:text-home-filter-muted">
+              <span className="text-xs font-medium text-neutral-600 dark:text-app-filter-muted">
                 {comment.createdAt}
               </span>
-              <span className="text-neutral-600 dark:text-home-filter-muted" aria-hidden>
+              <span className="text-neutral-600 dark:text-app-filter-muted" aria-hidden>
                 •
               </span>
               {comment.timeLabel ? (
-                <span className="text-xs font-medium text-neutral-600 dark:text-home-filter-muted">
+                <span className="text-xs font-medium text-neutral-600 dark:text-app-filter-muted">
                   {comment.timeLabel}
                 </span>
               ) : null}
@@ -420,7 +420,7 @@ export function CommentCard({
                 <button
                   type="button"
                   aria-label={t('more')}
-                  className="shrink-0 text-neutral-600 hover:text-home-filter-ink dark:text-home-filter-muted dark:hover:text-home-filter-ink"
+                  className="shrink-0 text-neutral-600 hover:text-app-filter-ink dark:text-app-filter-muted dark:hover:text-app-filter-ink"
                 >
                   <MoreVertical className="size-5" strokeWidth={1.5} />
                 </button>
@@ -429,13 +429,13 @@ export function CommentCard({
                 align="end"
                 sideOffset={6}
                 dir="rtl"
-                className="w-[240px] gap-0 rounded-xl border-0 bg-home-search-fill p-1 shadow-home-elevation-2 ring-0 dark:bg-home-search-category"
+                className="w-[240px] gap-0 rounded-xl border-0 bg-app-search-fill p-1 shadow-app-elevation-2 ring-0 dark:bg-app-search-category"
               >
                 <ul className="flex flex-col py-1">
                   <li>
                     <button
                       type="button"
-                      className="flex h-11 w-full items-center px-3 text-start text-sm font-medium text-home-filter-ink hover:bg-black/[0.04] dark:hover:bg-white/10"
+                      className="flex h-11 w-full items-center px-3 text-start text-sm font-medium text-app-filter-ink hover:bg-black/[0.04] dark:hover:bg-white/10"
                       onClick={() => {
                         setMenuOpen(false);
                         setDeleteOpen(true);
@@ -447,7 +447,7 @@ export function CommentCard({
                   <li>
                     <button
                       type="button"
-                      className="flex h-11 w-full items-center px-3 text-start text-sm font-medium text-home-filter-ink hover:bg-black/[0.04] dark:hover:bg-white/10"
+                      className="flex h-11 w-full items-center px-3 text-start text-sm font-medium text-app-filter-ink hover:bg-black/[0.04] dark:hover:bg-white/10"
                       onClick={() => {
                         setMenuOpen(false);
                         setTransferOpen(true);
@@ -459,7 +459,7 @@ export function CommentCard({
                   <li>
                     <button
                       type="button"
-                      className="flex h-11 w-full items-center px-3 text-start text-sm font-medium text-home-filter-ink hover:bg-black/[0.04] dark:hover:bg-white/10"
+                      className="flex h-11 w-full items-center px-3 text-start text-sm font-medium text-app-filter-ink hover:bg-black/[0.04] dark:hover:bg-white/10"
                       onClick={() => setMenuOpen(false)}
                     >
                       {tFlow('menuReport')}
@@ -470,11 +470,11 @@ export function CommentCard({
             </Popover>
           </header>
 
-          <p className="w-full text-start text-sm font-medium leading-5 text-home-filter-ink">
+          <p className="w-full text-start text-sm font-medium leading-5 text-app-filter-ink">
             {comment.body}
           </p>
 
-          <div className="h-px w-full bg-home-search-category dark:bg-border" aria-hidden />
+          <div className="h-px w-full bg-app-search-category dark:bg-border" aria-hidden />
 
           {interaction}
 
@@ -482,7 +482,7 @@ export function CommentCard({
             <button
               type="button"
               onClick={() => setShowReplies((v) => !v)}
-              className="inline-flex h-9 w-fit items-center gap-1 rounded-full border border-border px-3 text-sm font-medium text-home-filter-muted dark:border-border dark:text-home-filter-ink"
+              className="inline-flex h-9 w-fit items-center gap-1 rounded-full border border-border px-3 text-sm font-medium text-app-filter-muted dark:border-border dark:text-app-filter-ink"
             >
               <ChevronDown
                 className={cn(
@@ -608,7 +608,7 @@ function InteractionRow({
     <div className="flex w-full justify-end">
       <div
         dir="rtl"
-        className="flex flex-wrap items-center gap-1 text-neutral-600 dark:text-home-filter-muted"
+        className="flex flex-wrap items-center gap-1 text-neutral-600 dark:text-app-filter-muted"
       >
         <ActionButton
           label={labels.like}
@@ -701,14 +701,14 @@ function ReplyComposer({
             placeholder={labels.placeholder}
             rows={4}
             className={cn(
-              'w-full resize-none rounded-xl border border-border bg-home-stat-card px-3 pb-8 pt-3',
-              'text-start text-xs font-medium leading-5 text-home-filter-ink',
+              'w-full resize-none rounded-xl border border-border bg-app-stat-card px-3 pb-8 pt-3',
+              'text-start text-xs font-medium leading-5 text-app-filter-ink',
               'placeholder:text-neutral-600 focus-visible:border-primary focus-visible:outline-none',
-              'dark:border-border dark:bg-home-search-category dark:text-home-filter-ink',
-              'dark:placeholder:text-home-filter-muted dark:focus-visible:border-primary-100'
+              'dark:border-border dark:bg-app-search-category dark:text-app-filter-ink',
+              'dark:placeholder:text-app-filter-muted dark:focus-visible:border-primary-100'
             )}
           />
-          <span className="pointer-events-none absolute bottom-3 end-3 text-[11px] leading-4 text-neutral-600 dark:text-home-filter-muted">
+          <span className="pointer-events-none absolute bottom-3 end-3 text-[11px] leading-4 text-neutral-600 dark:text-app-filter-muted">
             {labels.charCount}
           </span>
         </label>

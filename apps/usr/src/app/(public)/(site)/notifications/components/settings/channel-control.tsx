@@ -26,9 +26,9 @@ type SettingsChannelControlProps = {
 };
 
 const controlClass = cn(
-  'size-4 shrink-0 border-home-filter-border bg-transparent',
+  'size-4 shrink-0 border-app-filter-border bg-transparent',
   'accent-primary checked:border-primary',
-  'dark:border-home-filter-muted dark:accent-primary'
+  'dark:border-app-filter-muted dark:accent-primary'
 );
 
 function formatDisplayTime(value: string | null): {
@@ -70,7 +70,7 @@ export function SettingsChannelControl({
   return (
     <div className="flex min-w-0 flex-col gap-3">
       <label className="flex cursor-pointer items-center justify-between gap-3">
-        <span className="text-base font-bold leading-6 tracking-[0.0094em] text-home-filter-ink">
+        <span className="text-base font-bold leading-6 tracking-[0.0094em] text-app-filter-ink">
           {t(`channels.${setting.channel}`)}
         </span>
         <input
@@ -92,7 +92,7 @@ export function SettingsChannelControl({
       >
         <legend className="sr-only">{t('timingLegend')}</legend>
         <label className="flex cursor-pointer items-center justify-between gap-3">
-          <span className="text-sm font-medium leading-5 tracking-[0.0071em] text-home-filter-muted">
+          <span className="text-sm font-medium leading-5 tracking-[0.0071em] text-app-filter-muted">
             {t('timing.atMoment')}
           </span>
           <input
@@ -105,7 +105,7 @@ export function SettingsChannelControl({
           />
         </label>
         <label className="flex cursor-pointer items-center justify-between gap-3">
-          <span className="text-sm font-medium leading-5 tracking-[0.0071em] text-home-filter-muted">
+          <span className="text-sm font-medium leading-5 tracking-[0.0071em] text-app-filter-muted">
             {t('timing.specifiedTime')}
           </span>
           <input
@@ -161,15 +161,15 @@ function TimeField({
   return (
     <>
       <div className="relative pt-2">
-        <span className="absolute start-3 top-0 z-10 bg-home-search-fill px-1 text-xs leading-4 text-home-filter-muted">
+        <span className="absolute start-3 top-0 z-10 bg-app-search-fill px-1 text-xs leading-4 text-app-filter-muted">
           {label}
         </span>
         <button
           type="button"
           onClick={() => setOpen(true)}
-          className="flex h-14 w-full items-center justify-between rounded-t-md border border-home-filter-border bg-transparent px-3 text-start text-base text-home-filter-ink dark:border-home-filter-muted"
+          className="flex h-14 w-full items-center justify-between rounded-t-md border border-app-filter-border bg-transparent px-3 text-start text-base text-app-filter-ink dark:border-app-filter-muted"
         >
-          <span className={cn(!display && 'text-home-filter-muted')}>
+          <span className={cn(!display && 'text-app-filter-muted')}>
             {display == null
               ? placeholder
               : `${display.text} ${display.period === 'am' ? t('am') : t('pm')}`}

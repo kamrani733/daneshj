@@ -77,7 +77,7 @@ export function NotificationsSettingsView({
       </header>
 
       {vm.settingsQuery.isLoading ? (
-        <div className="flex items-center justify-center gap-2 py-16 text-home-filter-muted">
+        <div className="flex items-center justify-center gap-2 py-16 text-app-filter-muted">
           <Spinner className="size-5" />
           <span className="text-sm">{t('loading')}</span>
         </div>

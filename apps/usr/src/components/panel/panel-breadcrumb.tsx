@@ -22,7 +22,7 @@ export function PanelBreadcrumb({
       aria-label={label}
       className="flex flex-wrap items-center justify-start gap-2 text-sm"
     >
-      <span className="font-semibold leading-5 tracking-[0.0071em] text-home-filter-muted dark:text-home-filter-ink">
+      <span className="font-semibold leading-5 tracking-[0.0071em] text-app-filter-muted dark:text-app-filter-ink">
         {current}
       </span>
       <ChevronLeft

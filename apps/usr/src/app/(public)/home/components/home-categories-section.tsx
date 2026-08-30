@@ -42,8 +42,8 @@ export async function HomeCategoriesSection() {
           >
             <span
               className={cn(
-                'flex size-[96px] items-center justify-center overflow-hidden rounded-full shadow-home-elevation-1',
-                'bg-white dark:bg-home-search-fill',
+                'flex size-[96px] items-center justify-center overflow-hidden rounded-full shadow-app-elevation-1',
+                'bg-white dark:bg-app-search-fill',
                 'transition-transform group-hover:scale-[1.03]',
                 'min-[834px]:size-[135px]'
               )}

@@ -47,15 +47,15 @@ export function HomeCategoryOverlay({ open, onClose, onSelect }: HomeCategoryOve
         aria-modal="true"
         aria-label="دسته‌بندی"
         className={cn(
-          'relative flex size-full h-[100dvh] w-full flex-col overflow-hidden bg-home-header',
-          'min-[834px]:size-auto min-[834px]:h-auto min-[834px]:max-w-[1100px] min-[834px]:rounded-3xl min-[834px]:p-10 min-[834px]:shadow-home-elevation-4'
+          'relative flex size-full h-[100dvh] w-full flex-col overflow-hidden bg-app-header',
+          'min-[834px]:size-auto min-[834px]:h-auto min-[834px]:max-w-[1100px] min-[834px]:rounded-3xl min-[834px]:p-10 min-[834px]:shadow-app-elevation-4'
         )}
       >
         <button
           type="button"
           aria-label="بستن"
           onClick={onClose}
-          className="absolute left-6 top-6 z-10 hidden size-10 items-center justify-center rounded-full bg-home-search-category text-content transition-colors hover:bg-muted min-[834px]:inline-flex"
+          className="absolute left-6 top-6 z-10 hidden size-10 items-center justify-center rounded-full bg-app-search-category text-content transition-colors hover:bg-muted min-[834px]:inline-flex"
         >
           <X className="size-5" />
         </button>
@@ -85,7 +85,7 @@ export function HomeCategoryOverlay({ open, onClose, onSelect }: HomeCategoryOve
                 }}
                 className="group flex flex-col items-center gap-6"
               >
-                <span className="flex size-[135px] items-center justify-center overflow-hidden rounded-full bg-home-header shadow-home-elevation-1 transition-transform group-hover:scale-[1.02] dark:bg-home-search-fill">
+                <span className="flex size-[135px] items-center justify-center overflow-hidden rounded-full bg-app-header shadow-app-elevation-1 transition-transform group-hover:scale-[1.02] dark:bg-app-search-fill">
                   <Image
                     src={SITE_IMAGES.discountCard}
                     alt=""
@@ -112,7 +112,7 @@ export function HomeCategoryOverlay({ open, onClose, onSelect }: HomeCategoryOve
               type="button"
               aria-label="بستن"
               onClick={onClose}
-              className="inline-flex size-10 items-center justify-center rounded-full bg-home-search-category text-content transition-colors hover:bg-muted"
+              className="inline-flex size-10 items-center justify-center rounded-full bg-app-search-category text-content transition-colors hover:bg-muted"
             >
               <X className="size-5" />
             </button>

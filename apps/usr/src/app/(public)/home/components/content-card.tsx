@@ -47,9 +47,9 @@ export function ContentCard({
   return (
     <article
       className={cn(
-        'group flex w-[260px] shrink-0 flex-col items-end overflow-hidden rounded-[12px] bg-home-card shadow-home-elevation-1',
+        'group flex w-[260px] shrink-0 flex-col items-end overflow-hidden rounded-[12px] bg-app-card shadow-app-elevation-1',
         'motion-safe:transition-shadow motion-safe:duration-300 motion-safe:ease-out',
-        'hover:shadow-home-elevation-2 active:shadow-home-elevation-1',
+        'hover:shadow-app-elevation-2 active:shadow-app-elevation-1',
         'min-[834px]:w-[344px]',
         className
       )}
@@ -132,7 +132,7 @@ function DiscountCard({
   return (
     <article
       className={cn(
-        'group relative flex w-[280px] shrink-0 flex-col overflow-hidden rounded-[12px] bg-home-card shadow-home-elevation-1',
+        'group relative flex w-[280px] shrink-0 flex-col overflow-hidden rounded-[12px] bg-app-card shadow-app-elevation-1',
         className
       )}
     >
@@ -162,7 +162,7 @@ function DiscountCard({
 
       <div
         className={cn(
-          'relative z-10 flex w-full flex-col items-end gap-2 bg-home-card p-4',
+          'relative z-10 flex w-full flex-col items-end gap-2 bg-app-card p-4',
           'motion-safe:transition-colors motion-safe:duration-500 motion-safe:ease-out',
           'group-hover:bg-black/35'
         )}

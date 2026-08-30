@@ -40,7 +40,7 @@ const BRAND_STYLES: Record<SocialNetwork, string> = {
   website: 'bg-info-600 text-primary-foreground',
 };
 
-const PILL_BG = 'bg-home-search-category dark:bg-home-stat-card';
+const PILL_BG = 'bg-app-search-category dark:bg-app-stat-card';
 
 function getCopyValue(link: PanelSocialLink): string {
   const { network, href } = link;
@@ -124,7 +124,7 @@ export function SocialLinksRow({
                     open && BRAND_STYLES[link.network],
                     !open &&
                       variant === 'outline' &&
-                      'bg-home-stat-card text-primary shadow-[0_1px_2px_rgba(0,0,0,0.06)] hover:opacity-90 dark:text-primary-100',
+                      'bg-app-stat-card text-primary shadow-[0_1px_2px_rgba(0,0,0,0.06)] hover:opacity-90 dark:text-primary-100',
                     !open &&
                       variant === 'filled' &&
                       'bg-primary text-primary-foreground hover:opacity-90 dark:bg-primary-100 dark:text-primary-900',
@@ -157,12 +157,12 @@ export function SocialLinksRow({
                 )}
               >
                 {copied ? (
-                  <span className="text-sm font-medium text-home-filter-ink">
+                  <span className="text-sm font-medium text-app-filter-ink">
                     {t('copied')}
                   </span>
                 ) : (
                   <>
-                    <span className="max-w-[220px] truncate text-sm font-medium text-home-filter-ink">
+                    <span className="max-w-[220px] truncate text-sm font-medium text-app-filter-ink">
                       {copyValue}
                     </span>
                     <button

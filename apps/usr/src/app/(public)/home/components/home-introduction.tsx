@@ -22,7 +22,7 @@ function IntroSidePattern({
       width={390}
       height={505}
       aria-hidden
-      className={cn('home-intro-pattern', className)}
+      className={cn('app-intro-pattern', className)}
     />
   );
 }
@@ -32,7 +32,7 @@ export async function HomeIntroduction() {
   const t = await getTranslations('home.intro');
 
   return (
-    <section className="w-full overflow-hidden rounded-xl border border-home-intro bg-home-header min-[834px]:rounded-3xl min-[834px]:border-2 min-[834px]:bg-home-card">
+    <section className="w-full overflow-hidden rounded-xl border border-app-intro bg-app-header min-[834px]:rounded-3xl min-[834px]:border-2 min-[834px]:bg-app-card">
       {/* Desktop / tablet — row, space-between, center column 1078px */}
       <div
         className="relative hidden min-h-[280px] items-center justify-center min-[834px]:flex"

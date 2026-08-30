@@ -30,7 +30,7 @@ export function AcademicRecordCard({
   return (
     <article className={cn('flex w-full flex-col gap-3', className)}>
       <div className="flex flex-wrap items-center justify-start gap-2">
-        <h4 className="text-sm font-bold text-[#171d19] dark:text-home-filter-ink min-[720px]:text-base">
+        <h4 className="text-sm font-bold text-[#171d19] dark:text-app-filter-ink min-[720px]:text-base">
           {record.degree || '\u00a0'}
         </h4>
         {roleLabel ? (
@@ -65,10 +65,10 @@ export function AcademicRecordCard({
         ) : null}
       </div>
 
-      <div className="flex flex-col gap-2 text-start text-sm leading-6 text-[#404943] min-[720px]:flex-row min-[720px]:items-start min-[720px]:justify-between min-[720px]:gap-10 dark:text-home-filter-muted">
+      <div className="flex flex-col gap-2 text-start text-sm leading-6 text-[#404943] min-[720px]:flex-row min-[720px]:items-start min-[720px]:justify-between min-[720px]:gap-10 dark:text-app-filter-muted">
         <div className="flex min-w-0 flex-col items-start gap-1">
           {record.university ? (
-            <p className="font-medium text-home-filter-muted dark:text-home-filter-ink">
+            <p className="font-medium text-app-filter-muted dark:text-app-filter-ink">
               {record.university}
             </p>
           ) : null}

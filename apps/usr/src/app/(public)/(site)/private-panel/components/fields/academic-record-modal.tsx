@@ -45,7 +45,7 @@ const EMPTY_FORM: AcademicRecordFormValues = {
   endDate: '',
 };
 
-const DIALOG_LABEL_SURFACE = 'bg-[#f9f8f3] dark:bg-home-stat-card';
+const DIALOG_LABEL_SURFACE = 'bg-[#f9f8f3] dark:bg-app-card';
 
 type AcademicRecordModalProps = {
   open: boolean;
@@ -102,8 +102,8 @@ export function AcademicRecordModal({
         showCloseButton={false}
         className={cn(
           'max-h-[min(90vh,900px)] w-[min(720px,calc(100%-2rem))] overflow-y-auto',
-          'gap-6 rounded-[28px] border-0 bg-[#f9f8f3] p-6 shadow-home-elevation-2',
-          'sm:max-w-[720px] dark:bg-home-stat-card'
+          'gap-6 rounded-[28px] border-0 bg-[#f9f8f3] p-6 shadow-app-elevation-2',
+          'sm:max-w-[720px] dark:border dark:border-auth-input-border dark:bg-app-card'
         )}
       >
         <DialogTitle className="text-start text-base font-bold text-[#171d19] dark:text-primary-100">

@@ -58,7 +58,7 @@ export function UploadDropzone({
       className={cn(
         'flex min-h-[220px] w-full flex-col items-center justify-center gap-1 rounded-2xl',
         'border border-dashed border-[#bfc9c1] px-4 py-8',
-        'bg-transparent dark:border-auth-input-border',
+        'bg-transparent dark:border-auth-input-border dark:bg-app-search-category/40',
         disabled && 'pointer-events-none opacity-50',
         wide
           ? 'min-[720px]:max-w-[462px]'
@@ -66,14 +66,14 @@ export function UploadDropzone({
       )}
     >
       <CloudUpload
-        className="size-12 text-[#404943] dark:text-home-filter-muted"
+        className="size-12 text-[#404943] dark:text-app-filter-muted"
         strokeWidth={1.5}
         aria-hidden
       />
-      <p className="text-center text-xs font-medium text-[#404943] dark:text-home-filter-muted">
+      <p className="text-center text-xs font-medium text-[#404943] dark:text-app-filter-muted">
         {label}
       </p>
-      <p className="text-center text-xs font-medium text-[#404943] dark:text-home-filter-muted">
+      <p className="text-center text-xs font-medium text-[#404943] dark:text-app-filter-muted">
         {orLabel}
       </p>
       <UploadButton

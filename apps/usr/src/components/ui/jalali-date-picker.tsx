@@ -105,10 +105,10 @@ export function JalaliDatePicker({
           id={id}
           disabled={disabled}
           className={cn(
-            'flex h-14 w-full items-center gap-2 rounded border border-home-filter bg-white px-3 text-start',
+            'flex h-14 w-full items-center gap-2 rounded border border-app-filter bg-white px-3 text-start',
             'outline-none focus-visible:ring-2 focus-visible:ring-primary/30',
             'disabled:cursor-not-allowed disabled:opacity-50',
-            'dark:bg-home-search-fill',
+            'dark:bg-app-search-fill',
             triggerClassName
           )}
         >
@@ -116,7 +116,7 @@ export function JalaliDatePicker({
           <span
             className={cn(
               'min-w-0 flex-1 truncate text-sm leading-5',
-              display ? 'text-home-filter-ink' : 'text-home-filter-muted'
+              display ? 'text-app-filter-ink' : 'text-app-filter-muted'
             )}
           >
             {display || placeholder || t('placeholder')}
@@ -129,7 +129,7 @@ export function JalaliDatePicker({
         sideOffset={8}
         className={cn(
           'w-[min(328px,calc(100vw-24px))] gap-3 rounded-2xl border-0 p-4',
-          'bg-home-header text-content shadow-home-elevation-2 ring-0',
+          'bg-app-header text-content shadow-app-elevation-2 ring-0',
           className
         )}
       >

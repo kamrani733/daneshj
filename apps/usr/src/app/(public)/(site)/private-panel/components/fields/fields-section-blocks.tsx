@@ -63,7 +63,7 @@ export function IdentityCategoryBlocks({
   return (
     <>
       <FieldsetBlock title={t('photosTitle')}>
-        <p className="text-justify text-sm font-medium leading-6 text-[#404943] dark:text-home-filter-muted">
+        <p className="text-justify text-sm font-medium leading-6 text-[#404943] dark:text-app-filter-muted">
           {t('photosHintBefore')}
           <button
             type="button"
@@ -300,7 +300,7 @@ export function AcademicRecordsBlock({
 
   return (
     <FieldsetBlock title={tVis('sections.academicRecords')}>
-      <p className="text-justify text-sm font-medium leading-6 text-[#404943] dark:text-home-filter-muted">
+      <p className="text-justify text-sm font-medium leading-6 text-[#404943] dark:text-app-filter-muted">
         {t('academicIntro')}
       </p>
 
@@ -314,7 +314,8 @@ export function AcademicRecordsBlock({
               'h-11 !rounded-xl border border-[#e06333] bg-transparent px-4',
               'text-sm font-medium text-[#e06333] shadow-none',
               'hover:bg-[#ffdbcf]/40 hover:text-[#e06333]',
-              recordsHidden && 'bg-[#ffdbcf]/50',
+              'dark:border-warning-100 dark:text-warning-100 dark:hover:bg-warning/10 dark:hover:text-warning-100',
+              recordsHidden && 'bg-[#ffdbcf]/50 dark:bg-warning/10',
             )}
           >
             {recordsHidden
@@ -341,8 +342,8 @@ export function AcademicRecordsBlock({
         {records.length > 0 ? (
           <ul
             className={cn(
-              'overflow-hidden rounded-2xl border border-[#dbd8d1] bg-home-card',
-              'dark:border-auth-input-border dark:bg-home-search-category',
+              'overflow-hidden rounded-2xl border border-[#dbd8d1] bg-app-card',
+              'dark:border-auth-input-border dark:bg-app-search-category',
             )}
           >
             {records.map((record, index) => (
@@ -362,7 +363,7 @@ export function AcademicRecordsBlock({
                         <RecordIconButton
                           label={t('editRecord')}
                           disabled={deletingId === record.id}
-                          hoverClassName="hover:border-[#e06333] hover:text-[#e06333]"
+                          hoverClassName="hover:border-warning hover:text-warning dark:hover:border-warning-100 dark:hover:text-warning-100"
                           onClick={() => openEdit(record)}
                         >
                           <Pencil
@@ -374,7 +375,7 @@ export function AcademicRecordsBlock({
                         <RecordIconButton
                           label={t('deleteRecord')}
                           disabled={deletingId === record.id}
-                          hoverClassName="hover:border-[#ba1a1a] hover:text-[#ba1a1a]"
+                          hoverClassName="hover:border-error hover:text-error"
                           onClick={() => {
                             void handleDeleteRecord(record);
                           }}
@@ -488,7 +489,7 @@ function RecordIconButton({
         'flex size-9 shrink-0 items-center justify-center rounded-lg border',
         'border-[#c4c7c0] bg-transparent text-[#404943]',
         hoverClassName,
-        'disabled:opacity-50 dark:border-auth-input-border dark:text-home-filter-muted',
+        'disabled:opacity-50 dark:border-auth-input-border dark:text-app-filter-muted dark:hover:bg-white/5',
       )}
     >
       {children}
@@ -568,10 +569,10 @@ export function FieldsetBlock({
         'bg-[#f8f8f0] px-4 pb-8 pt-10',
         'min-[720px]:gap-12 min-[720px]:px-10 min-[720px]:pb-12 min-[720px]:pt-12',
         'min-[834px]:px-[88px]',
-        'dark:border-auth-input-border dark:bg-home-stat-card',
+        'dark:border-auth-input-border dark:bg-app-card',
       )}
     >
-      <legend className="absolute -top-3 start-4 max-w-[calc(100%-2rem)] bg-[#f8f8f0] px-1 text-sm font-bold text-[#404943] min-[720px]:start-8 min-[720px]:text-base dark:bg-home-stat-card dark:text-primary-100">
+      <legend className="absolute -top-3 start-4 max-w-[calc(100%-2rem)] bg-[#f8f8f0] px-1 text-sm font-bold text-[#404943] min-[720px]:start-8 min-[720px]:text-base dark:bg-app-card dark:text-primary-100">
         {title}
       </legend>
       {children}
@@ -596,8 +597,8 @@ function BulletText({
         className={cn(
           'min-w-0 flex-1 text-justify text-sm font-medium leading-6',
           tone === 'muted'
-            ? 'text-[#404943] dark:text-home-filter-muted'
-            : 'text-[#171d19] dark:text-home-filter-ink',
+            ? 'text-[#404943] dark:text-app-filter-muted'
+            : 'text-[#171d19] dark:text-app-filter-ink',
         )}
       >
         {children}

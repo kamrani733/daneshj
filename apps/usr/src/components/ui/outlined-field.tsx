@@ -38,11 +38,11 @@ type OutlinedFieldShellProps = {
   required?: boolean;
 };
 
-const DEFAULT_SURFACE = 'bg-home-card dark:bg-auth-input-bg';
-const DEFAULT_LABEL_SURFACE = 'bg-home-card dark:bg-home-search-category';
+const DEFAULT_SURFACE = 'bg-app-card dark:bg-auth-input-bg';
+const DEFAULT_LABEL_SURFACE = 'bg-app-card dark:bg-app-search-category';
 
 const CONTROL_TEXT =
-  'w-full bg-transparent text-start text-sm font-medium text-content outline-none dark:text-home-filter-ink disabled:cursor-not-allowed disabled:opacity-60';
+  'w-full bg-transparent text-start text-sm font-medium text-content outline-none dark:text-app-filter-ink disabled:cursor-not-allowed disabled:opacity-60';
 
 function toneBorderClass(tone: OutlinedFieldTone = 'default') {
   if (tone === 'error') {
@@ -129,7 +129,7 @@ export function OutlinedFieldShell({
         <span
           className={cn(
             'pointer-events-none absolute start-3 top-0 z-[1] -translate-y-1/2 px-1 text-xs font-medium',
-            'text-[#404943] dark:text-home-filter-muted',
+            'text-[#404943] dark:text-app-filter-muted',
             labelSurfaceClassName ?? DEFAULT_LABEL_SURFACE,
             tone === 'error' && 'text-error'
           )}
@@ -350,7 +350,7 @@ export function OutlinedSelectField({
       errorMessage={message}
       endAdornment={
         <ChevronDown
-          className="size-5 text-[#404943] dark:text-home-filter-muted"
+          className="size-5 text-[#404943] dark:text-app-filter-muted"
           strokeWidth={1.75}
           aria-hidden
         />
@@ -411,7 +411,7 @@ export function OutlinedDateField({
     errorMessage ?? (typeof error === 'string' ? error : null);
   const calendarIcon = (
     <Calendar
-      className="size-5 text-[#404943] dark:text-home-filter-muted"
+      className="size-5 text-[#404943] dark:text-app-filter-muted"
       strokeWidth={1.75}
       aria-hidden
     />
@@ -439,7 +439,7 @@ export function OutlinedDateField({
         triggerClassName={cn(
           'h-auto w-full justify-start border-0 bg-transparent p-0 shadow-none',
           'text-start text-sm font-medium text-content hover:bg-transparent',
-          'dark:text-home-filter-ink',
+          'dark:text-app-filter-ink',
           disabled && 'cursor-not-allowed opacity-60'
         )}
       />
@@ -485,11 +485,11 @@ export function OutlinedDisplayField({
       errorMessage={message}
     >
       {multiline ? (
-        <p className="min-h-[72px] whitespace-pre-wrap text-start text-sm font-medium leading-6 text-content dark:text-home-filter-ink">
+        <p className="min-h-[72px] whitespace-pre-wrap text-start text-sm font-medium leading-6 text-content dark:text-app-filter-ink">
           {value || '\u00a0'}
         </p>
       ) : (
-        <p className="truncate text-start text-sm font-medium text-content dark:text-home-filter-ink">
+        <p className="truncate text-start text-sm font-medium text-content dark:text-app-filter-ink">
           {value || '\u00a0'}
         </p>
       )}

@@ -54,7 +54,7 @@ function selectionFromFields(fields: VisibilityField[]): Record<string, boolean>
       field.id,
       field.locked
         ? false
-        : (field.selectedInitially ?? field.initiallyVisible),
+        : Boolean(field.selectedInitially ?? field.initiallyVisible),
     ])
   );
 }
@@ -297,7 +297,7 @@ export function ManageVisibilityPanel({
 
   return (
     <div className="flex w-full flex-col gap-3 min-[720px]:gap-6">
-      <ul className="flex list-disc flex-col gap-2 pe-4 text-justify text-xs font-medium leading-6 text-home-filter-muted marker:text-home-filter-muted min-[720px]:gap-3 min-[720px]:pe-5 min-[720px]:text-sm min-[720px]:leading-7 dark:text-home-filter-ink">
+      <ul className="flex list-disc flex-col gap-2 pe-4 text-justify text-xs font-medium leading-6 text-app-filter-muted marker:text-app-filter-muted min-[720px]:gap-3 min-[720px]:pe-5 min-[720px]:text-sm min-[720px]:leading-7 dark:text-app-filter-ink">
         {INTRO_PARAGRAPHS.map((paragraph) => (
           <li key={paragraph}>{paragraph}</li>
         ))}
@@ -309,7 +309,7 @@ export function ManageVisibilityPanel({
         dir="rtl"
         className={cn(
           'flex w-full flex-col gap-3 rounded-xl border border-border bg-white p-3',
-          'dark:bg-home-stat-card',
+          'dark:border-auth-input-border dark:bg-app-card',
           'min-[720px]:gap-5 min-[720px]:rounded-2xl min-[720px]:p-5',
           'min-[834px]:p-6'
         )}
@@ -328,11 +328,11 @@ export function ManageVisibilityPanel({
                 value={id}
                 className={cn(
                   'h-auto shrink-0 rounded-none border-0 border-b-2 border-transparent px-0 pb-2',
-                  'justify-center text-[11px] font-medium text-home-filter-muted shadow-none',
+                  'justify-center text-[11px] font-medium text-app-filter-muted shadow-none',
                   'hover:text-primary focus-visible:ring-primary/30',
                   'data-[state=active]:border-b-primary data-[state=active]:bg-transparent',
                   'data-[state=active]:text-primary data-[state=active]:shadow-none',
-                  'dark:text-home-filter-ink dark:data-[state=active]:border-b-primary-100',
+                  'dark:text-app-filter-ink dark:data-[state=active]:border-b-primary-100',
                   'dark:data-[state=active]:text-primary-100',
                   'min-[720px]:pb-2.5 min-[720px]:text-sm'
                 )}
@@ -348,7 +348,7 @@ export function ManageVisibilityPanel({
         {VISIBILITY_CATEGORIES.map((id) => (
           <TabsContent key={id} value={id} className="mt-0">
             {id !== category ? null : categoryFields.length === 0 ? (
-              <p className="py-8 text-center text-sm text-home-filter-muted min-[720px]:py-10">
+              <p className="py-8 text-center text-sm text-app-filter-muted min-[720px]:py-10">
                 {t('emptyCategory')}
               </p>
             ) : (
@@ -371,10 +371,10 @@ export function ManageVisibilityPanel({
                         'flex w-full flex-col gap-3 rounded-xl border border-border',
                         'bg-[#f8f8f0] px-2.5 pb-3 pt-1.5',
                         'min-[720px]:gap-5 min-[720px]:rounded-[20px] min-[720px]:px-5 min-[720px]:pb-5 min-[720px]:pt-2',
-                        'min-[834px]:rounded-3xl'
+                        'min-[834px]:rounded-3xl dark:border-auth-input-border dark:bg-app-search-category'
                       )}
                     >
-                      <legend className="ms-1 max-w-[calc(100%-0.5rem)] bg-white px-1.5 text-xs font-medium text-primary min-[720px]:ms-2 min-[720px]:px-2 min-[720px]:text-sm dark:bg-home-stat-card dark:text-primary-100">
+                      <legend className="ms-1 max-w-[calc(100%-0.5rem)] bg-white px-1.5 text-xs font-medium text-primary min-[720px]:ms-2 min-[720px]:px-2 min-[720px]:text-sm dark:bg-app-search-category dark:text-primary-100">
                         {t(`sections.${section.titleKey}`)}
                       </legend>
                       {section.key === 'academicRecords' ? (
@@ -412,7 +412,7 @@ export function ManageVisibilityPanel({
                       'h-11 w-full px-4 text-sm font-medium text-primary shadow-none',
                       'hover:bg-transparent hover:text-primary',
                       'disabled:opacity-40',
-                      'dark:text-primary-100',
+                      'dark:text-primary-100 dark:hover:text-primary-100/80',
                       'min-[720px]:w-auto'
                     )}
                   >
@@ -428,6 +428,7 @@ export function ManageVisibilityPanel({
                     className={cn(
                       'h-11 w-full !rounded-xl bg-primary px-6 text-sm font-medium text-white shadow-none',
                       'hover:bg-primary/90 disabled:opacity-40',
+                      'dark:bg-primary-100 dark:text-primary-900 dark:hover:bg-primary-100/90',
                       'min-[720px]:w-auto min-[720px]:px-8'
                     )}
                   >

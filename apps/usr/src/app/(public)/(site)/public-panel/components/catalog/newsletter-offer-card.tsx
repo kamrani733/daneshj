@@ -20,7 +20,7 @@ export function NewsletterOfferCard({
   return (
     <CatalogOfferCardShell
       className={cn(
-        'hover:bg-muted hover:shadow-[0_10px_24px_rgba(0,0,0,0.12)] dark:hover:bg-home-card',
+        'hover:bg-muted hover:shadow-[0_10px_24px_rgba(0,0,0,0.12)] dark:hover:bg-app-card',
         className
       )}
     >
@@ -31,10 +31,10 @@ export function NewsletterOfferCard({
           </AvatarFallback>
         </Avatar>
         <div className="min-w-0 flex-1 text-start">
-          <p className="truncate text-xs font-medium text-home-filter-ink">
+          <p className="truncate text-xs font-medium text-app-filter-ink">
             {item.publisherName}
           </p>
-          <p className="text-[11px] text-home-filter-muted">{item.publishedAt}</p>
+          <p className="text-[11px] text-app-filter-muted">{item.publishedAt}</p>
         </div>
       </div>
 
@@ -50,14 +50,14 @@ export function NewsletterOfferCard({
       </div>
 
       <div className="flex flex-1 flex-col gap-1.5 p-3">
-        <h3 className="text-sm font-bold leading-5 text-home-filter-ink">
+        <h3 className="text-sm font-bold leading-5 text-app-filter-ink">
           {item.title}
         </h3>
-        <p className="text-xs leading-4 text-home-filter-muted">
+        <p className="text-xs leading-4 text-app-filter-muted">
           {item.description}
         </p>
 
-        <div className="mt-auto flex items-center justify-start gap-1 pt-2 text-xs text-home-filter-ink">
+        <div className="mt-auto flex items-center justify-start gap-1 pt-2 text-xs text-app-filter-ink">
           <Star className="size-3.5 fill-warning text-warning" aria-hidden />
           <span>
             {item.rating} ({item.reviewCount} نظر)

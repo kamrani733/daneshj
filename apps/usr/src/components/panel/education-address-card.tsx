@@ -18,7 +18,7 @@ export function EducationAddressCard({
   address,
   title,
   className,
-  titleBgClassName = 'bg-home-scene',
+  titleBgClassName = 'bg-app-scene',
 }: EducationAddressCardProps) {
   const t = useTranslations('panel.educationAddress');
 
@@ -26,9 +26,9 @@ export function EducationAddressCard({
     <BorderedSectionCard
       title={title ?? t('title')}
       titleBgClassName={titleBgClassName}
-      titleClassName="text-sm font-medium text-home-filter-muted dark:text-home-filter-ink"
+      titleClassName="text-sm font-medium text-app-filter-muted dark:text-app-filter-ink"
       className={cn(
-        'rounded-xl border-border bg-home-search-fill px-6 pb-5 pt-8 dark:bg-home-search-category',
+        'rounded-xl border-border bg-app-search-fill px-6 pb-5 pt-8 dark:bg-app-search-category',
         className
       )}
     >
@@ -45,10 +45,10 @@ export function EducationAddressCard({
 function AddressField({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex flex-col items-center gap-1 text-center">
-      <dt className="text-xs font-medium leading-5 text-neutral-600 dark:text-home-filter-muted">
+      <dt className="text-xs font-medium leading-5 text-neutral-600 dark:text-app-filter-muted">
         {label}
       </dt>
-      <dd className="text-sm font-bold leading-5 text-home-filter-ink">
+      <dd className="text-sm font-bold leading-5 text-app-filter-ink">
         {value || '\u00a0'}
       </dd>
     </div>

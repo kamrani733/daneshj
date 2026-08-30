@@ -19,7 +19,7 @@ export async function SiteShell({ children }: SiteShellProps) {
   const userType = session ? (isUserSession ? 'user' : 'admin') : undefined;
 
   return (
-    <div className="relative min-h-screen overflow-x-clip bg-home-scene" dir="rtl">
+    <div className="relative min-h-screen overflow-x-clip bg-app-scene" dir="rtl">
       <SessionKeepAlive
         enabled={!!session?.refreshToken && !!session.sessionKey}
       />

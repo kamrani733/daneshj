@@ -66,14 +66,14 @@ export function FieldsSection({
         <div
           className={cn(
             'relative overflow-hidden rounded-3xl border-2 border-border',
-            'bg-transparent dark:border-auth-input-border',
+            'bg-transparent dark:border-auth-input-border dark:bg-app-card',
             vm.isFieldsLoading && 'min-h-[320px]',
           )}
         >
           {vm.isFieldsLoading ? (
             <PanelLoadingOverlay
               message={vm.t('loading')}
-              className="bg-home-search-fill/85 dark:bg-home-card/80"
+              className="bg-app-search-fill/85 dark:bg-app-card/80"
             />
           ) : null}
 
@@ -151,7 +151,7 @@ function CategoryTabs({
       <TabsList
         className={cn(
           'flex h-14 w-max min-w-full items-stretch justify-start gap-0',
-          'rounded-none border-b border-home-carousel-inactive bg-transparent p-0',
+          'rounded-none border-b border-app-carousel-inactive bg-transparent p-0',
           'min-[720px]:h-16 dark:border-auth-input-border',
         )}
       >
@@ -161,12 +161,12 @@ function CategoryTabs({
             value={id}
             className={cn(
               'h-full shrink-0 rounded-none border-0 border-b-2 border-transparent px-3',
-              'justify-center text-xs font-medium text-home-filter-muted shadow-none',
+              'justify-center text-xs font-medium text-app-filter-muted shadow-none',
               'hover:text-content focus-visible:ring-primary/30',
-              'data-[state=active]:border-b-primary data-[state=active]:bg-home-search-fill',
+              'data-[state=active]:border-b-primary data-[state=active]:bg-app-search-fill',
               'data-[state=active]:font-bold data-[state=active]:text-content',
               'data-[state=active]:shadow-none',
-              'dark:text-home-filter-ink dark:data-[state=active]:bg-home-stat-card',
+              'dark:text-app-filter-ink dark:data-[state=active]:bg-app-search-category',
               'dark:data-[state=active]:border-b-primary-100 dark:data-[state=active]:text-primary-100',
               'min-[720px]:px-4 min-[720px]:text-sm',
             )}
@@ -285,7 +285,7 @@ function FieldsEditView({
             variant="outline"
             disabled={vm.isSaving}
             onClick={vm.onCancel}
-            className="h-12 max-w-[160px] border-none ml-10 !rounded-2xl px-4 text-base font-medium text-primary shadow-none"
+            className="ml-10 h-12 max-w-[160px] border-none !rounded-2xl px-4 text-base font-medium text-primary shadow-none dark:text-primary-100"
           >
             {vm.t('cancel')}
           </Button>
@@ -298,6 +298,7 @@ function FieldsEditView({
             'h-12 w-full max-w-[220px] gap-2 !rounded-2xl bg-primary',
             'px-4 text-base font-medium text-white shadow-none',
             'hover:bg-primary/90 disabled:opacity-60',
+            'dark:bg-primary-100 dark:text-primary-900 dark:hover:bg-primary-100/90',
           )}
         >
           {vm.isSaving ? vm.t('saving') : vm.t('save')}

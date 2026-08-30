@@ -87,7 +87,7 @@ export function HomeHeroBanner() {
     <section
       dir="ltr"
       className={cn(
-        'relative w-full overflow-hidden rounded-2xl bg-home-hero shadow-home-elevation-4',
+        'relative w-full overflow-hidden rounded-2xl bg-app-hero shadow-app-elevation-4',
         'min-[834px]:aspect-[1312/480] min-[834px]:rounded-3xl'
       )}
       aria-roledescription="carousel"
@@ -172,7 +172,7 @@ export function HomeHeroBanner() {
           'relative z-10 mx-auto mb-4',
           'min-[834px]:absolute min-[834px]:left-1/2 min-[834px]:top-[calc(452/480*100%)] min-[834px]:mb-0 min-[834px]:-translate-x-1/2'
         )}
-        activeClassName="bg-home-carousel-inactive"
+        activeClassName="bg-app-carousel-inactive"
         inactiveClassName="bg-primary"
       />
     </section>
@@ -194,7 +194,7 @@ export function CarouselDots({
   onSelect,
   className,
   activeClassName = 'bg-primary',
-  inactiveClassName = 'bg-home-carousel-inactive',
+  inactiveClassName = 'bg-app-carousel-inactive',
 }: CarouselDotsProps) {
   return (
     <div className={cn('flex items-center gap-3', className)} role="tablist" aria-label="اسلایدها">

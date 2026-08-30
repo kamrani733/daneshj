@@ -83,10 +83,10 @@ export function StatsPeopleDialog({
       title={tDialog(TITLE_KEY[kind])}
       className={cn(
         'flex max-h-[85vh] max-w-[420px] flex-col gap-4 overflow-hidden p-4',
-        'dark:bg-home-search-category sm:max-w-[480px]',
+        'dark:bg-app-search-category sm:max-w-[480px]',
       )}
     >
-      <h2 className="ps-10 text-start text-base font-bold leading-7 text-home-filter-ink">
+      <h2 className="ps-10 text-start text-base font-bold leading-7 text-app-filter-ink">
         {tDialog(TITLE_KEY[kind])}
       </h2>
 
@@ -94,7 +94,7 @@ export function StatsPeopleDialog({
         type="button"
         aria-label={tDialog('close')}
         onClick={() => onOpenChange(false)}
-        className="absolute end-3 top-3 inline-flex size-9 items-center justify-center rounded-full text-home-filter-muted hover:bg-black/5 dark:text-home-filter-ink dark:hover:bg-white/5"
+        className="absolute end-3 top-3 inline-flex size-9 items-center justify-center rounded-full text-app-filter-muted hover:bg-black/5 dark:text-app-filter-ink dark:hover:bg-white/5"
       >
         <X className="size-5" strokeWidth={1.75} />
       </button>
@@ -107,11 +107,11 @@ export function StatsPeopleDialog({
       />
 
       {loading ? (
-        <p className="py-8 text-center text-sm font-medium text-neutral-600 dark:text-home-filter-muted">
+        <p className="py-8 text-center text-sm font-medium text-neutral-600 dark:text-app-filter-muted">
           {tDialog('loading')}
         </p>
       ) : filtered.length === 0 ? (
-        <p className="py-8 text-center text-sm font-medium text-neutral-600 dark:text-home-filter-muted">
+        <p className="py-8 text-center text-sm font-medium text-neutral-600 dark:text-app-filter-muted">
           {tDialog('emptySearch')}
         </p>
       ) : (
@@ -120,7 +120,7 @@ export function StatsPeopleDialog({
             <li
               key={person.id}
               className={cn(
-                'flex items-center gap-3 rounded-2xl bg-home-stat-card p-3',
+                'flex items-center gap-3 rounded-2xl bg-app-stat-card p-3',
                 'shadow-[0_1px_2px_rgba(0,0,0,0.06)]',
               )}
             >
@@ -137,10 +137,10 @@ export function StatsPeopleDialog({
               </Avatar>
 
               <div className="flex min-w-0 flex-1 flex-col items-start gap-0.5 text-start">
-                <span className="truncate text-sm font-bold text-home-filter-ink">
+                <span className="truncate text-sm font-bold text-app-filter-ink">
                   {person.username}
                 </span>
-                <span className="truncate text-xs font-medium text-neutral-600 dark:text-home-filter-muted">
+                <span className="truncate text-xs font-medium text-neutral-600 dark:text-app-filter-muted">
                   {person.displayName}
                 </span>
               </div>
@@ -197,7 +197,7 @@ function PeopleActionButton({
         className={cn(
           'h-9 shrink-0 rounded-full px-3 text-sm font-medium shadow-none',
           following
-            ? 'border-border text-home-filter-ink hover:bg-black/5 dark:hover:bg-white/5'
+            ? 'border-border text-app-filter-ink hover:bg-black/5 dark:hover:bg-white/5'
             : 'bg-primary text-primary-foreground hover:bg-primary-hover dark:bg-primary-100 dark:text-primary-900 dark:hover:bg-primary-100/90',
         )}
       >
@@ -211,7 +211,7 @@ function PeopleActionButton({
       type="button"
       variant="outline"
       onClick={onClick}
-      className="h-9 shrink-0 rounded-full border-border px-3 text-sm font-medium text-home-filter-ink shadow-none hover:bg-black/5 dark:hover:bg-white/5"
+      className="h-9 shrink-0 rounded-full border-border px-3 text-sm font-medium text-app-filter-ink shadow-none hover:bg-black/5 dark:hover:bg-white/5"
     >
       {labels.unfollow}
     </Button>
@@ -261,15 +261,15 @@ export function StatsShareDialog({
       title={t('shareTitle')}
       className={cn(
         'flex max-w-[420px] flex-col gap-5',
-        'dark:bg-home-search-category sm:max-w-[480px]',
+        'dark:bg-app-search-category sm:max-w-[480px]',
       )}
     >
-      <h2 className="text-start text-base font-bold text-home-filter-ink">
+      <h2 className="text-start text-base font-bold text-app-filter-ink">
         {t('shareTitle')}
       </h2>
 
       <label className="relative block w-full">
-        <span className="absolute -top-2.5 start-3 bg-home-search-fill px-1 text-xs font-medium text-primary dark:bg-home-search-category dark:text-primary-100">
+        <span className="absolute -top-2.5 start-3 bg-app-search-fill px-1 text-xs font-medium text-primary dark:bg-app-search-category dark:text-primary-100">
           {t('shareReason')}
         </span>
         <textarea
@@ -278,9 +278,9 @@ export function StatsShareDialog({
           placeholder={t('sharePlaceholder')}
           rows={3}
           className={cn(
-            'w-full resize-none rounded-xl border border-home-filter-muted bg-transparent px-3 py-3',
-            'text-start text-sm text-home-filter-ink placeholder:text-neutral-600',
-            'dark:border-border dark:placeholder:text-home-filter-muted',
+            'w-full resize-none rounded-xl border border-app-filter-muted bg-transparent px-3 py-3',
+            'text-start text-sm text-app-filter-ink placeholder:text-neutral-600',
+            'dark:border-border dark:placeholder:text-app-filter-muted',
             'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30',
           )}
         />
@@ -291,12 +291,12 @@ export function StatsShareDialog({
           type="button"
           aria-label={t('copyLink')}
           onClick={() => void handleCopy()}
-          className="inline-flex size-9 shrink-0 items-center justify-center rounded-lg text-home-filter-muted hover:bg-black/5 dark:text-home-filter-ink dark:hover:bg-white/5"
+          className="inline-flex size-9 shrink-0 items-center justify-center rounded-lg text-app-filter-muted hover:bg-black/5 dark:text-app-filter-ink dark:hover:bg-white/5"
         >
           <Copy className="size-5" strokeWidth={1.5} />
         </button>
         <p
-          className="min-w-0 flex-1 truncate text-sm text-home-filter-muted"
+          className="min-w-0 flex-1 truncate text-sm text-app-filter-muted"
           dir="ltr"
         >
           {copied ? t('copied') : shareUrl}
@@ -304,7 +304,7 @@ export function StatsShareDialog({
       </div>
 
       <div
-        className="h-px w-full bg-home-carousel-inactive dark:bg-border"
+        className="h-px w-full bg-app-carousel-inactive dark:bg-border"
         aria-hidden
       />
 
@@ -422,7 +422,7 @@ const SHARE_TARGETS = [
   {
     id: 'drive',
     className:
-      'bg-home-stat-card text-home-filter-muted ring-1 ring-home-carousel-inactive dark:text-home-filter-ink dark:ring-border',
+      'bg-app-stat-card text-app-filter-muted ring-1 ring-app-carousel-inactive dark:text-app-filter-ink dark:ring-border',
     href: (url: string) => url,
     icon: (
       <svg viewBox="0 0 24 24" className="size-6" aria-hidden>

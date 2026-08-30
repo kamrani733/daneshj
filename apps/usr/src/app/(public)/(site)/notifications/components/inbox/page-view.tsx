@@ -114,7 +114,7 @@ export function NotificationsPageView({
   }
 
   return (
-    <NotificationsPageShell contentClassName="flex flex-col gap-6 rounded-2xl bg-home-search-fill p-4">
+    <NotificationsPageShell contentClassName="flex flex-col gap-6 rounded-2xl bg-app-search-fill p-4">
       <Tabs
         value={tab}
         onValueChange={(value) => {

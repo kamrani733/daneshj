@@ -133,10 +133,10 @@ export function CommentsSection({
       <div className="flex w-full flex-col items-stretch gap-6">
         <div className="flex w-full items-center justify-start gap-3">
           <span
-            className="size-2 shrink-0 rounded-full bg-home-filter-ink/80"
+            className="size-2 shrink-0 rounded-full bg-app-filter-ink/80"
             aria-hidden
           />
-          <p className="text-start text-sm font-medium leading-5 text-home-filter-ink">
+          <p className="text-start text-sm font-medium leading-5 text-app-filter-ink">
             {t('intro', { username })}
           </p>
         </div>
@@ -158,17 +158,17 @@ export function CommentsSection({
                 placeholder={t('placeholder')}
                 rows={expanded ? 4 : 2}
                 className={cn(
-                  'w-full resize-none rounded-xl border bg-home-stat-card px-3 py-3 text-start text-xs font-medium leading-5 text-home-filter-ink',
+                  'w-full resize-none rounded-xl border bg-app-stat-card px-3 py-3 text-start text-xs font-medium leading-5 text-app-filter-ink',
                   'shadow-[0_2px_6px_2px_rgba(0,0,0,0.15),0_1px_2px_0_rgba(0,0,0,0.3)]',
                   'placeholder:text-neutral-600 focus-visible:outline-none',
-                  'dark:border-border dark:bg-home-stat-card dark:text-home-filter-ink dark:placeholder:text-home-filter-muted',
+                  'dark:border-border dark:bg-app-stat-card dark:text-app-filter-ink dark:placeholder:text-app-filter-muted',
                   expanded
                     ? 'border-primary pb-8 focus-visible:ring-0 dark:border-primary-100'
                     : 'border-border focus-visible:ring-2 focus-visible:ring-primary/30'
                 )}
               />
               {expanded ? (
-                <span className="pointer-events-none absolute bottom-3 end-3 text-[11px] leading-4 text-neutral-600 dark:text-home-filter-muted">
+                <span className="pointer-events-none absolute bottom-3 end-3 text-[11px] leading-4 text-neutral-600 dark:text-app-filter-muted">
                   {t('charCount', {
                     count: formatFaNumber(draft.length),
                     max: formatFaNumber(COMMENT_MAX_LENGTH),
@@ -279,9 +279,9 @@ function CommentListPanel({
   }, [comments, query, sort]);
 
   return (
-    <section className="flex w-full flex-col gap-8 rounded-2xl bg-home-stat-card p-8 shadow-[0_4px_20px_0_rgba(0,0,0,0.05)]">
+    <section className="flex w-full flex-col gap-8 rounded-2xl bg-app-stat-card p-8 shadow-[0_4px_20px_0_rgba(0,0,0,0.05)]">
       <header className="flex w-full items-center justify-between gap-3">
-        <h3 className="text-start text-lg font-bold text-home-filter-ink">
+        <h3 className="text-start text-lg font-bold text-app-filter-ink">
           {title}
         </h3>
         <Badge className="h-auto rounded-[30px] border-0 bg-primary-subtle px-3 py-1 text-sm font-medium text-primary-700 dark:text-primary-100">
@@ -296,9 +296,9 @@ function CommentListPanel({
             value={sort}
             onChange={(event) => setSort(event.target.value as CommentSort)}
             className={cn(
-              'h-12 w-[176px] appearance-none rounded-full border border-border bg-transparent py-1.5 pe-3 ps-10 text-start text-sm font-medium text-home-filter-muted',
+              'h-12 w-[176px] appearance-none rounded-full border border-border bg-transparent py-1.5 pe-3 ps-10 text-start text-sm font-medium text-app-filter-muted',
               'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30',
-              'dark:border-border dark:text-home-filter-ink'
+              'dark:border-border dark:text-app-filter-ink'
             )}
           >
             <option value="newest">{t('sort.newest')}</option>
@@ -306,7 +306,7 @@ function CommentListPanel({
             <option value="mostLiked">{t('sort.mostLiked')}</option>
           </select>
           <ArrowUpDown
-            className="pointer-events-none absolute start-3 top-1/2 size-4 -translate-y-1/2 text-home-filter-muted"
+            className="pointer-events-none absolute start-3 top-1/2 size-4 -translate-y-1/2 text-app-filter-muted"
             aria-hidden
           />
         </label>
@@ -320,7 +320,7 @@ function CommentListPanel({
         />
       </div>
 
-      <div className="h-px w-full bg-home-search-category dark:bg-border" aria-hidden />
+      <div className="h-px w-full bg-app-search-category dark:bg-border" aria-hidden />
 
       {filtered.length === 0 ? (
         <EmptyState

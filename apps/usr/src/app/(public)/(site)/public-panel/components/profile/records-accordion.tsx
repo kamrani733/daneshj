@@ -60,7 +60,7 @@ export function RecordsAccordion({
               <li key={record.id}>
                 <AcademicRecordCard
                   record={record}
-                  className="rounded-2xl border border-border bg-home-stat-card px-6 py-5 shadow-[0_1px_3px_0_rgba(0,0,0,0.06)]"
+                  className="rounded-2xl border border-border bg-app-stat-card px-6 py-5 shadow-[0_1px_3px_0_rgba(0,0,0,0.06)]"
                 />
               </li>
             ))}

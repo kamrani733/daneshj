@@ -152,7 +152,7 @@ export function HomeMenuStackList({
       <ul
         dir="rtl"
         className={cn(
-          'flex min-h-0 w-full flex-col overflow-y-auto overscroll-contain rounded bg-home-search-category py-2 text-right shadow-home-elevation-2',
+          'flex min-h-0 w-full flex-col overflow-y-auto overscroll-contain rounded bg-app-search-category py-2 text-right shadow-app-elevation-2',
           'max-h-[min(60vh,calc(100dvh-10rem))]',
           listClassName
         )}
@@ -265,7 +265,7 @@ export function HomeMenuPanel({
     <ul
       dir="rtl"
       className={cn(
-        'relative z-[90] flex w-max min-w-[280px] max-w-[min(480px,90vw)] flex-col rounded bg-home-search-category py-2 text-right shadow-home-elevation-2',
+        'relative z-[90] flex w-max min-w-[280px] max-w-[min(480px,90vw)] flex-col rounded bg-app-search-category py-2 text-right shadow-app-elevation-2',
         scrollable
           ? 'overflow-y-auto overscroll-contain'
           : 'overflow-visible',

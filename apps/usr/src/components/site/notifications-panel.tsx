@@ -153,7 +153,7 @@ export function NotificationsPanel({
           aria-label={triggerLabel}
           className={cn(
             'w-[min(420px,calc(100vw-16px))] gap-4 rounded-3xl border-0',
-            'bg-home-header p-5 text-content shadow-home-elevation-2 ring-0'
+            'bg-app-header p-5 text-content shadow-app-elevation-2 ring-0'
           )}
         >
           {panelBody}
@@ -177,7 +177,7 @@ export function NotificationsPanel({
         variant="sheet"
         title={t('title')}
         description={triggerLabel}
-        className="max-h-[min(85vh,720px)] gap-4 bg-home-header text-content"
+        className="max-h-[min(85vh,720px)] gap-4 bg-app-header text-content"
       >
         {panelBody}
       </AppDialog>
@@ -323,7 +323,7 @@ function NotificationCard({
       onClick={() => onSelect?.(item)}
       className={cn(
         'flex w-full items-center gap-3 rounded-xl border border-[#E0E0E0] bg-white px-3 py-3 text-start',
-        'transition-opacity hover:opacity-95 dark:border-border dark:bg-home-search-category'
+        'transition-opacity hover:opacity-95 dark:border-border dark:bg-app-search-category'
       )}
     >
       <span

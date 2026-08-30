@@ -42,7 +42,7 @@ export function GuideSection() {
   const hasAny = showEdit || showConfirm || showManage;
 
   return (
-    <section className="flex w-full flex-col gap-6 min-[720px]:gap-8">
+    <section className="flex w-full flex-col gap-6 rounded-3xl border border-transparent min-[720px]:gap-8 dark:border-auth-input-border dark:bg-app-card dark:p-6">
       <div className="flex flex-col gap-3 min-[720px]:flex-row min-[720px]:items-center min-[720px]:justify-between min-[720px]:gap-4">
         <div className="flex items-center gap-3">
           <span
@@ -64,19 +64,19 @@ export function GuideSection() {
       </div>
 
       {!matchesSearch || !hasAny ? (
-        <p className="text-sm text-home-filter-muted">{t('emptySearch')}</p>
+        <p className="text-sm text-app-filter-muted dark:text-app-filter-muted">{t('emptySearch')}</p>
       ) : (
         <div className="flex flex-col gap-5 min-[720px]:gap-6">
           <div className="flex flex-col gap-3">
-            <h3 className="text-base font-bold leading-7 text-content min-[720px]:text-lg dark:text-home-filter-ink">
+            <h3 className="text-base font-bold leading-7 text-content min-[720px]:text-lg dark:text-app-filter-ink">
               {t('subsectionFields')}
             </h3>
-            <p className="text-justify text-sm font-medium leading-7 text-home-filter-muted dark:text-home-filter-ink">
+            <p className="text-justify text-sm font-medium leading-7 text-app-filter-muted dark:text-app-filter-ink">
               {content.fieldsIntro}
             </p>
           </div>
 
-          <Accordion type="multiple" className="flex flex-col gap-1">
+          <Accordion type="multiple" className="flex flex-col gap-1 dark:divide-y dark:divide-auth-input-border">
             {showEdit ? (
               <AccordionItem value={editBlock.id}>
                 <AccordionTrigger className="py-3 text-base font-bold">
@@ -102,15 +102,15 @@ export function GuideSection() {
 
           {showManage ? (
             <div className="flex flex-col gap-3 pt-1 min-[720px]:gap-4">
-              <h3 className="text-base font-bold leading-7 text-content dark:text-home-filter-ink">
+              <h3 className="text-base font-bold leading-7 text-content dark:text-app-filter-ink">
                 {manageBlock.title}
               </h3>
-              <div className="flex flex-col gap-3 text-justify text-sm font-medium leading-7 text-home-filter-muted dark:text-home-filter-ink">
+              <div className="flex flex-col gap-3 text-justify text-sm font-medium leading-7 text-app-filter-muted dark:text-app-filter-ink">
                 {manageBlock.paragraphs.map((p) => (
                   <p key={p}>{highlightQuotes(p)}</p>
                 ))}
                 {manageBlock.bullets?.length ? (
-                  <ul className="list-disc space-y-2 pe-5 marker:text-home-filter-muted">
+                  <ul className="list-disc space-y-2 pe-5 marker:text-app-filter-muted">
                     {manageBlock.bullets.map((item) => (
                       <li key={item}>{item}</li>
                     ))}
@@ -127,7 +127,7 @@ export function GuideSection() {
 
 function AccordionBody({ block }: { block: GuideAccordionBlock }) {
   return (
-    <div className="flex flex-col gap-4 text-justify text-sm font-medium leading-7 text-home-filter-muted dark:text-home-filter-ink">
+    <div className="flex flex-col gap-4 text-justify text-sm font-medium leading-7 text-app-filter-muted dark:text-app-filter-ink">
       {block.intro.map((p) => (
         <p key={p}>{p}</p>
       ))}
@@ -139,7 +139,7 @@ function AccordionBody({ block }: { block: GuideAccordionBlock }) {
           key={`${category.title}-${categoryIndex}`}
           className="flex flex-col gap-3"
         >
-          <h4 className="font-bold text-content dark:text-home-filter-ink">
+          <h4 className="font-bold text-content dark:text-app-filter-ink">
             {category.title}
           </h4>
           {category.paragraphs?.map((p) => (
@@ -147,14 +147,14 @@ function AccordionBody({ block }: { block: GuideAccordionBlock }) {
           ))}
           {category.subsections?.map((sub) => (
             <div key={sub.title} className="flex flex-col gap-2 ps-1">
-              <h5 className="font-semibold text-content dark:text-home-filter-ink">
+              <h5 className="font-semibold text-content dark:text-app-filter-ink">
                 {sub.title}
               </h5>
               {sub.paragraphs?.map((p) => (
                 <p key={p}>{p}</p>
               ))}
               {sub.bullets?.length ? (
-                <ul className="list-disc space-y-1.5 pe-5 marker:text-home-filter-muted">
+                <ul className="list-disc space-y-1.5 pe-5 marker:text-app-filter-muted">
                   {sub.bullets.map((item) => (
                     <li key={item}>{item}</li>
                   ))}
@@ -163,7 +163,7 @@ function AccordionBody({ block }: { block: GuideAccordionBlock }) {
             </div>
           ))}
           {category.bullets?.length ? (
-            <ul className="list-disc space-y-1.5 pe-5 marker:text-home-filter-muted">
+            <ul className="list-disc space-y-1.5 pe-5 marker:text-app-filter-muted">
               {category.bullets.map((item) => (
                 <li key={item}>{item}</li>
               ))}

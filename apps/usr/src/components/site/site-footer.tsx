@@ -10,10 +10,10 @@ export async function SiteFooter() {
   const t = await getTranslations('home.footer');
 
   return (
-    <footer className="relative overflow-hidden bg-home-header">
+    <footer className="relative overflow-hidden bg-app-header">
       <div
         aria-hidden
-        className="home-footer-pattern pointer-events-none absolute inset-0 opacity-30"
+        className="app-footer-pattern pointer-events-none absolute inset-0 opacity-30"
         style={{
           backgroundImage: `url(${SITE_IMAGES.bgPattern})`,
           backgroundSize: 'cover',

@@ -42,7 +42,7 @@ function FileKindIcon({ kind, name }: { kind: DocumentKind; name?: string }) {
   }
   return (
     <FileText
-      className="size-8 shrink-0 text-[#404943]"
+      className="size-8 shrink-0 text-[#404943] dark:text-app-filter-muted"
       strokeWidth={1.5}
       aria-hidden
     />
@@ -70,12 +70,12 @@ export function DocumentItem({
         <div
           className={cn(
             'flex h-14 items-center gap-3 rounded-xl border border-[#bfc9c1]',
-            'bg-home-card px-3 dark:border-auth-input-border dark:bg-home-search-category'
+            'bg-app-card px-3 dark:border-auth-input-border dark:bg-app-search-category'
           )}
         >
           <div className="flex min-w-0 flex-1 items-center gap-2">
             <FileKindIcon kind={item.kind} name={item.name} />
-            <span className="truncate text-sm font-medium text-[#171d19] dark:text-home-filter-ink">
+            <span className="truncate text-sm font-medium text-[#171d19] dark:text-app-filter-ink">
               {item.name}
             </span>
           </div>
@@ -85,7 +85,7 @@ export function DocumentItem({
             className={cn(
               'flex size-9 shrink-0 items-center justify-center rounded-lg border',
               'border-[#c4c7c0] bg-transparent text-[#404943]',
-              'dark:border-auth-input-border dark:text-home-filter-muted'
+              'dark:border-auth-input-border dark:text-app-filter-muted'
             )}
             aria-label={t('remove')}
           >
@@ -117,22 +117,22 @@ export function DocumentItem({
       <div
         className={cn(
           'flex h-14 items-center gap-3 rounded-xl border px-3',
-          'bg-home-card dark:border-auth-input-border dark:bg-home-search-category',
-          isError ? 'border-[#ba1a1a]' : 'border-[#bfc9c1]'
+          'bg-app-card dark:border-auth-input-border dark:bg-app-search-category',
+            isError ? 'border-[#ba1a1a]' : 'border-[#bfc9c1]'
         )}
       >
         <div className="flex min-w-0 max-w-[45%] items-center gap-2">
           <FileKindIcon kind={item.kind} name={item.name} />
-          <span className="truncate text-sm font-medium text-[#171d19] dark:text-home-filter-ink">
+          <span className="truncate text-sm font-medium text-[#171d19] dark:text-app-filter-ink">
             {item.name}
           </span>
         </div>
 
         {showProgress ? (
           <div className="min-w-0 flex-1 px-1">
-            <div className="h-3 w-full overflow-hidden rounded-full bg-[#ffdbcf]">
+            <div className="h-3 w-full overflow-hidden rounded-full bg-[#ffdbcf] dark:bg-warning/25">
               <div
-                className="h-full rounded-full bg-[#008d63] transition-[width] duration-300"
+                className="h-full rounded-full bg-[#008d63] transition-[width] duration-300 dark:bg-primary-100"
                 style={{ width: `${progress}%` }}
               />
             </div>
@@ -152,7 +152,7 @@ export function DocumentItem({
             'flex size-9 shrink-0 items-center justify-center rounded-lg border bg-transparent',
             isError
               ? 'border-[#ba1a1a] text-[#ba1a1a]'
-              : 'border-[#c4c7c0] text-[#404943] dark:border-auth-input-border dark:text-home-filter-muted'
+              : 'border-[#c4c7c0] text-[#404943] dark:border-auth-input-border dark:text-app-filter-muted'
           )}
           aria-label={
             item.state === 'uploading' ? t('cancel') : t('remove')
@@ -198,8 +198,8 @@ function DecisionRadio({
           checked
             ? isReject
               ? 'text-[#ba1a1a]'
-              : 'text-[#008d63]'
-            : 'text-[#404943]'
+              : 'text-[#008d63] dark:text-primary-100'
+            : 'text-[#404943] dark:text-app-filter-muted'
         )}
       >
         {label}
@@ -210,8 +210,8 @@ function DecisionRadio({
           checked
             ? isReject
               ? 'border-[#ba1a1a]'
-              : 'border-[#008d63]'
-            : 'border-[#707973]'
+              : 'border-[#008d63] dark:border-primary-100'
+            : 'border-[#707973] dark:border-app-filter-muted'
         )}
       >
         <input
@@ -225,7 +225,7 @@ function DecisionRadio({
           <span
             className={cn(
               'size-2.5 rounded-full',
-              isReject ? 'bg-[#ba1a1a]' : 'bg-[#008d63]'
+              isReject ? 'bg-[#ba1a1a]' : 'bg-[#008d63] dark:bg-primary-100'
             )}
           />
         ) : null}

@@ -69,7 +69,7 @@ export function HomeSearchFilterBar({
   return (
     <div
       className={cn(
-        'relative w-full rounded-[12px] border border-home-filter bg-home-search-fill',
+        'relative w-full rounded-[12px] border border-app-filter bg-app-search-fill',
         (panelOpen || sortOpen) && 'z-[60]',
         className
       )}
@@ -118,7 +118,7 @@ export function HomeSearchFilterBar({
       {panelOpen ? (
         <div dir="rtl" className="flex flex-col">
           <div className="flex h-14 items-center justify-start px-3">
-            <p className="text-base leading-6 tracking-[0.0094em] text-home-filter-ink">
+            <p className="text-base leading-6 tracking-[0.0094em] text-app-filter-ink">
               {t('title')}
             </p>
           </div>
@@ -261,7 +261,7 @@ function FilterField({
       >
         <ChevronDown
           className={cn(
-            'size-6 shrink-0 text-home-filter-muted transition-transform',
+            'size-6 shrink-0 text-app-filter-muted transition-transform',
             open && 'rotate-180'
           )}
           aria-hidden

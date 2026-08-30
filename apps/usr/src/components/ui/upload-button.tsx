@@ -31,6 +31,7 @@ export function UploadButton({
         'transition-colors hover:bg-[#ffcdb8]',
         'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#e06333]/40',
         'disabled:pointer-events-none disabled:opacity-50',
+        'dark:bg-warning-50 dark:text-warning-800 dark:hover:bg-warning-100',
         fullWidth ? 'w-full' : 'min-w-[168px]',
         className
       )}

@@ -77,7 +77,7 @@ export function SearchResultCard({
       dir="rtl"
       className={cn(
         'flex w-full max-w-[320px] flex-col overflow-hidden rounded-xl',
-        'border border-home-filter bg-home-card shadow-home-elevation-1',
+        'border border-app-filter bg-app-card shadow-app-elevation-1',
         'min-[640px]:max-w-none',
         className
       )}
@@ -111,25 +111,25 @@ export function SearchResultCard({
 
       <div className="flex w-full flex-col gap-2 p-4" dir="rtl">
         <div className="flex w-full flex-col gap-2">
-          <p className="w-full text-right text-xs font-bold leading-4 tracking-[0.0083em] text-home-filter-muted">
+          <p className="w-full text-right text-xs font-bold leading-4 tracking-[0.0083em] text-app-filter-muted">
             {businessName}
           </p>
-          <h3 className="w-full text-right text-base font-semibold leading-6 tracking-[0.0094em] text-home-filter-ink">
+          <h3 className="w-full text-right text-base font-semibold leading-6 tracking-[0.0094em] text-app-filter-ink">
             {title}
           </h3>
 
           <div className="flex w-full items-center justify-start gap-1">
             <GoldStarIcon className="size-4 shrink-0" />
-            <span className="text-sm font-bold leading-5 text-home-filter-muted">
+            <span className="text-sm font-bold leading-5 text-app-filter-muted">
               {formatFaRating(rating)}
             </span>
-            <span className="text-xs leading-4 tracking-[0.0083em] text-home-filter-muted">
+            <span className="text-xs leading-4 tracking-[0.0083em] text-app-filter-muted">
               ({formatFaNumber(reviewCount)} نظر)
             </span>
           </div>
         </div>
 
-        <div className="mx-2 h-px bg-home-filter-border" aria-hidden />
+        <div className="mx-2 h-px bg-app-filter-border" aria-hidden />
 
         <div className="flex w-full items-end justify-between gap-3 px-2">
           <div className="flex flex-col items-end gap-1">

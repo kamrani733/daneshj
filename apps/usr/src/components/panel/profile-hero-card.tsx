@@ -32,8 +32,8 @@ export function ProfileHeroCard({ profile }: ProfileHeroCardProps) {
   return (
     <article
       className={cn(
-        'relative w-full overflow-hidden rounded-[24px] bg-home-card',
-        'shadow-home-elevation-2 dark:bg-home-search-category',
+        'relative w-full overflow-hidden rounded-[24px] bg-app-card',
+        'shadow-app-elevation-2 dark:bg-app-search-category',
       )}
     >
       {showProvider ? (
@@ -42,7 +42,7 @@ export function ProfileHeroCard({ profile }: ProfileHeroCardProps) {
           className={cn(
             'absolute start-0 top-3 z-20 h-10 rounded-none rounded-e-[10px]',
             'px-3 text-xs font-semibold leading-5 tracking-[0.0094em]',
-            'shadow-home-elevation-3',
+            'shadow-app-elevation-3',
             'min-[834px]:top-[15px] min-[834px]:h-[55px] min-[834px]:px-5 min-[834px]:text-base min-[834px]:leading-6',
           )}
         >
@@ -88,7 +88,7 @@ export function ProfileHeroCard({ profile }: ProfileHeroCardProps) {
                 <h2 className="text-xl font-bold leading-8 tracking-[0.0094em] text-content dark:text-primary-100 min-[834px]:text-[28px] min-[834px]:leading-10">
                   {profile.displayName}
                 </h2>
-                <p className="text-sm font-medium leading-6 text-content dark:text-home-filter-ink min-[834px]:text-lg min-[834px]:font-bold">
+                <p className="text-sm font-medium leading-6 text-content dark:text-app-filter-ink min-[834px]:text-lg min-[834px]:font-bold">
                   {profile.username}
                 </p>
                 <span className="text-base font-medium leading-6 text-warning min-[834px]:text-[17px]">
@@ -97,10 +97,10 @@ export function ProfileHeroCard({ profile }: ProfileHeroCardProps) {
               </div>
 
               {showLocation ? (
-                <p className="flex items-center justify-center gap-2 px-2 text-sm font-medium leading-6 text-home-filter-muted min-[834px]:text-base">
+                <p className="flex items-center justify-center gap-2 px-2 text-sm font-medium leading-6 text-app-filter-muted min-[834px]:text-base">
                   <span>{profile.location}</span>
                   <MapPin
-                    className="size-5 shrink-0 text-home-filter-muted min-[834px]:size-6"
+                    className="size-5 shrink-0 text-app-filter-muted min-[834px]:size-6"
                     strokeWidth={1.5}
                     aria-hidden
                   />
@@ -111,9 +111,9 @@ export function ProfileHeroCard({ profile }: ProfileHeroCardProps) {
                 asChild
                 variant="outline"
                 className={cn(
-                  'h-11 w-full max-w-[240px] rounded-full border-border bg-home-scene px-4',
-                  'text-sm font-medium text-home-filter-muted shadow-none',
-                  'hover:bg-home-scene dark:border-home-filter-border dark:bg-transparent dark:text-content',
+                  'h-11 w-full max-w-[240px] rounded-full border-border bg-app-scene px-4',
+                  'text-sm font-medium text-app-filter-muted shadow-none',
+                  'hover:bg-app-scene dark:border-app-filter-border dark:bg-transparent dark:text-content',
                   'min-[834px]:h-12 min-[834px]:w-auto min-[834px]:min-w-[169px]',
                 )}
               >
@@ -134,9 +134,9 @@ export function ProfileHeroCard({ profile }: ProfileHeroCardProps) {
           {showAbout ? (
             <BorderedSectionCard
               title={t('aboutMe')}
-              titleBgClassName="bg-home-card"
+              titleBgClassName="bg-app-card"
               className={cn(
-                'min-h-[120px] w-full border-primary-200/70 bg-home-card p-4 dark:border-primary/40 dark:bg-home-search-category',
+                'min-h-[120px] w-full border-primary-200/70 bg-app-card p-4 dark:border-primary/40 dark:bg-app-search-category',
                 'min-[834px]:min-h-[148px] min-[834px]:max-w-[590px] min-[834px]:flex-1 min-[834px]:p-6',
               )}
               footer={
@@ -151,7 +151,7 @@ export function ProfileHeroCard({ profile }: ProfileHeroCardProps) {
                 ) : null
               }
             >
-              <p className="text-justify text-sm font-medium leading-5 tracking-[0.0071em] text-content dark:text-home-filter-ink">
+              <p className="text-justify text-sm font-medium leading-5 tracking-[0.0071em] text-content dark:text-app-filter-ink">
                 {bioText}
               </p>
             </BorderedSectionCard>

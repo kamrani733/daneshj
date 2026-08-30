@@ -66,7 +66,7 @@ export function ReportsToolbar({
   return (
     <div
       className={cn(
-        'flex w-full flex-col rounded-xl border border-border bg-home-search-fill',
+        'flex w-full flex-col rounded-xl border border-border bg-app-search-fill',
         panelOpen && 'z-[60]'
       )}
     >
@@ -121,7 +121,7 @@ export function ReportsToolbar({
             <PopoverContent
               align="start"
               sideOffset={6}
-              className="w-[280px] gap-0 rounded border-0 bg-home-search-category p-0 py-2 shadow-home-elevation-2 ring-0"
+              className="w-[280px] gap-0 rounded border-0 bg-app-search-category p-0 py-2 shadow-app-elevation-2 ring-0"
             >
               <ul role="menu" dir="rtl" aria-label={t('sort')} className="flex flex-col">
                 {ORDERING_OPTIONS.map((option) => {

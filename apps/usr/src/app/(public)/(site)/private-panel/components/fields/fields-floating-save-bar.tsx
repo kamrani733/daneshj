@@ -34,11 +34,11 @@ export function FieldsFloatingSaveBar({
       <div
         className={cn(
           'pointer-events-auto flex w-full max-w-[920px] items-center gap-3',
-          'rounded-full bg-[#efede6] px-4 py-2.5 shadow-home-elevation-2',
-          'dark:bg-home-stat-card'
+          'rounded-full bg-[#efede6] px-4 py-2.5 shadow-app-elevation-2',
+          'dark:border dark:border-auth-input-border dark:bg-app-search-category'
         )}
       >
-        <p className="min-w-0 flex-1 text-start text-xs font-medium leading-5 text-[#171d19] min-[720px]:text-sm dark:text-home-filter-ink">
+        <p className="min-w-0 flex-1 text-start text-xs font-medium leading-5 text-[#171d19] min-[720px]:text-sm dark:text-app-filter-ink">
           {t('dirtyHint')}
         </p>
         <button
@@ -55,7 +55,8 @@ export function FieldsFloatingSaveBar({
           onClick={onSave}
           className={cn(
             'h-10 shrink-0 !rounded-xl bg-[#008d63] px-5 text-sm font-medium text-white shadow-none',
-            'hover:bg-[#008d63]/90 disabled:opacity-60'
+            'hover:bg-[#008d63]/90 disabled:opacity-60',
+            'dark:bg-primary-100 dark:text-primary-900 dark:hover:bg-primary-100/90'
           )}
         >
           {saving ? (

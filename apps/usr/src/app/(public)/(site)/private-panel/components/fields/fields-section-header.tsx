@@ -20,7 +20,7 @@ export function ModeTabs({
     'text-sm font-medium text-[#404943] shadow-none',
     'data-[state=active]:border-b-[#008d63] data-[state=active]:bg-transparent',
     'data-[state=active]:font-bold data-[state=active]:text-[#171d19]',
-    'data-[state=active]:shadow-none dark:text-home-filter-ink',
+    'data-[state=active]:shadow-none dark:text-app-filter-ink',
     'dark:data-[state=active]:border-b-primary-100 dark:data-[state=active]:text-primary-100',
   );
 
@@ -72,7 +72,7 @@ export function OwnerIntroBullets({
             aria-hidden
             className="mt-2 size-1.5 shrink-0 rounded-full bg-[#008d63]"
           />
-          <p className="min-w-0 flex-1 text-justify text-sm font-medium leading-6 text-[#171d19] dark:text-home-filter-ink">
+          <p className="min-w-0 flex-1 text-justify text-sm font-medium leading-6 text-[#171d19] dark:text-app-filter-ink">
             {index === 1 ? (
               <>
                 {t('intro.requiredBefore')}
@@ -104,7 +104,7 @@ export function ReviewIntroBullets({
             aria-hidden
             className="mt-2 size-1.5 shrink-0 rounded-full bg-[#008d63]"
           />
-          <p className="min-w-0 flex-1 text-justify text-sm font-medium leading-6 text-[#171d19] dark:text-home-filter-ink">
+          <p className="min-w-0 flex-1 text-justify text-sm font-medium leading-6 text-[#171d19] dark:text-app-filter-ink">
             {t(`reviewIntro.p${index}` as 'reviewIntro.p1', { username })}
           </p>
         </li>

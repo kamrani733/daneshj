@@ -18,7 +18,7 @@ export function BorderedSectionCard({
   children,
   footer,
   className,
-  titleBgClassName = 'bg-home-scene',
+  titleBgClassName = 'bg-app-scene',
   titleClassName,
 }: BorderedSectionCardProps) {
   return (
@@ -31,7 +31,7 @@ export function BorderedSectionCard({
       <h3
         className={cn(
           'absolute -top-2.5 start-4 px-1 text-sm font-bold leading-5 tracking-[0.0071em] text-primary',
-          'dark:!bg-home-search-category',
+          'dark:!bg-app-search-category',
           titleBgClassName,
           titleClassName
         )}

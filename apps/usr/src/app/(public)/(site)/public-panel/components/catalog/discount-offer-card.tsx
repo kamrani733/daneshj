@@ -55,18 +55,18 @@ export function DiscountOfferCard({ offer, className }: DiscountOfferCardProps) 
         </Badge>
       </div>
 
-      <div className="relative z-10 flex flex-1 flex-col gap-3 bg-home-card p-3 transition-colors duration-200 group-hover:bg-transparent dark:bg-home-stat-card dark:group-hover:bg-transparent">
+      <div className="relative z-10 flex flex-1 flex-col gap-3 bg-app-card p-3 transition-colors duration-200 group-hover:bg-transparent dark:bg-app-stat-card dark:group-hover:bg-transparent">
         <div className="flex flex-col gap-1 text-start">
-          <h3 className="text-sm font-bold leading-5 text-home-filter-ink transition-colors duration-200 group-hover:text-white">
+          <h3 className="text-sm font-bold leading-5 text-app-filter-ink transition-colors duration-200 group-hover:text-white">
             {offer.title}
           </h3>
-          <p className="text-xs leading-4 text-home-filter-muted transition-colors duration-200 group-hover:text-white/85">
+          <p className="text-xs leading-4 text-app-filter-muted transition-colors duration-200 group-hover:text-white/85">
             {offer.businessName}
           </p>
         </div>
 
         <div className="mt-auto flex items-end justify-between gap-2">
-          <div className="flex items-center gap-1 text-xs text-home-filter-ink transition-colors duration-200 group-hover:text-white">
+          <div className="flex items-center gap-1 text-xs text-app-filter-ink transition-colors duration-200 group-hover:text-white">
             <Star
               className="size-3.5 fill-warning text-warning"
               aria-hidden
@@ -86,7 +86,7 @@ export function DiscountOfferCard({ offer, className }: DiscountOfferCardProps) 
             >
               {offer.discountBadge}
             </Badge>
-            <span className="text-[11px] leading-4 text-home-filter-muted line-through transition-colors duration-200 group-hover:text-white/75">
+            <span className="text-[11px] leading-4 text-app-filter-muted line-through transition-colors duration-200 group-hover:text-white/75">
               {offer.originalPrice}
             </span>
             <span className="text-sm font-bold leading-5 text-primary transition-colors duration-200 group-hover:text-white">

@@ -27,7 +27,7 @@ export function SettingsFloatingActions({
       aria-label={t('floatingActions')}
       className="pointer-events-none fixed inset-x-0 bottom-0 z-40 flex justify-center px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-2"
     >
-      <div className="pointer-events-auto flex w-full max-w-[1364px] items-center justify-end gap-3 rounded-2xl bg-home-search-category px-4 py-3 shadow-home-elevation-2">
+      <div className="pointer-events-auto flex w-full max-w-[1364px] items-center justify-end gap-3 rounded-2xl bg-app-search-category px-4 py-3 shadow-app-elevation-2">
         <Button
           type="button"
           variant="ghost"

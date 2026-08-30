@@ -16,7 +16,7 @@ type OtherInfoPanelProps = {
   content: OtherInfoContent;
 };
 
-const CARD_ELEVATION = 'shadow-home-elevation-1';
+const CARD_ELEVATION = 'shadow-app-elevation-1';
 
 /** «سایر اطلاعات» — resume, portfolio, certificates (library node 2453:5976). */
 export function OtherInfoPanel({ content }: OtherInfoPanelProps) {
@@ -31,7 +31,7 @@ export function OtherInfoPanel({ content }: OtherInfoPanelProps) {
       <EmptyState
         message={t('emptyOther')}
         imageSrc="/images/public-panel/empty-state-alt.png"
-        className="rounded-2xl bg-home-stat-card shadow-[0_1px_2px_rgba(0,0,0,0.06)] dark:bg-home-search-category"
+        className="rounded-2xl bg-app-stat-card shadow-[0_1px_2px_rgba(0,0,0,0.06)] dark:bg-app-search-category"
       />
     );
   }
@@ -42,7 +42,7 @@ export function OtherInfoPanel({ content }: OtherInfoPanelProps) {
         <OtherInfoSection title={t('otherInfo.resume')}>
           <div
             className={cn(
-              'relative flex min-h-[184px] w-full flex-col gap-6 rounded-2xl border border-border bg-home-stat-card p-5',
+              'relative flex min-h-[184px] w-full flex-col gap-6 rounded-2xl border border-border bg-app-stat-card p-5',
               CARD_ELEVATION,
               'dark:border-warning-700 dark:bg-warning-800'
             )}
@@ -57,10 +57,10 @@ export function OtherInfoPanel({ content }: OtherInfoPanelProps) {
               />
 
               <div className="flex min-w-0 flex-1 flex-col items-start gap-1 pt-2 text-start">
-                <p className="w-full truncate text-base font-semibold leading-6 tracking-[0.0094em] text-home-filter-muted dark:text-home-filter-ink">
+                <p className="w-full truncate text-base font-semibold leading-6 tracking-[0.0094em] text-app-filter-muted dark:text-app-filter-ink">
                   {content.resume.fileName}
                 </p>
-                <p className="w-full text-xs font-medium leading-5 tracking-[0.0083em] text-neutral-600 dark:text-home-filter-muted">
+                <p className="w-full text-xs font-medium leading-5 tracking-[0.0083em] text-neutral-600 dark:text-app-filter-muted">
                   {content.resume.sizeLabel}
                   <span aria-hidden> {'  •  '} </span>
                   {t('otherInfo.updatedAt', { date: content.resume.updatedAt })}
@@ -111,8 +111,8 @@ export function OtherInfoPanel({ content }: OtherInfoPanelProps) {
           >
             {content.portfolio.map((item) => (
               <li key={item.id} className="min-w-0">
-                <article className="flex h-full flex-col overflow-hidden rounded-xl border border-border bg-home-card dark:border-border dark:bg-surface-dark">
-                  <div className="relative h-[188px] w-full shrink-0 overflow-hidden bg-home-search-category">
+                <article className="flex h-full flex-col overflow-hidden rounded-xl border border-border bg-app-card dark:border-border dark:bg-surface-dark">
+                  <div className="relative h-[188px] w-full shrink-0 overflow-hidden bg-app-search-category">
                     <Image
                       src={item.imageSrc}
                       alt={item.title}
@@ -121,11 +121,11 @@ export function OtherInfoPanel({ content }: OtherInfoPanelProps) {
                       sizes="(max-width: 640px) 100vw, (max-width: 960px) 50vw, 420px"
                     />
                   </div>
-                  <div className="flex flex-col items-start gap-0 bg-home-card p-4 text-start dark:bg-surface-dark">
-                    <h4 className="w-full text-base font-normal leading-6 tracking-[0.0094em] text-home-filter-ink">
+                  <div className="flex flex-col items-start gap-0 bg-app-card p-4 text-start dark:bg-surface-dark">
+                    <h4 className="w-full text-base font-normal leading-6 tracking-[0.0094em] text-app-filter-ink">
                       {item.title}
                     </h4>
-                    <p className="w-full text-sm font-normal leading-5 tracking-[0.0071em] text-neutral-600 dark:text-home-filter-muted">
+                    <p className="w-full text-sm font-normal leading-5 tracking-[0.0071em] text-neutral-600 dark:text-app-filter-muted">
                       {item.description}
                     </p>
                   </div>
@@ -141,7 +141,7 @@ export function OtherInfoPanel({ content }: OtherInfoPanelProps) {
           <ul
             dir="rtl"
             className={cn(
-              'flex w-full flex-col overflow-hidden rounded-2xl border border-border bg-home-stat-card',
+              'flex w-full flex-col overflow-hidden rounded-2xl border border-border bg-app-stat-card',
               CARD_ELEVATION,
               'dark:border-warning-700 dark:bg-warning-800'
             )}
@@ -163,10 +163,10 @@ export function OtherInfoPanel({ content }: OtherInfoPanelProps) {
                   className="size-[22px] shrink-0 dark:brightness-125"
                 />
                 <div className="flex min-w-0 flex-1 flex-col items-start gap-0 text-start">
-                  <p className="w-full text-sm font-semibold leading-5 tracking-[0.0071em] text-home-filter-muted dark:text-home-filter-ink">
+                  <p className="w-full text-sm font-semibold leading-5 tracking-[0.0071em] text-app-filter-muted dark:text-app-filter-ink">
                     {item.title}
                   </p>
-                  <p className="w-full text-xs font-medium leading-5 tracking-[0.0083em] text-neutral-600 dark:text-home-filter-muted">
+                  <p className="w-full text-xs font-medium leading-5 tracking-[0.0083em] text-neutral-600 dark:text-app-filter-muted">
                     {item.issuer}
                     <span aria-hidden> {'  •  '} </span>
                     {item.issuedAt}

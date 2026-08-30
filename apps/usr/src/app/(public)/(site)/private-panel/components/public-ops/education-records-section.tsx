@@ -42,7 +42,7 @@ export function EducationRecordsSection({
 
   return (
     <div className="flex flex-col gap-3 min-[720px]:gap-5">
-      <ul className="flex list-disc flex-col gap-2 pe-4 text-justify text-xs font-medium leading-6 text-home-filter-muted marker:text-home-filter-muted min-[720px]:pe-5 min-[720px]:text-sm min-[720px]:leading-7 dark:text-home-filter-ink">
+      <ul className="flex list-disc flex-col gap-2 pe-4 text-justify text-xs font-medium leading-6 text-app-filter-muted marker:text-app-filter-muted min-[720px]:pe-5 min-[720px]:text-sm min-[720px]:leading-7 dark:text-app-filter-ink">
         {INTRO.map((paragraph) => (
           <li key={paragraph}>{paragraph}</li>
         ))}
@@ -60,7 +60,7 @@ export function EducationRecordsSection({
         ))}
       </div>
 
-      <p className="text-justify text-xs font-medium leading-6 text-home-filter-muted min-[720px]:text-sm min-[720px]:leading-7 dark:text-home-filter-ink">
+      <p className="text-justify text-xs font-medium leading-6 text-app-filter-muted min-[720px]:text-sm min-[720px]:leading-7 dark:text-app-filter-ink">
         {t('academicRecordsHint', {
           count: formatFaNumber(records.length),
         })}
@@ -81,10 +81,12 @@ export function EducationRecordsSection({
               <AcademicRecordCard
                 record={toPanelAcademicRecord(record)}
                 className={cn(
-                  'rounded-xl border-[#707973] bg-[#f8f8f0] p-3 dark:bg-home-search-category',
+                  'rounded-xl border-[#707973] bg-[#f8f8f0] p-3 dark:bg-app-card',
                   'min-[720px]:p-4',
-                  state === 'visible' && 'border-[#dae6da]',
-                  state === 'pendingRemoval' && 'border-warning/50',
+                  state === 'visible' &&
+                    'border-[#dae6da] dark:border-primary-100/50',
+                  state === 'pendingRemoval' &&
+                    'border-warning/50 dark:border-warning-100/60',
                   state === 'hidden' && 'border-[#dbdbd3] dark:border-border'
                 )}
                 footer={

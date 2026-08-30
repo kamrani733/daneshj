@@ -39,7 +39,7 @@ export function NotificationsToolbar({
   return (
     <div
       className={cn(
-        'flex w-full flex-col rounded-xl border border-border bg-home-search-fill',
+        'flex w-full flex-col rounded-xl border border-border bg-app-search-fill',
         panelOpen && 'z-[60]'
       )}
     >

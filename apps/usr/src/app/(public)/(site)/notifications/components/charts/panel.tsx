@@ -57,7 +57,7 @@ export function NotificationsChartsPanel({
   });
 
   return (
-    <section className="overflow-hidden rounded-xl bg-home-search-fill ring-1 ring-border/40">
+    <section className="overflow-hidden rounded-xl bg-app-search-fill ring-1 ring-border/40">
       <header className="flex items-center justify-between gap-3 px-4 py-3.5 min-[720px]:px-5">
         <div className="flex items-center gap-2">
           <AccentMark />
@@ -88,16 +88,16 @@ export function NotificationsChartsPanel({
       {open ? (
         <div className="flex flex-col gap-4 px-3 pb-4 min-[720px]:gap-5 min-[720px]:px-5 min-[720px]:pb-5">
           {!canQuery ? (
-            <div className="flex min-h-[160px] items-center justify-center rounded-xl bg-white px-4 text-center text-sm text-home-filter-muted dark:bg-home-search-category">
+            <div className="flex min-h-[160px] items-center justify-center rounded-xl bg-white px-4 text-center text-sm text-app-filter-muted dark:bg-app-search-category">
               {t('authRequired')}
             </div>
           ) : isLoading ? (
-            <div className="flex min-h-[220px] items-center justify-center rounded-xl bg-white dark:bg-home-search-category">
+            <div className="flex min-h-[220px] items-center justify-center rounded-xl bg-white dark:bg-app-search-category">
               <Spinner className="size-8 text-primary" />
             </div>
           ) : errorMessage ? (
-            <div className="flex min-h-[160px] flex-col items-center justify-center gap-3 rounded-xl bg-white px-4 text-center dark:bg-home-search-category">
-              <p className="text-sm text-home-filter-muted">{errorMessage}</p>
+            <div className="flex min-h-[160px] flex-col items-center justify-center gap-3 rounded-xl bg-white px-4 text-center dark:bg-app-search-category">
+              <p className="text-sm text-app-filter-muted">{errorMessage}</p>
               <Button
                 type="button"
                 variant="outline"
