@@ -2,6 +2,8 @@
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
+import { EMPTY_PUBLIC_PANEL } from '@public-panel/data/public-panel-ui';
+
 import {
   followEntity,
   getAverageScore,
@@ -15,7 +17,27 @@ import {
   shareEntity,
   submitScore,
 } from './interactive-ops';
-import { interactiveOpsQueryKeys } from './query-keys';
+import {
+  isIndividualServiceProvider,
+  mapVisitorPublicPanel,
+} from './profile-mappers';
+import {
+  getPublicPanelStatusByAdmin,
+  getPublicPanelStatusByOwner,
+  requestPublicPanelChangeStatus,
+} from './profiles-base';
+import { retrieveBusinessPublicPanelForVisitor } from './profiles-business';
+import { retrieveIndividualPublicPanelForVisitor } from './profiles-individual';
+import { retrieveUserPublicPanelForVisitor } from './profiles-user';
+import {
+  interactiveOpsQueryKeys,
+  publicPanelActorQueryKeys,
+} from './query-keys';
+import type {
+  GetPublicPanelStatusPayload,
+  PublicPanelKind,
+  RequestPublicPanelChangeStatusPayload,
+} from '@public-panel/types/actor';
 import type {
   ActorQueryPayload,
   FollowPayload,
@@ -30,7 +52,7 @@ import type {
 import { TARGET_TYPE } from '@public-panel/types/api';
 
 function canQueryInteractiveOps() {
-  return Boolean(process.env.NEXT_PUBLIC_INTERACTIVE_OPS_API_URL);
+  return true;
 }
 
 export function useFollowersQuery(
@@ -306,6 +328,119 @@ export function useScoreMutation() {
         queryKey: interactiveOpsQueryKeys.averageScore(
           variables.targetId,
           variables.targetType
+        ),
+      });
+    },
+  });
+}
+
+function canQueryActor() {
+  return Boolean(process.env.NEXT_PUBLIC_ACTOR_API_URL);
+}
+
+function canFetchActor(accessToken: string | null | undefined) {
+  return Boolean(accessToken) && canQueryActor();
+}
+
+async function fetchVisitorPublicPanel(
+  accessToken: string | null | undefined,
+  actorId: number,
+  kind: PublicPanelKind
+) {
+  if (kind === 'business') {
+    const businessData = await retrieveBusinessPublicPanelForVisitor({
+      accessToken,
+      actorId,
+    });
+    return mapVisitorPublicPanel(actorId, kind, undefined, undefined, businessData);
+  }
+
+  const userData = await retrieveUserPublicPanelForVisitor({
+    accessToken,
+    actorId,
+  });
+  const shouldLoadIndividual =
+    kind === 'individual' || isIndividualServiceProvider(userData);
+  const individualData = shouldLoadIndividual
+    ? await retrieveIndividualPublicPanelForVisitor({
+        accessToken,
+        actorId,
+      }).catch(() => null)
+    : null;
+  return mapVisitorPublicPanel(
+    actorId,
+    shouldLoadIndividual ? 'individual' : 'user',
+    userData,
+    individualData
+  );
+}
+
+/** GET public retrieve-for-visitor — Usr-Prf-6N1 / 6N2 */
+export function usePublicPanelProfileQuery(
+  accessToken: string | null | undefined,
+  actorId: number | null | undefined,
+  kind: PublicPanelKind = 'user'
+) {
+  const targetId = actorId ?? 0;
+  return useQuery({
+    queryKey: publicPanelActorQueryKeys.profile(targetId, kind),
+    queryFn: () => fetchVisitorPublicPanel(accessToken, targetId, kind),
+    enabled: canFetchActor(accessToken) && targetId > 0,
+    staleTime: 60_000,
+    placeholderData: EMPTY_PUBLIC_PANEL,
+  });
+}
+
+export function usePublicPanelVisitorQuery(
+  accessToken: string | null | undefined,
+  actorId: number | null | undefined,
+  kind: PublicPanelKind = 'user',
+  enabled = true
+) {
+  const targetId = actorId ?? 0;
+  return useQuery({
+    queryKey: publicPanelActorQueryKeys.visitor(targetId, kind),
+    queryFn: () => fetchVisitorPublicPanel(accessToken, targetId, kind),
+    enabled: enabled && canFetchActor(accessToken) && targetId > 0,
+  });
+}
+
+export function usePublicPanelStatusQuery(
+  payload: Omit<GetPublicPanelStatusPayload, 'accessToken'> & {
+    accessToken?: string | null;
+  },
+  enabled = true
+) {
+  return useQuery({
+    queryKey: publicPanelActorQueryKeys.status(
+      payload.actorType,
+      payload.actorId
+    ),
+    queryFn: () =>
+      payload.actorId
+        ? getPublicPanelStatusByAdmin({
+            accessToken: payload.accessToken,
+            actorType: payload.actorType,
+            actorId: payload.actorId,
+          })
+        : getPublicPanelStatusByOwner({
+            accessToken: payload.accessToken,
+            actorType: payload.actorType,
+          }),
+    enabled: enabled && canFetchActor(payload.accessToken),
+  });
+}
+
+export function useRequestPublicPanelChangeStatusMutation() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (payload: RequestPublicPanelChangeStatusPayload) =>
+      requestPublicPanelChangeStatus(payload),
+    onSuccess: async (_data, variables) => {
+      await queryClient.invalidateQueries({
+        queryKey: publicPanelActorQueryKeys.status(
+          variables.actorType,
+          variables.actorId
         ),
       });
     },

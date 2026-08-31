@@ -2,13 +2,11 @@
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
-import { EMPTY_PUBLIC_PANEL } from '@public-panel/data/public-panel-ui';
 import type { PrivatePanelProfile } from '@private-panel/data/private-panel-ui';
 
 import {
   mapAcademicRecords,
   mapPrivatePanelProfile,
-  mapPublicPanelProfile,
   mapVisibilityFields,
 } from './mappers';
 import {
@@ -274,25 +272,7 @@ export function usePublicPanelForVisitorQuery(
   });
 }
 
-export function usePublicPanelProfileQuery(
-  accessToken: string | null | undefined,
-  actorId: number | null | undefined
-) {
-  const targetId = actorId ?? 0;
-  return useQuery({
-    queryKey: actorQueryKeys.publicPanelProfile(targetId),
-    queryFn: async () => {
-      const publicData = await retrievePublicPanelForVisitor({
-        accessToken,
-        actorId: targetId,
-      });
-      return mapPublicPanelProfile(targetId, publicData);
-    },
-    enabled: canFetch(accessToken) && targetId > 0,
-    staleTime: 60_000,
-    placeholderData: EMPTY_PUBLIC_PANEL,
-  });
-}
+export { usePublicPanelProfileQuery } from '@public-panel/api/react-query';
 
 export function useServiceTitlesQuery(
   payload: Omit<ListServiceTitlesPayload, 'accessToken'> & {

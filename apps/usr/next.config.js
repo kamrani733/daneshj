@@ -60,7 +60,13 @@ const nextConfig = {
     const actorBackend = process.env.ACTOR_API_URL;
     if (actorBackend) {
       const base = actorBackend.replace(/\/$/, '');
-      for (const prefix of ['profiles_base', 'profiles_user', 'service_titles']) {
+      for (const prefix of [
+        'profiles_base',
+        'profiles_user',
+        'profiles_individual',
+        'profiles_business',
+        'service_titles',
+      ]) {
         rules.push({
           source: `/api/${prefix}/:path*`,
           destination: `${base}/${prefix}/:path*`,

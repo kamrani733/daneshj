@@ -2,10 +2,9 @@
 
 import { useTranslations } from 'next-intl';
 
-import {
-  usePublicPanelProfileQuery,
-} from '@private-panel/api';
+import { usePublicPanelProfileQuery } from '@public-panel/api';
 import { EMPTY_PUBLIC_PANEL } from '@public-panel/data/public-panel-ui';
+import type { PublicPanelKind } from '@public-panel/types/actor';
 
 import { PanelLoadingOverlay, ProfileHeroCard } from '@/components/panel';
 
@@ -19,16 +18,22 @@ import { ServiceInfoSection } from './catalog/service-info-section';
 type PublicPanelViewProps = {
   accessToken?: string | null;
   actorId?: number | null;
+  actorType?: PublicPanelKind;
   viewerActorId?: number | null;
 };
 
 export function PublicPanelView({
   accessToken,
   actorId,
+  actorType = 'user',
   viewerActorId,
 }: PublicPanelViewProps) {
   const t = useTranslations('publicPanel');
-  const profileQuery = usePublicPanelProfileQuery(accessToken, actorId);
+  const profileQuery = usePublicPanelProfileQuery(
+    accessToken,
+    actorId,
+    actorType
+  );
   const profile = profileQuery.data ?? EMPTY_PUBLIC_PANEL;
   const isLoading =
     profileQuery.isFetching &&

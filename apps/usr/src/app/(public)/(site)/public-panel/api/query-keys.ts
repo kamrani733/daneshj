@@ -1,3 +1,4 @@
+import type { PublicPanelKind } from '@public-panel/types/actor';
 import type {
   ActorQueryPayload,
   TargetQueryPayload,
@@ -21,4 +22,21 @@ export const interactiveOpsQueryKeys = {
     [...interactiveOpsQueryKeys.all, 'average-score', targetType, targetId] as const,
   panelStats: (targetId: number, targetType: number) =>
     [...interactiveOpsQueryKeys.all, 'panel-stats', targetType, targetId] as const,
+};
+
+export const publicPanelActorQueryKeys = {
+  all: ['public-panel', 'actor'] as const,
+  profile: (actorId: number, kind: PublicPanelKind) =>
+    [...publicPanelActorQueryKeys.all, 'profile', kind, actorId] as const,
+  visitor: (actorId: number, kind: PublicPanelKind) =>
+    [...publicPanelActorQueryKeys.all, 'visitor', kind, actorId] as const,
+  owner: (kind: PublicPanelKind) =>
+    [...publicPanelActorQueryKeys.all, 'owner', kind] as const,
+  status: (actorType: string, actorId?: number | null) =>
+    [
+      ...publicPanelActorQueryKeys.all,
+      'status',
+      actorType,
+      actorId ?? 'owner',
+    ] as const,
 };
