@@ -48,12 +48,17 @@ const nextConfig = {
       });
     }
 
-    const interactiveOpsBackend = process.env.INTERACTIVE_OPS_API_URL;
-    if (interactiveOpsBackend) {
-      const base = interactiveOpsBackend.replace(/\/$/, '');
+    const interactiveOpsBackend = (
+      process.env.INTERACTIVE_OPS_API_URL ||
+      'http://dev.stella.webpanel.systems:5001'
+    ).replace(/\/$/, '');
+    for (const source of [
+      '/api/interactive-ops/:path*',
+      '/interactive-ops/:path*',
+    ]) {
       rules.push({
-        source: '/api/interactive-ops/:path*',
-        destination: `${base}/interactive-ops/:path*`,
+        source,
+        destination: `${interactiveOpsBackend}/interactive-ops/:path*`,
       });
     }
 
