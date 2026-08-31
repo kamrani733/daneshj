@@ -4,6 +4,15 @@ const SESSION_COOKIE = 'session';
 
 const protectedPaths = ['/dashboard', '/private-panel'];
 
+/** Actor MS retrieve-for-visitor 500s when Accept-Language is a real locale. */
+const actorProxyPrefixes = [
+  '/api/profiles_base',
+  '/api/profiles_user',
+  '/api/profiles_individual',
+  '/api/profiles_business',
+  '/api/service_titles',
+];
+
 /** Guest-only auth routes — logged-in users should not enter or start these flows. */
 const guestAuthPaths = ['/login', '/forgot-password', '/register'];
 
@@ -25,8 +34,21 @@ function matchesPath(pathname: string, paths: string[]) {
   return paths.some((path) => pathname === path || pathname.startsWith(`${path}/`));
 }
 
+function isActorProxyPath(pathname: string) {
+  return actorProxyPrefixes.some(
+    (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`)
+  );
+}
+
 export default function middleware(request: NextRequest) {
   const { pathname, searchParams } = request.nextUrl;
+
+  if (isActorProxyPath(pathname)) {
+    const headers = new Headers(request.headers);
+    headers.delete('accept-language');
+    return NextResponse.next({ request: { headers } });
+  }
+
   const authenticated = hasValidSession(request);
 
   if (authenticated && matchesPath(pathname, guestAuthPaths)) {
@@ -49,5 +71,12 @@ export default function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/((?!api|_next|_vercel|.*\\..*).*)'],
+  matcher: [
+    '/((?!api|_next|_vercel|.*\\..*).*)',
+    '/api/profiles_base/:path*',
+    '/api/profiles_user/:path*',
+    '/api/profiles_individual/:path*',
+    '/api/profiles_business/:path*',
+    '/api/service_titles/:path*',
+  ],
 };

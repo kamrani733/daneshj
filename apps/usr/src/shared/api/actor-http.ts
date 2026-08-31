@@ -16,3 +16,13 @@ export const actorHttpClient: HttpClient = createApiClient({
   withCredentials: !isExternalApi,
   timeout: 20_000,
 });
+
+/**
+ * Actor `retrieve-for-visitor` returns 500 when Accept-Language is a real
+ * locale (`en-US`, `fa`, `*`). Browser clients send that header by default.
+ * Empty matches the working backend contract (omit / blank).
+ */
+actorHttpClient.interceptors.request.use((config) => {
+  config.headers.set('Accept-Language', '');
+  return config;
+});
