@@ -25,7 +25,7 @@ type VisibilityFieldCardProps = {
   onToggle: (id: string) => void;
 };
 
-const CARD_BG = 'bg-[#f8f8f0] dark:bg-app-card';
+const CARD_BG = 'bg-app-search-fill';
 const LOCKED_CARD_BG = 'bg-private-panel-locked-field';
 const INPUT_BG = 'dark:bg-app-search-category';
 const LOCKED_INPUT_BG = 'bg-private-panel-locked-field';
@@ -67,7 +67,7 @@ export function VisibilityFieldCard({
     return (
       <div className={cn(cardClass(state), 'overflow-hidden p-0')}>
         <div className="flex flex-col items-center gap-3 px-3 pb-3 pt-4 min-[720px]:px-4 min-[720px]:pt-5">
-          <p className="w-full text-start text-xs font-medium text-[#404943] dark:text-app-filter-muted">
+          <p className="w-full text-start text-xs font-medium text-app-filter-muted">
             {label}
           </p>
           <Avatar className="size-[72px] min-[720px]:size-24">
@@ -77,7 +77,7 @@ export function VisibilityFieldCard({
             <AvatarFallback>{label.slice(0, 1)}</AvatarFallback>
           </Avatar>
         </div>
-        <div className="border-t border-[#dbdbd3]/70 px-3 py-2.5 min-[720px]:px-4 min-[720px]:py-3 dark:border-border/60">
+        <div className="border-t border-border/70 px-3 py-2.5 min-[720px]:px-4 min-[720px]:py-3 dark:border-border/60">
           <VisibilityCheckbox
             label={label}
             caption={caption}
@@ -94,32 +94,15 @@ export function VisibilityFieldCard({
 
   if (field.kind === 'toggle') {
     return (
-      <div
-        className={cn(
-          cardClass(state),
-          'gap-2.5 p-2.5 pt-2 min-[720px]:gap-3 min-[720px]:p-3'
-        )}
-      >
-        <fieldset className="min-w-0 rounded-lg border border-[#707973] px-3 py-2.5 min-[720px]:py-3 dark:border-auth-input-border">
-          <legend
-            className={cn(
-              'px-1 text-xs font-medium text-[#404943] dark:text-app-filter-muted',
-              cardBg
-            )}
-          >
-            {label}
-          </legend>
-        </fieldset>
-        <VisibilityCheckbox
-          label={label}
-          caption={caption}
-          state={state}
-          selected={selected}
-          locked={interactionLocked}
-          lockedMuted={lockedMuted}
-          onToggle={() => onToggle(field.id)}
-        />
-      </div>
+      <AcademicFieldToggleCard
+        label={label}
+        caption={caption}
+        state={state}
+        selected={selected}
+        locked={interactionLocked}
+        lockedMuted={lockedMuted}
+        onToggle={() => onToggle(field.id)}
+      />
     );
   }
 
@@ -174,10 +157,10 @@ function cardClass(state: VisibilityUiState) {
   return cn(
     'flex min-w-0 flex-col rounded-xl border',
     cardSurfaceClass(state),
-    state === 'visible' && 'border-[#BFC9C1]',
+    state === 'visible' && 'border-app-filter-border dark:border-primary-100/40',
     state === 'pendingRemoval' && 'border-warning/50',
     (state === 'hidden' || state === 'locked') &&
-      'border-[#dbdbd3] dark:border-border'
+      'border-border dark:border-border'
   );
 }
 
@@ -189,7 +172,7 @@ function inputSurfaceClass(state: VisibilityUiState) {
   return state === 'locked' ? LOCKED_INPUT_BG : INPUT_BG;
 }
 
-export function VisibilityCheckbox({
+export function AcademicFieldToggleCard({
   label,
   caption,
   state,
@@ -206,23 +189,78 @@ export function VisibilityCheckbox({
   lockedMuted?: boolean;
   onToggle: () => void;
 }) {
+  const visible = state === 'visible';
+
+  return (
+    <div
+      className={cn(
+        'flex min-w-0 w-full flex-col items-end gap-2 rounded-lg border p-4',
+        'bg-app-card dark:bg-app-card',
+        visible
+          ? 'border-[#8DD5B2]'
+          : 'border-border dark:border-auth-input-border'
+      )}
+    >
+      <p
+        className={cn(
+          'w-full text-start text-base leading-6 tracking-[0.0094em]',
+          'text-[#404943] dark:text-app-filter-ink'
+        )}
+      >
+        {label}
+      </p>
+      <VisibilityCheckbox
+        label={label}
+        caption={caption}
+        state={state}
+        selected={selected}
+        locked={locked}
+        lockedMuted={lockedMuted}
+        className="w-full"
+        onToggle={onToggle}
+      />
+    </div>
+  );
+}
+
+export function VisibilityCheckbox({
+  label,
+  caption,
+  state,
+  selected,
+  locked,
+  lockedMuted = false,
+  className,
+  onToggle,
+}: {
+  label: string;
+  caption: string;
+  state: VisibilityUiState;
+  selected: boolean;
+  locked: boolean;
+  lockedMuted?: boolean;
+  className?: string;
+  onToggle: () => void;
+}) {
   return (
     <label
       className={cn(
         'flex min-h-11 cursor-pointer items-start gap-2 py-0.5',
         'min-[720px]:min-h-0',
-        locked && 'cursor-not-allowed'
+        locked && 'cursor-not-allowed',
+        className
       )}
     >
       <span
         className={cn(
           'mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-[3px] border min-[720px]:size-[18px]',
-          state === 'visible' && 'border-primary bg-primary text-white',
+          state === 'visible' &&
+            'border-primary bg-primary text-white dark:border-primary-100 dark:bg-primary-100 dark:text-primary-900',
           state === 'pendingRemoval' && 'border-warning bg-transparent',
           state === 'hidden' &&
-            'border-[#707973] bg-transparent dark:border-app-filter-muted',
+            'border-neutral-600 bg-transparent dark:border-app-filter-muted',
           locked &&
-            'border-[#707973] bg-transparent opacity-70 dark:border-app-filter-muted'
+            'border-neutral-600 bg-transparent opacity-70 dark:border-app-filter-muted'
         )}
         aria-hidden
       >
@@ -244,9 +282,9 @@ export function VisibilityCheckbox({
           'min-[720px]:text-xs',
           state === 'visible' && 'text-primary dark:text-primary-100',
           state === 'pendingRemoval' && 'text-warning',
-          state === 'hidden' && 'text-[#404943] dark:text-app-filter-muted',
+          state === 'hidden' && 'text-app-filter-muted',
           locked && !lockedMuted && 'text-error',
-          lockedMuted && 'text-[#404943] dark:text-app-filter-muted'
+          lockedMuted && 'text-app-filter-muted'
         )}
       >
         {caption}

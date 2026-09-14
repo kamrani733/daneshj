@@ -23,7 +23,7 @@ function FileKindIcon({ kind, name }: { kind: DocumentKind; name?: string }) {
   if (kind === 'pdf') {
     return (
       <span
-        className="flex h-7 min-w-8 shrink-0 items-center justify-center rounded bg-[#fce8e6] px-1 text-[10px] font-bold text-[#ba1a1a]"
+        className="flex h-7 min-w-8 shrink-0 items-center justify-center rounded bg-error-50 px-1 text-[10px] font-bold text-error"
         aria-hidden
       >
         PDF
@@ -33,7 +33,7 @@ function FileKindIcon({ kind, name }: { kind: DocumentKind; name?: string }) {
   if (kind === 'image' || isJpeg) {
     return (
       <span
-        className="flex h-7 min-w-9 shrink-0 items-center justify-center rounded bg-[#fce8e6] px-1 text-[10px] font-bold text-[#ba1a1a]"
+        className="flex h-7 min-w-9 shrink-0 items-center justify-center rounded bg-error-50 px-1 text-[10px] font-bold text-error"
         aria-hidden
       >
         JPEG
@@ -42,7 +42,7 @@ function FileKindIcon({ kind, name }: { kind: DocumentKind; name?: string }) {
   }
   return (
     <FileText
-      className="size-8 shrink-0 text-[#404943] dark:text-app-filter-muted"
+      className="size-8 shrink-0 text-app-filter-muted"
       strokeWidth={1.5}
       aria-hidden
     />
@@ -69,13 +69,13 @@ export function DocumentItem({
       >
         <div
           className={cn(
-            'flex h-14 items-center gap-3 rounded-xl border border-[#bfc9c1]',
+            'flex h-14 items-center gap-3 rounded-xl border border-border',
             'bg-app-card px-3 dark:border-auth-input-border dark:bg-app-search-category'
           )}
         >
           <div className="flex min-w-0 flex-1 items-center gap-2">
             <FileKindIcon kind={item.kind} name={item.name} />
-            <span className="truncate text-sm font-medium text-[#171d19] dark:text-app-filter-ink">
+            <span className="truncate text-sm font-medium text-content dark:text-app-filter-ink">
               {item.name}
             </span>
           </div>
@@ -84,7 +84,7 @@ export function DocumentItem({
             onClick={() => onRemove?.(item.id)}
             className={cn(
               'flex size-9 shrink-0 items-center justify-center rounded-lg border',
-              'border-[#c4c7c0] bg-transparent text-[#404943]',
+              'border-neutral-300 bg-transparent text-app-filter-muted',
               'dark:border-auth-input-border dark:text-app-filter-muted'
             )}
             aria-label={t('remove')}
@@ -118,21 +118,21 @@ export function DocumentItem({
         className={cn(
           'flex h-14 items-center gap-3 rounded-xl border px-3',
           'bg-app-card dark:border-auth-input-border dark:bg-app-search-category',
-            isError ? 'border-[#ba1a1a]' : 'border-[#bfc9c1]'
+            isError ? 'border-error' : 'border-border'
         )}
       >
         <div className="flex min-w-0 max-w-[45%] items-center gap-2">
           <FileKindIcon kind={item.kind} name={item.name} />
-          <span className="truncate text-sm font-medium text-[#171d19] dark:text-app-filter-ink">
+          <span className="truncate text-sm font-medium text-content dark:text-app-filter-ink">
             {item.name}
           </span>
         </div>
 
         {showProgress ? (
           <div className="min-w-0 flex-1 px-1">
-            <div className="h-3 w-full overflow-hidden rounded-full bg-[#ffdbcf] dark:bg-warning/25">
+            <div className="h-3 w-full overflow-hidden rounded-full bg-warning-50 dark:bg-warning/25">
               <div
-                className="h-full rounded-full bg-[#008d63] transition-[width] duration-300 dark:bg-primary-100"
+                className="h-full rounded-full bg-primary transition-[width] duration-300 dark:bg-primary-100"
                 style={{ width: `${progress}%` }}
               />
             </div>
@@ -151,8 +151,8 @@ export function DocumentItem({
           className={cn(
             'flex size-9 shrink-0 items-center justify-center rounded-lg border bg-transparent',
             isError
-              ? 'border-[#ba1a1a] text-[#ba1a1a]'
-              : 'border-[#c4c7c0] text-[#404943] dark:border-auth-input-border dark:text-app-filter-muted'
+              ? 'border-error text-error'
+              : 'border-neutral-300 text-app-filter-muted dark:border-auth-input-border dark:text-app-filter-muted'
           )}
           aria-label={
             item.state === 'uploading' ? t('cancel') : t('remove')
@@ -167,7 +167,7 @@ export function DocumentItem({
       </div>
 
       {isError ? (
-        <p className="text-start text-xs font-medium text-[#ba1a1a]">
+        <p className="text-start text-xs font-medium text-error">
           {t(item.errorKey ?? 'maxSize')}
         </p>
       ) : null}
@@ -197,9 +197,9 @@ function DecisionRadio({
           'text-sm font-medium',
           checked
             ? isReject
-              ? 'text-[#ba1a1a]'
-              : 'text-[#008d63] dark:text-primary-100'
-            : 'text-[#404943] dark:text-app-filter-muted'
+              ? 'text-error'
+              : 'text-primary dark:text-primary-100'
+            : 'text-app-filter-muted'
         )}
       >
         {label}
@@ -209,9 +209,9 @@ function DecisionRadio({
           'flex size-5 items-center justify-center rounded-full border-2',
           checked
             ? isReject
-              ? 'border-[#ba1a1a]'
-              : 'border-[#008d63] dark:border-primary-100'
-            : 'border-[#707973] dark:border-app-filter-muted'
+              ? 'border-error'
+              : 'border-primary dark:border-primary-100'
+            : 'border-neutral-600 dark:border-app-filter-muted'
         )}
       >
         <input
@@ -225,7 +225,7 @@ function DecisionRadio({
           <span
             className={cn(
               'size-2.5 rounded-full',
-              isReject ? 'bg-[#ba1a1a]' : 'bg-[#008d63] dark:bg-primary-100'
+              isReject ? 'bg-error' : 'bg-primary dark:bg-primary-100'
             )}
           />
         ) : null}

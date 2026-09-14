@@ -49,6 +49,7 @@ export function PrivatePanelView({
 
       <PrivatePanelHeading
         displayName={profile?.displayName ?? ''}
+        username={profile?.username}
         isAdminAccess={Boolean(targetActorId)}
       />
       {profile ? <ProfileHeroCard profile={profile} /> : null}

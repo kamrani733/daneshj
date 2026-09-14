@@ -41,7 +41,7 @@ function DiscardWarningIcon() {
   return (
     <span
       aria-hidden
-      className="flex size-8 items-center justify-center rounded-full bg-[#ab2d25] text-base font-bold leading-none text-white"
+      className="flex size-8 items-center justify-center rounded-full bg-error text-base font-bold leading-none text-white"
     >
       !
     </span>
@@ -75,11 +75,13 @@ function partitionFields(fields: VisibilityField[]) {
 type ManageVisibilityPanelProps = {
   accessToken?: string | null;
   targetActorId?: number | null;
+  username?: string;
 };
 
 export function ManageVisibilityPanel({
   accessToken,
   targetActorId,
+  username,
 }: ManageVisibilityPanelProps) {
   const t = useTranslations('privatePanel.publicOps.manageVisibility');
   const visibilityQuery = useManageVisibilityQuery(accessToken, targetActorId);
@@ -298,9 +300,20 @@ export function ManageVisibilityPanel({
   return (
     <div className="flex w-full flex-col gap-3 min-[720px]:gap-6">
       <ul className="flex list-disc flex-col gap-2 pe-4 text-justify text-xs font-medium leading-6 text-app-filter-muted marker:text-app-filter-muted min-[720px]:gap-3 min-[720px]:pe-5 min-[720px]:text-sm min-[720px]:leading-7 dark:text-app-filter-ink">
-        {INTRO_PARAGRAPHS.map((paragraph) => (
-          <li key={paragraph}>{paragraph}</li>
-        ))}
+        {targetActorId ? (
+          <>
+            <li>
+              {t('adminHeading', {
+                username: username || 'کاربر',
+              })}
+            </li>
+            <li>{t('adminBody')}</li>
+          </>
+        ) : (
+          INTRO_PARAGRAPHS.map((paragraph) => (
+            <li key={paragraph}>{paragraph}</li>
+          ))
+        )}
       </ul>
 
       <Tabs
@@ -308,8 +321,8 @@ export function ManageVisibilityPanel({
         onValueChange={(value) => setCategory(value as VisibilityCategoryId)}
         dir="rtl"
         className={cn(
-          'flex w-full flex-col gap-3 rounded-xl border border-border bg-white p-3',
-          'dark:border-auth-input-border dark:bg-app-card',
+          'flex w-full flex-col gap-3 rounded-xl border border-border bg-app-search-fill p-3',
+          'dark:border-auth-input-border dark:bg-app-search-fill',
           'min-[720px]:gap-5 min-[720px]:rounded-2xl min-[720px]:p-5',
           'min-[834px]:p-6'
         )}
@@ -319,6 +332,7 @@ export function ManageVisibilityPanel({
             className={cn(
               'flex h-auto w-max min-w-full items-stretch justify-start gap-3',
               'rounded-none border-b border-border bg-transparent p-0',
+              'dark:border-auth-input-border',
               'min-[720px]:w-full min-[720px]:gap-5'
             )}
           >
@@ -369,12 +383,12 @@ export function ManageVisibilityPanel({
                       key={section.key}
                       className={cn(
                         'flex w-full flex-col gap-3 rounded-xl border border-border',
-                        'bg-[#f8f8f0] px-2.5 pb-3 pt-1.5',
+                        'bg-app-search-fill px-2.5 pb-3 pt-1.5',
                         'min-[720px]:gap-5 min-[720px]:rounded-[20px] min-[720px]:px-5 min-[720px]:pb-5 min-[720px]:pt-2',
                         'min-[834px]:rounded-3xl dark:border-auth-input-border dark:bg-app-search-category'
                       )}
                     >
-                      <legend className="ms-1 max-w-[calc(100%-0.5rem)] bg-white px-1.5 text-xs font-medium text-primary min-[720px]:ms-2 min-[720px]:px-2 min-[720px]:text-sm dark:bg-app-search-category dark:text-primary-100">
+                      <legend className="ms-1 max-w-[calc(100%-0.5rem)] bg-app-search-fill px-1.5 text-xs font-medium text-primary min-[720px]:ms-2 min-[720px]:px-2 min-[720px]:text-sm dark:bg-app-search-category dark:text-primary-100">
                         {t(`sections.${section.titleKey}`)}
                       </legend>
                       {section.key === 'academicRecords' ? (

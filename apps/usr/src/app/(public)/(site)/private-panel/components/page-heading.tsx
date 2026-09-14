@@ -2,16 +2,19 @@
 
 import { useTranslations } from 'next-intl';
 
+import { ppTheme } from '@private-panel/data/private-panel-theme';
 import { PanelBreadcrumb } from '@/components/panel';
 import { cn } from '@/lib/utils';
 
 type PrivatePanelHeadingProps = {
   displayName: string;
+  username?: string;
   isAdminAccess?: boolean;
 };
 
 export function PrivatePanelHeading({
   displayName,
+  username,
   isAdminAccess = false,
 }: PrivatePanelHeadingProps) {
   const t = useTranslations('privatePanel');
@@ -32,14 +35,17 @@ export function PrivatePanelHeading({
         <div className="flex flex-wrap items-center justify-start gap-x-2 gap-y-1 px-2">
           <span
             aria-hidden
-            className="h-8 w-3 shrink-0 rounded-[2px] bg-[#008d63] min-[720px]:h-8"
+            className={cn(
+              'h-8 w-3 shrink-0 rounded-[2px] min-[720px]:h-8',
+              ppTheme.titleBar
+            )}
           />
           <div className="flex flex-wrap items-baseline justify-start gap-x-2 gap-y-1">
             <h1
               className={cn(
-                'text-start text-2xl font-bold leading-9 text-[#005138]',
+                'text-start text-2xl font-bold leading-9',
                 'min-[720px]:text-[28px] min-[720px]:leading-10',
-                'dark:text-primary-100'
+                ppTheme.title
               )}
             >
               {t('title')}
@@ -53,11 +59,16 @@ export function PrivatePanelHeading({
         </div>
         <p
           className={cn(
-            'px-2 text-start text-sm font-semibold leading-5 tracking-[0.007em] text-[#707973]',
-            'dark:text-app-filter-ink'
+            'px-2 text-start text-sm font-semibold leading-5 tracking-[0.007em]',
+            ppTheme.subtitle
           )}
         >
-          {displayName || t('titleUserFallback')}
+          {isAdminAccess
+            ? t('adminAccessNote', {
+                username:
+                  username || displayName || t('titleUserFallback'),
+              })
+            : displayName || t('titleUserFallback')}
         </p>
       </div>
     </header>

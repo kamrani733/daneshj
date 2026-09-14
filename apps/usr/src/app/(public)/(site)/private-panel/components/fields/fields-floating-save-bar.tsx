@@ -34,18 +34,18 @@ export function FieldsFloatingSaveBar({
       <div
         className={cn(
           'pointer-events-auto flex w-full max-w-[920px] items-center gap-3',
-          'rounded-full bg-[#efede6] px-4 py-2.5 shadow-app-elevation-2',
+          'rounded-full bg-app-search-category px-4 py-2.5 shadow-app-elevation-2',
           'dark:border dark:border-auth-input-border dark:bg-app-search-category'
         )}
       >
-        <p className="min-w-0 flex-1 text-start text-xs font-medium leading-5 text-[#171d19] min-[720px]:text-sm dark:text-app-filter-ink">
+        <p className="min-w-0 flex-1 text-start text-xs font-medium leading-5 text-content min-[720px]:text-sm dark:text-app-filter-ink">
           {t('dirtyHint')}
         </p>
         <button
           type="button"
           disabled={saving}
           onClick={onCancel}
-          className="shrink-0 px-1 text-sm font-medium text-[#008d63] hover:underline disabled:opacity-60 dark:text-primary-100"
+          className="shrink-0 px-1 text-sm font-medium text-primary dark:text-primary-100 hover:underline disabled:opacity-60 dark:text-primary-100"
         >
           {t('cancel')}
         </button>
@@ -54,8 +54,8 @@ export function FieldsFloatingSaveBar({
           disabled={disabled || saving}
           onClick={onSave}
           className={cn(
-            'h-10 shrink-0 !rounded-xl bg-[#008d63] px-5 text-sm font-medium text-white shadow-none',
-            'hover:bg-[#008d63]/90 disabled:opacity-60',
+            'h-10 shrink-0 !rounded-xl bg-primary px-5 text-sm font-medium text-white shadow-none',
+            'hover:bg-primary/90 disabled:opacity-60',
             'dark:bg-primary-100 dark:text-primary-900 dark:hover:bg-primary-100/90'
           )}
         >

@@ -27,11 +27,11 @@ export function UploadButton({
       type={type}
       className={cn(
         'inline-flex h-12 items-center justify-center gap-2 rounded-full',
-        'bg-[#ffdbcf] px-5 text-sm font-medium text-[#72351f]',
-        'transition-colors hover:bg-[#ffcdb8]',
-        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#e06333]/40',
+        'bg-warning-50 px-5 text-sm font-medium text-warning-700',
+        'transition-colors hover:bg-warning-100',
+        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-warning/40',
         'disabled:pointer-events-none disabled:opacity-50',
-        'dark:bg-warning-50 dark:text-warning-800 dark:hover:bg-warning-100',
+        'dark:bg-warning-800 dark:text-warning-50 dark:hover:bg-warning-700',
         fullWidth ? 'w-full' : 'min-w-[168px]',
         className
       )}

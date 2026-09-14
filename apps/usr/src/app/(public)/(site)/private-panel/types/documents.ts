@@ -14,7 +14,10 @@ export type DocumentItemModel = {
   decision?: DocumentReviewDecision;
 };
 
+export type DocumentSlot = 'resume' | 'portfolio' | 'academic';
+
 export type DocumentDraft = DocumentItemModel & {
   file?: File;
   filePath?: string;
+  slot?: DocumentSlot;
 };

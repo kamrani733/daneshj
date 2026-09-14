@@ -34,6 +34,8 @@ function fieldErrorMessage(
   return tVis(`validation.${key}`);
 }
 
+type PhotoMode = 'shared' | 'separate';
+
 export function IdentityCategoryBlocks({
   fields,
   editable,
@@ -42,6 +44,8 @@ export function IdentityCategoryBlocks({
   fieldErrors,
   onChange,
   onPhotoPick,
+  onSharePhotos,
+  onSharedPhotoPick,
   t,
   tVis,
 }: {
@@ -52,6 +56,8 @@ export function IdentityCategoryBlocks({
   fieldErrors: Record<string, VisibilityValidationErrorKey>;
   onChange: (id: string, value: string) => void;
   onPhotoPick: (id: string, previewUrl: string, file: File) => void;
+  onSharePhotos: () => void;
+  onSharedPhotoPick: (previewUrl: string, file: File) => void;
   t: ReturnType<typeof useTranslations>;
   tVis: ReturnType<typeof useTranslations>;
 }) {
@@ -59,11 +65,25 @@ export function IdentityCategoryBlocks({
   const rest = fields.filter((f) => resolveViewControl(f) !== 'photo');
   const textFields = rest.filter((f) => f.kind !== 'textarea');
   const textareas = rest.filter((f) => f.kind === 'textarea');
+  const avatar = photos.find((field) => field.id === 'avatar');
+  const card = photos.find((field) => field.id === 'electronicCardPhoto');
+  const avatarSrc = values.avatar || avatar?.imageSrc || avatar?.value || '';
+  const cardSrc =
+    values.electronicCardPhoto || card?.imageSrc || card?.value || '';
+  const initialMode: PhotoMode =
+    avatarSrc && cardSrc && avatarSrc !== cardSrc ? 'separate' : 'shared';
+  const [photoMode, setPhotoMode] = useState<PhotoMode>(initialMode);
+  const canEditPhotos = editable && photos.some((field) => !field.locked);
+
+  function selectPhotoMode(next: PhotoMode) {
+    setPhotoMode(next);
+    if (next === 'shared') onSharePhotos();
+  }
 
   return (
     <>
       <FieldsetBlock title={t('photosTitle')}>
-        <p className="text-justify text-sm font-medium leading-6 text-[#404943] dark:text-app-filter-muted">
+        <p className="text-justify text-sm font-medium leading-6 text-app-filter-muted">
           {t('photosHintBefore')}
           <button
             type="button"
@@ -71,21 +91,46 @@ export function IdentityCategoryBlocks({
           >
             {t('photosHintLink')}
           </button>
+          {t('photosHintAfter')}
         </p>
-        <div className="grid grid-cols-1 gap-8 min-[720px]:grid-cols-2 min-[720px]:gap-x-[100px] min-[834px]:gap-x-[158px]">
-          {photos.map((field) => {
+        {canEditPhotos ? (
+          <PhotoModePicker
+            mode={photoMode}
+            onChange={selectPhotoMode}
+            t={t}
+          />
+        ) : null}
+        <div
+          className={cn(
+            'grid grid-cols-1 gap-8',
+            (photoMode === 'separate' || !canEditPhotos) &&
+              'min-[720px]:grid-cols-2 min-[720px]:gap-x-[100px] min-[834px]:gap-x-[158px]',
+          )}
+        >
+          {(photoMode === 'shared' && canEditPhotos
+            ? photos.filter((field) => field.id === 'avatar')
+            : photos
+          ).map((field) => {
             const src = values[field.id] || field.imageSrc || field.value;
+            const sharedPick = photoMode === 'shared' && canEditPhotos;
             return (
               <ViewField
                 key={field.id}
                 field={{ ...field, imageSrc: src, value: src }}
-                label={tVis(`fields.${field.labelKey}`)}
+                label={
+                  sharedPick ? t('uploadPhoto') : tVis(`fields.${field.labelKey}`)
+                }
                 editable={editable && !field.locked}
                 showPending={showPending}
                 value={src}
                 error={fieldErrorMessage(fieldErrors, field.id, tVis)}
                 onChange={onChange}
-                onPhotoPick={onPhotoPick}
+                onPhotoPick={
+                  sharedPick
+                    ? (_id, previewUrl, file) =>
+                        onSharedPhotoPick(previewUrl, file)
+                    : onPhotoPick
+                }
               />
             );
           })}
@@ -168,21 +213,45 @@ export function ProviderBlocks({
           tVis={tVis}
         />
       </FieldsetBlock>
-      <FieldsetBlock title={t('documentsTitle')}>
-        <div className="flex flex-col gap-6">
-          <ul className="flex flex-col gap-4">
-            <BulletText>{t('providerDocumentsHint')}</BulletText>
-          </ul>
-          <DocumentsPanel
-            dropLabel={t('dropHere')}
-            dropOrLabel={t('dropOr')}
-            uploadLabel={t('uploadFile')}
-            documents={documents}
-            onDocumentsChange={onDocumentsChange}
-            onUploadFile={onUploadFile}
-          />
-        </div>
-      </FieldsetBlock>
+      {(['resume', 'portfolio'] as const).map((slot) => {
+        const slotDocs = documents.filter((doc) =>
+          slot === 'resume'
+            ? doc.slot === 'resume' || !doc.slot
+            : doc.slot === 'portfolio',
+        );
+        return (
+          <FieldsetBlock
+            key={slot}
+            title={t(slot === 'resume' ? 'resumeTitle' : 'portfolioTitle')}
+          >
+            <div className="flex flex-col gap-6">
+              <ul className="flex flex-col gap-4">
+                <BulletText>
+                  {t(slot === 'resume' ? 'resumeHint' : 'portfolioHint')}
+                </BulletText>
+              </ul>
+              <DocumentsPanel
+                dropLabel={t('dropHere')}
+                dropOrLabel={t('dropOr')}
+                uploadLabel={t('uploadFile')}
+                slot={slot}
+                documents={slotDocs}
+                onDocumentsChange={(next) =>
+                  onDocumentsChange([
+                    ...documents.filter((doc) =>
+                      slot === 'resume'
+                        ? doc.slot === 'portfolio'
+                        : doc.slot !== 'portfolio',
+                    ),
+                    ...next,
+                  ])
+                }
+                onUploadFile={onUploadFile}
+              />
+            </div>
+          </FieldsetBlock>
+        );
+      })}
     </div>
   );
 }
@@ -300,7 +369,7 @@ export function AcademicRecordsBlock({
 
   return (
     <FieldsetBlock title={tVis('sections.academicRecords')}>
-      <p className="text-justify text-sm font-medium leading-6 text-[#404943] dark:text-app-filter-muted">
+      <p className="text-justify text-sm font-medium leading-6 text-app-filter-muted">
         {t('academicIntro')}
       </p>
 
@@ -311,11 +380,11 @@ export function AcademicRecordsBlock({
             variant="outline"
             onClick={() => setRecordsHidden((prev) => !prev)}
             className={cn(
-              'h-11 !rounded-xl border border-[#e06333] bg-transparent px-4',
-              'text-sm font-medium text-[#e06333] shadow-none',
-              'hover:bg-[#ffdbcf]/40 hover:text-[#e06333]',
+              'h-11 !rounded-xl border border-warning bg-transparent px-4',
+              'text-sm font-medium text-warning shadow-none',
+              'hover:bg-warning-50/40 hover:text-warning',
               'dark:border-warning-100 dark:text-warning-100 dark:hover:bg-warning/10 dark:hover:text-warning-100',
-              recordsHidden && 'bg-[#ffdbcf]/50 dark:bg-warning/10',
+              recordsHidden && 'bg-warning-50/50 dark:bg-warning/10',
             )}
           >
             {recordsHidden
@@ -342,7 +411,7 @@ export function AcademicRecordsBlock({
         {records.length > 0 ? (
           <ul
             className={cn(
-              'overflow-hidden rounded-2xl border border-[#dbd8d1] bg-app-card',
+              'overflow-hidden rounded-2xl border border-border bg-app-card',
               'dark:border-auth-input-border dark:bg-app-search-category',
             )}
           >
@@ -351,7 +420,7 @@ export function AcademicRecordsBlock({
                 key={record.id}
                 className={cn(
                   index > 0 &&
-                    'border-t border-[#dbd8d1] dark:border-auth-input-border',
+                    'border-t border-border dark:border-auth-input-border',
                 )}
               >
                 <AcademicRecordCard
@@ -413,7 +482,7 @@ export function AcademicRecordsBlock({
       </div>
 
       <div className="flex flex-col gap-5">
-        <h4 className="text-start text-base font-bold text-[#404943] dark:text-primary-100">
+        <h4 className="text-start text-base font-bold text-app-filter-muted dark:text-primary-100">
           {t('academicDocumentsTitle')}
         </h4>
 
@@ -423,7 +492,7 @@ export function AcademicRecordsBlock({
             {t('academicSampleBefore')}
             <button
               type="button"
-              className="text-[#00639a] underline-offset-2 hover:underline dark:text-primary-100"
+              className="text-info-700 underline-offset-2 hover:underline dark:text-primary-100"
             >
               {t('academicSampleLink')}
             </button>
@@ -487,7 +556,7 @@ function RecordIconButton({
       aria-label={label}
       className={cn(
         'flex size-9 shrink-0 items-center justify-center rounded-lg border',
-        'border-[#c4c7c0] bg-transparent text-[#404943]',
+        'border-neutral-300 bg-transparent text-app-filter-muted',
         hoverClassName,
         'disabled:opacity-50 dark:border-auth-input-border dark:text-app-filter-muted dark:hover:bg-white/5',
       )}
@@ -565,18 +634,68 @@ export function FieldsetBlock({
   return (
     <fieldset
       className={cn(
-        'relative flex w-full flex-col gap-8 rounded-3xl border border-[#dbd8d1]',
-        'bg-[#f8f8f0] px-4 pb-8 pt-10',
+        'relative flex w-full flex-col gap-8 rounded-3xl border border-border',
+        'bg-app-search-fill px-4 pb-8 pt-10',
         'min-[720px]:gap-12 min-[720px]:px-10 min-[720px]:pb-12 min-[720px]:pt-12',
         'min-[834px]:px-[88px]',
-        'dark:border-auth-input-border dark:bg-app-card',
+        'dark:border-auth-input-border',
       )}
     >
-      <legend className="absolute -top-3 start-4 max-w-[calc(100%-2rem)] bg-[#f8f8f0] px-1 text-sm font-bold text-[#404943] min-[720px]:start-8 min-[720px]:text-base dark:bg-app-card dark:text-primary-100">
+      <legend className="absolute -top-3 start-4 max-w-[calc(100%-2rem)] bg-app-search-fill px-1 text-sm font-bold text-app-filter-muted min-[720px]:start-8 min-[720px]:text-base dark:text-primary-100">
         {title}
       </legend>
       {children}
     </fieldset>
+  );
+}
+
+function PhotoModePicker({
+  mode,
+  onChange,
+  t,
+}: {
+  mode: PhotoMode;
+  onChange: (mode: PhotoMode) => void;
+  t: ReturnType<typeof useTranslations>;
+}) {
+  const options: PhotoMode[] = ['shared', 'separate'];
+
+  return (
+    <div
+      role="radiogroup"
+      aria-label={t('photosTitle')}
+      className={cn(
+        'grid grid-cols-1 gap-3 rounded-xl border border-border bg-app-scene p-3',
+        'min-[720px]:grid-cols-2 min-[720px]:gap-4 min-[720px]:p-4',
+        'dark:border-auth-input-border dark:bg-app-search-category',
+      )}
+    >
+      {options.map((value) => {
+        const selected = mode === value;
+        return (
+          <label
+            key={value}
+            className="flex cursor-pointer items-start gap-2 text-start"
+          >
+            <input
+              type="radio"
+              name="private-panel-photo-mode"
+              checked={selected}
+              onChange={() => onChange(value)}
+              className="mt-1 size-5 shrink-0 accent-primary dark:accent-primary-100"
+            />
+            <span className="flex min-w-0 flex-col gap-1">
+              <span className="text-sm font-medium text-app-filter-muted dark:text-app-filter-ink">
+                {t(`photoMode.${value}`)}
+              </span>
+              <span className="text-sm font-medium leading-6 text-app-filter-muted">
+                {t(`photoMode.${value}Hint`)}
+              </span>
+            </span>
+          </label>
+        );
+      })}
+    </div>
   );
 }
 
@@ -591,14 +710,14 @@ function BulletText({
     <li className="flex w-full items-start gap-2.5">
       <span
         aria-hidden
-        className="mt-2 size-1.5 shrink-0 rounded-full bg-[#008d63]"
+        className="mt-2 size-1.5 shrink-0 rounded-full bg-primary dark:bg-primary-100"
       />
       <p
         className={cn(
           'min-w-0 flex-1 text-justify text-sm font-medium leading-6',
           tone === 'muted'
-            ? 'text-[#404943] dark:text-app-filter-muted'
-            : 'text-[#171d19] dark:text-app-filter-ink',
+            ? 'text-app-filter-muted'
+            : 'text-content dark:text-app-filter-ink',
         )}
       >
         {children}

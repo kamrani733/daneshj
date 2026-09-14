@@ -163,7 +163,7 @@ export function ViewField({
           value={formatViewDate(current)}
           endAdornment={
             <Calendar
-              className="size-5 text-[#404943] dark:text-app-filter-muted"
+              className="size-5 text-app-filter-muted"
               strokeWidth={1.75}
               aria-hidden
             />
@@ -209,7 +209,7 @@ export function ViewField({
           value={current}
           endAdornment={
             <ChevronDown
-              className="size-5 text-[#404943] dark:text-app-filter-muted"
+              className="size-5 text-app-filter-muted"
               strokeWidth={1.75}
               aria-hidden
             />
@@ -224,7 +224,7 @@ export function ViewField({
         value={selectedLabel}
         endAdornment={
           <ChevronDown
-            className="size-5 text-[#404943] dark:text-app-filter-muted"
+            className="size-5 text-app-filter-muted"
             strokeWidth={1.75}
             aria-hidden
           />
@@ -279,25 +279,25 @@ function PhotoField({
     <div className="flex flex-col gap-1">
       <div
         className={cn(
-          'flex w-full flex-col items-center gap-4 rounded-2xl border border-[#dbd8d1] px-4 pb-5 pt-4',
+          'flex w-full flex-col items-center gap-4 rounded-2xl border border-border px-4 pb-5 pt-4',
           FIELD_SURFACE,
           'dark:border-auth-input-border dark:bg-app-search-category',
-          pending && 'border-[#e06333] dark:border-[#e06333]',
+          pending && 'border-warning dark:border-warning',
           error && 'border-error',
         )}
       >
-        <p className="w-full text-start text-sm font-bold text-[#404943] dark:text-app-filter-muted">
+        <p className="w-full text-start text-sm font-bold text-app-filter-muted">
           {label}
         </p>
 
-        <Avatar className="size-24 bg-[#efede7] min-[720px]:size-[112px] dark:bg-app-card">
+        <Avatar className="size-24 bg-app-search-category min-[720px]:size-[112px] dark:bg-app-card">
           {hasPhoto ? <AvatarImage src={imageSrc} alt={label} /> : null}
-          <AvatarFallback className="bg-[#efede7] text-[#7a807a] dark:bg-app-card dark:text-app-filter-muted">
+          <AvatarFallback className="bg-app-search-category text-app-filter-muted dark:bg-app-card">
             <AvatarUserIcon className="size-12" />
           </AvatarFallback>
         </Avatar>
 
-        <p className="text-center text-xs font-medium leading-5 text-[#404943] dark:text-app-filter-muted">
+        <p className="text-center text-xs font-medium leading-5 text-app-filter-muted">
           {t('photosHintMax')}
         </p>
 

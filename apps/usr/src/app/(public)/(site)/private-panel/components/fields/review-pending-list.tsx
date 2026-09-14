@@ -38,14 +38,14 @@ function ReviewFilePreview({ value }: { value: string }) {
   const isPdf = isPdfPath(value);
 
   return (
-    <div className="flex h-12 min-w-0 items-center gap-2 rounded-lg border border-[#bfc9c1] bg-app-card px-3 dark:border-auth-input-border dark:bg-app-search-category">
+    <div className="flex h-12 min-w-0 items-center gap-2 rounded-lg border border-border bg-app-card px-3 dark:border-auth-input-border dark:bg-app-search-category">
       {isPdf ? (
-        <span className="flex h-7 min-w-8 shrink-0 items-center justify-center rounded bg-[#fce8e6] px-1 text-[10px] font-bold text-[#ba1a1a]">
+        <span className="flex h-7 min-w-8 shrink-0 items-center justify-center rounded bg-error-50 px-1 text-[10px] font-bold text-error">
           PDF
         </span>
       ) : (
         <FileText
-          className="size-7 shrink-0 text-[#404943] dark:text-app-filter-muted"
+          className="size-7 shrink-0 text-app-filter-muted"
           strokeWidth={1.5}
           aria-hidden
         />
@@ -59,7 +59,7 @@ function ReviewFilePreview({ value }: { value: string }) {
 
 function ReviewPhotoPreview({ value, label }: { value: string; label: string }) {
   return (
-    <div className="flex min-h-[150px] items-center justify-center rounded-xl border border-[#bfc9c1] bg-app-card p-3 dark:border-auth-input-border dark:bg-app-search-category">
+    <div className="flex min-h-[150px] items-center justify-center rounded-xl border border-border bg-app-card p-3 dark:border-auth-input-border dark:bg-app-search-category">
       {value && isImagePath(value) ? (
         <img
           src={value}
@@ -68,7 +68,7 @@ function ReviewPhotoPreview({ value, label }: { value: string; label: string }) 
           loading="lazy"
         />
       ) : (
-        <span className="max-w-full truncate text-sm font-medium text-[#707973]">
+        <span className="max-w-full truncate text-sm font-medium text-neutral-600 dark:text-app-filter-muted">
           {value || '\u00a0'}
         </span>
       )}
@@ -139,7 +139,7 @@ export function ReviewPendingList({
             <li
               key={request.requestKey}
               className={cn(
-                'mx-auto w-full max-w-[1000px] rounded-xl border border-[#dbd8d1] bg-[#f8f8f0]',
+                'mx-auto w-full max-w-[1000px] rounded-xl border border-border bg-app-search-fill',
                 'px-4 pb-6 pt-4 dark:border-auth-input-border dark:bg-app-card',
                 'min-[720px]:rounded-2xl min-[720px]:px-6 min-[720px]:pb-7 min-[720px]:pt-5',
               )}
@@ -157,26 +157,26 @@ export function ReviewPendingList({
                         className="grid grid-cols-1 gap-y-5 min-[720px]:grid-cols-2 min-[720px]:gap-x-[100px] min-[834px]:gap-x-[158px]"
                       >
                         <div className="flex flex-col gap-3">
-                          <p className="text-start text-xs font-bold text-[#404943] dark:text-app-filter-muted">
+                          <p className="text-start text-xs font-bold text-app-filter-muted">
                             {t('previousValue')}
                           </p>
                           <OutlinedDisplayField
                             label={fieldLabel}
                             value={field.previousValue || t('emptyValue')}
-                            surfaceClassName="bg-[#f8f8f0] dark:bg-app-search-category"
-                            labelSurfaceClassName="bg-[#f8f8f0] dark:bg-app-card"
+                            surfaceClassName="bg-app-search-fill dark:bg-app-search-category"
+                            labelSurfaceClassName="bg-app-search-fill"
                           />
                         </div>
                         <div className="flex flex-col gap-3">
-                          <p className="text-start text-xs font-bold text-[#404943] dark:text-app-filter-muted">
+                          <p className="text-start text-xs font-bold text-app-filter-muted">
                             {t('newValue')} ({t('reviewPendingLabel')})
                           </p>
                           <OutlinedDisplayField
                             label={fieldLabel}
                             value={field.value || t('emptyValue')}
                             tone="warning"
-                            surfaceClassName="bg-[#f8f8f0] dark:bg-app-search-category"
-                            labelSurfaceClassName="bg-[#f8f8f0] dark:bg-app-card"
+                            surfaceClassName="bg-app-search-fill dark:bg-app-search-category"
+                            labelSurfaceClassName="bg-app-search-fill"
                           />
                         </div>
                       </div>
@@ -193,7 +193,7 @@ export function ReviewPendingList({
                   )}
                 >
                   <div className="flex flex-col gap-3">
-                    <p className="text-start text-xs font-bold text-[#404943] dark:text-app-filter-muted">
+                    <p className="text-start text-xs font-bold text-app-filter-muted">
                       {t('previousValue')}
                     </p>
                     {request.kind === 'photo' ? (
@@ -208,12 +208,12 @@ export function ReviewPendingList({
                         label={label}
                         value={request.previousValue || t('emptyValue')}
                         multiline={request.kind === 'textarea'}
-                        surfaceClassName="bg-[#f8f8f0] dark:bg-app-search-category"
-                        labelSurfaceClassName="bg-[#f8f8f0] dark:bg-app-card"
+                        surfaceClassName="bg-app-search-fill dark:bg-app-search-category"
+                        labelSurfaceClassName="bg-app-search-fill"
                         endAdornment={
                           request.kind === 'textarea' ? undefined : (
                             <ChevronDown
-                              className="size-5 text-[#404943] dark:text-app-filter-muted"
+                              className="size-5 text-app-filter-muted"
                               strokeWidth={1.75}
                               aria-hidden
                             />
@@ -224,7 +224,7 @@ export function ReviewPendingList({
                   </div>
 
                   <div className="flex flex-col gap-3">
-                    <p className="text-start text-xs font-bold text-[#404943] dark:text-app-filter-muted">
+                    <p className="text-start text-xs font-bold text-app-filter-muted">
                       {t('newValue')} ({t('reviewPendingLabel')})
                     </p>
                     {request.kind === 'photo' ? (
@@ -234,8 +234,8 @@ export function ReviewPendingList({
                           label={label}
                           value={draftValue}
                           tone="warning"
-                          surfaceClassName="bg-[#f8f8f0] dark:bg-app-search-category"
-                          labelSurfaceClassName="bg-[#f8f8f0] dark:bg-app-card"
+                          surfaceClassName="bg-app-search-fill dark:bg-app-search-category"
+                          labelSurfaceClassName="bg-app-search-fill"
                           onValueChange={(value) =>
                             onReviewValueChange(request, value)
                           }
@@ -248,8 +248,8 @@ export function ReviewPendingList({
                         label={label}
                         value={draftValue}
                         tone="warning"
-                        surfaceClassName="bg-[#f8f8f0] dark:bg-app-search-category"
-                        labelSurfaceClassName="bg-[#f8f8f0] dark:bg-app-card"
+                        surfaceClassName="bg-app-search-fill dark:bg-app-search-category"
+                        labelSurfaceClassName="bg-app-search-fill"
                         onValueChange={(value) =>
                           onReviewValueChange(request, value)
                         }
@@ -259,8 +259,8 @@ export function ReviewPendingList({
                         label={label}
                         value={draftValue}
                         tone="warning"
-                        surfaceClassName="bg-[#f8f8f0] dark:bg-app-search-category"
-                        labelSurfaceClassName="bg-[#f8f8f0] dark:bg-app-card"
+                        surfaceClassName="bg-app-search-fill dark:bg-app-search-category"
+                        labelSurfaceClassName="bg-app-search-fill"
                         onValueChange={(value) =>
                           onReviewValueChange(request, value)
                         }
@@ -281,7 +281,7 @@ export function ReviewPendingList({
                     <RefreshCw className="size-4" strokeWidth={1.75} aria-hidden />
                     {t('reviewReset')}
                   </Button>
-                  <p className="text-start text-xs font-medium text-[#404943] dark:text-app-filter-muted">
+                  <p className="text-start text-xs font-medium text-app-filter-muted">
                     {t('reviewRejectDisabled')}
                   </p>
                 </div>
@@ -309,7 +309,7 @@ export function ReviewPendingList({
                       : t('showAllRecordFields')}
                   </button>
                   {recordExpanded ? (
-                    <div className="mt-4 grid grid-cols-1 gap-4 rounded-2xl border border-[#dbd8d1] bg-transparent p-4 dark:border-auth-input-border min-[720px]:grid-cols-2">
+                    <div className="mt-4 grid grid-cols-1 gap-4 rounded-2xl border border-border bg-transparent p-4 dark:border-auth-input-border min-[720px]:grid-cols-2">
                       {request.academicRecord.fields.map((field) => (
                         <OutlinedDisplayField
                           key={field.apiField}
@@ -321,7 +321,7 @@ export function ReviewPendingList({
                           value={field.value || t('emptyValue')}
                           tone={field.pending ? 'warning' : 'default'}
                           surfaceClassName="bg-transparent"
-                          labelSurfaceClassName="bg-[#f8f8f0] dark:bg-app-card"
+                          labelSurfaceClassName="bg-app-search-fill"
                         />
                       ))}
                     </div>
@@ -334,8 +334,8 @@ export function ReviewPendingList({
                   <span
                     className={cn(
                       decision === 'approve'
-                        ? 'text-[#008d63] dark:text-primary-100'
-                        : 'text-[#404943] dark:text-app-filter-muted',
+                        ? 'text-primary dark:text-primary-100'
+                        : 'text-app-filter-muted',
                     )}
                   >
                     {t('documents.approve')}
@@ -344,7 +344,7 @@ export function ReviewPendingList({
                     type="radio"
                     name={`review-${request.requestKey}`}
                     checked={decision === 'approve'}
-                    className="size-5 accent-[#008d63]"
+                    className="size-5 accent-primary dark:accent-primary-100"
                     onChange={() =>
                       onDecisionChange(request.requestKey, 'approve')
                     }
@@ -359,8 +359,8 @@ export function ReviewPendingList({
                   <span
                     className={cn(
                       decision === 'reject'
-                        ? 'text-[#ba1a1a]'
-                        : 'text-[#404943] dark:text-app-filter-muted',
+                        ? 'text-error'
+                        : 'text-app-filter-muted',
                     )}
                   >
                     {t('documents.reject')}
@@ -370,7 +370,7 @@ export function ReviewPendingList({
                     name={`review-${request.requestKey}`}
                     disabled={edited}
                     checked={decision === 'reject'}
-                    className="size-5 accent-[#ba1a1a]"
+                    className="size-5 accent-error"
                     onChange={() => onDecisionChange(request.requestKey, 'reject')}
                   />
                 </label>

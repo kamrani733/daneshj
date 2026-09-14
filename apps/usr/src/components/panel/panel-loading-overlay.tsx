@@ -24,11 +24,11 @@ export function PanelLoadingOverlay({
       aria-busy="true"
     >
       <Loader2
-        className="size-8 animate-spin text-[#008d63]"
+        className="size-8 animate-spin text-primary dark:text-primary-100"
         strokeWidth={2}
         aria-hidden
       />
-      <p className="text-sm font-medium text-[#404943] dark:text-app-filter-muted">
+      <p className="text-sm font-medium text-app-filter-muted">
         {message}
       </p>
     </div>

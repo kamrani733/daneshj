@@ -11,6 +11,7 @@ import type {
   DocumentDraft,
   DocumentKind,
   DocumentReviewDecision,
+  DocumentSlot,
 } from '@private-panel/types/documents';
 import { UploadDropzone } from './upload-dropzone';
 
@@ -25,6 +26,7 @@ type DocumentsPanelProps = {
   wide?: boolean;
   showDropzone?: boolean;
   className?: string;
+  slot?: DocumentSlot;
   documents: DocumentDraft[];
   onDocumentsChange: (documents: DocumentDraft[]) => void;
   onUploadFile?: (file: File) => Promise<string>;
@@ -49,6 +51,7 @@ export function DocumentsPanel({
   wide = false,
   showDropzone = true,
   className,
+  slot,
   documents,
   onDocumentsChange,
   onUploadFile,
@@ -91,6 +94,7 @@ export function DocumentsPanel({
           progress: 28,
           errorKey: 'maxSize',
           file,
+          slot,
         });
         continue;
       }
@@ -101,6 +105,7 @@ export function DocumentsPanel({
         state: 'uploading',
         progress: 12,
         file,
+        slot,
       };
       nextItems.push(draft);
       queued.push(draft);

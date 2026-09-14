@@ -223,12 +223,22 @@ export function useFieldsSectionController({
     if (formError) setFormError(null);
   };
 
+  const revokeIfUnused = (
+    values: FieldValues,
+    previous: string | undefined,
+    nextUrl: string,
+    exceptId?: string,
+  ) => {
+    if (!previous?.startsWith('blob:') || previous === nextUrl) return;
+    const stillUsed = Object.entries(values).some(
+      ([id, value]) => id !== exceptId && value === previous,
+    );
+    if (!stillUsed) URL.revokeObjectURL(previous);
+  };
+
   const onPhotoPick = (id: string, previewUrl: string, file: File) => {
     setDraftValues((prev) => {
-      const previous = prev[id];
-      if (previous?.startsWith('blob:')) {
-        URL.revokeObjectURL(previous);
-      }
+      revokeIfUnused(prev, prev[id], previewUrl, id);
       return { ...prev, [id]: previewUrl };
     });
     setPendingPhotoFiles((prev) => ({ ...prev, [id]: file }));
@@ -236,6 +246,54 @@ export function useFieldsSectionController({
       if (!prev[id]) return prev;
       const next = { ...prev };
       delete next[id];
+      return next;
+    });
+    if (formError) setFormError(null);
+  };
+
+  const onSharePhotos = () => {
+    setDraftValues((prev) => {
+      const source = prev.avatar?.trim()
+        ? prev.avatar
+        : prev.electronicCardPhoto;
+      if (!source) return prev;
+      revokeIfUnused(prev, prev.avatar, source, 'avatar');
+      revokeIfUnused(prev, prev.electronicCardPhoto, source, 'electronicCardPhoto');
+      return { ...prev, avatar: source, electronicCardPhoto: source };
+    });
+    setPendingPhotoFiles((prev) => {
+      const file = prev.avatar ?? prev.electronicCardPhoto;
+      if (!file) return prev;
+      return { ...prev, avatar: file, electronicCardPhoto: file };
+    });
+    if (formError) setFormError(null);
+  };
+
+  const onSharedPhotoPick = (previewUrl: string, file: File) => {
+    setDraftValues((prev) => {
+      revokeIfUnused(prev, prev.avatar, previewUrl, 'avatar');
+      revokeIfUnused(
+        prev,
+        prev.electronicCardPhoto,
+        previewUrl,
+        'electronicCardPhoto',
+      );
+      return {
+        ...prev,
+        avatar: previewUrl,
+        electronicCardPhoto: previewUrl,
+      };
+    });
+    setPendingPhotoFiles((prev) => ({
+      ...prev,
+      avatar: file,
+      electronicCardPhoto: file,
+    }));
+    setFieldErrors((prev) => {
+      if (!prev.avatar && !prev.electronicCardPhoto) return prev;
+      const next = { ...prev };
+      delete next.avatar;
+      delete next.electronicCardPhoto;
       return next;
     });
     if (formError) setFormError(null);
@@ -658,8 +716,11 @@ export function useFieldsSectionController({
     isDirty,
     isSaving,
     formError,
+    hasPendingReview: pendingRequests.length > 0,
     onFieldChange,
     onPhotoPick,
+    onSharePhotos,
+    onSharedPhotoPick,
     onSave: handleSave,
     onCancel: handleCancel,
     submitAcademicRecord,

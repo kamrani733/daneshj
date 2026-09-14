@@ -44,6 +44,7 @@ function AccordionTrigger({
         className={cn(
           'inline-flex w-full items-center justify-start gap-2 py-4 text-start text-sm font-medium text-content transition-all',
           'hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30',
+          'dark:text-app-filter-ink dark:hover:text-primary-100',
           '[&[data-state=open]>svg]:rotate-180',
           className
         )}

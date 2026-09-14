@@ -74,7 +74,7 @@ export function LocationListPicker({
         errorMessage={errorMessage}
         endAdornment={
           <ChevronDown
-            className="size-5 text-[#404943] dark:text-app-filter-muted"
+            className="size-5 text-app-filter-muted"
             strokeWidth={1.75}
             aria-hidden
           />
@@ -110,7 +110,7 @@ export function LocationListPicker({
         sideOffset={6}
         className={cn(
           'w-[var(--radix-popover-trigger-width)] min-w-[220px] overflow-hidden p-0',
-          'rounded-xl border border-[#dbd8d1] bg-[#f8f8f0] shadow-md',
+          'rounded-xl border border-border bg-app-search-fill shadow-md',
           'dark:border-auth-input-border dark:bg-app-search-category'
         )}
       >
@@ -150,7 +150,7 @@ export function LocationOptionList({
         maxHeightClassName,
         '[direction:rtl] [scrollbar-gutter:stable]',
         '[&::-webkit-scrollbar]:w-2',
-        '[&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[#707973]/70',
+        '[&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-auth-input-border/70',
         '[&::-webkit-scrollbar-track]:bg-transparent',
         className
       )}
@@ -164,10 +164,10 @@ export function LocationOptionList({
               onClick={() => onSelect(option.value)}
               className={cn(
                 'flex w-full items-center justify-start px-4 py-2.5 text-start text-sm font-medium',
-                'text-[#171d19] hover:bg-[#efede6]',
+                'text-content hover:bg-app-search-category',
                 'dark:text-app-filter-ink dark:hover:bg-white/5',
                 selected &&
-                  'bg-[#efede6] font-bold text-[#008d63] dark:bg-app-card dark:text-primary-100'
+                  'bg-app-search-category font-bold text-primary dark:text-primary-100 dark:bg-app-card dark:text-primary-100'
               )}
             >
               {option.label}

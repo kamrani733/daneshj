@@ -114,8 +114,8 @@ export function CreateDeletePanel({
     <div className="flex w-full flex-col gap-4 min-[720px]:gap-6">
       <section
         className={cn(
-          'flex flex-col gap-7 rounded-2xl border border-border bg-app-card p-4',
-          'dark:border-auth-input-border dark:bg-app-card',
+          'flex flex-col gap-7 rounded-2xl border border-border bg-app-search-fill p-4',
+          'dark:border-auth-input-border dark:bg-app-search-fill',
           'min-[720px]:gap-8 min-[720px]:p-6 min-[834px]:px-10 min-[834px]:py-9'
         )}
       >

@@ -45,7 +45,7 @@ const EMPTY_FORM: AcademicRecordFormValues = {
   endDate: '',
 };
 
-const DIALOG_LABEL_SURFACE = 'bg-[#f9f8f3] dark:bg-app-card';
+const DIALOG_LABEL_SURFACE = 'bg-app-search-fill dark:bg-app-card';
 
 type AcademicRecordModalProps = {
   open: boolean;
@@ -102,11 +102,11 @@ export function AcademicRecordModal({
         showCloseButton={false}
         className={cn(
           'max-h-[min(90vh,900px)] w-[min(720px,calc(100%-2rem))] overflow-y-auto',
-          'gap-6 rounded-[28px] border-0 bg-[#f9f8f3] p-6 shadow-app-elevation-2',
+          'gap-6 rounded-[28px] border-0 bg-app-search-fill p-6 shadow-app-elevation-2',
           'sm:max-w-[720px] dark:border dark:border-auth-input-border dark:bg-app-card'
         )}
       >
-        <DialogTitle className="text-start text-base font-bold text-[#171d19] dark:text-primary-100">
+        <DialogTitle className="text-start text-base font-bold text-content dark:text-primary-100">
           {t('title')}
         </DialogTitle>
 
@@ -190,8 +190,9 @@ export function AcademicRecordModal({
             disabled={saving}
             onClick={() => onSave(values)}
             className={cn(
-              'h-12 min-w-[120px] !rounded-full bg-[#008d63] px-8 text-sm font-medium text-white shadow-none',
-              'hover:bg-[#008d63]/90 disabled:opacity-60'
+              'h-12 min-w-[120px] !rounded-full bg-primary px-8 text-sm font-medium text-white shadow-none',
+              'hover:bg-primary/90 disabled:opacity-60',
+              'dark:bg-primary-100 dark:text-primary-900 dark:hover:bg-primary-100/90'
             )}
           >
             {saving ? (
@@ -207,7 +208,7 @@ export function AcademicRecordModal({
             type="button"
             disabled={saving}
             onClick={() => onOpenChange(false)}
-            className="text-sm font-medium text-[#008d63] hover:underline disabled:opacity-60 dark:text-primary-100"
+            className="text-sm font-medium text-primary dark:text-primary-100 hover:underline disabled:opacity-60 dark:text-primary-100"
           >
             {t('cancel')}
           </button>

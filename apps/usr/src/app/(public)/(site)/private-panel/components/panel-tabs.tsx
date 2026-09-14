@@ -4,6 +4,7 @@ import { CircleHelp, Info, UserCog } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import type { PrivatePanelTab } from '@private-panel/data/private-panel-ui';
+import { ppTheme } from '@private-panel/data/private-panel-theme';
 import {
   Tabs,
   TabsContent,
@@ -47,7 +48,7 @@ export function PrivatePanelTabs({
       <TabsList
         className={cn(
           'flex h-auto w-full items-center justify-between gap-1 rounded-[48px] p-3',
-          'bg-[#efede6] dark:bg-app-search-category',
+          ppTheme.tabTrack,
           'min-[720px]:gap-2 min-[720px]:px-4 min-[720px]:py-3'
         )}
       >
@@ -57,11 +58,12 @@ export function PrivatePanelTabs({
             value={id}
             className={cn(
               'h-auto min-h-12 min-w-0 flex-1 flex-col items-center justify-center gap-1 rounded-full border-0 px-2 py-2',
-              'text-[10px] font-bold leading-tight text-[#008d63] shadow-none',
-              'hover:text-[#008d63] focus-visible:ring-primary/30',
-              'data-[state=active]:bg-[#fafaf7] data-[state=active]:text-[#008d63]',
+              'text-[10px] font-bold leading-tight shadow-none',
+              ppTheme.tabIdle,
+              'hover:text-primary focus-visible:ring-primary/30 dark:hover:text-primary-100',
+              'data-[state=active]:bg-app-scene data-[state=active]:text-primary',
               'data-[state=active]:shadow-none',
-              'dark:text-primary-100 dark:data-[state=active]:bg-neutral-white dark:data-[state=active]:text-primary',
+              'dark:data-[state=active]:bg-app-card dark:data-[state=active]:text-primary-100',
               'min-[720px]:h-12 min-[720px]:flex-row min-[720px]:gap-2',
               'min-[720px]:px-4 min-[720px]:text-lg min-[720px]:leading-6'
             )}
@@ -89,6 +91,7 @@ export function PrivatePanelTabs({
         <PublicOpsSection
           accessToken={accessToken}
           targetActorId={targetActorId}
+          username={username}
         />
       </TabsContent>
       <TabsContent value="guide" className="mt-0">

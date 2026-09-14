@@ -21,6 +21,26 @@ import {
 const INTRO =
   fa.privatePanel.publicOps.manageVisibility.academicRecordsIntro;
 
+/** Grid order in Figma (RTL wrap: university first, then major, etc.). */
+const ACADEMIC_TOGGLE_FIELD_ORDER = [
+  'recordUniversity',
+  'recordMajor',
+  'recordFieldGroup',
+  'recordStudentStatus',
+  'recordDegreeLevel',
+  'recordFaculty',
+  'recordGraduationDate',
+  'recordDegreeDescription',
+] as const;
+
+function orderAcademicToggleFields(fields: VisibilityField[]) {
+  const byId = new Map(fields.map((field) => [field.id, field]));
+  return ACADEMIC_TOGGLE_FIELD_ORDER.flatMap((id) => {
+    const field = byId.get(id);
+    return field ? [field] : [];
+  });
+}
+
 type EducationRecordsSectionProps = {
   toggleFields: VisibilityField[];
   records: VisibilityAcademicRecord[];
@@ -42,14 +62,19 @@ export function EducationRecordsSection({
 
   return (
     <div className="flex flex-col gap-3 min-[720px]:gap-5">
-      <ul className="flex list-disc flex-col gap-2 pe-4 text-justify text-xs font-medium leading-6 text-app-filter-muted marker:text-app-filter-muted min-[720px]:pe-5 min-[720px]:text-sm min-[720px]:leading-7 dark:text-app-filter-ink">
+      <ul className="flex list-disc flex-col gap-3 pe-4 text-justify text-xs font-medium leading-6 text-[#171D19] marker:text-[#171D19] min-[720px]:pe-5 min-[720px]:text-sm min-[720px]:leading-7 dark:text-app-filter-ink dark:marker:text-app-filter-ink">
         {INTRO.map((paragraph) => (
           <li key={paragraph}>{paragraph}</li>
         ))}
       </ul>
 
-      <div className="grid grid-cols-1 gap-3 min-[720px]:grid-cols-2 min-[720px]:gap-4">
-        {toggleFields.map((field) => (
+      <div
+        className={cn(
+          'grid grid-cols-1 gap-4',
+          'min-[720px]:grid-cols-2 min-[720px]:gap-x-8 min-[720px]:gap-y-4'
+        )}
+      >
+        {orderAcademicToggleFields(toggleFields).map((field) => (
           <VisibilityFieldCard
             key={field.id}
             field={field}
@@ -60,46 +85,48 @@ export function EducationRecordsSection({
         ))}
       </div>
 
-      <p className="text-justify text-xs font-medium leading-6 text-app-filter-muted min-[720px]:text-sm min-[720px]:leading-7 dark:text-app-filter-ink">
-        {t('academicRecordsHint', {
-          count: formatFaNumber(records.length),
-        })}
-      </p>
+      <ul className="flex list-disc flex-col gap-2 pe-4 marker:text-app-filter-muted min-[720px]:pe-5">
+        <li className="text-justify text-xs font-medium leading-6 text-[#171D19] min-[720px]:text-sm min-[720px]:leading-7 dark:text-app-filter-ink">
+          {t('academicRecordsHint', {
+            count: formatFaNumber(records.length),
+          })}
+        </li>
+      </ul>
 
       <ul className="flex flex-col gap-3 min-[720px]:gap-4">
         {records.map((record) => {
           const selected = Boolean(recordSelection[record.id]);
-          const state: VisibilityUiState = selected
-            ? 'visible'
-            : record.initiallyVisible
-              ? 'pendingRemoval'
-              : 'hidden';
+          const state: VisibilityUiState = selected ? 'visible' : 'hidden';
           const caption = t(`captions.${state}`);
 
           return (
             <li key={record.id}>
-              <AcademicRecordCard
-                record={toPanelAcademicRecord(record)}
+              <div
                 className={cn(
-                  'rounded-xl border-[#707973] bg-[#f8f8f0] p-3 dark:bg-app-card',
-                  'min-[720px]:p-4',
-                  state === 'visible' &&
-                    'border-[#dae6da] dark:border-primary-100/50',
-                  state === 'pendingRemoval' &&
-                    'border-warning/50 dark:border-warning-100/60',
-                  state === 'hidden' && 'border-[#dbdbd3] dark:border-border'
+                  'flex flex-col gap-2 rounded-3xl border p-2',
+                  selected
+                    ? 'border-[#8DD5B2]'
+                    : 'border-border dark:border-auth-input-border'
                 )}
-                footer={
-                  <VisibilityCheckbox
-                    label={record.degree}
-                    caption={caption}
-                    state={state}
-                    selected={selected}
-                    locked={false}
-                    onToggle={() => onToggleRecord(record.id)}
-                  />
-                }
-              />
+              >
+                <AcademicRecordCard
+                  record={toPanelAcademicRecord(record)}
+                  className={cn(
+                    'rounded-3xl border border-[#DBD8D1] bg-[#F8F8F0] p-4',
+                    'min-[720px]:px-6 min-[720px]:py-6',
+                    'dark:border-auth-input-border dark:bg-app-card'
+                  )}
+                />
+                <VisibilityCheckbox
+                  label={record.degree}
+                  caption={caption}
+                  state={state}
+                  selected={selected}
+                  locked={false}
+                  className="px-1"
+                  onToggle={() => onToggleRecord(record.id)}
+                />
+              </div>
             </li>
           );
         })}

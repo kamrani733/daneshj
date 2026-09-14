@@ -17,14 +17,19 @@ import {
   ProviderBlocks,
 } from './fields-section-blocks';
 import { FieldsFloatingSaveBar } from './fields-floating-save-bar';
+import { AppDialog } from '@/components/ui/app-dialog';
 import {
+  AdminEditIntroBullets,
   IntroBullets,
   ModeTabs,
+  OwnerReviewIntroBullets,
   ReviewIntroBullets,
 } from './fields-section-header';
 import { FieldsLimitationsSection } from './fields-limitations-section';
 import { ReviewPendingList } from './review-pending-list';
 import { useFieldsSectionController } from '@private-panel/hooks/use-fields-section-controller';
+import type { FieldsMode } from '@private-panel/utils/fields-section-utils';
+import { useState } from 'react';
 
 type FieldsSectionProps = {
   accessToken?: string | null;
@@ -38,6 +43,21 @@ export function FieldsSection({
   username,
 }: FieldsSectionProps) {
   const vm = useFieldsSectionController({ accessToken, targetActorId });
+  const [leaveReviewOpen, setLeaveReviewOpen] = useState(false);
+
+  function requestModeChange(next: FieldsMode) {
+    if (vm.mode === 'review' && next === 'view' && vm.hasPendingReview) {
+      setLeaveReviewOpen(true);
+      return;
+    }
+    vm.setMode(next);
+  }
+
+  function confirmLeaveReview() {
+    vm.review.onCancel();
+    vm.setMode('view');
+    setLeaveReviewOpen(false);
+  }
 
   return (
     <div
@@ -47,10 +67,16 @@ export function FieldsSection({
         vm.mode === 'view' && vm.isDirty && 'pb-24 min-[834px]:pb-0',
       )}
     >
-      <ModeTabs mode={vm.mode} onModeChange={vm.setMode} t={vm.t} />
+      <ModeTabs mode={vm.mode} onModeChange={requestModeChange} t={vm.t} />
 
-      {targetActorId ? (
-        <ReviewIntroBullets t={vm.t} username={username} />
+      {vm.mode === 'review' ? (
+        targetActorId ? (
+          <ReviewIntroBullets t={vm.t} username={username} />
+        ) : (
+          <OwnerReviewIntroBullets t={vm.t} />
+        )
+      ) : targetActorId ? (
+        <AdminEditIntroBullets t={vm.t} />
       ) : (
         <IntroBullets t={vm.t} />
       )}
@@ -133,6 +159,23 @@ export function FieldsSection({
       ) : null}
 
       <FieldsLimitationsSection accessToken={accessToken} t={vm.t} />
+
+      <AppDialog
+        open={leaveReviewOpen}
+        onOpenChange={setLeaveReviewOpen}
+        variant="confirm"
+        title={vm.t('reviewIncompleteTitle')}
+        actionsStyle="text"
+        primaryAction={{
+          label: vm.t('reviewIncompleteYes'),
+          tone: 'destructive',
+          onClick: confirmLeaveReview,
+        }}
+        secondaryAction={{
+          label: vm.t('reviewIncompleteNo'),
+          tone: 'muted',
+        }}
+      />
     </div>
   );
 }
@@ -174,7 +217,7 @@ function CategoryTabs({
             <span className="flex items-center gap-2 whitespace-nowrap">
               {tVis(`categories.${id}`)}
               {pendingCounts[id] ? (
-                <span className="size-2 rounded-full bg-[#ba1a1a]" />
+                <span className="size-2 rounded-full bg-error" />
               ) : null}
             </span>
           </TabsTrigger>
@@ -211,6 +254,8 @@ function FieldsEditView({
               fieldErrors={vm.fieldErrors}
               onChange={vm.onFieldChange}
               onPhotoPick={vm.onPhotoPick}
+              onSharePhotos={vm.onSharePhotos}
+              onSharedPhotoPick={vm.onSharedPhotoPick}
               t={vm.t}
               tVis={vm.tVis}
             />

@@ -12,7 +12,7 @@ import {
 import { JalaliDatePicker } from '@/components/ui/jalali-date-picker';
 import { cn } from '@/lib/utils';
 
-export type OutlinedFieldTone = 'default' | 'warning' | 'error';
+export type OutlinedFieldTone = 'default' | 'primary' | 'warning' | 'error';
 
 export type OutlinedFieldOption = {
   value: string;
@@ -51,7 +51,10 @@ function toneBorderClass(tone: OutlinedFieldTone = 'default') {
   if (tone === 'warning') {
     return 'border-warning';
   }
-  return 'border-[#707973] dark:border-auth-input-border focus-within:ring-2 focus-within:ring-primary/30';
+  if (tone === 'primary') {
+    return 'border-primary dark:border-primary-100';
+  }
+  return 'border-auth-input-border focus-within:ring-2 focus-within:ring-primary/30';
 }
 
 function resolveTone({
@@ -129,7 +132,7 @@ export function OutlinedFieldShell({
         <span
           className={cn(
             'pointer-events-none absolute start-3 top-0 z-[1] -translate-y-1/2 px-1 text-xs font-medium',
-            'text-[#404943] dark:text-app-filter-muted',
+            'text-app-filter-muted',
             labelSurfaceClassName ?? DEFAULT_LABEL_SURFACE,
             tone === 'error' && 'text-error'
           )}
@@ -350,7 +353,7 @@ export function OutlinedSelectField({
       errorMessage={message}
       endAdornment={
         <ChevronDown
-          className="size-5 text-[#404943] dark:text-app-filter-muted"
+          className="size-5 text-app-filter-muted"
           strokeWidth={1.75}
           aria-hidden
         />
@@ -411,7 +414,7 @@ export function OutlinedDateField({
     errorMessage ?? (typeof error === 'string' ? error : null);
   const calendarIcon = (
     <Calendar
-      className="size-5 text-[#404943] dark:text-app-filter-muted"
+      className="size-5 text-app-filter-muted"
       strokeWidth={1.75}
       aria-hidden
     />

@@ -1,5 +1,6 @@
 import { Pencil, Stamp } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import type { ReactNode } from 'react';
 
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
@@ -17,9 +18,9 @@ export function ModeTabs({
 }) {
   const triggerClass = cn(
     'h-full flex-1 items-center justify-center gap-2 rounded-none border-0 border-b-2 border-transparent',
-    'text-sm font-medium text-[#404943] shadow-none',
-    'data-[state=active]:border-b-[#008d63] data-[state=active]:bg-transparent',
-    'data-[state=active]:font-bold data-[state=active]:text-[#171d19]',
+    'text-sm font-medium text-app-filter-muted shadow-none',
+    'data-[state=active]:border-b-primary data-[state=active]:bg-transparent',
+    'data-[state=active]:font-bold data-[state=active]:text-content',
     'data-[state=active]:shadow-none dark:text-app-filter-ink',
     'dark:data-[state=active]:border-b-primary-100 dark:data-[state=active]:text-primary-100',
   );
@@ -29,12 +30,12 @@ export function ModeTabs({
       value={mode}
       onValueChange={(value) => onModeChange(value as FieldsMode)}
       dir="rtl"
-      className="w-full max-w-[360px] self-start"
+      className="w-full max-w-[440px] self-start"
     >
       <TabsList
         className={cn(
           'flex h-12 w-full items-stretch justify-center gap-0',
-          'rounded-none border-b border-[#dbd8d1] bg-transparent p-0',
+          'rounded-none border-b border-border bg-transparent p-0',
           'dark:border-auth-input-border',
         )}
       >
@@ -70,9 +71,9 @@ export function OwnerIntroBullets({
         <li key={index} className="flex w-full items-start gap-2.5">
           <span
             aria-hidden
-            className="mt-2 size-1.5 shrink-0 rounded-full bg-[#008d63]"
+            className="mt-2 size-1.5 shrink-0 rounded-full bg-primary dark:bg-primary-100"
           />
-          <p className="min-w-0 flex-1 text-justify text-sm font-medium leading-6 text-[#171d19] dark:text-app-filter-ink">
+          <p className="min-w-0 flex-1 text-justify text-sm font-medium leading-6 text-content dark:text-app-filter-ink">
             {index === 1 ? (
               <>
                 {t('intro.requiredBefore')}
@@ -85,6 +86,30 @@ export function OwnerIntroBullets({
           </p>
         </li>
       ))}
+    </ul>
+  );
+}
+
+export function AdminEditIntroBullets({
+  t,
+}: {
+  t: ReturnType<typeof useTranslations>;
+}) {
+  return (
+    <ul className="flex w-full flex-col gap-4">
+      <BulletLine>{t('intro.adminP1')}</BulletLine>
+    </ul>
+  );
+}
+
+export function OwnerReviewIntroBullets({
+  t,
+}: {
+  t: ReturnType<typeof useTranslations>;
+}) {
+  return (
+    <ul className="flex w-full flex-col gap-4">
+      <BulletLine>{t('ownerReviewIntro.p1')}</BulletLine>
     </ul>
   );
 }
@@ -102,13 +127,27 @@ export function ReviewIntroBullets({
         <li key={index} className="flex w-full items-start gap-2.5">
           <span
             aria-hidden
-            className="mt-2 size-1.5 shrink-0 rounded-full bg-[#008d63]"
+            className="mt-2 size-1.5 shrink-0 rounded-full bg-primary dark:bg-primary-100"
           />
-          <p className="min-w-0 flex-1 text-justify text-sm font-medium leading-6 text-[#171d19] dark:text-app-filter-ink">
+          <p className="min-w-0 flex-1 text-justify text-sm font-medium leading-6 text-content dark:text-app-filter-ink">
             {t(`reviewIntro.p${index}` as 'reviewIntro.p1', { username })}
           </p>
         </li>
       ))}
     </ul>
+  );
+}
+
+function BulletLine({ children }: { children: ReactNode }) {
+  return (
+    <li className="flex w-full items-start gap-2.5">
+      <span
+        aria-hidden
+        className="mt-2 size-1.5 shrink-0 rounded-full bg-primary dark:bg-primary-100"
+      />
+      <p className="min-w-0 flex-1 text-justify text-sm font-medium leading-6 text-content dark:text-app-filter-ink">
+        {children}
+      </p>
+    </li>
   );
 }
