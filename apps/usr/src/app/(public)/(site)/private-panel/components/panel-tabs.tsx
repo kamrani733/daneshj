@@ -2,6 +2,7 @@
 
 import { CircleHelp, Info, UserCog } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { useState } from 'react';
 
 import type { PrivatePanelTab } from '@private-panel/data/private-panel-ui';
 import { ppTheme } from '@private-panel/data/private-panel-theme';
@@ -16,6 +17,10 @@ import { cn } from '@/lib/utils';
 import { FieldsSection } from './fields/fields-section';
 import { GuideSection } from './guide/guide-section';
 import { PublicOpsSection } from './public-ops/public-ops-section';
+import {
+  UnsavedChangesProvider,
+  useUnsavedChangesGuard,
+} from './unsaved-changes-guard';
 
 const TAB_ITEMS: {
   id: PrivatePanelTab;
@@ -32,16 +37,29 @@ type PrivatePanelTabsProps = {
   username: string;
 };
 
-export function PrivatePanelTabs({
+export function PrivatePanelTabs(props: PrivatePanelTabsProps) {
+  return (
+    <UnsavedChangesProvider>
+      <PanelTabsInner {...props} />
+    </UnsavedChangesProvider>
+  );
+}
+
+function PanelTabsInner({
   accessToken,
   targetActorId,
   username,
 }: PrivatePanelTabsProps) {
   const t = useTranslations('privatePanel');
+  const guard = useUnsavedChangesGuard();
+  const [tab, setTab] = useState<PrivatePanelTab>('fields');
 
   return (
     <Tabs
-      defaultValue="fields"
+      value={tab}
+      onValueChange={(value) =>
+        guard(() => setTab(value as PrivatePanelTab))
+      }
       className="flex w-full flex-col gap-6 min-[720px]:gap-8"
       dir="rtl"
     >

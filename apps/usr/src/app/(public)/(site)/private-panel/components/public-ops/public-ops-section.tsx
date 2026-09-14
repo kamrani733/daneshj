@@ -1,6 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
+import { useState } from 'react';
 
 import {
   Tabs,
@@ -10,6 +11,10 @@ import {
 } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
 
+import {
+  UNSAVED_SCOPE,
+  useUnsavedChangesGuard,
+} from '../unsaved-changes-guard';
 import { CreateDeletePanel } from './create-delete-panel';
 import { ManageVisibilityPanel } from './manage-visibility-panel';
 
@@ -31,13 +36,20 @@ export function PublicOpsSection({
   username,
 }: PublicOpsSectionProps) {
   const t = useTranslations('privatePanel.publicOps');
-  const defaultSubTab: PublicOpsSubTab = targetActorId
-    ? 'createDelete'
-    : 'manageVisibility';
+  const guard = useUnsavedChangesGuard();
+  const [subTab, setSubTab] = useState<PublicOpsSubTab>(
+    targetActorId ? 'createDelete' : 'manageVisibility'
+  );
 
   return (
     <Tabs
-      defaultValue={defaultSubTab}
+      value={subTab}
+      onValueChange={(value) =>
+        guard(
+          () => setSubTab(value as PublicOpsSubTab),
+          [UNSAVED_SCOPE.manageVisibility]
+        )
+      }
       className="flex w-full flex-col gap-3 min-[720px]:gap-6"
       dir="rtl"
     >

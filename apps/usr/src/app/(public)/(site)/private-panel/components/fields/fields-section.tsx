@@ -16,6 +16,11 @@ import {
   IdentityCategoryBlocks,
   ProviderBlocks,
 } from './fields-section-blocks';
+import {
+  UNSAVED_SCOPE,
+  useDiscardConfirm,
+  useRegisterUnsavedChanges,
+} from '../unsaved-changes-guard';
 import { FieldsFloatingSaveBar } from './fields-floating-save-bar';
 import { AppDialog } from '@/components/ui/app-dialog';
 import {
@@ -44,6 +49,9 @@ export function FieldsSection({
 }: FieldsSectionProps) {
   const vm = useFieldsSectionController({ accessToken, targetActorId });
   const [leaveReviewOpen, setLeaveReviewOpen] = useState(false);
+
+  useRegisterUnsavedChanges(UNSAVED_SCOPE.fields, vm.isDirty, vm.onCancel);
+  const confirmDiscard = useDiscardConfirm();
 
   function requestModeChange(next: FieldsMode) {
     if (vm.mode === 'review' && next === 'view' && vm.hasPendingReview) {
@@ -151,7 +159,7 @@ export function FieldsSection({
         <FieldsFloatingSaveBar
           disabled={!accessToken}
           saving={vm.isSaving}
-          onCancel={vm.onCancel}
+          onCancel={() => confirmDiscard([UNSAVED_SCOPE.fields])}
           onSave={() => {
             void vm.onSave();
           }}

@@ -19,7 +19,6 @@ import {
   type VisibilityCategoryId,
   type VisibilityField,
 } from '@private-panel/data/visibility-config';
-import { AppDialog } from '@/components/ui/app-dialog';
 import { Button } from '@/components/ui/button';
 import {
   Tabs,
@@ -30,23 +29,17 @@ import {
 import { cn } from '@/lib/utils';
 
 import {
+  UNSAVED_SCOPE,
+  useDiscardConfirm,
+  useRegisterUnsavedChanges,
+} from '../unsaved-changes-guard';
+import {
   EducationRecordsSection,
 } from './education-records-section';
 import { VisibilityFieldCard } from './visibility-field';
 
 const INTRO_PARAGRAPHS =
   fa.privatePanel.publicOps.manageVisibility.introParagraphs;
-
-function DiscardWarningIcon() {
-  return (
-    <span
-      aria-hidden
-      className="flex size-8 items-center justify-center rounded-full bg-error text-base font-bold leading-none text-white"
-    >
-      !
-    </span>
-  );
-}
 
 function selectionFromFields(fields: VisibilityField[]): Record<string, boolean> {
   return Object.fromEntries(
@@ -106,7 +99,6 @@ export function ManageVisibilityPanel({
   const [savedRecordSelection, setSavedRecordSelection] = useState<
     Record<string, boolean>
   >({});
-  const [discardOpen, setDiscardOpen] = useState(false);
   const [hydratedKey, setHydratedKey] = useState<number | null>(null);
   const [formError, setFormError] = useState<string | null>(null);
 
@@ -166,6 +158,13 @@ export function ManageVisibilityPanel({
     savedRecordSelection,
   ]);
 
+  useRegisterUnsavedChanges(
+    UNSAVED_SCOPE.manageVisibility,
+    isDirty,
+    discardChanges
+  );
+  const confirmDiscard = useDiscardConfirm();
+
   const sections = VISIBILITY_SECTIONS[category];
   const categoryFields = fields.filter((field) => field.category === category);
 
@@ -220,16 +219,10 @@ export function ManageVisibilityPanel({
     }
   }
 
-  function requestCancel() {
-    if (!isDirty) return;
-    setDiscardOpen(true);
-  }
-
-  function confirmDiscard() {
+  function discardChanges() {
     setSelection(savedSelection);
     setRecordSelection(savedRecordSelection);
     setFormError(null);
-    setDiscardOpen(false);
   }
 
   function renderFieldGrid(sectionFields: VisibilityField[]) {
@@ -437,7 +430,9 @@ export function ManageVisibilityPanel({
                     type="button"
                     variant="ghost"
                     disabled={!isDirty || isSaving}
-                    onClick={requestCancel}
+                    onClick={() =>
+                      confirmDiscard([UNSAVED_SCOPE.manageVisibility])
+                    }
                     className={cn(
                       'h-11 w-full px-4 text-sm font-medium text-primary shadow-none',
                       'hover:bg-transparent hover:text-primary',
@@ -471,23 +466,6 @@ export function ManageVisibilityPanel({
         ))}
       </Tabs>
 
-      <AppDialog
-        open={discardOpen}
-        onOpenChange={setDiscardOpen}
-        variant="confirm"
-        title={t('discardConfirm')}
-        icon={<DiscardWarningIcon />}
-        actionsStyle="text"
-        primaryAction={{
-          label: t('discardYes'),
-          tone: 'destructive',
-          onClick: confirmDiscard,
-        }}
-        secondaryAction={{
-          label: t('discardNo'),
-          tone: 'muted',
-        }}
-      />
     </div>
   );
 }
