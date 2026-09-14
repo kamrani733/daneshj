@@ -585,7 +585,10 @@ export function FieldGrid({
 }) {
   const textareas = fields.filter((f) => f.kind === 'textarea');
   const rest = fields.filter(
-    (f) => f.kind !== 'textarea' && f.kind !== 'toggle',
+    (f) =>
+      f.kind !== 'textarea' &&
+      f.kind !== 'toggle' &&
+      f.kind !== 'document',
   );
 
   return (

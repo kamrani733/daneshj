@@ -92,6 +92,51 @@ export function VisibilityFieldCard({
     );
   }
 
+  if (field.kind === 'document') {
+    const documentName =
+      field.documentName ??
+      t(`documents.${field.documentSlot ?? 'resume'}`);
+
+    return (
+      <div
+        className={cn(
+          cardClass(state),
+          'gap-2.5 p-3 pt-2.5 min-[720px]:gap-3 min-[720px]:p-4 min-[720px]:pt-3'
+        )}
+      >
+        <OutlinedTextField
+          label={label}
+          value={value}
+          readOnly
+          labelSurfaceClassName={cardBg}
+          surfaceClassName={inputBg}
+        />
+
+        <div className="flex items-center justify-end gap-2 px-1">
+          <span className="truncate text-xs font-medium text-content min-[720px]:text-sm dark:text-app-filter-ink">
+            {documentName}
+          </span>
+          <span
+            aria-hidden
+            className="flex h-6 min-w-9 shrink-0 items-center justify-center rounded bg-error-50 px-1 text-[10px] font-bold text-error"
+          >
+            JPEG
+          </span>
+        </div>
+
+        <VisibilityCheckbox
+          label={`${label} — ${documentName}`}
+          caption={caption}
+          state={state}
+          selected={selected}
+          locked={interactionLocked}
+          lockedMuted={lockedMuted}
+          onToggle={() => onToggle(field.id)}
+        />
+      </div>
+    );
+  }
+
   if (field.kind === 'toggle') {
     return (
       <AcademicFieldToggleCard

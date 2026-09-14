@@ -16,7 +16,14 @@ export type VisibilityCategoryId =
   | 'education'
   | 'provider';
 
-export type VisibilityFieldKind = 'text' | 'photo' | 'textarea' | 'toggle';
+export type VisibilityFieldKind =
+  | 'text'
+  | 'photo'
+  | 'textarea'
+  | 'toggle'
+  | 'document';
+
+export type VisibilityDocumentSlot = 'resume' | 'portfolio';
 
 export type VisibilityAcademicRecord = {
   id: string;
@@ -58,6 +65,8 @@ export type VisibilityField = {
   hiddenCaptionKey?: 'notDisplayed';
   withCalendar?: boolean;
   imageSrc?: string;
+  documentSlot?: VisibilityDocumentSlot;
+  documentName?: string;
   /** True when Actor wrapped value is awaiting admin approval. */
   pending?: boolean;
 };
@@ -81,6 +90,7 @@ export type VisibilityFieldDef = {
   lockedCaptionKey?: 'locked' | 'notDisplayed';
   hiddenCaptionKey?: 'notDisplayed';
   withCalendar?: boolean;
+  documentSlot?: VisibilityDocumentSlot;
 };
 
 export const VISIBILITY_CATEGORIES: VisibilityCategoryId[] = [
@@ -606,6 +616,28 @@ export const VISIBILITY_FIELD_DEFS: VisibilityFieldDef[] = [
   },
   // Provider fields — no matching public-flag section in current Actor YAML.
   {
+    id: 'providerFullName',
+    category: 'provider',
+    section: 'provider',
+    kind: 'text',
+    labelKey: 'fullName',
+    tabName: null,
+    apiSection: 'identity_info_user',
+    apiField: null,
+    valueField: 'first_name',
+  },
+  {
+    id: 'providerMobile',
+    category: 'provider',
+    section: 'provider',
+    kind: 'text',
+    labelKey: 'mobile',
+    tabName: null,
+    apiSection: 'contact_info_user',
+    apiField: null,
+    valueField: 'mobile',
+  },
+  {
     id: 'workPhone',
     category: 'provider',
     section: 'provider',
@@ -714,6 +746,28 @@ export const VISIBILITY_FIELD_DEFS: VisibilityFieldDef[] = [
     tabName: null,
     apiSection: null,
     apiField: null,
+  },
+  {
+    id: 'providerResume',
+    category: 'provider',
+    section: 'provider',
+    kind: 'document',
+    labelKey: 'documentDescription',
+    tabName: null,
+    apiSection: null,
+    apiField: null,
+    documentSlot: 'resume',
+  },
+  {
+    id: 'providerPortfolio',
+    category: 'provider',
+    section: 'provider',
+    kind: 'document',
+    labelKey: 'documentDescription',
+    tabName: null,
+    apiSection: null,
+    apiField: null,
+    documentSlot: 'portfolio',
   },
 ];
 

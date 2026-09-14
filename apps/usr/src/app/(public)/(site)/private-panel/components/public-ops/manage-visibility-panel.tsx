@@ -69,6 +69,7 @@ function partitionFields(fields: VisibilityField[]) {
     texts: fields.filter((f) => f.kind === 'text'),
     textareas: fields.filter((f) => f.kind === 'textarea'),
     toggles: fields.filter((f) => f.kind === 'toggle'),
+    documents: fields.filter((f) => f.kind === 'document'),
   };
 }
 
@@ -232,7 +233,8 @@ export function ManageVisibilityPanel({
   }
 
   function renderFieldGrid(sectionFields: VisibilityField[]) {
-    const { photos, texts, textareas, toggles } = partitionFields(sectionFields);
+    const { photos, texts, textareas, toggles, documents } =
+      partitionFields(sectionFields);
     const fieldGridClass =
       'grid grid-cols-1 gap-3 min-[720px]:grid-cols-2 min-[720px]:gap-4 min-[834px]:gap-5';
 
@@ -287,6 +289,20 @@ export function ManageVisibilityPanel({
                 key={field.id}
                 field={field}
                 value=""
+                selected={Boolean(selection[field.id])}
+                onToggle={toggleField}
+              />
+            ))}
+          </div>
+        ) : null}
+
+        {documents.length > 0 ? (
+          <div className={fieldGridClass}>
+            {documents.map((field) => (
+              <VisibilityFieldCard
+                key={field.id}
+                field={field}
+                value={values[field.id] ?? field.value}
                 selected={Boolean(selection[field.id])}
                 onToggle={toggleField}
               />

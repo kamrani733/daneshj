@@ -488,7 +488,10 @@ export function mapVisibilityFields(
   const submitter = options.submitter ?? 'owner';
   return VISIBILITY_FIELD_DEFS.map((def) => {
     const flag = readPublicFlag(publicFlags, def);
-    const value = readPrivateValue(privateData, def);
+    const value =
+      def.id === 'providerFullName'
+        ? readFullName(privateData)
+        : readPrivateValue(privateData, def);
     const imageSrc = def.kind === 'photo' && value ? value : undefined;
     const locked = isFieldLockedForSubmitter(def, submitter);
 
@@ -507,9 +510,29 @@ export function mapVisibilityFields(
       hiddenCaptionKey: def.hiddenCaptionKey,
       withCalendar: def.withCalendar,
       imageSrc,
+      documentSlot: def.documentSlot,
       pending: readPrivatePending(privateData, def),
     };
   });
+}
+
+function readFullName(
+  privateData: ProfileRetrieveData | null | undefined
+): string {
+  const identity = pickSection(privateData, 'identity_info_user');
+  const first = readTranslatedString(
+    privateData,
+    identity,
+    'identity_info_user_translation',
+    'first_name'
+  );
+  const last = readTranslatedString(
+    privateData,
+    identity,
+    'identity_info_user_translation',
+    'last_name'
+  );
+  return [first, last].filter(Boolean).join(' ');
 }
 
 function mapOneAcademicRecord(

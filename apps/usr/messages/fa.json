@@ -1007,6 +1007,8 @@
           "website": "آدرس وبسایت",
           "providerCredit": "اعتبار سرویس دهندگی",
           "offeredServices": "سرویس های قابل ارایه",
+          "fullName": "نام و نام خانوادگی",
+          "documentDescription": "توضیح",
           "gradEmploymentStatus": "وضعیت فارغ‌التحصیلی / اشتغال",
           "studentNumber": "شماره دانشجویی",
           "recordMajor": "رشته تحصیلی",
@@ -1017,6 +1019,10 @@
           "recordStudentStatus": "وضعیت دانشجویی",
           "recordDegreeDescription": "توضیح مقطع تحصیلی",
           "recordGraduationDate": "تاریخ پایان تحصیلات"
+        },
+        "documents": {
+          "resume": "رزومه.JPEG",
+          "portfolio": "پورتفولیو.JPEG"
         },
         "captions": {
           "visible": "این فیلد در پنل عمومی شما نمایش داده می‌شود",

@@ -170,6 +170,8 @@ const FIELD_SCHEMAS: Record<string, z.ZodType<string>> = {
   serviceProviderStatus: SHORT_TEXT,
   providerCredit: MEDIUM_TEXT,
   offeredServices: MEDIUM_TEXT,
+  providerFullName: SHORT_TEXT,
+  providerMobile: IRANIAN_MOBILE,
 };
 
 const EDITABLE_VALUE_IDS = new Set(
