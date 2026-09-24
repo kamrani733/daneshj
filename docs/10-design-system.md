@@ -190,9 +190,9 @@ audit; the "SRS usage" column shows why each is needed.
 |---|---|---|---|
 | `EmptyState` | No data (SRS text when given) | `components/panel/empty-state.tsx` | ✅ |
 | `NoResultState` | Search/filter returned nothing | — | ❌ |
-| `ErrorState` | Load failure with retry | — | ❌ (no `error.tsx` in app) |
+| `ErrorState` | Load failure with retry | `components/ui/error-state.tsx` | ✅ |
 | `NoPermissionState` | 403 / capability missing | — | ❌ |
-| `GuestPromptState` | Guest tried an interactive action | — | ❌ |
+| `GuestPromptState` | Guest tried an interactive action | `components/ui/guest-prompt-state.tsx` | ✅ |
 | `FormErrorBanner` | Form-level/server errors above actions | inline `role="alert"` divs | ⚠️ not abstracted |
 | `PanelLoadingOverlay` | Full-page loading | `components/panel/panel-loading-overlay.tsx` | ✅ |
 

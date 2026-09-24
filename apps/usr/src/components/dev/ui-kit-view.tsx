@@ -2,6 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 
+import { UiKitComponents } from '@/components/dev/ui-kit-components';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { cn } from '@/lib/utils';
 
@@ -105,6 +106,8 @@ export function UiKitView() {
           ))}
         </ul>
       </section>
+
+      <UiKitComponents />
     </main>
   );
 }

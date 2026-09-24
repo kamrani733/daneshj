@@ -34,6 +34,9 @@ const badgeVariants = cva(
          */
         sell:
           "h-8 rounded-[8px] border-0 bg-warning-50 px-3 text-sm font-medium leading-5 tracking-[0.0071em] text-warning-700 shadow-app-elevation-1",
+        time: "h-auto rounded-small border-0 bg-primary-container px-2 py-1 text-label-small font-medium text-on-primary-container",
+        viewcount:
+          "h-auto gap-1 rounded-small border-0 bg-warning-container px-2 py-1 text-label-small font-medium text-on-warning-container",
       },
     },
     defaultVariants: {
