@@ -30,7 +30,7 @@ Every doc answers exactly one question:
 
 ## Markers
 
-- `⟨FILL: …⟩` — a fact that exists in the repo but was not yet copied here. Fill it from the code or from
+- **Placeholder markers** (kit install used `⟨FILL: …⟩` tokens) — facts copied from the code or from
   `ai/00-project-audit.md` (the section is named in the marker). Never leave a guess.
 - `TBD` — genuinely undecided; must have a matching row in `09-known-issues.md`.
 

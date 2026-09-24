@@ -9,11 +9,26 @@ last_updated: "2026-09-25"
 
 ## Route table (existing)
 
-⟨FILL: every route from audit §3 — route, page file, layout, required actor, SRS service, caching⟩
+All routes are in `apps/usr` unless noted. **Caching:** no route-level `revalidate` or `loading.tsx`/`error.tsx`
+today; pages are dynamic SSR/RSC with client data via React Query where noted.
 
-| Route | Purpose | Actor (UI guard) | Server guard | SRS | Caching |
-|-------|---------|------------------|--------------|-----|---------|
-| ⟨FILL⟩ | | | | | |
+| Route | Page file | Layout / shell | Actor (UI) | Server guard | SRS / domain | Caching |
+|-------|-----------|----------------|------------|--------------|--------------|---------|
+| `/` | `(public)/(site)/page.tsx` → home | Root → `(public)` → `(site)` → `SiteShell` | Guest OK | — | Home / search (mock); SRV-like UI | Dynamic SSR + client mock search |
+| `/cooperation` | `(site)/cooperation/page.tsx` | SiteShell | Guest OK | — | Static i18n; no SRS path | Dynamic SSR |
+| `/login`, `/login/otp`, `/login/password`, `/login/totp`, `/login/sessions` | `(auth)/login/...` | Auth layout | Guest (sessions flow varies) | Auth layout redirects if session | Auth (`USR-Aut` in comments) | Dynamic |
+| `/forgot-password`, `/forgot-password/otp`, `/forgot-password/reset` | `(auth)/forgot-password/...` | Auth layout | Guest | Middleware + auth layout | Auth | Dynamic |
+| `/public-panel` | `(site)/public-panel/page.tsx` | SiteShell | Guest OK (API uses token if present) | — | Visitor profile (`Usr-Prf-6`); catalog UI for Nws/Dsc/Nwl | Dynamic + React Query |
+| `/private-panel` | `(site)/private-panel/page.tsx` | SiteShell | Signed-in user; `?actor_id=` admin view | Middleware: session required | `USR-Prf-2`, `Adm-Prf-2` | Dynamic + React Query |
+| `/notifications` | `(site)/notifications/page.tsx` | SiteShell + notifications `page-shell` | Needs token for data | — | `USR-Ntf` | Client fetch (RQ) |
+| `/notifications/stats` | `(site)/notifications/stats/page.tsx` | Same | Token for API | — | `Adm-Ntf-6N10` | Client fetch |
+| `/notifications/charts` | `(site)/notifications/charts/page.tsx` | Same | Token for API | — | `Adm-Ntf-6N11` | Client fetch |
+| `/notifications/reports` | `(site)/notifications/reports/page.tsx` | Same | Token for API | — | `Usr-Ntf-6N5` | Client fetch |
+| `/notifications/settings` | `(site)/notifications/settings/page.tsx` | Same | Token for API | — | `USR-Ntf-5` | Client fetch |
+| `/dashboard` | **Missing** `page.tsx` | — | Nav expects signed-in user | Middleware lists as protected | Broken — see known issues | — |
+| `/register` | Redirect → `/login` | — | — | `next.config.js` | — | — |
+| `apps/adm` `/` | `apps/adm/src/app/page.tsx` | Placeholder | — | — | Placeholder | Static |
+| `apps/bus` `/` | `apps/bus/src/app/page.tsx` | Placeholder | — | — | Placeholder | Static |
 
 Open: should `/dashboard` exist, or should menu links point to `private-panel` / a future admin app? (TBD)
 

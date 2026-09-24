@@ -7,7 +7,10 @@ last_updated: "2026-09-25"
 
 # Data Models
 
-> Existing types: ⟨FILL: where DTOs live today and whether any are generated, audit §4⟩
+> **Existing types:** Handwritten TypeScript in each feature's `types/` (e.g.
+> `notifications/types/api.ts` ~490 lines, private/public panel `types/api.ts`). **No OpenAPI codegen** in the
+> repo. Shared minimal types: `libs/shared-types` (`User`, `Session` only). API envelopes `{ success, message,
+> errors }` are asserted per feature (`assertApiSuccess`, duplicated `formatApiResponseError` helpers).
 
 ## Shared contracts (target — confirm with backend)
 

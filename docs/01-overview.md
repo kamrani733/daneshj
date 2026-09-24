@@ -16,8 +16,8 @@ and invite friends.
 
 ## Localization
 
-RTL-first Persian. Numbers, codes and Latin text stay LTR inline. Jalali dates for display. ⟨FILL: is a second
-locale planned? audit §6⟩
+RTL-first Persian. Numbers, codes and Latin text stay LTR inline. Jalali dates for display. **Single locale
+today:** `fa` only via `next-intl` — no second locale configured.
 
 ## Actors
 
@@ -48,8 +48,18 @@ Access matrix: [03-domain-and-rules.md](./03-domain-and-rules.md).
 ## Platform areas outside the SRS (already built from Figma)
 
 Authentication, actor profiles, notifications and notification settings, operational panels, interactive
-operations. ⟨FILL: exact list from audit §8 "screens with no SRS path code"⟩ These are documented from the code,
-not the SRS. A separate SRS for them: TBD.
+operations. Implemented areas **not** in the Chapter-2 path index ([srs-coverage.md](./srs-coverage.md)):
+
+- `/cooperation` — static cooperation page
+- `/dashboard` — linked in nav/middleware but **no** `page.tsx` (broken)
+- Auth flows (`/login`, forgot-password, sessions) — Auth MS
+- `private-panel`, `public-panel` — Actor / profile MS
+- `/notifications/*` — Notification MS (`Ntf` codes in comments)
+- Interactive ops (follow/like/score/share) — `public-panel/api/interactive-ops.ts`
+- `apps/adm`, `apps/bus` placeholder landing pages
+- Temporary admin login (`TEMP_ADMIN_ACCESS_TOKEN`)
+
+These are documented from the code, not the SRS. A separate SRS for them: TBD.
 
 ## Out of scope (current)
 

@@ -12,28 +12,30 @@ last_updated: "2026-09-25"
 
 ## Executive summary (2026-09-25)
 
-Platform shell built from Figma (⟨FILL: auth, actor profiles, notifications, panels…⟩). SRS services: 0 of 557
-paths DONE, 17 PARTIAL, 15 UI-ONLY, 525 MISSING. AI-first setup in progress: SRS in repo, docs kit, Cursor rules.
+Platform shell built from Figma: **auth** (OTP/password/sessions), **actor profiles** (private + public panels),
+**notifications** (inbox, stats, charts, reports, settings), **home** (mock search), **cooperation** page,
+**interactive ops** on public profiles. SRS services: **0** of **557** paths DONE, **17** PARTIAL, **15** UI-ONLY,
+**525** MISSING. AI-first setup: SRS in repo, audit done, docs kit filled, Cursor rules added.
 
 ## Overall status
 
 | Area | Status | Notes |
 |------|--------|-------|
 | SRS in repo (`docs/srs/`) | Done | Per-service Markdown + path index |
-| Docs kit | In progress | `⟨FILL⟩` markers remain |
-| Cursor rules / AGENTS.md | In progress | `.cursor/rules/` |
+| Docs kit | Done | Kit placeholders filled; design TBDs in `09-known-issues.md` |
+| Cursor rules / AGENTS.md | Done | `.cursor/rules/` — reconcile with code ongoing |
 | Design system consolidation | In progress | [10-design-system.md](./10-design-system.md) |
-| Platform shell | ⟨FILL⟩ | |
+| Platform shell | Partial | `/dashboard` missing; actor query gating; auth dev shortcuts |
 | Shared pattern libs | Not started | approval, soft delete, archive, categories, reasons, reports, uploader |
-| SRV general pages | ⟨FILL from coverage⟩ | |
-| Rwd | ⟨FILL⟩ | |
-| Dsc | ⟨FILL⟩ | |
-| Rfl | ⟨FILL⟩ | |
-| Msg | ⟨FILL⟩ | |
-| Nws | ⟨FILL⟩ | |
-| Nwl | ⟨FILL⟩ | |
-| Cln | ⟨FILL⟩ | |
-| Tests | ⟨FILL⟩ | e2e target without project |
+| SRV general pages | Partial | 0 DONE, 9 PARTIAL, 26 MISSING (mock home search) |
+| Rwd | Not started | 26 MISSING |
+| Dsc | Not started | 0 DONE, 4 PARTIAL, 3 UI-ONLY, 129 MISSING |
+| Rfl | Not started | 0 DONE, 4 PARTIAL, 19 MISSING |
+| Msg | Not started | 0 DONE, 4 UI-ONLY (comments UI), 28 MISSING |
+| Nws | Not started | 0 DONE, 4 UI-ONLY, 99 MISSING |
+| Nwl | Not started | 0 DONE, 4 UI-ONLY, 117 MISSING |
+| Cln | Not started | 81 MISSING |
+| Tests | Partial | 2 Jest specs; usr spec broken path; CI `e2e` without Playwright project |
 | Deployment | Partial | Vercel; env matrix TBD |
 
 ## Phases
@@ -41,7 +43,7 @@ paths DONE, 17 PARTIAL, 15 UI-ONLY, 525 MISSING. AI-first setup in progress: SRS
 ### Phase 0 — AI-first foundation
 - [x] SRS converted and in repo
 - [x] Repo audit
-- [ ] Docs kit filled (no `⟨FILL⟩` left)
+- [x] Docs kit filled (no placeholder markers left)
 - [ ] Rules reconciled with the codebase
 - [ ] Design system inventory + consolidation plan
 
