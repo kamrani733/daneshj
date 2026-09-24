@@ -33,7 +33,9 @@ const UnsavedChangesContext = createContext<UnsavedChangesContextValue | null>(
   null
 );
 
-const NOOP = () => {};
+const NOOP = () => {
+  // Intentional no-op: cancel confirms the discard and does not navigate.
+};
 
 function dirtyKeys(
   sources: Map<string, UnsavedSource>,

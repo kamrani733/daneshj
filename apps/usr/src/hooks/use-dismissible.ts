@@ -31,6 +31,5 @@ export function useDismissible(
       document.removeEventListener('keydown', handleEscape);
     };
     // refs is read on each event; callers pass stable ref objects
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- refs identity is stable
   }, [open, onDismiss]);
 }
