@@ -1,12 +1,11 @@
 import type { LucideIcon } from 'lucide-react';
-import type { ReactNode } from 'react';
 
 import { cn } from '@/lib/utils';
 
 type StatItemProps = {
   value: string;
   label: string;
-  icon?: LucideIcon | ReactNode;
+  icon?: LucideIcon;
   onClick?: () => void;
   className?: string;
 };
@@ -14,16 +13,15 @@ type StatItemProps = {
 export function StatItem({
   value,
   label,
-  icon,
+  icon: Icon,
   onClick,
   className,
 }: StatItemProps) {
-  const Icon = typeof icon === 'function' ? icon : null;
   const content = (
     <>
       <span className="text-headline-medium font-bold text-on-surface">{value}</span>
       <span className="inline-flex items-center gap-1 text-label-large font-medium text-on-surface-variant">
-        {Icon ? <Icon className="size-4 shrink-0" strokeWidth={1.75} aria-hidden /> : icon}
+        {Icon ? <Icon className="size-4 shrink-0" strokeWidth={1.75} aria-hidden /> : null}
         {label}
       </span>
     </>
