@@ -1,8 +1,29 @@
+const { readFileSync } = require('node:fs');
+const { join } = require('node:path');
+
 const nextJest = require('next/jest.js');
 
 const createJestConfig = nextJest({
   dir: './',
 });
+
+/** Jest patterns from apps/usr/tsconfig.json `compilerOptions.paths`. */
+function moduleNameMapperFromTsconfig(tsconfigPath) {
+  const tsconfig = JSON.parse(readFileSync(tsconfigPath, 'utf8'));
+  const paths = tsconfig.compilerOptions?.paths ?? {};
+  const mapper = {};
+
+  for (const [alias, targets] of Object.entries(paths)) {
+    const target = Array.isArray(targets) ? targets[0] : undefined;
+    if (!target) continue;
+
+    const pattern = `^${alias.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/\\\*/g, '(.*)')}$`;
+    const relativeTarget = target.replace(/^\.\//, '');
+    mapper[pattern] = `<rootDir>/${relativeTarget.replace(/\*$/, '$1')}`;
+  }
+
+  return mapper;
+}
 
 const config = {
   displayName: '@daneshjoam/usr',
@@ -11,20 +32,11 @@ const config = {
     '^(?!.*\\.(js|jsx|ts|tsx|css|json)$)': '@nx/react/plugins/jest',
   },
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
-  // App aliases live in apps/usr/tsconfig.json. Jest 30's Nx resolver does not
-  // fall back to those paths, and this config turns off SWC path mapping.
-  moduleNameMapper: {
-    '^@auth/(.*)$': '<rootDir>/src/app/(public)/(auth)/$1',
-    '^@home/(.*)$': '<rootDir>/src/app/(public)/home/$1',
-    '^@messages/(.*)$': '<rootDir>/messages/$1',
-    '^@notifications/(.*)$':
-      '<rootDir>/src/app/(public)/(site)/notifications/$1',
-    '^@private-panel/(.*)$':
-      '<rootDir>/src/app/(public)/(site)/private-panel/$1',
-    '^@public-panel/(.*)$':
-      '<rootDir>/src/app/(public)/(site)/public-panel/$1',
-    '^@/(.*)$': '<rootDir>/src/$1',
-  },
+  // Jest 30's Nx resolver does not fall back to tsconfig paths, and this
+  // config turns off SWC path mapping. Paths stay in tsconfig.json only.
+  moduleNameMapper: moduleNameMapperFromTsconfig(
+    join(__dirname, 'tsconfig.json'),
+  ),
   coverageDirectory: '../../coverage/apps/usr',
   testEnvironment: 'jsdom',
 };
