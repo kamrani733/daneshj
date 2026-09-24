@@ -6,6 +6,8 @@ alwaysApply: false
 
 # Design system
 
+Language: **Material Design 3 roles + shadcn/Radix + Tailwind v4. Never add MUI** or any other component library.
+
 Canonical source: `docs/10-design-system.md` (token tables + component inventory). Update it in the same change
 whenever a token or shared component is added or changed.
 
@@ -16,8 +18,10 @@ whenever a token or shared component is added or changed.
 - Token sources in order: `docs/10-design-system.md` → global CSS variables → theme / Tailwind mapping
   (exact paths listed in the design-system doc).
 - A needed value that is not in the token set: stop and ask. Never invent a value.
-- Components use semantic tokens (`bg-surface`, `text-primary`, `border-default`, `status-*`), never primitive
-  palette steps directly.
+- Components use semantic M3 tokens (`bg-primary`, `text-on-surface`, `border-outline`, `bg-surface-container-lowest`),
+  never primitive palette steps. Existing `bg-surface` means **card**, not page — public-panel page wash is
+  `bg-background`.
+- No hex and no arbitrary `text-[…]` / `rounded-[…]` in new TSX.
 - Palette vs screen exports: the documented palette always wins. If a Figma screen shows a different shade,
   flag it; once I confirm, the resolution is always "use the palette", never "use the screen".
 - Status colors come only from the status token map in `docs/10-design-system.md`. A status with no mapped token
@@ -31,7 +35,7 @@ whenever a token or shared component is added or changed.
 - An element with no existing component gets ONE new reusable component in the shared UI library, used everywhere
   that element appears from then on. No inline one-off copies.
 - Every new or changed shared component gets a demo with mock props on `/dev/ui-kit` in the same change. The route
-  does not exist yet: create it on first use as a dev-only route that returns 404 in production.
+  returns 404 in production.
 - Changing the visual default of an existing shared component (radius, color, padding, typography) because a new
   design seems to want it: stop and ask. Name the component and property and say it will change every screen that
   already uses it, e.g. "the new design wants radius-lg on `Input` — this changes `Input` everywhere. Confirm?"
@@ -55,6 +59,5 @@ whenever a token or shared component is added or changed.
 - Directional icons (back, next, chevrons, arrows) mirror in RTL; non-directional icons never mirror.
 - Every component is responsive from the start. With no mobile design: stack on mobile, sidebar → drawer,
   tables scroll horizontally or collapse to cards. If the choice would change the layout's meaning, ask.
-- Dark mode: `ThemeProvider` and `.dark` tokens exist but the product decision is open. Until decided: do not
-  remove existing dark styles; new code uses semantic tokens only (which follow `.dark` automatically) and adds
-  no dark-specific overrides.
+- Dark mode is in scope. New code uses semantic tokens only (they follow `.dark`) and adds no dark-specific
+  color overrides. Theme toggle is visible on mobile too.

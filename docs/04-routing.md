@@ -27,6 +27,7 @@ today; pages are dynamic SSR/RSC with client data via React Query where noted.
 | `/notifications/settings` | `(site)/notifications/settings/page.tsx` | Same | Token for API | — | `USR-Ntf-5` | Client fetch |
 | `/dashboard` | **Missing** `page.tsx` | — | Nav expects signed-in user | Middleware lists as protected | Broken — see known issues | — |
 | `/register` | Redirect → `/login` | — | — | `next.config.js` | — | — |
+| `/dev/ui-kit` | `(dev)/ui-kit/page.tsx` | Root only (no SiteShell) | Dev | `notFound()` in production | Design system | Dynamic |
 | `apps/adm` `/` | `apps/adm/src/app/page.tsx` | Placeholder | — | — | Placeholder | Static |
 | `apps/bus` `/` | `apps/bus/src/app/page.tsx` | Placeholder | — | — | Placeholder | Static |
 

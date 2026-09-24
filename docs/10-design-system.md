@@ -7,25 +7,28 @@ last_updated: "2026-09-25"
 
 # Design System
 
+Language: **Material Design 3 roles + shadcn/Radix + Tailwind v4. Never add MUI** or any other component library.
+
 ## Principles
 
 1. **One source per value.** Every color, size, radius and shadow is a token; components never contain literals.
 2. **Palette wins over screens.** If a Figma screen differs from the documented palette, the palette is right.
 3. **One component per element.** A card, a badge, a list toolbar exists once and is configured by props.
 4. **RTL by construction.** Logical properties only; directional icons mirror.
-5. **Visual check first.** Every shared component is shown on the UI-kit route before it is used on a screen.
+5. **Visual check first.** Every shared component is shown on `/dev/ui-kit` before it is used on a screen.
+6. **No hex / arbitrary type or radius in new TSX.** Use M3 semantic tokens so dark mode follows automatically.
 
 ## Sources
 
 | What | Where |
 |---|---|
-| Figma file | TBD (external URLs not committed; comments reference frame IDs e.g. `#956:5039`, `#1:8903`) |
-| CSS variables | `apps/usr/src/app/globals.css` — Tailwind v4 `@theme` block |
+| Figma file | [Untitled](https://www.figma.com/design/aKH5AZkwgcEfmh96gHTTWE/Untitled?node-id=0-1) (public panel dark: `400-139432`) |
+| CSS variables | `apps/usr/src/app/globals.css` — Tailwind v4 `@theme` + M3 roles from `docs/ai/m3-tokens.css` v2 |
 | Theme / Tailwind mapping | `apps/usr/src/app/globals.css` (semantic tokens in `@theme`, dark flip in `.dark`) |
-| Shared UI library | `apps/usr/src/components/ui/` (shadcn-style components) |
+| Shared UI library | `apps/usr/src/components/ui/` (shadcn/Radix). **Never MUI.** |
 | Icons | `apps/usr/src/components/icons/material-icons.tsx` (inline SVG components) + `lucide-react` icons |
 | Fonts | **IRANSansX VF** — `apps/usr/public/fonts/IRANSansXVF.ttf`, loaded via `next/font/local` in `layout.tsx` |
-| UI-kit route | Does not exist; create `/dev/ui-kit` (dev only) |
+| UI-kit route | `/dev/ui-kit` (dev only; `notFound()` in production) |
 
 ## Token architecture
 
@@ -44,24 +47,31 @@ primitives and map semantic tokens onto them, so Figma and code can still be com
 
 | Semantic token | Role | Light | Dark | CSS variable | Class |
 |---|---|---|---|---|---|
-| `brand` / `primary` | Primary brand, primary buttons | `#008d63` | `#008d63` | `--color-primary` | `bg-primary`, `text-primary` |
+| `brand` / `primary` | Primary brand, primary buttons | `#008d63` | `#8dd5b2` | `--color-primary` | `bg-primary`, `text-primary` |
 | `brand-hover` | Hover of brand surfaces | `#006c4b` | `#2ea377` | `--color-primary-hover` | — |
 | `secondary` | Secondary accent | `#dee4de` | `#2c322e` | `--color-secondary` | `bg-secondary` |
 | `bg-page` | App background | `#fafaf5` | `#0f1511` | `--color-background` | `bg-background` |
-| `bg-surface` | Cards, panels | `#fffbff` | `#171d19` | `--color-surface` | `bg-surface` |
+| `bg-surface` | **Cards, panels** (legacy name — not M3 page) | `#fffbff` | `#171d19` | `--color-surface` | `bg-surface` |
 | `bg-subtle` | Table headers, zebra, inputs | `#eff1ed` | `#2c322e` | `--color-muted` | `bg-muted` |
 | `text-primary` | Body text | `#171d19` | `#eff1ed` | `--color-foreground` | `text-foreground` |
 | `text-secondary` | Secondary text | `#57605b` | `#8a938c` | `--color-content-muted` | `text-content-muted` |
 | `text-muted` | Hints, placeholders | `#8a938c` | `#8a938c` | `--color-muted-foreground` | `text-muted-foreground` |
-| `text-on-brand` | Text on brand fill | `#fffbff` | `#fffbff` | `--color-primary-foreground` | `text-primary-foreground` |
+| `text-on-brand` / `on-primary` | Text on brand fill | `#ffffff` | `#003825` | `--color-on-primary` | `text-on-primary`, `text-primary-foreground` |
 | `border-default` | Card/table borders | `#bfc9c1` | `#404943` | `--color-border` | `border-border` |
 | `border-field` | Inputs | `#bfc9c1` | `#404943` | `--color-input` | `border-input` |
 | `success` | Success fg + tint | `#008d63` / `#d3f4e1` | — | `--color-primary`, `--color-primary-subtle` | `text-primary`, `bg-primary-subtle` |
 | `warning` | Warning fg + tint | `#e06333` / `#ffdbcf` | `#e06333` / `#72351f` | `--color-warning`, `--color-warning-subtle` | `text-warning`, `bg-warning-subtle` |
-| `error` | Error fg + tint (borders, messages) | `#ba1a1a` / `#ffdad6` | `#de3730` / `#93000a` | `--color-error`, `--color-error-subtle` | `text-error`, `bg-error-subtle` |
+| `error` | Error fg + tint (borders, messages) | `#ba1a1a` / `#ffdad6` | `#ffb4ab` / `#93000a` | `--color-error`, `--color-error-subtle` | `text-error`, `bg-error-subtle` |
 | `info` | Info / in-process fg + tint | `#244c5b` / `#c1e9fb` | `#567c8d` / `#073543` | `--color-info`, `--color-info-subtle` | `text-info`, `bg-info-subtle` |
 | `disabled` | Disabled fill + text | opacity 50% via `disabled:opacity-50` | — | — | `disabled:opacity-50` |
-| `overlay` | Modal backdrop | TBD (no explicit token) | — | — | — |
+| `overlay` | Modal / hover scrim | `rgb(0 0 0 / 0.32)` | same | `--color-overlay` | `bg-overlay` |
+| `brand-secondary` | Logo orange, CTA, section bars | `#e06333` | `#ffb59b` | `--color-brand-secondary` | `bg-brand-secondary` |
+| `rating` | Card stars | `#ffd393` | `#ffd393` | `--color-rating` | `text-rating` |
+| `like-active` | Comment like (not stats bar) | `#f66060` | `#f66060` | `--color-like-active` | `text-like-active` |
+| `featured` / `featured-container` | Featured comment | `#f59e0b` / `#fff5eb` | `#f59e0b` / `#211d18` | `--color-featured*` | `text-featured`, `bg-featured-container` |
+| `surface-container-lowest` | New cards (M3) | `#ffffff` | `#0a0f0c` | `--color-surface-container-lowest` | `bg-surface-container-lowest` |
+
+Public-panel pages use `bg-background` for the page and `bg-surface-container-lowest` for cards. Do not use `bg-surface` as the page wash — that token still means “card”. See [09-known-issues.md](./09-known-issues.md).
 
 ### Hardcoded colors in code (should map to tokens)
 
@@ -99,16 +109,9 @@ One map for every service, so the same state always looks the same. **Proposal �
 
 ## Typography
 
-Typography uses Tailwind utility classes. No explicit token scale is defined in `globals.css`; sizes come from
-Tailwind defaults. Recommend formalizing a scale based on actual usage:
-
-| Token | Size / line height / weight | Usage |
-|---|---|---|
-| `display` | TBD (no explicit token — uses inline classes) | Landing hero |
-| `h1` … `h4` | TBD (no explicit token — uses Tailwind `text-xl`, `text-lg`, etc.) | Page and section titles |
-| `body-lg`, `body`, `body-sm` | `text-base` (16px), `text-sm` (14px), `text-xs` (12px) | Text |
-| `caption` | `text-xs` / `leading-4` | Hints, meta |
-| `label` | `text-sm font-medium` | Form labels, table headers |
+M3 type scale is in `globals.css` (`text-display-large` … `text-label-small`, each with line-height).
+Weights by convention: headings `font-bold`, titles/labels/buttons `font-medium`, body `font-normal`.
+New UI uses these tokens, not `text-[28px]` / `text-[32px]`.
 
 Font family: **IRANSansX VF** — variable font with weight range 100–900.  
 Font stack: `var(--font-iran-sans), ui-sans-serif, system-ui, sans-serif` (defined in `@theme`).
@@ -121,15 +124,15 @@ digits per the formatting util (`lib/jalali.ts` `toFaDigits`, `formatFaNumber`).
 | Scale | Tokens |
 |---|---|
 | Spacing | Tailwind 4-px base: `gap-1` (4px), `gap-2` (8px), `gap-3` (12px), `gap-4` (16px), `gap-6` (24px), etc. |
-| Radius | `--radius: 0.5rem` (8px) base; `rounded-md` (6px), `rounded-lg` (8px), `rounded-xl` (12px), `rounded-full` |
+| Radius | M3: `rounded-extra-small` (4) … `rounded-extra-large` (28); `--radius: 0.5rem` remains the shadcn base |
 | Shadow | `--shadow-app-elevation-1` through `--shadow-app-elevation-4` (Material 3 style); utility classes `shadow-app-elevation-1` … `shadow-app-elevation-4` |
 | Breakpoints | Tailwind defaults + custom inline: `min-[720px]`, `min-[834px]`; standard `sm` (640px), `md` (768px), `lg` (1024px), `xl` (1280px) |
 | z-index | TBD (no explicit scale in globals.css — uses Tailwind defaults inline) |
 
 ## Dark mode
 
-Decision: **TBD** (09-known-issues #11). If yes, every token has a dark value and components use `dark:` via
-tokens only. If no, remove any partial dark styles to avoid half-themes.
+**In scope.** Components use semantic tokens only (they flip under `.dark`). Theme toggle is on desktop and mobile.
+Do not add `dark:` color overrides except where a role does not exist yet.
 
 ## Icons
 

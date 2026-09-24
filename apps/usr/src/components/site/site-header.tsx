@@ -213,6 +213,7 @@ function HeaderIconGroup({
 }: HeaderIconGroupProps) {
   return (
     <div className={cn('flex shrink-0 items-center gap-2', className)}>
+      <ThemeToggle />
       <AuthEntryButton
         isAuthenticated={isAuthenticated}
         userName={userName}
