@@ -12,7 +12,7 @@ last_updated: "2026-09-25"
 | Variable | Required | Client-exposed | Purpose |
 |---|---|---|---|
 | `NEXT_PUBLIC_API_URL` | Production: this or `AUTH_API_URL` | Yes | Auth MS base URL. Unset in dev → auth mocks. Production builds never mock |
-| `NEXT_PUBLIC_ACTOR_API_URL` | TBD in production | Yes | Actor MS browser base; also gates profile queries today |
+| `NEXT_PUBLIC_ACTOR_API_URL` | No (defaults to `/api`) | Yes | Optional Actor MS browser base. Queries use same-origin `/api` when unset |
 | `NEXT_PUBLIC_NOTIFICATION_API_URL` | When using notification APIs | Yes | Notification MS browser base (often `/api`) |
 | `NEXT_PUBLIC_INTERACTIVE_OPS_API_URL` | When using interactive ops | Yes | Interactive Ops browser base (often `/api`) |
 | `NEXT_PUBLIC_FILE_UPLOAD_URL` | For document upload | Yes | Upload endpoint for profile files |

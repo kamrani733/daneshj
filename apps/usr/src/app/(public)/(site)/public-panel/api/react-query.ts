@@ -28,6 +28,10 @@ import {
 } from '@public-panel/api/profiles-base';
 import { retrieveBusinessPublicPanelForVisitor } from '@public-panel/api/profiles-business';
 import { retrieveIndividualPublicPanelForVisitor } from '@public-panel/api/profiles-individual';
+import {
+  canFetchVisitorProfile,
+  canQueryActor,
+} from '@public-panel/api/actor-query';
 import { retrieveUserPublicPanelForVisitor } from '@public-panel/api/profiles-user';
 import {
   interactiveOpsQueryKeys,
@@ -334,10 +338,6 @@ export function useScoreMutation() {
   });
 }
 
-function canQueryActor() {
-  return Boolean(process.env.NEXT_PUBLIC_ACTOR_API_URL);
-}
-
 function canFetchActor(accessToken: string | null | undefined) {
   return Boolean(accessToken) && canQueryActor();
 }
@@ -385,7 +385,7 @@ export function usePublicPanelProfileQuery(
   return useQuery({
     queryKey: publicPanelActorQueryKeys.profile(targetId, kind),
     queryFn: () => fetchVisitorPublicPanel(accessToken, targetId, kind),
-    enabled: canFetchActor(accessToken) && targetId > 0,
+    enabled: canFetchVisitorProfile(targetId),
     staleTime: 60_000,
     placeholderData: EMPTY_PUBLIC_PANEL,
   });
@@ -401,7 +401,7 @@ export function usePublicPanelVisitorQuery(
   return useQuery({
     queryKey: publicPanelActorQueryKeys.visitor(targetId, kind),
     queryFn: () => fetchVisitorPublicPanel(accessToken, targetId, kind),
-    enabled: enabled && canFetchActor(accessToken) && targetId > 0,
+    enabled: enabled && canFetchVisitorProfile(targetId),
   });
 }
 

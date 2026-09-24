@@ -13,7 +13,6 @@ import type {
 export async function retrieveBusinessPublicPanelForVisitor(
   payload: RetrievePublicPanelForVisitorPayload
 ): Promise<ProfileRetrieveData> {
-  requireAccessToken(payload.accessToken);
   const { data } = await getActor<ProfileRetrieveData>(
     '/profiles_business/public/retrieve-for-visitor',
     payload.accessToken,

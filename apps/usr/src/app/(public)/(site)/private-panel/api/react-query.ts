@@ -65,8 +65,9 @@ type ReviewPrivateChangesPayload = ReviewPrivateChangesByOwnerPayload &
 type ReviewPrivateStatePayload = ReviewPrivateStateByOwnerPayload &
   AdminTargetPayload;
 
+/** Same-origin `/api` rewrite is enough; do not require NEXT_PUBLIC_ACTOR_API_URL. */
 function canQueryActor() {
-  return Boolean(process.env.NEXT_PUBLIC_ACTOR_API_URL);
+  return true;
 }
 
 function canFetch(accessToken: string | null | undefined) {

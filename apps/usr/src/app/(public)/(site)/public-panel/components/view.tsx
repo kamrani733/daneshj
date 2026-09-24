@@ -7,6 +7,7 @@ import { EMPTY_PUBLIC_PANEL } from '@public-panel/data/public-panel-ui';
 import type { PublicPanelKind } from '@public-panel/types/actor';
 
 import { PanelLoadingOverlay, ProfileHeroCard } from '@/components/panel';
+import { ErrorState } from '@/components/ui/error-state';
 
 import { CommentsSection } from '@public-panel/components/comments/section';
 import { PanelInfoBanner } from '@public-panel/components/profile/info-banner';
@@ -45,6 +46,13 @@ export function PublicPanelView({
       className="relative mx-auto flex w-full max-w-[1322px] flex-col gap-8 bg-transparent px-4 py-6 min-[834px]:gap-12 min-[834px]:px-[95px] min-[834px]:py-8"
     >
       {isLoading ? <PanelLoadingOverlay message={t('loading')} /> : null}
+      {profileQuery.isError && !isLoading ? (
+        <ErrorState
+          message={t('loadError')}
+          retryLabel={t('retry')}
+          onRetry={() => void profileQuery.refetch()}
+        />
+      ) : null}
 
       <PublicPanelHeading displayName={profile.displayName} />
 

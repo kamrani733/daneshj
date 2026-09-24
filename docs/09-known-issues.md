@@ -44,7 +44,7 @@ See [srs/README.md](./srs/README.md) → Known issues, Declared but not detailed
 
 | Issue | Location | Severity | Suggested fix |
 |-------|----------|----------|----------------|
-| `NEXT_PUBLIC_ACTOR_API_URL` gate disables queries when using `/api` proxy only | `private-panel/api/react-query.ts`, `public-panel/api/react-query.ts` | **High** | Enable when `accessToken` + same-origin `/api`, or set public env |
+| `NEXT_PUBLIC_ACTOR_API_URL` gate disables queries when using `/api` proxy only | `private-panel` / `public-panel` `react-query.ts` | Resolved 2026-09-25 | Visitor profile loads without the public env; token optional |
 | Hardcoded default interactive-ops backend host in `next.config.js` | `apps/usr/next.config.js` | **High** | Require env in prod; redact in docs |
 | `/dashboard` protected but no page | `middleware.ts`, `auth-routes.ts` | **High** | Add page or remove links/guard |
 | Auth OTP dev shortcuts / client-side OTP storage | `auth-forms.tsx`, `auth-flow.ts` | **High** | Remove before production |

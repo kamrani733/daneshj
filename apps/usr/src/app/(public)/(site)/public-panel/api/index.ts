@@ -67,6 +67,10 @@ export {
   useShareMutation,
 } from '@public-panel/api/react-query';
 export {
+  canFetchVisitorProfile,
+  canQueryActor,
+} from '@public-panel/api/actor-query';
+export {
   LIKE_STATUS,
   SHARE_PLATFORM,
   ACTOR_TYPE,
