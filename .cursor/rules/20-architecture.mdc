@@ -8,15 +8,19 @@ alwaysApply: false
 
 Full detail: `docs/02-architecture.md`.
 
-## Monorepo
+## Monorepo (current reality)
 
-- Apps are thin: routing, layouts, composition. Cross-route or cross-app code lives in `libs/`.
+- One real app: `apps/usr`. Shared UI is `apps/usr/src/components/ui/` — this is the canonical UI library.
+- Libs today: `libs/api-client`, `libs/auth`, `libs/shared-types`, `libs/shared-ui`. The role of
+  `libs/shared-ui` vs the app UI folder is undecided: do not add components to `libs/shared-ui` until it is.
+- Move code into `libs/` only when a second app actually consumes it. Until then, cross-route code lives in
+  shared folders of `apps/usr/src/` (`components/`, `lib/`, `hooks/`).
 - `apps/adm` and `apps/bus`: status undecided (`docs/09-known-issues.md`). Do not add code there and do not
   import from them until the decision is recorded.
-- Respect `@nx/enforce-module-boundaries` and project tags. Cross-project imports use the path alias, never a
-  deep relative path.
-- Import direction: `ui` → nothing domain-specific; `feature` → `ui`, `data-access`, `util`;
-  `data-access` → `util`; nothing imports from an app. Server-only code is marked `server-only`.
+- Nx tag boundaries are not enforced yet (`sourceTag: "*"` in `eslint.config.mjs`). Follow the import direction
+  anyway: UI components import nothing domain-specific or data-related; feature code imports UI, data and utils;
+  nothing imports from an app into a lib. Cross-project imports use path aliases, never deep relative paths.
+- Server-only code is marked `server-only`.
 
 ## Route colocation
 
@@ -24,8 +28,8 @@ Every route that owns data or interaction uses this layout. `page.tsx` stays thi
 
 ```text
 app/<route>/
-  page.tsx      # params, guard, compose sections — no logic
-  sections/     # UI composition for this route
+  page.tsx      # params, guard, compose components — no logic
+  components/   # UI composition for this route (existing convention; do not rename to sections/)
   api/          # functions the screen and hooks call — the only data entry point
   hooks/        # server-state and other hooks for this route
   utils/        # pure helpers for this route
@@ -36,10 +40,11 @@ app/<route>/
 - `api/` is the only module sections and hooks import for data. In the mock phase `api/` validates input and
   delegates to `mock/` (fake delay + in-memory data). When the real endpoint exists, only `api/` changes.
 - `mock/` has `README.md` and a `// MOCK ONLY` header. Never import `mock/` from sections or hooks.
-- Existing hybrid mocks (e.g. notification `settings-mock.ts`) follow the same rule and are listed as MOCKED
-  in `docs/07-integrations.md`.
-- One route uses it → it stays in that route. Two or more routes → `libs/`. The shared UI library never imports
-  from a route folder.
+- New mocks go in `mock/`. Existing mocks in other places (`data/settings-mock.ts`, `home/data/search-mock.ts`,
+  `(auth)/api/mock.ts`) are legacy: move them to `mock/` behind `api/` when the route is next touched. All mocks
+  are listed as MOCKED in `docs/07-integrations.md`.
+- One route uses it → it stays in that route. Two or more routes → the app's shared folders (or `libs/` once a
+  second app needs it). `components/ui/` never imports from a route folder.
 
 ## SRS service modules
 
@@ -47,7 +52,8 @@ All SRS services (SRV, Rwd, Dsc, Rfl, Msg, Nws, Nwl, Cln) use the same shape so 
 
 - Routes per actor surface: public site, user panel (پنل عملیاتی کاربر), provider panel (پنل عملیاتی سرویس‌دهنده),
   admin panel (پنل راهبری). Exact route groups: `docs/04-routing.md`.
-- One `data-access` lib and one `types` module per service, shared by all its routes.
+- One data-access module and one types module per service, shared by all its routes (location confirmed with
+  me before the first service is built).
 - Cross-service behaviours (approval, soft delete, archive, categories, reasons, reports) come from shared libs —
   see `41-shared-patterns.mdc`. Never re-implement them inside a service.
 - Before creating the first module of a new service, confirm names with me and record them in `02-architecture.md`.

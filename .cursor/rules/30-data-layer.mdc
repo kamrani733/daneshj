@@ -12,6 +12,10 @@ Contracts and status per microservice: `docs/07-integrations.md`. Types: `docs/0
 
 - One shared HTTP client factory (base URL, auth, interceptors, error normalization). Every microservice client
   is created from it. Never call `fetch`/axios ad hoc from a route or component.
+- Today the client and `formatApiResponseError` are duplicated (`private-panel/api/http.ts`,
+  `public-panel/api/http.ts`, `notifications/api/errors.ts`, …). Consolidation into one module (target:
+  `libs/api-client`) is a tracked task. New code must not add another copy: import an existing one and note the
+  duplication, or ask.
 - Base URLs come only from env vars documented in `docs/08-configuration.md`. Browser calls go through the
   same-origin `/api` rewrite or proxy unless a doc says otherwise; never hardcode hosts.
 - Errors are normalized into one typed shape (status, code, Persian message, field errors). UI maps them to
@@ -35,7 +39,8 @@ Contracts and status per microservice: `docs/07-integrations.md`. Types: `docs/0
   otherwise. Public lists that the SRS marks as infinite scroll use cursor/page infinite queries.
 - Filter, sort, search and page live in the URL query string so views are shareable and back-button safe.
 - Debounce search/filter inputs by at least 300 ms. Enforce SRS input limits (search ≤ 50 characters).
-- Never fetch-all-then-slice on the client.
+- Never fetch-all-then-slice on the client. Exception: a `mock/` implementation may filter/sort in memory to
+  simulate the server, as long as the UI calls `api/` with the same params it will send to the real endpoint.
 
 ## Mocks
 

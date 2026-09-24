@@ -21,8 +21,12 @@ Checklist of every path: `docs/srs/path-index.md`.
 
 ## In code
 
-- Tag the implementing unit with its codes in a single comment line: `// SRS: Adm-Dsc-2N1, ASR-Dsc-2N1`.
+- Tag the implementing unit with its codes, always with the `SRS:` prefix so they are greppable:
+  `// SRS: Adm-Dsc-2N1, ASR-Dsc-2N1` or inside JSDoc `/** … SRS: Usr-Ntf-1N1 */`.
   Tag route `page.tsx`, the mutation/query function, and the component that renders an E-path.
+- Actor prefixes use SRS casing: `Usr`, `ASR`, `Adm`, `Sys` (existing `USR-…` tags are fixed on touch).
+- Some existing code references services whose SRS is not in `docs/srs/` yet (e.g. `Ntf` notifications). Keep
+  those tags; do not invent codes for them.
 - Test names include the code: `it('ASR-Dsc-2E4 shows duplicate-title error', …)`.
 - Actor codes map to roles as in `docs/03-domain-and-rules.md`: `Usr` user, `ASR` provider, `Adm` admin,
   `Sys` system (never a UI action), Guest = کاربر میهمان.

@@ -11,13 +11,15 @@ alwaysApply: false
 Every page, section and list handles: loading, empty, error, no-permission, and guest (when the SRS defines a
 guest error path). Use the shared components (`LoadingState`/skeletons, `EmptyState`, `ErrorState`,
 `NoPermissionState`, `GuestPromptState` — exact names in `docs/10-design-system.md`). No one-off inline versions.
+Today only `EmptyState` and `PanelLoadingOverlay` exist. If a needed state component is missing, create it once in
+`components/ui/` (with a `/dev/ui-kit` demo) instead of writing an inline version.
 Empty states use the SRS text when the SRS gives one (e.g. "گفتگوی شخصی برای نمایش وجود ندارد").
 Search/filter with no result uses the SRS "no result" text, distinct from the empty state.
 
 ## Forms
 
-- One schema per form (Zod or the project's validator), shared by client and server. Client validation is UX;
-  the server is authoritative.
+- One Zod schema per form, shared by client and server. Client validation is UX; the server is authoritative.
+  Applies to new forms; existing manual forms (e.g. `auth-forms.tsx`) migrate when substantially changed.
 - Field rules (required, min/max length, formats, file limits) come from the SRS detail block — cite the path
   code next to the schema.
 - Field-level errors appear on the field; form-level or server errors appear in the shared form error banner
@@ -36,6 +38,8 @@ Search/filter with no result uses the SRS "no result" text, distinct from the em
 ## Feedback
 
 - Success/failure toasts use SRS texts. Toasts never carry information that is unavailable elsewhere.
+- There is no toast system yet. Adding one is a foundation task: do not build an ad hoc toast inside a feature;
+  ask first.
 - Heavy UI (modals with editors, charts, file import) is lazy-loaded with `next/dynamic`.
 
 ## Accessibility

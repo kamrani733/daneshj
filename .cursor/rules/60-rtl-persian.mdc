@@ -6,12 +6,15 @@ alwaysApply: false
 
 # RTL and Persian
 
-- `dir="rtl"` and `lang="fa"` are set once on `<html>`. Never patch direction per component.
+- `dir="rtl"` and `lang="fa"` are set once on `<html>`. Never patch direction per component; existing extra
+  `dir="rtl"` attributes (`site-shell.tsx`, `auth-shell.tsx`, panel headers) are removed on touch.
 - Numbers, currency, technical IDs, codes (e.g. `Adm-Dsc-2N1`, discount codes), URLs, emails and Latin text inside
   Persian sentences are wrapped in a `dir="ltr"` span (use the shared `Ltr`/`Bdi` helper, or `<bdi>`).
 - Layout uses logical properties only (see `10-design-system.mdc`).
-- User-visible strings live in the message catalog, not in components. Keys are namespaced by service
-  (`dsc.*`, `nws.*`, `common.*`); SRS-quoted texts use code-based keys (`40-srs-traceability.mdc`).
+- Single locale (`fa`); no i18n library. User-visible strings live in typed message modules, not inline in
+  components: `messages.ts` next to the feature, shared strings in one common module. Keys are namespaced by
+  service (`dsc.*`, `nws.*`, `common.*`); SRS-quoted texts use code-based keys (`40-srs-traceability.mdc`).
+  Existing hardcoded strings are moved on touch.
 - Text normalization: store and display Persian `ی`/`ک` (not Arabic `ي`/`ك`); normalize user input in search and
   duplicate-name checks the same way, and normalize Persian/Arabic digits to Latin before sending to the API.
 - Digits: display policy (Persian or Latin digits) is defined once in the formatting util and applied everywhere
