@@ -11,5 +11,21 @@ export default [
             ".next/**/*",
             "**/out-tsc"
         ]
+    },
+    {
+        files: ["src/**/*.{ts,tsx,js,jsx,mjs,cjs}"],
+        rules: {
+            "no-restricted-imports": [
+                "error",
+                {
+                    patterns: [
+                        {
+                            group: ["./*", "../*"],
+                            message: "Use path aliases (@/…) instead of relative imports."
+                        }
+                    ]
+                }
+            ]
+        }
     }
 ];
