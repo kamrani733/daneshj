@@ -1257,7 +1257,7 @@ export async function sendVerifyCode(
 | Actor query gating vs client base URL | `canQueryActor()` requires `NEXT_PUBLIC_ACTOR_API_URL` but client defaults to `/api` |
 | Tailwind version decl | `apps/usr/package.json` lists tailwind 3.x; app uses Tailwind 4 syntax |
 | Modal components | `dialog.tsx` vs `app-dialog.tsx` |
-| Tests import missing page | `apps/usr/specs/index.spec.tsx` imports `../src/app/page` (file **does not exist**) |
+| Tests import missing page | Resolved: scaffold `index.spec.tsx` files removed; util specs cover `jalali.ts` and `format-fa.ts` |
 | README | Stock Nx template, not product-specific |
 
 ---
@@ -1270,7 +1270,7 @@ export async function sendVerifyCode(
 | Prettier | `.prettierrc` | `singleQuote: true` |
 | Stylelint | **Not found** | — |
 | Husky / lint-staged | **Not found** | — |
-| Jest | Nx target `test` on usr/adm | **2** spec files; usr spec likely broken path |
+| Jest | Nx target `test` on usr/adm | usr: auth specs plus `jalali` / `format-fa` util specs. adm: no specs (`passWithNoTests`) |
 | Playwright | In CI `e2e` target | **No** `playwright.config.*` or e2e project in `nx show projects` |
 | Storybook | **Not found** | — |
 | CI | `.github/workflows/ci.yml` | pnpm 9.8.0, Node 20, `nx run-many -t lint test build typecheck e2e` |
@@ -1304,7 +1304,6 @@ export async function sendVerifyCode(
 | Comments/messaging without API | `comments/section.tsx` | Medium | Wire Msg service or mark UI-only in routes |
 | Home search entirely mock | `home/data/search-mock.ts` | Medium | Integrate SRV search API |
 | Large unmaintainable files (>300 lines) | see list below | Medium | Split by tab/section |
-| usr unit test imports non-existent page | `apps/usr/specs/index.spec.tsx` | Medium | Point at real route component |
 | CI runs `e2e` with no Playwright project | `.github/workflows/ci.yml` | Medium | Add e2e app or drop target |
 | Tailwind version mismatch in package.json | `apps/usr/package.json` vs root | Low | Align declarations |
 | `any` in TS | only `apps/*/index.d.ts` (image types) | Low | — |

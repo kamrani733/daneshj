@@ -43,9 +43,12 @@ Node **20** in CI; workspace uses **pnpm** (`pnpm-workspace.yaml`).
 | `pnpm exec nx dev usr` | Next.js dev server (`next dev` in `apps/usr`) |
 | `pnpm exec nx build usr` | Production build |
 | `pnpm exec nx start usr` | Serve production build |
-| `pnpm exec nx lint usr` | ESLint |
+| `pnpm exec nx lint usr` | ESLint (`react-hooks/rules-of-hooks` is an error; `exhaustive-deps` is a warning) |
 | `pnpm exec nx test usr` | Jest |
-| `pnpm exec nx affected -t lint test build` | Pre-merge checks (add `typecheck` if configured) |
+| `pnpm exec nx typecheck usr` | `tsc --noEmit -p tsconfig.json` in `apps/usr`. Library projects typecheck first (`tsc --build tsconfig.json --emitDeclarationOnly`) |
+| `pnpm exec nx typecheck adm` / `nx typecheck bus` | Same `tsc --noEmit -p tsconfig.json` for those apps |
+| `pnpm exec nx run-many -t lint test build typecheck` | Lint, test, build, and typecheck every project |
+| `pnpm exec nx affected -t lint test build typecheck` | Pre-merge checks |
 
 Note: Nx target is **`dev`**, not `serve`, for `usr`.
 

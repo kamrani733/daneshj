@@ -54,7 +54,6 @@ See [srs/README.md](./srs/README.md) → Known issues, Declared but not detailed
 | Comments/messaging without API | `comments/section.tsx` | Medium | Wire Msg service or mark UI-only |
 | Home search entirely mock | `home/data/search-mock.ts` | Medium | Integrate SRV search API |
 | Large unmaintainable files (>300 lines) | Multiple — see audit §11 | Medium | Split by tab/section |
-| usr unit test imports non-existent page | `apps/usr/specs/index.spec.tsx` | Medium | Point at real route component |
 | CI runs `e2e` with no Playwright project | `.github/workflows/ci.yml` | Medium | Add e2e app or drop target |
 | Tailwind version mismatch in package.json | `apps/usr/package.json` vs root | Low | Align declarations |
 | `any` in TS | only `apps/*/index.d.ts` (image types) | Low | — |
@@ -81,3 +80,4 @@ See [10-design-system.md](./10-design-system.md#hardcoded-colors-in-code-should-
 
 - 2026-09-25 — SRS converted to Markdown in `docs/srs/` (was open question: "Where is the SRS?").
 - 2026-09-25 — Duplicate `files/srs/` to be removed; `docs/srs/` is canonical.
+- 2026-09-25 — Scaffold page specs removed (`apps/usr/specs/index.spec.tsx`, `apps/adm/specs/index.spec.tsx`). They imported a page module that does not exist and cannot render async server components. `jalali.ts` and `format-fa.ts` now have unit tests. `apps/adm` Jest passes with no tests (`passWithNoTests`).
