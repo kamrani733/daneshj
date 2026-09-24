@@ -57,3 +57,17 @@ work. For feature work also read `docs/srs/README.md` and the service file in `d
   are separate tasks: propose them, don't bundle them into feature work.
 - Exceptions — fix immediately whenever found, and tell me: tokens in localStorage/sessionStorage,
   client-side authority (role/actor sent from client), unsanitized HTML rendering, secrets in client code.
+
+## Imports
+
+- Always import through path aliases, never relative paths (`./` or `../`).
+  - In apps/usr: `@/…` for shared app code (`components`, `lib`, `hooks`, `shared`); feature aliases for
+    features: `@auth/*`, `@home/*`, `@messages/*`, `@notifications/*`, `@public-panel/*`, `@private-panel/*`.
+  - Libs: `@daneshjoam/api-client`, `@daneshjoam/auth`, `@daneshjoam/shared-types`, `@daneshjoam/shared-ui` —
+    public entry only, never deep paths into a lib's `src/`.
+- Exception: files inside a lib import other files of the same lib relatively (a lib importing itself through its
+  own alias creates a circular import and breaks Nx module boundaries).
+- A new feature folder that needs its own alias: add it to `apps/usr/tsconfig.json` `paths` in the same change,
+  following the existing pattern.
+- Existing relative imports are converted when the file is touched (Legacy rule); no mass rewrite unless asked
+  as a separate task.
