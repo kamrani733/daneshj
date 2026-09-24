@@ -11,8 +11,9 @@ Full detail: `docs/02-architecture.md`.
 ## Monorepo (current reality)
 
 - One real app: `apps/usr`. Shared UI is `apps/usr/src/components/ui/` — this is the canonical UI library.
-- Libs today: `libs/api-client`, `libs/auth`, `libs/shared-types`, `libs/shared-ui`. The role of
-  `libs/shared-ui` vs the app UI folder is undecided: do not add components to `libs/shared-ui` until it is.
+- Libs today: `libs/api-client` (axios factory, `ApiError`, mock fallback), `libs/auth` (session cookie, auth store,
+  login/logout actions), `libs/shared-types` (`User`, `Session`), `libs/shared-ui` (React Query provider only).
+  Do not add visual components to `libs/shared-ui`; UI components go in `apps/usr/src/components/ui/`.
 - Move code into `libs/` only when a second app actually consumes it. Until then, cross-route code lives in
   shared folders of `apps/usr/src/` (`components/`, `lib/`, `hooks/`).
 - `apps/adm` and `apps/bus`: status undecided (`docs/09-known-issues.md`). Do not add code there and do not

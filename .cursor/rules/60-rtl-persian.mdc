@@ -11,10 +11,11 @@ alwaysApply: false
 - Numbers, currency, technical IDs, codes (e.g. `Adm-Dsc-2N1`, discount codes), URLs, emails and Latin text inside
   Persian sentences are wrapped in a `dir="ltr"` span (use the shared `Ltr`/`Bdi` helper, or `<bdi>`).
 - Layout uses logical properties only (see `10-design-system.mdc`).
-- Single locale (`fa`); no i18n library. User-visible strings live in typed message modules, not inline in
-  components: `messages.ts` next to the feature, shared strings in one common module. Keys are namespaced by
-  service (`dsc.*`, `nws.*`, `common.*`); SRS-quoted texts use code-based keys (`40-srs-traceability.mdc`).
-  Existing hardcoded strings are moved on touch.
+- i18n is `next-intl` with a single locale (`fa`). Every user-visible string lives in `apps/usr/messages/fa.json`
+  and is read with `useTranslations` (client) or `getTranslations` (server) — never inline in components.
+  Namespaces follow the feature (`privatePanel`, `notifications`, `auth`, …); new SRS services get their own
+  namespace (`dsc`, `nws`, `nwl`, `cln`, …). SRS-quoted texts use code-based keys (`40-srs-traceability.mdc`).
+  Existing hardcoded Persian strings are moved to `fa.json` on touch.
 - Text normalization: store and display Persian `ی`/`ک` (not Arabic `ي`/`ك`); normalize user input in search and
   duplicate-name checks the same way, and normalize Persian/Arabic digits to Latin before sending to the API.
 - Digits: display policy (Persian or Latin digits) is defined once in the formatting util and applied everywhere

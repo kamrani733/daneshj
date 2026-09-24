@@ -1,0 +1,104 @@
+/* Material Design 3 role tokens — generated from seed #008d63 (SchemeTonalSpot, @material/material-color-utilities 0.3.0).
+ * ADDITIVE: paste inside the existing @theme block / .dark block of apps/usr/src/app/globals.css.
+ * Existing tokens (--color-primary, --color-surface, --color-error, …) are NOT redefined; clashing role names use the md- prefix.
+ * Brand fill stays --color-primary (#008d63). */
+
+@theme {
+  /* ── Color roles (light) ── */
+  --color-md-primary: #206a4e;
+  --color-on-primary: #ffffff;
+  --color-primary-container: #a9f2cd;
+  --color-on-primary-container: #005138;
+  --color-md-secondary: #4d6357;
+  --color-on-secondary: #ffffff;
+  --color-secondary-container: #cfe9d9;
+  --color-on-secondary-container: #364b40;
+  --color-tertiary: #3d6373;
+  --color-on-tertiary: #ffffff;
+  --color-tertiary-container: #c1e9fb;
+  --color-on-tertiary-container: #244c5b;
+  --color-md-error: #ba1a1a;
+  --color-on-error: #ffffff;
+  --color-error-container: #ffdad6;
+  --color-on-error-container: #93000a;
+  --color-md-surface: #f5fbf5;
+  --color-on-surface: #171d19;
+  --color-on-surface-variant: #404943;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #eff5ef;
+  --color-surface-container: #eaefe9;
+  --color-surface-container-high: #e4eae4;
+  --color-surface-container-highest: #dee4de;
+  --color-outline: #707973;
+  --color-outline-variant: #bfc9c1;
+  --color-inverse-surface: #2c322e;
+  --color-inverse-on-surface: #edf2ec;
+  --color-inverse-primary: #8dd5b2;
+  --color-scrim: #000000;
+  --color-warning-container: #ffdbcf;
+  --color-on-warning-container: #72351f;
+  --color-md-warning: #8f4c34;
+  --color-overlay: rgb(0 0 0 / 0.32);   /* M3 scrim opacity for modals */
+  --color-rating: #ffc107;                 /* star rating (only non-M3 exception) */
+
+  /* ── Type scale (M3). Size + line height only; weight stays on font-* classes per convention ── */
+  --text-display-large: 3.5625rem;   --text-display-large--line-height: 4rem;       /* 57/64 */
+  --text-display-medium: 2.8125rem;  --text-display-medium--line-height: 3.25rem;   /* 45/52 */
+  --text-display-small: 2.25rem;     --text-display-small--line-height: 2.75rem;    /* 36/44 */
+  --text-headline-large: 2rem;       --text-headline-large--line-height: 2.5rem;    /* 32/40 */
+  --text-headline-medium: 1.75rem;   --text-headline-medium--line-height: 2.25rem;  /* 28/36 */
+  --text-headline-small: 1.5rem;     --text-headline-small--line-height: 2rem;      /* 24/32 */
+  --text-title-large: 1.375rem;      --text-title-large--line-height: 1.75rem;      /* 22/28 */
+  --text-title-medium: 1rem;         --text-title-medium--line-height: 1.5rem;      /* 16/24 */
+  --text-title-small: 0.875rem;      --text-title-small--line-height: 1.25rem;      /* 14/20 */
+  --text-body-large: 1rem;           --text-body-large--line-height: 1.5rem;        /* 16/24 */
+  --text-body-medium: 0.875rem;      --text-body-medium--line-height: 1.25rem;      /* 14/20 */
+  --text-body-small: 0.75rem;        --text-body-small--line-height: 1rem;          /* 12/16 */
+  --text-label-large: 0.875rem;      --text-label-large--line-height: 1.25rem;      /* 14/20 */
+  --text-label-medium: 0.75rem;      --text-label-medium--line-height: 1rem;        /* 12/16 */
+  --text-label-small: 0.6875rem;     --text-label-small--line-height: 1rem;         /* 11/16 */
+
+  /* ── Shape scale (M3 corner tokens; names chosen to avoid Tailwind's rounded-sm/md/lg/xl) ── */
+  --radius-extra-small: 0.25rem;     /* 4  */
+  --radius-small: 0.5rem;            /* 8  */
+  --radius-medium: 0.75rem;          /* 12 */
+  --radius-large: 1rem;              /* 16 */
+  --radius-large-increased: 1.25rem; /* 20 */
+  --radius-extra-large: 1.75rem;     /* 28 — dialogs, sheets */
+}
+
+.dark {
+  --color-md-primary: #8dd5b2;
+  --color-on-primary: #003825;
+  --color-primary-container: #005138;
+  --color-on-primary-container: #a9f2cd;
+  --color-md-secondary: #b4ccbd;
+  --color-on-secondary: #1f352a;
+  --color-secondary-container: #364b40;
+  --color-on-secondary-container: #cfe9d9;
+  --color-tertiary: #a5ccde;
+  --color-on-tertiary: #073543;
+  --color-tertiary-container: #244c5b;
+  --color-on-tertiary-container: #c1e9fb;
+  --color-md-error: #ffb4ab;
+  --color-on-error: #690005;
+  --color-error-container: #93000a;
+  --color-on-error-container: #ffdad6;
+  --color-md-surface: #0f1511;
+  --color-on-surface: #dee4de;
+  --color-on-surface-variant: #bfc9c1;
+  --color-surface-container-lowest: #0a0f0c;
+  --color-surface-container-low: #171d19;
+  --color-surface-container: #1b211d;
+  --color-surface-container-high: #252b28;
+  --color-surface-container-highest: #303632;
+  --color-outline: #8a938c;
+  --color-outline-variant: #404943;
+  --color-inverse-surface: #dee4de;
+  --color-inverse-on-surface: #2c322e;
+  --color-inverse-primary: #206a4e;
+  --color-scrim: #000000;
+  --color-warning-container: #72351f;
+  --color-on-warning-container: #ffdbcf;
+  --color-md-warning: #ffb59c;
+}
