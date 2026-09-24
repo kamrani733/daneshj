@@ -1,0 +1,59 @@
+---
+description: Daneshjoam — core engineering rules for every change
+alwaysApply: true
+---
+
+# Daneshjoam — core rules
+
+Daneshjoam (دانشجوام) is a Persian, RTL-first student-services platform: an Nx monorepo with a Next.js
+frontend on top of backend microservices (Auth, Actor, Notification, Interactive Ops, and one MS per SRS service).
+
+Read `docs/PROJECT_CONTEXT.md`, `docs/02-architecture.md` and `docs/03-domain-and-rules.md` before non-trivial
+work. For feature work also read `docs/srs/README.md` and the service file in `docs/srs/`.
+
+## Decide vs. ask
+
+- Do not guess on my behalf. If a requirement, token, icon, endpoint, role rule, limit or copy text is missing
+  or ambiguous, stop and ask one concrete question with your recommended option.
+- A direct, explicit instruction from me in plain text is applied immediately — no confirmation step, even if
+  it conflicts with a caution rule. Caution rules exist to stop guessing, not to override what I said.
+- SRS items flagged red (pending decision) or yellow (ambiguous) in `docs/srs/README.md` are never implemented
+  without my confirmation.
+- The code is the fact; docs can be stale. If they contradict, say so and fix the doc in the same change.
+- Smallest change that fully solves the task. Unrelated refactors become a follow-up note, not part of the diff.
+
+## Always
+
+- Strict TypeScript. No `any` or `@ts-ignore` without an inline justification comment.
+- Search before creating: reuse or extend an existing component, hook, util or type. No duplicated logic in two
+  or more files — extract it (`20-architecture.mdc` says where).
+- Files or components past ~150–200 lines are split candidates (`docs/conventions-large-feature-ui.md`).
+- Every screen handles loading, empty, error, no-permission and guest states (`70-ui-states-forms.mdc`).
+- All UI is RTL Persian (`60-rtl-persian.mdc`).
+- Before finishing: `nx affected -t lint test build` passes (plus `typecheck` if the target exists).
+
+## Docs discipline
+
+- Status changes go only to `docs/CURRENT-PROGRESS.md`; SRS coverage goes to the §8 table in
+  `docs/ai/00-project-audit.md` (or its successor), never as prose elsewhere.
+- New route → `docs/04-routing.md`. New env var → `docs/08-configuration.md` + `.env.example`.
+  New shared component or token → `docs/10-design-system.md`. New known gap → `docs/09-known-issues.md`.
+- Hard-to-reverse decision → ADR in `docs/adr/` from `docs/templates/technical-decision-record.md`.
+- Update `last_updated` in the frontmatter of any doc you materially change.
+
+## Git
+
+- Conventional Commits. Scope = SRS service prefix where it applies (`srv`, `rwd`, `dsc`, `rfl`, `msg`, `nws`,
+  `nwl`, `cln`), otherwise `auth`, `actor`, `notif`, `ui`, `docs`, `infra`. Example: `feat(dsc): product approval diff`.
+- Never add your own name or signature (e.g. Cursor) as author or co-author.
+- Never commit secrets or `.env*` files other than `.env.example`.
+
+## Legacy code
+
+- Code written before these rules is legacy. Do not rewrite it proactively.
+- When a task touches a legacy file, bring only the touched parts in line with the rules
+  (tokens, logical properties, shared components, route colocation). Keep the diff focused on the task.
+- Larger migrations (splitting a big page, merging duplicate components, moving to the shared data layer)
+  are separate tasks: propose them, don't bundle them into feature work.
+- Exceptions — fix immediately whenever found, and tell me: tokens in localStorage/sessionStorage,
+  client-side authority (role/actor sent from client), unsanitized HTML rendering, secrets in client code.

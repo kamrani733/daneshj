@@ -1,0 +1,58 @@
+---
+description: Design system — tokens, shared components, Figma fidelity, styling mechanics
+globs: ["**/*.tsx", "**/*.css", "**/*.scss", "**/tailwind.config.*", "**/globals.css"]
+alwaysApply: false
+---
+
+# Design system
+
+Canonical source: `docs/10-design-system.md` (token tables + component inventory). Update it in the same change
+whenever a token or shared component is added or changed.
+
+## Tokens
+
+- No raw colors in components: no hex, `rgb()`, `hsl()` literals in TSX or style files. Tokens only.
+- No hardcoded spacing, radius, shadow, font size or line height when an equivalent token/class exists.
+- Token sources in order: `docs/10-design-system.md` → global CSS variables → theme / Tailwind mapping
+  (exact paths listed in the design-system doc).
+- A needed value that is not in the token set: stop and ask. Never invent a value.
+- Components use semantic tokens (`bg-surface`, `text-primary`, `border-default`, `status-*`), never primitive
+  palette steps directly.
+- Palette vs screen exports: the documented palette always wins. If a Figma screen shows a different shade,
+  flag it; once I confirm, the resolution is always "use the palette", never "use the screen".
+- Status colors come only from the status token map in `docs/10-design-system.md`. A status with no mapped token
+  gets no color until one is confirmed.
+
+## Shared components
+
+- Before implementing any UI element, check the shared UI library (path in `docs/10-design-system.md`).
+  If an existing component can render it — even with a new prop or variant — extend it. Never create a second
+  version of something that exists.
+- An element with no existing component gets ONE new reusable component in the shared UI library, used everywhere
+  that element appears from then on. No inline one-off copies.
+- Every shared component is first rendered with mock props on the dev UI-kit route so it can be checked visually
+  before being wired into real screens. Add it there in the same change.
+- Changing the visual default of an existing shared component (radius, color, padding, typography) because a new
+  design seems to want it: stop and ask. Name the component and property and say it will change every screen that
+  already uses it, e.g. "the new design wants radius-lg on `Input` — this changes `Input` everywhere. Confirm?"
+  Adding a new variant or prop does not need confirmation.
+
+## Figma fidelity
+
+- Implement every new design with maximum visual fidelity, using the fewest new tokens/styles possible. Reuse
+  tokens and components first, but never sacrifice matching the design for the sake of reuse.
+- Icons: list the icon directory (see design-system doc) and use an exact existing file/name. Never invent,
+  guess or alias an icon; never substitute a placeholder icon library without confirmation.
+- Images through `next/image`.
+
+## Styling mechanics
+
+- Use the project's utility classes mapped to tokens; avoid inline `style={{}}` except for truly
+  runtime-computed values (e.g. a chart's computed width).
+- Direction-aware utilities only: `ms-/me-/ps-/pe-/start-/end-/text-start/text-end`, `border-s/border-e`.
+  Never `ml/mr/pl/pr/left/right/text-left/text-right` for layout.
+- Directional icons (back, next, chevrons, arrows) mirror in RTL; non-directional icons never mirror.
+- Every component is responsive from the start. With no mobile design: stack on mobile, sidebar → drawer,
+  tables scroll horizontally or collapse to cards. If the choice would change the layout's meaning, ask.
+- Dark mode: follow the decision recorded in `docs/10-design-system.md`. If dark mode is in scope, every
+  component ships with it from the start via dark token values; if not, add no dark styles.

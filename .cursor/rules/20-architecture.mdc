@@ -1,0 +1,58 @@
+---
+description: Nx monorepo boundaries, route colocation, where code lives, import direction
+globs: ["apps/**", "libs/**", "**/project.json", "nx.json"]
+alwaysApply: false
+---
+
+# Architecture
+
+Full detail: `docs/02-architecture.md`.
+
+## Monorepo
+
+- Apps are thin: routing, layouts, composition. Cross-route or cross-app code lives in `libs/`.
+- `apps/adm` and `apps/bus`: status undecided (`docs/09-known-issues.md`). Do not add code there and do not
+  import from them until the decision is recorded.
+- Respect `@nx/enforce-module-boundaries` and project tags. Cross-project imports use the path alias, never a
+  deep relative path.
+- Import direction: `ui` → nothing domain-specific; `feature` → `ui`, `data-access`, `util`;
+  `data-access` → `util`; nothing imports from an app. Server-only code is marked `server-only`.
+
+## Route colocation
+
+Every route that owns data or interaction uses this layout. `page.tsx` stays thin. No empty folders.
+
+```text
+app/<route>/
+  page.tsx      # params, guard, compose sections — no logic
+  sections/     # UI composition for this route
+  api/          # functions the screen and hooks call — the only data entry point
+  hooks/        # server-state and other hooks for this route
+  utils/        # pure helpers for this route
+  types/        # types for this route
+  mock/         # MOCK ONLY — fake data + fake implementations, same shape as api/
+```
+
+- `api/` is the only module sections and hooks import for data. In the mock phase `api/` validates input and
+  delegates to `mock/` (fake delay + in-memory data). When the real endpoint exists, only `api/` changes.
+- `mock/` has `README.md` and a `// MOCK ONLY` header. Never import `mock/` from sections or hooks.
+- Existing hybrid mocks (e.g. notification `settings-mock.ts`) follow the same rule and are listed as MOCKED
+  in `docs/07-integrations.md`.
+- One route uses it → it stays in that route. Two or more routes → `libs/`. The shared UI library never imports
+  from a route folder.
+
+## SRS service modules
+
+All SRS services (SRV, Rwd, Dsc, Rfl, Msg, Nws, Nwl, Cln) use the same shape so the pattern repeats:
+
+- Routes per actor surface: public site, user panel (پنل عملیاتی کاربر), provider panel (پنل عملیاتی سرویس‌دهنده),
+  admin panel (پنل راهبری). Exact route groups: `docs/04-routing.md`.
+- One `data-access` lib and one `types` module per service, shared by all its routes.
+- Cross-service behaviours (approval, soft delete, archive, categories, reasons, reports) come from shared libs —
+  see `41-shared-patterns.mdc`. Never re-implement them inside a service.
+- Before creating the first module of a new service, confirm names with me and record them in `02-architecture.md`.
+
+## Size
+
+A page or component over ~150–200 lines, or with more than one data fetch plus one non-trivial interaction, is
+split per `docs/conventions-large-feature-ui.md`.

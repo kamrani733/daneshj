@@ -1,0 +1,77 @@
+---
+description: Cross-service patterns from the SRS — approval, soft delete, archive, categories, reasons, reports
+globs: ["apps/**", "libs/**"]
+alwaysApply: false
+---
+
+# Shared patterns
+
+These behaviours repeat almost identically across Dsc, Nws, Nwl, Cln (and partly Rwd, Rfl, Msg). Each is built
+ONCE as a shared abstraction (hook + UI + types) and configured per service. Never re-implement one inside a
+service. If a service needs a variation, add an option to the shared version.
+
+## 1. Approval workflow
+
+- Provider (ASR) or user submits → admin (Adm) approves or rejects. Rejection requires a reason picked from the
+  service's managed reason list, plus optional free text.
+- Edits to approved/published items create a pending change; admin approves/rejects per field (Dsc-2 pattern)
+  with an optional replacement value that is sent back to the counterpart for approval.
+- The counterpart actor is notified on submit, approve, reject (texts from the SRS).
+- Status transitions are defined in one state map per entity in its `types` module; the UI derives available
+  actions from `status × role`, never from ad hoc conditions.
+
+## 2. Soft delete and restore
+
+- Delete = soft delete. The item stays listed with a Restore action until the retention period passes, then the
+  backend deletes it physically. The period is backend configuration — never hardcode it in the frontend.
+- Some deletes are requests (provider requests delete/restore → admin decides). Use the shared request flow.
+- Deleting something that is in use (reason, category, voucher) shows the SRS in-use error path.
+
+## 3. Archive / unarchive
+
+Separate from delete. Archived items leave default lists and appear in an "archived" view/tab.
+
+## 4. Two-level categories (main / sub)
+
+- One shared category manager: list, search, add main, add sub, edit, soft delete, restore.
+- Errors: duplicate main name, duplicate sub name (within its parent), delete main that has subs.
+- Deleted categories are hidden from pickers but kept on existing records.
+
+## 5. Managed reason lists
+
+- Rejection / cancellation / suspension reasons: list, search, add, edit, soft delete, restore.
+- Error on deleting a reason already used. Unused reasons may be auto soft-deleted by the system (`Sys` paths).
+
+## 6. Notifications
+
+- Emitted by the backend; the frontend only renders them. Never construct notification side effects client-side.
+
+## 7. Audit log
+
+- Privileged and moderation actions are logged by the backend (actor id, entity id, action, timestamp, reason).
+  The frontend never writes audit records; it passes the reason and shows history screens.
+
+## 8. Reports, statistics, charts
+
+- Every service has a reports area: history tables (shared list shell), stat cards, charts. Use the shared
+  report layout, stat card and chart wrapper; lazy-load charts with `next/dynamic`.
+- Reports obey the same role scoping as the screens they summarise.
+
+## 9. Uploads
+
+- One shared uploader with per-field config (formats, max size, dimensions, required). SRS limits in use today:
+  featured image ≤ 1 MB (jpg, png, webp, avif); list image ≤ 500 KB; newsletter file PDF ≤ 3 MB;
+  discount-code import xlsx with one column. Client checks are UX; the server re-validates.
+- Wrong format and wrong size each map to their own SRS E-path message.
+
+## 10. Guest and restricted-actor access
+
+- Guest trying an authenticated action → the SRS guest-access error path (prompt to log in / register).
+- Legal-entity providers (سرویس‌دهنده حقوقی) are blocked from some user actions (e.g. referral links, some
+  interactive news actions) with the SRS message. Model this as a capability, not a string check.
+
+## 11. Input conventions from the SRS
+
+- Name fields: Save/Confirm disabled until something changed and the minimum length (usually 3) is met.
+- Search fields: max 50 characters.
+- Date/time fields: if time is omitted, the system ignores time (date-only semantics).

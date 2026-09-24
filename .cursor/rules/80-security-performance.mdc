@@ -1,0 +1,40 @@
+---
+description: Security and performance rules from the mock phase onward
+globs: ["apps/**", "libs/**", "next.config.*", "**/middleware.ts"]
+alwaysApply: false
+---
+
+# Security and performance
+
+Apply these from the mock phase so nothing needs retrofitting.
+
+## Input, output, secrets
+
+- Validate every input server-side (route handlers, server actions, proxy), including query params.
+- Rich content (news body, newsletter content, messages, event descriptions) is sanitized before rendering. No
+  `dangerouslySetInnerHTML` without the shared sanitizer.
+- Only `NEXT_PUBLIC_*` variables may enter the client bundle. No backend keys or tokens in client code, logs or
+  comments — mocks included.
+- File uploads: validate type by content where possible, not only by extension; never trust client MIME.
+- Exports and downloads (newsletter PDFs, reports) obey the same permission rules as the screen.
+
+## Headers, CSRF, rate limits
+
+- CSP, `X-Frame-Options`, `Referrer-Policy`, `Permissions-Policy` configured centrally (`next.config` / middleware).
+- CSRF protection on every cookie-authenticated mutation.
+- Rate limits (backend authoritative, UI respects 429): login/OTP, message send, report abuse, suggestion submit,
+  referral link creation (SRS: max 3 per calendar day).
+
+## Payments and wallet
+
+- Event registration via wallet or payment gateway, voucher/receipt purchase: amounts from the server only,
+  idempotency key on every payment mutation, no optimistic updates, gateway return handled server-side.
+
+## Performance
+
+- Server Components by default; `'use client'` only for interaction/state.
+- Public pages (service home, news, newsletters, events, products) are server-rendered with an explicit caching /
+  revalidation choice documented in `docs/04-routing.md`.
+- `next/image` for all images with explicit sizes; `next/dynamic` for charts, editors, modals, file import.
+- Stable `key`s in lists; no new objects/functions created inside large loops in JSX.
+- No premature memoization — only after profiling shows a real problem.

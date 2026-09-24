@@ -1,0 +1,25 @@
+---
+description: RTL layout, Persian text, digits, Jalali dates, i18n catalog
+globs: ["**/*.tsx", "**/messages/**", "**/locales/**", "**/i18n/**", "**/*.css"]
+alwaysApply: false
+---
+
+# RTL and Persian
+
+- `dir="rtl"` and `lang="fa"` are set once on `<html>`. Never patch direction per component.
+- Numbers, currency, technical IDs, codes (e.g. `Adm-Dsc-2N1`, discount codes), URLs, emails and Latin text inside
+  Persian sentences are wrapped in a `dir="ltr"` span (use the shared `Ltr`/`Bdi` helper, or `<bdi>`).
+- Layout uses logical properties only (see `10-design-system.mdc`).
+- User-visible strings live in the message catalog, not in components. Keys are namespaced by service
+  (`dsc.*`, `nws.*`, `common.*`); SRS-quoted texts use code-based keys (`40-srs-traceability.mdc`).
+- Text normalization: store and display Persian `ی`/`ک` (not Arabic `ي`/`ك`); normalize user input in search and
+  duplicate-name checks the same way, and normalize Persian/Arabic digits to Latin before sending to the API.
+- Digits: display policy (Persian or Latin digits) is defined once in the formatting util and applied everywhere
+  through it. Never format numbers inline.
+- Dates: Jalali (Shamsi) for display via ONE shared date util and ONE date/date-range picker; send ISO-8601 to the
+  API. Never use `toLocaleDateString` ad hoc. Relative times ("۵ دقیقه پیش") come from the same util.
+- Money: always show the unit (تومان/ریال, per the formatting util). Amounts come from the server — never compute
+  prices, discounts, wallet balances or fees client-side for submitted operations.
+- Use ZWNJ (نیم‌فاصله) correctly in copy; do not replace it with spaces.
+- Font: the project Persian font from the design system, loaded through the framework font loader with a fallback
+  stack.

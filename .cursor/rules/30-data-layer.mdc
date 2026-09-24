@@ -1,0 +1,44 @@
+---
+description: API clients, microservice integration, server state, caching, pagination, mocks
+globs: ["**/api/**", "**/hooks/**", "**/data-access/**", "**/mock/**", "**/*.api.ts", "**/*client*.ts"]
+alwaysApply: false
+---
+
+# Data layer
+
+Contracts and status per microservice: `docs/07-integrations.md`. Types: `docs/05-data-models.md`.
+
+## Clients
+
+- One shared HTTP client factory (base URL, auth, interceptors, error normalization). Every microservice client
+  is created from it. Never call `fetch`/axios ad hoc from a route or component.
+- Base URLs come only from env vars documented in `docs/08-configuration.md`. Browser calls go through the
+  same-origin `/api` rewrite or proxy unless a doc says otherwise; never hardcode hosts.
+- Errors are normalized into one typed shape (status, code, Persian message, field errors). UI maps them to
+  states; it never parses raw backend errors itself.
+- When an OpenAPI spec exists for a service, types are generated from it; do not hand-write DTOs that the spec
+  covers. Until then, hand-written DTOs live in the service `types` module and are marked provisional.
+
+## Server state
+
+- Server state lives in the query cache, not in component state or global stores. Query keys come from one
+  factory per service (`<service>Keys.list(filters)`, `<service>Keys.detail(id)`).
+- Explicit `staleTime` per data type: long for categories, reasons, static pages (terms/help); short for
+  messages, notifications, wallet balance, voucher/receipt state.
+- After a mutation, invalidate exactly the affected keys. No blanket invalidation.
+- No optimistic updates for payments, wallet, registrations, approvals, deletes or anything with money or
+  moderation consequences. Optimistic UI is allowed only for low-risk toggles (pin, favourite, archive in Msg).
+
+## Lists
+
+- Panel lists (admin/provider/user panels): server-side pagination, 24 records per page unless the SRS path says
+  otherwise. Public lists that the SRS marks as infinite scroll use cursor/page infinite queries.
+- Filter, sort, search and page live in the URL query string so views are shareable and back-button safe.
+- Debounce search/filter inputs by at least 300 ms. Enforce SRS input limits (search ≤ 50 characters).
+- Never fetch-all-then-slice on the client.
+
+## Mocks
+
+- Mock data has the exact shape of the real contract, including pagination meta and error shape.
+- Mock `api/` implementations simulate latency and the SRS exception paths (duplicate name, in-use delete,
+  upload format/size, guest access) so every E-path has a reachable UI.

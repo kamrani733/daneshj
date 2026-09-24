@@ -1,0 +1,44 @@
+---
+description: Required UI states, forms, validation, modals, toasts
+globs: ["**/*.tsx", "**/schemas/**", "**/*.schema.ts"]
+alwaysApply: false
+---
+
+# UI states and forms
+
+## Five required states
+
+Every page, section and list handles: loading, empty, error, no-permission, and guest (when the SRS defines a
+guest error path). Use the shared components (`LoadingState`/skeletons, `EmptyState`, `ErrorState`,
+`NoPermissionState`, `GuestPromptState` — exact names in `docs/10-design-system.md`). No one-off inline versions.
+Empty states use the SRS text when the SRS gives one (e.g. "گفتگوی شخصی برای نمایش وجود ندارد").
+Search/filter with no result uses the SRS "no result" text, distinct from the empty state.
+
+## Forms
+
+- One schema per form (Zod or the project's validator), shared by client and server. Client validation is UX;
+  the server is authoritative.
+- Field rules (required, min/max length, formats, file limits) come from the SRS detail block — cite the path
+  code next to the schema.
+- Field-level errors appear on the field; form-level or server errors appear in the shared form error banner
+  above the actions.
+- Submit disabled while submitting and, where the SRS says so, until something changed and minimum lengths are met.
+- Multi-tab forms (e.g. Dsc product): the entity is created when the first mandatory tab is saved; later tabs save
+  independently; unsaved-change guard on tab/route leave.
+
+## Modals and actions
+
+- Destructive or moderation actions (delete, reject, suspend, cancel, unpublish) use the shared confirm modal;
+  reject/suspend/cancel use the shared reason-picker modal.
+- Actions available on a row come from `status × capability` (see `41-shared-patterns.mdc`), rendered by the shared
+  row-actions menu.
+
+## Feedback
+
+- Success/failure toasts use SRS texts. Toasts never carry information that is unavailable elsewhere.
+- Heavy UI (modals with editors, charts, file import) is lazy-loaded with `next/dynamic`.
+
+## Accessibility
+
+- All interactive elements keyboard-reachable with visible focus; modals trap focus and restore it on close.
+- Inputs have associated labels; errors are linked with `aria-describedby`; icon-only buttons have `aria-label`.

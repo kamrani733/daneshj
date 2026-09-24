@@ -1,0 +1,33 @@
+---
+description: Authentication, session, actors and access control
+globs: ["**/auth/**", "**/middleware.ts", "**/session/**", "**/guards/**", "**/permissions/**", "apps/**/layout.tsx"]
+alwaysApply: false
+---
+
+# Auth and access control
+
+Actors and matrix: `docs/03-domain-and-rules.md`.
+
+## Actors
+
+Guest, Usr (user/student), ASR (service provider — natural or legal entity), Adm (admin), Sys (system only).
+The source of truth for actor type and permissions is being decided (`docs/09-known-issues.md`). Until it is:
+
+- All actor/role reads go through ONE helper module (e.g. `getActor()` server-side, `useActor()` client-side).
+  No component reads JWT claims, `loginType` or cookies directly.
+- Capabilities are named (`dsc.product.approve`, `nws.news.create`, `rfl.link.create`) and resolved from actor
+  type in that one module, so moving to backend-driven permissions changes one file.
+
+## Session
+
+- Session tokens in `httpOnly` + `Secure` + `SameSite` cookies. Never in `localStorage`/`sessionStorage`.
+- Short-lived access + refresh. Logout invalidates the session server-side, not only the client cookie.
+
+## Enforcement
+
+- UI checks are UX only. Hiding or disabling an action is not authorization; every mutation assumes the backend
+  re-checks and handles 401/403 with the shared no-permission state.
+- Never send actor type, role, provider id or permission flags from the client as authority. Scope comes from the
+  authenticated session server-side.
+- Route guards run server-side (middleware / layout) for panels; client guards only improve UX.
+- The provider panel shows only the signed-in provider's own records; the admin panel is admin-only.

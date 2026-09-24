@@ -1,0 +1,17 @@
+---
+description: Tests, lint, CI expectations
+globs: ["**/*.test.*", "**/*.spec.*", "**/e2e/**", "**/.github/**", "**/jest.config.*", "**/vitest.config.*", "**/playwright.config.*"]
+alwaysApply: false
+---
+
+# Testing and quality
+
+- Pure utils (formatting, Jalali dates, text normalization, status→actions maps, query-key factories) have unit
+  tests. These are shared by many services, so a bug there multiplies.
+- Shared pattern hooks (approval, soft delete, categories, reasons) have tests against mock `api/` including every
+  E-path.
+- Test names include SRS codes where they verify a path.
+- E2E: the CI `e2e` target must correspond to a real project. Until a Playwright project exists, do not add tests
+  that pretend to be e2e; record the gap in `docs/09-known-issues.md`.
+- No skipped or `.only` tests committed. No lowering lint rules to make a change pass.
+- Use `docs/templates/testing-checklist.md` before merging a feature.
