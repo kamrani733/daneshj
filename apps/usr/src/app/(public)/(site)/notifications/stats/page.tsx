@@ -1,6 +1,6 @@
 import { getSession } from '@daneshjoam/auth';
 
-import { NotificationsStatsView } from '../components/stats/view';
+import { NotificationsStatsView } from '@notifications/components/stats/view';
 
 /** Notifications stats — Figma سکشن آمار + Adm-Ntf-6N10 */
 export default async function NotificationsStatsPage() {

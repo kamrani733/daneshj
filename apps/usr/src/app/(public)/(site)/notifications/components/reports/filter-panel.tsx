@@ -16,7 +16,7 @@ import {
   DateRangeInputs,
   FilterCheckbox,
   FilterField,
-} from '../shared/filter-primitives';
+} from '@notifications/components/shared/filter-primitives';
 
 export type ReportsFilterValues = {
   sentStart: string;

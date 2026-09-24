@@ -13,7 +13,7 @@ import {
   artboardStyle,
   type HeroSlideConfig,
   type HeroTextAlign,
-} from '../data/hero-banner';
+} from '@home/data/hero-banner';
 
 const AUTO_ADVANCE_MS = 6000;
 

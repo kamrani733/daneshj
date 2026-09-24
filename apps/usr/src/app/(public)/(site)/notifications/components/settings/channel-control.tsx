@@ -11,7 +11,7 @@ import type {
 import { formatFaNumber } from '@/lib/format-fa';
 import { cn } from '@/lib/utils';
 
-import { SettingsTimePicker } from './time-picker';
+import { SettingsTimePicker } from '@notifications/components/settings/time-picker';
 
 type SettingsChannelControlProps = {
   setting: ChannelSettingState;

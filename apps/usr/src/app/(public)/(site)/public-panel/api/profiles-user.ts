@@ -1,4 +1,4 @@
-import { getActor, patchActor, postActor, requireAccessToken } from './http';
+import { getActor, patchActor, postActor, requireAccessToken } from '@public-panel/api/http';
 import type {
   MutationResult,
   ProfileRetrieveData,

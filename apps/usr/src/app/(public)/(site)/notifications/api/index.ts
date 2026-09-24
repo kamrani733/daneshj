@@ -11,17 +11,17 @@ export {
   markAllNotificationsAsRead,
   markLast5NotificationsAsRead,
   markNotificationAsRead,
-} from './notifications';
+} from '@notifications/api/notifications';
 export {
   formatApiResponseError,
   getNotificationApiErrorMessage,
-} from './errors';
-export type { NotificationKnownErrorKey } from './errors';
-export { notificationQueryKeys } from './query-keys';
+} from '@notifications/api/errors';
+export type { NotificationKnownErrorKey } from '@notifications/api/errors';
+export { notificationQueryKeys } from '@notifications/api/query-keys';
 export {
   mergeActorSettingsIntoEventStates,
   toActorChannelSettingRequest,
-} from './transformers';
+} from '@notifications/api/transformers';
 export {
   useActorSettingsQuery,
   useApplyActorSettingsMutation,
@@ -35,7 +35,7 @@ export {
   useNotificationsListQuery,
   useStatisticsReportQuery,
   useUnreadCountQuery,
-} from './react-query';
+} from '@notifications/api/react-query';
 export type {
   ActorChannelSettingDto,
   ActorReceivePeriod,

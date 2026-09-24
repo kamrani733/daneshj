@@ -10,7 +10,7 @@ import {
   sendVerifyCodeAction,
   verifyCodeAction,
   verifyPasswordAction,
-} from '../lib/auth-flow-actions';
+} from '@auth/lib/auth-flow-actions';
 import {
   changePassword,
   deleteSession,
@@ -19,8 +19,8 @@ import {
   getSessions,
   refreshToken,
   sendOtpForLogin,
-} from './auth';
-import { authQueryKeys } from './query-keys';
+} from '@auth/api/auth';
+import { authQueryKeys } from '@auth/api/query-keys';
 import type {
   ChangePasswordPayload,
   DeleteSessionForLimitReachedPayload,
@@ -34,7 +34,7 @@ import type {
   SendVerifyCodePayload,
   VerifyCodePayload,
   VerifyPasswordPayload,
-} from './types';
+} from '@auth/api/types';
 
 export function useSendVerifyCodeMutation() {
   return useMutation({ mutationFn: sendVerifyCodeAction });

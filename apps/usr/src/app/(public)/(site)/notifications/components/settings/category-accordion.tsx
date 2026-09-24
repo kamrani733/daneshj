@@ -12,7 +12,7 @@ import type {
 } from '@notifications/data/settings-mock';
 import { SETTINGS_CHANNELS } from '@notifications/data/settings-mock';
 
-import { SettingsChannelControl } from './channel-control';
+import { SettingsChannelControl } from '@notifications/components/settings/channel-control';
 
 type SettingsCategoryAccordionProps = {
   category: SettingsCategory;

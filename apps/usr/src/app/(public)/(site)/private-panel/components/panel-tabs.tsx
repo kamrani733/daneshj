@@ -14,13 +14,13 @@ import {
 } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
 
-import { FieldsSection } from './fields/fields-section';
-import { GuideSection } from './guide/guide-section';
-import { PublicOpsSection } from './public-ops/public-ops-section';
+import { FieldsSection } from '@private-panel/components/fields/fields-section';
+import { GuideSection } from '@private-panel/components/guide/guide-section';
+import { PublicOpsSection } from '@private-panel/components/public-ops/public-ops-section';
 import {
   UnsavedChangesProvider,
   useUnsavedChangesGuard,
-} from './unsaved-changes-guard';
+} from '@private-panel/components/unsaved-changes-guard';
 
 const TAB_ITEMS: {
   id: PrivatePanelTab;

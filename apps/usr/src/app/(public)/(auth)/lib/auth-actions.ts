@@ -3,8 +3,8 @@
 import { getSession, login, logout } from '@daneshjoam/auth';
 import type { Session } from '@daneshjoam/shared-types';
 
-import { actorLogout, getTokenInfo, refreshToken } from '../api/auth';
-import { getAuthRequestMeta } from './auth-request-meta';
+import { actorLogout, getTokenInfo, refreshToken } from '@auth/api/auth';
+import { getAuthRequestMeta } from '@auth/lib/auth-request-meta';
 
 /** Refresh when fewer than 10 minutes remain on the access token. */
 const REFRESH_SKEW_SECONDS = 10 * 60;

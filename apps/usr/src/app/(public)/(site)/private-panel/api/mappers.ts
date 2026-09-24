@@ -5,11 +5,11 @@ export {
   mapVisibilityFields,
   toAcademicRecordUserDto,
   toPanelAcademicRecord,
-} from './profile-mappers';
+} from '@private-panel/api/profile-mappers';
 export {
   mapPendingFieldRequests,
   type PendingFieldRequest,
-} from './pending-mappers';
+} from '@private-panel/api/pending-mappers';
 export {
   sanitizeValuesForPrivateSubmit,
   tabsAffectedBySelection,
@@ -17,4 +17,4 @@ export {
   toPrivateTabSubmitBody,
   toPublicVisibilitySubmitBody,
   type PrivateSubmitDocument,
-} from './submit-mappers';
+} from '@private-panel/api/submit-mappers';

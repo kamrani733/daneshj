@@ -32,11 +32,11 @@ import {
   UNSAVED_SCOPE,
   useDiscardConfirm,
   useRegisterUnsavedChanges,
-} from '../unsaved-changes-guard';
+} from '@private-panel/components/unsaved-changes-guard';
 import {
   EducationRecordsSection,
-} from './education-records-section';
-import { VisibilityFieldCard } from './visibility-field';
+} from '@private-panel/components/public-ops/education-records-section';
+import { VisibilityFieldCard } from '@private-panel/components/public-ops/visibility-field';
 
 const INTRO_PARAGRAPHS =
   fa.privatePanel.publicOps.manageVisibility.introParagraphs;

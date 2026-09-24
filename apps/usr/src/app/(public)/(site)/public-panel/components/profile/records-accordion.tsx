@@ -12,7 +12,7 @@ import { AcademicRecordCard, EducationAddressCard } from '@/components/panel';
 import { formatFaNumber } from '@/lib/format-fa';
 import { cn } from '@/lib/utils';
 
-import { TitleUnderline } from '../shared/title-underline';
+import { TitleUnderline } from '@public-panel/components/shared/title-underline';
 
 type RecordsAccordionProps = {
   username: string;

@@ -1,6 +1,6 @@
 import { notificationHttpClient } from '@/shared/api/notification-http';
 
-import { formatApiResponseError } from './errors';
+import { formatApiResponseError } from '@notifications/api/errors';
 import {
   mapActorNotification,
   mapActorSettingsList,
@@ -13,7 +13,7 @@ import {
   toDetailedStatusReportQuery,
   toListNotificationsQuery,
   toStatisticsReportQuery,
-} from './transformers';
+} from '@notifications/api/transformers';
 import type {
   ActorNotificationDto,
   ActorNotificationListData,

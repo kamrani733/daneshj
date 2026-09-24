@@ -6,14 +6,14 @@ import { cn } from '@/lib/utils';
 
 import {
   DocumentItem,
-} from './document-item';
+} from '@private-panel/components/fields/document-item';
 import type {
   DocumentDraft,
   DocumentKind,
   DocumentReviewDecision,
   DocumentSlot,
 } from '@private-panel/types/documents';
-import { UploadDropzone } from './upload-dropzone';
+import { UploadDropzone } from '@private-panel/components/fields/upload-dropzone';
 
 const MAX_BYTES = 1 * 1024 * 1024;
 const MAX_FILES = 5;

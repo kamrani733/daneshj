@@ -21,7 +21,7 @@ import { cn } from '@/lib/utils';
 import {
   StatsPeopleDialog,
   StatsShareDialog,
-} from './stats-dialogs';
+} from '@public-panel/components/profile/stats-dialogs';
 
 type ProfileStatsBarProps = {
   profile: PublicPanelProfile;

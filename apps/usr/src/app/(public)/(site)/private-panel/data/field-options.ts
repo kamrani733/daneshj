@@ -4,7 +4,7 @@ import {
   citiesForProvince,
   districtsForCity,
   type GeoOption,
-} from './geo';
+} from '@private-panel/data/geo';
 
 export type FieldOption = GeoOption;
 

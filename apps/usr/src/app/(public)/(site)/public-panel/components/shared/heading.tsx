@@ -5,7 +5,7 @@ import { useTranslations } from 'next-intl';
 
 import { PanelBreadcrumb } from '@/components/panel';
 
-import { TitleUnderline } from './title-underline';
+import { TitleUnderline } from '@public-panel/components/shared/title-underline';
 
 type PublicPanelHeadingProps = {
   displayName: string;

@@ -17,9 +17,9 @@ export {
   verifyCode,
   verifyOtp,
   verifyPassword,
-} from './auth';
-export { formatApiResponseError, getAuthApiErrorMessage } from './errors';
-export { USR_ACTOR_TYPE, USR_LOGIN_SOURCE, MAX_ACTIVE_SESSIONS } from './constants';
+} from '@auth/api/auth';
+export { formatApiResponseError, getAuthApiErrorMessage } from '@auth/api/errors';
+export { USR_ACTOR_TYPE, USR_LOGIN_SOURCE, MAX_ACTIVE_SESSIONS } from '@auth/api/constants';
 export {
   useChangePasswordMutation,
   useDeleteSessionForLimitReachedMutation,
@@ -37,7 +37,7 @@ export {
   useVerifyCodeMutation,
   useVerifyOtpMutation,
   useVerifyPasswordMutation,
-} from './react-query';
+} from '@auth/api/react-query';
 export type {
   ActorLogoutPayload,
   AuthOperation,
@@ -67,4 +67,4 @@ export type {
   VerifyCodeResult,
   VerifyOtpPayload,
   VerifyPasswordPayload,
-} from './types';
+} from '@auth/api/types';

@@ -11,9 +11,9 @@ import { withStatIcons } from '@notifications/data/stats';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
 
-import { NotificationsPageShell } from '../layout/page-shell';
-import { StatCountCard } from './count-card';
-import { StatRatioCard } from './ratio-card';
+import { NotificationsPageShell } from '@notifications/components/layout/page-shell';
+import { StatCountCard } from '@notifications/components/stats/count-card';
+import { StatRatioCard } from '@notifications/components/stats/ratio-card';
 
 type NotificationsStatsViewProps = {
   accessToken?: string | null;

@@ -16,23 +16,23 @@ import {
   reactToEntity,
   shareEntity,
   submitScore,
-} from './interactive-ops';
+} from '@public-panel/api/interactive-ops';
 import {
   isIndividualServiceProvider,
   mapVisitorPublicPanel,
-} from './profile-mappers';
+} from '@public-panel/api/profile-mappers';
 import {
   getPublicPanelStatusByAdmin,
   getPublicPanelStatusByOwner,
   requestPublicPanelChangeStatus,
-} from './profiles-base';
-import { retrieveBusinessPublicPanelForVisitor } from './profiles-business';
-import { retrieveIndividualPublicPanelForVisitor } from './profiles-individual';
-import { retrieveUserPublicPanelForVisitor } from './profiles-user';
+} from '@public-panel/api/profiles-base';
+import { retrieveBusinessPublicPanelForVisitor } from '@public-panel/api/profiles-business';
+import { retrieveIndividualPublicPanelForVisitor } from '@public-panel/api/profiles-individual';
+import { retrieveUserPublicPanelForVisitor } from '@public-panel/api/profiles-user';
 import {
   interactiveOpsQueryKeys,
   publicPanelActorQueryKeys,
-} from './query-keys';
+} from '@public-panel/api/query-keys';
 import type {
   GetPublicPanelStatusPayload,
   PublicPanelKind,

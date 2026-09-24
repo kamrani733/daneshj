@@ -22,11 +22,11 @@ import { Spinner } from '@/components/ui/spinner';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
 
-import { NotificationsCardList } from './card-list';
-import { NotificationsPageShell } from '../layout/page-shell';
-import { NotificationsPagination } from '../layout/pagination';
-import { NotificationsTable } from './table';
-import { NotificationsToolbar } from './toolbar';
+import { NotificationsCardList } from '@notifications/components/inbox/card-list';
+import { NotificationsPageShell } from '@notifications/components/layout/page-shell';
+import { NotificationsPagination } from '@notifications/components/layout/pagination';
+import { NotificationsTable } from '@notifications/components/inbox/table';
+import { NotificationsToolbar } from '@notifications/components/inbox/toolbar';
 
 type NotificationTab = NotificationType;
 const TABS: NotificationTab[] = ['manual', 'system'];

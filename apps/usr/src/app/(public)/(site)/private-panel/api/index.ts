@@ -4,7 +4,7 @@ export {
   getPublicPanelStatusByAdmin,
   getPublicPanelStatusByOwner,
   requestPublicPanelChangeStatus,
-} from './profiles-base';
+} from '@private-panel/api/profiles-base';
 export {
   retrievePrivatePanelForAdmin,
   retrievePrivatePanelForOwner,
@@ -21,14 +21,14 @@ export {
   submitPrivateTabByAdmin,
   submitPrivateTabByOwner,
   submitPublicTabByOwner,
-} from './profiles-user';
-export { listServiceTitlesToAll } from './service-titles';
+} from '@private-panel/api/profiles-user';
+export { listServiceTitlesToAll } from '@private-panel/api/service-titles';
 export {
   formatApiResponseError,
   getActorApiErrorMessage,
-} from './errors';
-export type { ActorKnownErrorKey } from './errors';
-export { actorQueryKeys, privatePanelQueryKeys } from './query-keys';
+} from '@private-panel/api/errors';
+export type { ActorKnownErrorKey } from '@private-panel/api/errors';
+export { actorQueryKeys, privatePanelQueryKeys } from '@private-panel/api/query-keys';
 export {
   useActorInfoQuery,
   useManageVisibilityQuery,
@@ -45,7 +45,7 @@ export {
   useSubmitPrivateStateByOwnerMutation,
   useSubmitPrivateTabByOwnerMutation,
   useSubmitPublicTabByOwnerMutation,
-} from './react-query';
+} from '@private-panel/api/react-query';
 export {
   mapAcademicRecords,
   mapPendingFieldRequests,
@@ -59,12 +59,12 @@ export {
   toAcademicRecordUserDto,
   toPrivateTabSubmitBody,
   toPublicVisibilitySubmitBody,
-} from './mappers';
-export type { PendingFieldRequest, PrivateSubmitDocument } from './mappers';
+} from '@private-panel/api/mappers';
+export type { PendingFieldRequest, PrivateSubmitDocument } from '@private-panel/api/mappers';
 export {
   isPrivateFileUploadConfigured,
   uploadPrivatePanelFile,
-} from './upload';
+} from '@private-panel/api/upload';
 export {
   mapActorInfo,
   mapPublicPanelStatus,
@@ -73,8 +73,8 @@ export {
   toPrivateReviewBody,
   toPrivateStateReviewBody,
   toPrivateStateSubmitBody,
-} from './transformers';
-export { ACTOR_TYPE_NAME } from '../types/api';
+} from '@private-panel/api/transformers';
+export { ACTOR_TYPE_NAME } from '@private-panel/types/api';
 export type {
   ActorInfo,
   ActorInfoDataDto,
@@ -95,4 +95,4 @@ export type {
   ServiceTitleItem,
   SubmitPrivateTabByOwnerPayload,
   SubmitPublicTabByOwnerPayload,
-} from '../types/api';
+} from '@private-panel/types/api';

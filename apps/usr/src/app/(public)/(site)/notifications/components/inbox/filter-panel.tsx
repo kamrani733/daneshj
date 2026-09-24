@@ -18,7 +18,7 @@ import {
   DateRangeInputs,
   FilterCheckbox,
   FilterField,
-} from '../shared/filter-primitives';
+} from '@notifications/components/shared/filter-primitives';
 
 type NotificationsFilterPanelProps = {
   filters: NotificationsFilterValues;

@@ -4,7 +4,7 @@ import { getTranslations } from 'next-intl/server';
 
 import { cn } from '@/lib/utils';
 
-import { HOME_CATEGORY_LINKS } from '../data/home-category-links';
+import { HOME_CATEGORY_LINKS } from '@home/data/home-category-links';
 
 /** Figma Category desktop #53:532 · mobile #2333:2172 — title + icon links (before discounts). */
 export async function HomeCategoriesSection() {

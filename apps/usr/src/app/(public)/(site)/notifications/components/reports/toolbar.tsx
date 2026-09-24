@@ -22,7 +22,7 @@ import {
   EMPTY_REPORTS_FILTERS,
   ReportsFilterPanel,
   type ReportsFilterValues,
-} from './filter-panel';
+} from '@notifications/components/reports/filter-panel';
 
 /** Figma sort menu — one preferred direction per field (API Usr-Ntf-6N5 ordering). */
 const ORDERING_OPTIONS: Array<{

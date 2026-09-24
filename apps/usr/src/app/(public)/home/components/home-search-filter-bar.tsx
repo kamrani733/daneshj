@@ -13,9 +13,9 @@ import {
   EMPTY_SEARCH_FILTERS,
   type SearchFilterValues,
   type SearchSortId,
-} from '../data/search-filter-data';
-import { FilterControlButton } from './filter-control-button';
-import { HomeSearchSortMenu } from './home-search-sort-menu';
+} from '@home/data/search-filter-data';
+import { FilterControlButton } from '@home/components/filter-control-button';
+import { HomeSearchSortMenu } from '@home/components/home-search-sort-menu';
 import { FilterAltIcon, SortIcon } from '@/components/icons/material-icons';
 
 type HomeSearchFilterBarProps = {

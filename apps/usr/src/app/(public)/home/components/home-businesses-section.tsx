@@ -1,9 +1,9 @@
 import { getTranslations } from 'next-intl/server';
 
-import { BUSINESS_ITEMS } from '../data/home-content';
-import { ContentCard } from './content-card';
-import { HomeCarouselSectionHeader } from './home-carousel-section-header';
-import { ViewAllLink } from './view-all-link';
+import { BUSINESS_ITEMS } from '@home/data/home-content';
+import { ContentCard } from '@home/components/content-card';
+import { HomeCarouselSectionHeader } from '@home/components/home-carousel-section-header';
+import { ViewAllLink } from '@home/components/view-all-link';
 
 /** Figma #5847:169349 — title right, view-all left, horizontal scroll 344px cards. */
 export async function HomeBusinessesSection() {

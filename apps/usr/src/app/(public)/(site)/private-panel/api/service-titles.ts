@@ -1,7 +1,7 @@
 import { toRequestQuery } from '@daneshjoam/api-client';
 
-import { getActor, requireAccessToken } from './http';
-import { mapServiceTitleItem, toListServiceTitlesQuery } from './transformers';
+import { getActor, requireAccessToken } from '@private-panel/api/http';
+import { mapServiceTitleItem, toListServiceTitlesQuery } from '@private-panel/api/transformers';
 import type {
   ListServiceTitlesPayload,
   ServiceTitleItem,

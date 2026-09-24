@@ -1,11 +1,11 @@
-export { AcademicRecordCard } from './academic-record-card';
-export { BorderedSectionCard } from './bordered-section-card';
-export { EducationAddressCard } from './education-address-card';
-export { EmptyState } from './empty-state';
-export { PanelBreadcrumb } from './panel-breadcrumb';
-export { PanelLoadingOverlay } from './panel-loading-overlay';
-export { ProfileHeroCard } from './profile-hero-card';
-export { SocialLinksRow } from './social-links-row';
+export { AcademicRecordCard } from '@/components/panel/academic-record-card';
+export { BorderedSectionCard } from '@/components/panel/bordered-section-card';
+export { EducationAddressCard } from '@/components/panel/education-address-card';
+export { EmptyState } from '@/components/panel/empty-state';
+export { PanelBreadcrumb } from '@/components/panel/panel-breadcrumb';
+export { PanelLoadingOverlay } from '@/components/panel/panel-loading-overlay';
+export { ProfileHeroCard } from '@/components/panel/profile-hero-card';
+export { SocialLinksRow } from '@/components/panel/social-links-row';
 export type {
   PanelAcademicRecord,
   PanelAcademicRecordRole,
@@ -16,4 +16,4 @@ export type {
   PanelRoleLabelKey,
   PanelSocialLink,
   SocialNetwork,
-} from './types';
+} from '@/components/panel/types';

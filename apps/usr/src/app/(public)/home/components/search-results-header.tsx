@@ -5,8 +5,8 @@ import { useTranslations } from 'next-intl';
 import { formatFaNumber } from '@/lib/format-fa';
 import { cn } from '@/lib/utils';
 
-import type { SearchCategoryChip } from '../lib/search-category-chips';
-import { SearchFilterChip } from './search-filter-chip';
+import type { SearchCategoryChip } from '@home/lib/search-category-chips';
+import { SearchFilterChip } from '@home/components/search-filter-chip';
 
 type SearchResultsHeaderProps = {
   count: number;

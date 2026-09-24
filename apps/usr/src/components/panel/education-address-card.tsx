@@ -4,8 +4,8 @@ import { useTranslations } from 'next-intl';
 
 import { cn } from '@/lib/utils';
 
-import { BorderedSectionCard } from './bordered-section-card';
-import type { PanelEducationAddress } from './types';
+import { BorderedSectionCard } from '@/components/panel/bordered-section-card';
+import type { PanelEducationAddress } from '@/components/panel/types';
 
 type EducationAddressCardProps = {
   address: PanelEducationAddress;

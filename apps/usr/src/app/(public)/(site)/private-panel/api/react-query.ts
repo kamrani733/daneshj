@@ -8,14 +8,14 @@ import {
   mapAcademicRecords,
   mapPrivatePanelProfile,
   mapVisibilityFields,
-} from './mappers';
+} from '@private-panel/api/mappers';
 import {
   changePublicPanelStatusByAdmin,
   getActorInfo,
   getPublicPanelStatusByAdmin,
   getPublicPanelStatusByOwner,
   requestPublicPanelChangeStatus,
-} from './profiles-base';
+} from '@private-panel/api/profiles-base';
 import {
   retrievePrivatePanelForAdmin,
   retrievePrivatePanelForOwner,
@@ -31,9 +31,9 @@ import {
   submitPrivateTabByAdmin,
   submitPrivateTabByOwner,
   submitPublicTabByOwner,
-} from './profiles-user';
-import { actorQueryKeys, privatePanelQueryKeys } from './query-keys';
-import { listServiceTitlesToAll } from './service-titles';
+} from '@private-panel/api/profiles-user';
+import { actorQueryKeys, privatePanelQueryKeys } from '@private-panel/api/query-keys';
+import { listServiceTitlesToAll } from '@private-panel/api/service-titles';
 import type {
   ActorTypeName,
   GetActorInfoPayload,
@@ -46,8 +46,8 @@ import type {
   SubmitPrivateStateByOwnerPayload,
   SubmitPrivateTabByOwnerPayload,
   SubmitPublicTabByOwnerPayload,
-} from '../types/api';
-import { ACTOR_TYPE_NAME } from '../types/api';
+} from '@private-panel/types/api';
+import { ACTOR_TYPE_NAME } from '@private-panel/types/api';
 
 type AdminTargetPayload = {
   actorId?: number | null;

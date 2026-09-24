@@ -1,1 +1,1 @@
-export * from './comments';
+export * from '@public-panel/utils/comments';

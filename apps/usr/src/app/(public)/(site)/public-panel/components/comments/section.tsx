@@ -20,8 +20,8 @@ import { SearchField } from '@/components/ui/search-field';
 import { formatFaNumber } from '@/lib/format-fa';
 import { cn } from '@/lib/utils';
 
-import { CommentCard } from './card';
-import { SectionTitle } from '../shared/section-title';
+import { CommentCard } from '@public-panel/components/comments/card';
+import { SectionTitle } from '@public-panel/components/shared/section-title';
 
 const COMMENT_MAX_LENGTH = 1500;
 

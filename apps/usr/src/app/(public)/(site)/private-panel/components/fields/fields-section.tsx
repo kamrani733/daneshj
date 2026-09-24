@@ -15,13 +15,13 @@ import {
   FieldsetBlock,
   IdentityCategoryBlocks,
   ProviderBlocks,
-} from './fields-section-blocks';
+} from '@private-panel/components/fields/fields-section-blocks';
 import {
   UNSAVED_SCOPE,
   useDiscardConfirm,
   useRegisterUnsavedChanges,
-} from '../unsaved-changes-guard';
-import { FieldsFloatingSaveBar } from './fields-floating-save-bar';
+} from '@private-panel/components/unsaved-changes-guard';
+import { FieldsFloatingSaveBar } from '@private-panel/components/fields/fields-floating-save-bar';
 import { AppDialog } from '@/components/ui/app-dialog';
 import {
   AdminEditIntroBullets,
@@ -29,9 +29,9 @@ import {
   ModeTabs,
   OwnerReviewIntroBullets,
   ReviewIntroBullets,
-} from './fields-section-header';
-import { FieldsLimitationsSection } from './fields-limitations-section';
-import { ReviewPendingList } from './review-pending-list';
+} from '@private-panel/components/fields/fields-section-header';
+import { FieldsLimitationsSection } from '@private-panel/components/fields/fields-limitations-section';
+import { ReviewPendingList } from '@private-panel/components/fields/review-pending-list';
 import { useFieldsSectionController } from '@private-panel/hooks/use-fields-section-controller';
 import type { FieldsMode } from '@private-panel/utils/fields-section-utils';
 import { useState } from 'react';

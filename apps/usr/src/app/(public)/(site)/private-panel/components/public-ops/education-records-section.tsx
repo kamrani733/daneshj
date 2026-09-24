@@ -16,7 +16,7 @@ import {
   VisibilityCheckbox,
   VisibilityFieldCard,
   type VisibilityUiState,
-} from './visibility-field';
+} from '@private-panel/components/public-ops/visibility-field';
 
 const INTRO =
   fa.privatePanel.publicOps.manageVisibility.academicRecordsIntro;

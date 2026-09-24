@@ -10,7 +10,7 @@ import { cn } from '@/lib/utils';
 import {
   SEARCH_SORT_OPTIONS,
   type SearchSortId,
-} from '../data/search-filter-data';
+} from '@home/data/search-filter-data';
 import { CheckIcon } from '@/components/icons/material-icons';
 
 type HomeSearchSortMenuProps = {

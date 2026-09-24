@@ -6,7 +6,7 @@ import {
   AUTH_SCENE_IMAGES,
   FIGMA_FRAME,
   FORM_PATTERN_LAYERS,
-} from './auth-scene-assets';
+} from '@/components/auth/auth-scene-assets';
 
 function useBackgroundScale() {
   const [scale, setScale] = useState(1);

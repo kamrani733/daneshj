@@ -2,10 +2,10 @@ import { getTranslations } from 'next-intl/server';
 
 import { cn } from '@/lib/utils';
 
-import { DISCOUNT_ITEMS } from '../data/home-content';
-import { ContentCard } from './content-card';
-import { HomeCarouselSectionHeader } from './home-carousel-section-header';
-import { ViewAllLink } from './view-all-link';
+import { DISCOUNT_ITEMS } from '@home/data/home-content';
+import { ContentCard } from '@home/components/content-card';
+import { HomeCarouselSectionHeader } from '@home/components/home-carousel-section-header';
+import { ViewAllLink } from '@home/components/view-all-link';
 
 /** Figma #1:8912 Title Box + #1:9041 content — 4×2 grid, title right, view-all left. */
 export async function HomeDiscountsSection() {

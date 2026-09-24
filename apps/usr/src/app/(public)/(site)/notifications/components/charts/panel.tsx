@@ -17,9 +17,9 @@ import { formatFaNumber } from '@/lib/format-fa';
 import { cn } from '@/lib/utils';
 
 import { AccentMark } from '@/components/site/accent-mark';
-import { ChartCard } from './chart-card';
-import { NotificationsBarChart } from './bar-chart';
-import { NotificationsDonutChart } from './donut-chart';
+import { ChartCard } from '@notifications/components/charts/chart-card';
+import { NotificationsBarChart } from '@notifications/components/charts/bar-chart';
+import { NotificationsDonutChart } from '@notifications/components/charts/donut-chart';
 
 type NotificationsChartsPanelProps = {
   accessToken?: string | null;

@@ -16,10 +16,10 @@ import {
   PROMO_TONE_CLASS,
   surfaceStyle,
   type PromoSlideConfig,
-} from '../data/promo-banner';
+} from '@home/data/promo-banner';
 import { SITE_IMAGES } from '@/components/site/site-assets';
-import { CarouselDots } from './home-hero-banner';
-import { SectionTitle } from './section-title';
+import { CarouselDots } from '@home/components/home-hero-banner';
+import { SectionTitle } from '@home/components/section-title';
 
 function boxStyle(x: number, y: number, w?: number): CSSProperties {
   const { width: aw, height: ah } = PROMO_SURFACE;

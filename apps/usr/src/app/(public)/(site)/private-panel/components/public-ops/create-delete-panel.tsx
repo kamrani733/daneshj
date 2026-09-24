@@ -13,7 +13,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
-import { OpsConfirmDialog } from './ops-confirm-dialog';
+import { OpsConfirmDialog } from '@private-panel/components/public-ops/ops-confirm-dialog';
 
 const COPY = fa.privatePanel.publicOps.createDelete;
 

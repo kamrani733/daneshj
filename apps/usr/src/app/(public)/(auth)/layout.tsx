@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation';
 import { getSession } from '@daneshjoam/auth';
 
-import { AuthFlowClientLayout } from './auth-flow-client-layout';
+import { AuthFlowClientLayout } from '@auth/auth-flow-client-layout';
 
 /**
  * Block guest auth flows when a session cookie with accessToken already exists.

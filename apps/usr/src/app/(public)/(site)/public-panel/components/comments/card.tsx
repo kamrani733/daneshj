@@ -37,7 +37,7 @@ import {
 import { formatFaNumber } from '@/lib/format-fa';
 import { cn } from '@/lib/utils';
 
-import { CommentTransferFlow } from './transfer-flow';
+import { CommentTransferFlow } from '@public-panel/components/comments/transfer-flow';
 
 const REPLY_MAX_LENGTH = 1500;
 

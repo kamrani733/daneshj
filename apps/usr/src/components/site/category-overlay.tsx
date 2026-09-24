@@ -6,9 +6,9 @@ import { useEffect } from 'react';
 
 import { cn } from '@/lib/utils';
 
-import { CATEGORY_GRID_ITEMS, CATEGORY_MENU_ITEMS } from './nav-data';
-import { HomeMenuPanel, HomeMenuStackList } from './menu-panel';
-import { SITE_IMAGES } from './site-assets';
+import { CATEGORY_GRID_ITEMS, CATEGORY_MENU_ITEMS } from '@/components/site/nav-data';
+import { HomeMenuPanel, HomeMenuStackList } from '@/components/site/menu-panel';
+import { SITE_IMAGES } from '@/components/site/site-assets';
 
 type HomeCategoryOverlayProps = {
   open: boolean;

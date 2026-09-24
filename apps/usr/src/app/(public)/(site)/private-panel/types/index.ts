@@ -1,3 +1,3 @@
-export * from './api';
-export * from './documents';
-export * from './public-ops';
+export * from '@private-panel/types/api';
+export * from '@private-panel/types/documents';
+export * from '@private-panel/types/public-ops';

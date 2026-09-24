@@ -5,7 +5,7 @@ import type { NewsletterItem } from '@public-panel/types/ui';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
 
-import { CatalogOfferCardShell } from './offer-card-shell';
+import { CatalogOfferCardShell } from '@public-panel/components/catalog/offer-card-shell';
 
 type NewsletterOfferCardProps = {
   item: NewsletterItem;

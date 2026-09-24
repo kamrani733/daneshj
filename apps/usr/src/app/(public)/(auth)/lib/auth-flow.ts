@@ -14,7 +14,7 @@ import type {
   PageType,
 } from '@auth/api';
 
-import { clearAuthFlowStep } from './auth-flow-actions';
+import { clearAuthFlowStep } from '@auth/lib/auth-flow-actions';
 
 export type { AuthPurpose } from '@auth/api';
 

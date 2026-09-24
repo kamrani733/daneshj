@@ -1,3 +1,3 @@
-export * from './fields-section-utils';
-export * from './mapper-utils';
-export * from './visibility-validation';
+export * from '@private-panel/utils/fields-section-utils';
+export * from '@private-panel/utils/mapper-utils';
+export * from '@private-panel/utils/visibility-validation';

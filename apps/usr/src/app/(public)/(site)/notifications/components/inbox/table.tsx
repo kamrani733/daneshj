@@ -14,8 +14,8 @@ import {
 } from '@/components/ui/table';
 import { cn } from '@/lib/utils';
 
-import { NotificationDateTime } from './datetime';
-import { NotificationStatusIcon } from './status-icon';
+import { NotificationDateTime } from '@notifications/components/inbox/datetime';
+import { NotificationStatusIcon } from '@notifications/components/inbox/status-icon';
 
 /**
  * Figma visual left → right (dir=ltr on table):

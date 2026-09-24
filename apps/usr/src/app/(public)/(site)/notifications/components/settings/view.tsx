@@ -10,8 +10,8 @@ import { SETTINGS_SECTIONS } from '@notifications/data/settings-mock';
 import { Spinner } from '@/components/ui/spinner';
 
 import { AccentMark } from '@/components/site/accent-mark';
-import { SettingsCategoryAccordion } from './category-accordion';
-import { SettingsFloatingActions } from './floating-actions';
+import { SettingsCategoryAccordion } from '@notifications/components/settings/category-accordion';
+import { SettingsFloatingActions } from '@notifications/components/settings/floating-actions';
 
 type NotificationsSettingsViewProps = {
   accessToken?: string | null;

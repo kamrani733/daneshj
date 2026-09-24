@@ -5,7 +5,7 @@ import {
   PURPOSE_TO_SEND_OPERATION,
   USR_ACTOR_TYPE,
   USR_LOGIN_SOURCE,
-} from './constants';
+} from '@auth/api/constants';
 import type {
   ActorSendCodeBody,
   ActorSendCodeQuery,
@@ -19,7 +19,7 @@ import type {
   VerifyCodeData,
   VerifyCodePayload,
   VerifyCodeResponse,
-} from './types';
+} from '@auth/api/types';
 
 export function toSendCodeQuery(payload: SendVerifyCodePayload): ActorSendCodeQuery {
   const query: ActorSendCodeQuery = {

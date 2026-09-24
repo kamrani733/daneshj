@@ -10,8 +10,8 @@ import type {
 
 import { SocialLinksRow } from '@/components/panel';
 
-import { PublicPanelTabs } from './tabs';
-import { SectionTitle } from '../shared/section-title';
+import { PublicPanelTabs } from '@public-panel/components/catalog/tabs';
+import { SectionTitle } from '@public-panel/components/shared/section-title';
 
 type ServiceInfoSectionProps = {
   links: PublicPanelSocialLink[];

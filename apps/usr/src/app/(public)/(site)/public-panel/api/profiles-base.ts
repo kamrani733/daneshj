@@ -1,4 +1,4 @@
-import { getActor, postActor, putActor, requireAccessToken } from './http';
+import { getActor, postActor, putActor, requireAccessToken } from '@public-panel/api/http';
 import type {
   GetPublicPanelStatusPayload,
   MutationResult,

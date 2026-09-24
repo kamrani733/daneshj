@@ -1,5 +1,5 @@
-import { getActor, postActor, putActor, requireAccessToken } from './http';
-import { mapActorInfo, mapPublicPanelStatus } from './transformers';
+import { getActor, postActor, putActor, requireAccessToken } from '@private-panel/api/http';
+import { mapActorInfo, mapPublicPanelStatus } from '@private-panel/api/transformers';
 import type {
   ActorInfo,
   ActorInfoDataDto,

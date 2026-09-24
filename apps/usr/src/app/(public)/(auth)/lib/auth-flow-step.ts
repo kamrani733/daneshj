@@ -1,4 +1,4 @@
-import type { IdentityInfo, VerifyCodeResponse } from '../api/types';
+import type { IdentityInfo, VerifyCodeResponse } from '@auth/api/types';
 
 export type AuthFlowStepName = 'verify-password' | 'reset-password' | 'session-limit';
 

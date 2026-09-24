@@ -1,6 +1,6 @@
 import { getSession } from '@daneshjoam/auth';
 
-import { PrivatePanelView } from './components/view';
+import { PrivatePanelView } from '@private-panel/components/view';
 
 function parseActorId(raw: string | undefined): number | null {
   if (!raw) return null;

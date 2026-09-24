@@ -1,4 +1,4 @@
-import type { AuthOperation, AuthPurpose } from './types';
+import type { AuthOperation, AuthPurpose } from '@auth/api/types';
 
 export const USR_ACTOR_TYPE = 'User' as const;
 export const USR_LOGIN_SOURCE = 'Web' as const;

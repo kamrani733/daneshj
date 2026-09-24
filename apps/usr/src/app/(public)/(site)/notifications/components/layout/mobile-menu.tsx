@@ -7,7 +7,7 @@ import { useTranslations } from 'next-intl';
 import { AppDialog } from '@/components/ui/app-dialog';
 import { cn } from '@/lib/utils';
 
-import { NotificationsNavList } from './nav-list';
+import { NotificationsNavList } from '@notifications/components/layout/nav-list';
 
 type OperationalPanelMobileMenuProps = {
   className?: string;

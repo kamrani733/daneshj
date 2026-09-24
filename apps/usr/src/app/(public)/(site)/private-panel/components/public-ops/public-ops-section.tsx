@@ -14,9 +14,9 @@ import { cn } from '@/lib/utils';
 import {
   UNSAVED_SCOPE,
   useUnsavedChangesGuard,
-} from '../unsaved-changes-guard';
-import { CreateDeletePanel } from './create-delete-panel';
-import { ManageVisibilityPanel } from './manage-visibility-panel';
+} from '@private-panel/components/unsaved-changes-guard';
+import { CreateDeletePanel } from '@private-panel/components/public-ops/create-delete-panel';
+import { ManageVisibilityPanel } from '@private-panel/components/public-ops/manage-visibility-panel';
 
 type PublicOpsSubTab = 'manageVisibility' | 'createDelete';
 

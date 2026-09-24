@@ -10,44 +10,44 @@ export {
   reactToEntity,
   shareEntity,
   submitScore,
-} from './interactive-ops';
+} from '@public-panel/api/interactive-ops';
 export {
   changePublicPanelStatusByAdmin,
   getPublicPanelStatusByAdmin,
   getPublicPanelStatusByOwner,
   requestPublicPanelChangeStatus,
-} from './profiles-base';
+} from '@public-panel/api/profiles-base';
 export {
   retrieveUserPublicPanelForAdmin,
   retrieveUserPublicPanelForOwner,
   retrieveUserPublicPanelForVisitor,
   reviewUserPublicChangesByAdmin,
   submitUserPublicTabByOwner,
-} from './profiles-user';
+} from '@public-panel/api/profiles-user';
 export {
   retrieveIndividualPublicPanelForAdmin,
   retrieveIndividualPublicPanelForOwner,
   retrieveIndividualPublicPanelForVisitor,
   reviewIndividualPublicChangesByAdmin,
   submitIndividualPublicTabByOwner,
-} from './profiles-individual';
+} from '@public-panel/api/profiles-individual';
 export {
   retrieveBusinessPublicPanelForAdmin,
   retrieveBusinessPublicPanelForOwner,
   retrieveBusinessPublicPanelForVisitor,
   reviewBusinessPublicChangesByAdmin,
   submitBusinessPublicTabByOwner,
-} from './profiles-business';
+} from '@public-panel/api/profiles-business';
 export {
   applyIndividualPublicPanel,
   isIndividualServiceProvider,
   mapBusinessPublicPanel,
   mapVisitorPublicPanel,
-} from './profile-mappers';
+} from '@public-panel/api/profile-mappers';
 export {
   interactiveOpsQueryKeys,
   publicPanelActorQueryKeys,
-} from './query-keys';
+} from '@public-panel/api/query-keys';
 export {
   useAverageScoreQuery,
   useDislikeesQuery,
@@ -65,7 +65,7 @@ export {
   useRequestPublicPanelChangeStatusMutation,
   useScoreMutation,
   useShareMutation,
-} from './react-query';
+} from '@public-panel/api/react-query';
 export {
   LIKE_STATUS,
   SHARE_PLATFORM,

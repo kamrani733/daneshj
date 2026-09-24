@@ -10,7 +10,7 @@ import {
   toScoreBody,
   toShareBody,
   toTargetQuery,
-} from './transformers';
+} from '@public-panel/api/transformers';
 import type {
   ActorQueryPayload,
   ApiResponse,

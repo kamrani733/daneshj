@@ -19,8 +19,8 @@ import {
   markAllNotificationsAsRead,
   markLast5NotificationsAsRead,
   markNotificationAsRead,
-} from './notifications';
-import { notificationQueryKeys } from './query-keys';
+} from '@notifications/api/notifications';
+import { notificationQueryKeys } from '@notifications/api/query-keys';
 import type {
   ApplyActorSettingsPayload,
   GetChartsReportPayload,

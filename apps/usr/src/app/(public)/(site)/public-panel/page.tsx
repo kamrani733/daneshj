@@ -2,7 +2,7 @@ import { getSession } from '@daneshjoam/auth';
 
 import { parsePublicPanelKind } from '@public-panel/types/actor';
 
-import { PublicPanelView } from './components/view';
+import { PublicPanelView } from '@public-panel/components/view';
 
 function parseActorId(raw: string | undefined): number | null {
   if (!raw) return null;

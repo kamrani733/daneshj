@@ -8,12 +8,12 @@ import type { PublicPanelKind } from '@public-panel/types/actor';
 
 import { PanelLoadingOverlay, ProfileHeroCard } from '@/components/panel';
 
-import { CommentsSection } from './comments/section';
-import { PanelInfoBanner } from './profile/info-banner';
-import { ProfileStatsBar } from './profile/stats-bar';
-import { PublicPanelHeading } from './shared/heading';
-import { RecordsAccordion } from './profile/records-accordion';
-import { ServiceInfoSection } from './catalog/service-info-section';
+import { CommentsSection } from '@public-panel/components/comments/section';
+import { PanelInfoBanner } from '@public-panel/components/profile/info-banner';
+import { ProfileStatsBar } from '@public-panel/components/profile/stats-bar';
+import { PublicPanelHeading } from '@public-panel/components/shared/heading';
+import { RecordsAccordion } from '@public-panel/components/profile/records-accordion';
+import { ServiceInfoSection } from '@public-panel/components/catalog/service-info-section';
 
 type PublicPanelViewProps = {
   accessToken?: string | null;

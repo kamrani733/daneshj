@@ -19,10 +19,10 @@ import { cn } from '@/lib/utils';
 import {
   AcademicRecordModal,
   type AcademicRecordFormValues,
-} from './academic-record-modal';
-import { DocumentsPanel } from './documents-panel';
+} from '@private-panel/components/fields/academic-record-modal';
+import { DocumentsPanel } from '@private-panel/components/fields/documents-panel';
 import type { DocumentDraft } from '@private-panel/types/documents';
-import { resolveViewControl, ViewField } from './view-field';
+import { resolveViewControl, ViewField } from '@private-panel/components/fields/view-field';
 
 function fieldErrorMessage(
   fieldErrors: Record<string, VisibilityValidationErrorKey>,

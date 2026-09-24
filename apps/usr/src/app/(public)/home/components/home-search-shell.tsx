@@ -4,8 +4,8 @@ import { useState, type ReactNode } from 'react';
 
 import { HomeSearchCategoryBar } from '@/components/site/site-header';
 
-import type { SearchQuery } from '../data/search-mock';
-import { HomeSearchResults } from './home-search-results';
+import type { SearchQuery } from '@home/data/search-mock';
+import { HomeSearchResults } from '@home/components/home-search-results';
 
 type HomeSearchShellProps = {
   /** Default home feed (hero → businesses). Hidden while search is active. */

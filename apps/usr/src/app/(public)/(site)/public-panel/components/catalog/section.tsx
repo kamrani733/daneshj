@@ -5,7 +5,7 @@ import type { ReactNode } from 'react';
 
 import { cn } from '@/lib/utils';
 
-import { TitleUnderline } from '../shared/title-underline';
+import { TitleUnderline } from '@public-panel/components/shared/title-underline';
 
 type CatalogSectionProps = {
   title: string;

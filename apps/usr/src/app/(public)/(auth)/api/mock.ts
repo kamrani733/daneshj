@@ -5,7 +5,7 @@ import type {
   SessionData,
   VerifyCodePayload,
   VerifyCodeResponse,
-} from './types';
+} from '@auth/api/types';
 
 /**
  * Dev-only. True when `NEXT_PUBLIC_API_URL` is unset: callers try the request

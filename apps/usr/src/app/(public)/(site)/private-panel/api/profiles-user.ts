@@ -3,12 +3,12 @@ import {
   patchActor,
   postActor,
   requireAccessToken,
-} from './http';
+} from '@private-panel/api/http';
 import {
   toPrivateReviewBody,
   toPrivateStateReviewBody,
   toPrivateStateSubmitBody,
-} from './transformers';
+} from '@private-panel/api/transformers';
 import type {
   MutationResult,
   PrivateTabSubmitByAdminBodyDto,

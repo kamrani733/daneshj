@@ -21,7 +21,7 @@ import { UploadButton } from '@/components/ui/upload-button';
 import { dateToJalali, formatJalaliDisplay, parseIsoDate } from '@/lib/jalali';
 import { cn } from '@/lib/utils';
 
-import { LocationListPicker } from './location-list-picker';
+import { LocationListPicker } from '@private-panel/components/fields/location-list-picker';
 
 const FIELD_SURFACE = 'bg-app-card dark:bg-app-card';
 const INPUT_SURFACE = 'bg-app-card dark:bg-app-search-category';

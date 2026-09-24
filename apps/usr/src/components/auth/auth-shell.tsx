@@ -9,7 +9,7 @@ import { useSyncExternalStore } from 'react';
 
 import { TemporaryAdminLoginButton } from '@/components/site/temporary-admin-login-button';
 import { cn } from '@/lib/utils';
-import { AuthPageBackground, FormPattern } from './auth-background';
+import { AuthPageBackground, FormPattern } from '@/components/auth/auth-background';
 import {
   FIGMA_CARD_GRID,
   FIGMA_LOGIN_PANEL,
@@ -17,7 +17,7 @@ import {
   MAZE_LINES_BLUE,
   cardSlotStyle,
   type CardSlot,
-} from './auth-scene-assets';
+} from '@/components/auth/auth-scene-assets';
 
 const lalezar = localFont({
   src: '../../../public/fonts/Lalezar-Regular.ttf',

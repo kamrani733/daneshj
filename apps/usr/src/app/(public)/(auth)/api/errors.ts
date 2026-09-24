@@ -1,6 +1,6 @@
 import { isApiError } from '@daneshjoam/api-client';
 
-import type { ApiResponse } from './types';
+import type { ApiResponse } from '@auth/api/types';
 
 function isApiResponseBody(data: unknown): data is ApiResponse<unknown> {
   return (

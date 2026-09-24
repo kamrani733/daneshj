@@ -7,7 +7,7 @@ import type { ReactNode } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 
-import type { PanelAcademicRecord } from './types';
+import type { PanelAcademicRecord } from '@/components/panel/types';
 
 type AcademicRecordCardProps = {
   record: PanelAcademicRecord;

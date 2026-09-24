@@ -3,10 +3,10 @@ import { getSession } from '@daneshjoam/auth';
 
 import { SessionKeepAlive } from '@/components/session-keep-alive';
 
-import { SiteBgPattern } from './site-bg-pattern';
-import { SiteFooter } from './site-footer';
-import { SiteHeader } from './site-header';
-import { SiteMotivationBox } from './site-motivation-box';
+import { SiteBgPattern } from '@/components/site/site-bg-pattern';
+import { SiteFooter } from '@/components/site/site-footer';
+import { SiteHeader } from '@/components/site/site-header';
+import { SiteMotivationBox } from '@/components/site/site-motivation-box';
 
 type SiteShellProps = {
   children: ReactNode;

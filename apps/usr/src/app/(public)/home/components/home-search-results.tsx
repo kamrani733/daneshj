@@ -9,21 +9,21 @@ import {
   EMPTY_SEARCH_FILTERS,
   type SearchFilterValues,
   type SearchSortId,
-} from '../data/search-filter-data';
+} from '@home/data/search-filter-data';
 import {
   applySearchFilters,
   filterMockSearchResults,
   type SearchQuery,
   type SearchResultItem,
-} from '../data/search-mock';
+} from '@home/data/search-mock';
 import {
   getChipFilterCategory,
   getSearchCategoryChips,
   getSelectedChipId,
-} from '../lib/search-category-chips';
-import { HomeSearchFilterBar } from './home-search-filter-bar';
-import { SearchResultCard } from './search-result-card';
-import { SearchResultsHeader } from './search-results-header';
+} from '@home/lib/search-category-chips';
+import { HomeSearchFilterBar } from '@home/components/home-search-filter-bar';
+import { SearchResultCard } from '@home/components/search-result-card';
+import { SearchResultsHeader } from '@home/components/search-results-header';
 
 type HomeSearchResultsProps = {
   search: SearchQuery;

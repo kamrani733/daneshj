@@ -1,6 +1,6 @@
 import { SITE_IMAGES } from '@/components/site/site-assets';
 
-import type { SearchFilterValues, SearchSortId } from './search-filter-data';
+import type { SearchFilterValues, SearchSortId } from '@home/data/search-filter-data';
 
 export type SearchResultItem = {
   id: string;

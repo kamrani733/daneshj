@@ -11,11 +11,11 @@ import { EmptyState } from '@/components/panel';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
 
-import { CatalogSection } from './section';
-import { DiscountOfferCard } from './discount-offer-card';
-import { NewsOfferCard } from './news-offer-card';
-import { NewsletterOfferCard } from './newsletter-offer-card';
-import { OtherInfoPanel } from './other-info-panel';
+import { CatalogSection } from '@public-panel/components/catalog/section';
+import { DiscountOfferCard } from '@public-panel/components/catalog/discount-offer-card';
+import { NewsOfferCard } from '@public-panel/components/catalog/news-offer-card';
+import { NewsletterOfferCard } from '@public-panel/components/catalog/newsletter-offer-card';
+import { OtherInfoPanel } from '@public-panel/components/catalog/other-info-panel';
 
 type PublicPanelTabsProps = {
   catalog: ServiceCatalog;

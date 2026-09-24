@@ -1,7 +1,7 @@
 'use client';
 
-import { NotificationsChartsPanel } from './panel';
-import { NotificationsPageShell } from '../layout/page-shell';
+import { NotificationsChartsPanel } from '@notifications/components/charts/panel';
+import { NotificationsPageShell } from '@notifications/components/layout/page-shell';
 
 type NotificationsChartsViewProps = {
   accessToken?: string | null;

@@ -1,7 +1,7 @@
 import { cn } from '@/lib/utils';
 
-import { SectionTitle } from './section-title';
-import { ViewAllLink } from './view-all-link';
+import { SectionTitle } from '@home/components/section-title';
+import { ViewAllLink } from '@home/components/view-all-link';
 
 type HomeCarouselSectionHeaderProps = {
   title: string;

@@ -11,6 +11,20 @@ const config = {
     '^(?!.*\\.(js|jsx|ts|tsx|css|json)$)': '@nx/react/plugins/jest',
   },
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
+  // App aliases live in apps/usr/tsconfig.json. Jest 30's Nx resolver does not
+  // fall back to those paths, and this config turns off SWC path mapping.
+  moduleNameMapper: {
+    '^@auth/(.*)$': '<rootDir>/src/app/(public)/(auth)/$1',
+    '^@home/(.*)$': '<rootDir>/src/app/(public)/home/$1',
+    '^@messages/(.*)$': '<rootDir>/messages/$1',
+    '^@notifications/(.*)$':
+      '<rootDir>/src/app/(public)/(site)/notifications/$1',
+    '^@private-panel/(.*)$':
+      '<rootDir>/src/app/(public)/(site)/private-panel/$1',
+    '^@public-panel/(.*)$':
+      '<rootDir>/src/app/(public)/(site)/public-panel/$1',
+    '^@/(.*)$': '<rootDir>/src/$1',
+  },
   coverageDirectory: '../../coverage/apps/usr',
   testEnvironment: 'jsdom',
 };

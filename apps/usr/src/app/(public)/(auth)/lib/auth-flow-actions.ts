@@ -10,15 +10,15 @@ import {
   sendVerifyCode,
   verifyCode,
   verifyPassword,
-} from '../api/auth';
+} from '@auth/api/auth';
 import type {
   LoginByIdentityPasswordPayload,
   SendVerifyCodePayload,
   SendVerifyCodeResponse,
   SessionData,
   VerifyCodePayload,
-} from '../api/types';
-import { getAuthRequestMeta } from './auth-request-meta';
+} from '@auth/api/types';
+import { getAuthRequestMeta } from '@auth/lib/auth-request-meta';
 import {
   decodeAuthFlowStep,
   encodeAuthFlowStep,
@@ -26,7 +26,7 @@ import {
   stripProductionOtp,
   type ClientAuthResult,
   type StashedAuthFlowStep,
-} from './auth-flow-step';
+} from '@auth/lib/auth-flow-step';
 
 const AUTH_FLOW_STEP_COOKIE = 'auth_flow_step';
 const AUTH_FLOW_STEP_MAX_AGE = 600;

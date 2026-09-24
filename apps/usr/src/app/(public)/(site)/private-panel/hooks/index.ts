@@ -1,1 +1,1 @@
-export { useFieldsSectionController } from './use-fields-section-controller';
+export { useFieldsSectionController } from '@private-panel/hooks/use-fields-section-controller';

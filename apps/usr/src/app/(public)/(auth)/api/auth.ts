@@ -2,15 +2,15 @@ import { createApiClient, withMockFallback, type HttpClient } from '@daneshjoam/
 import type { Session } from '@daneshjoam/shared-types';
 
 import { usrHttpClient } from '@/shared/api/usr-http';
-import { USR_ACTOR_TYPE } from './constants';
-import { formatApiResponseError } from './errors';
+import { USR_ACTOR_TYPE } from '@auth/api/constants';
+import { formatApiResponseError } from '@auth/api/errors';
 import {
   isAuthApiMocked,
   mockRefreshToken,
   mockSendVerifyCode,
   mockSessions,
   mockVerifyCode,
-} from './mock';
+} from '@auth/api/mock';
 import {
   mapSendCodeResponse,
   mapToSession,
@@ -20,7 +20,7 @@ import {
   toSendCodeQuery,
   toVerifyCodeBody,
   toVerifyCodeQuery,
-} from './transformers';
+} from '@auth/api/transformers';
 import type {
   ActorLogoutPayload,
   ApiResponse,
@@ -47,7 +47,7 @@ import type {
   VerifyCodeResponse,
   VerifyPasswordData,
   VerifyPasswordPayload,
-} from './types';
+} from '@auth/api/types';
 
 export type AuthRequestMeta = {
   headers?: Record<string, string>;

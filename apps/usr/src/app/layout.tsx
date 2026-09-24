@@ -5,7 +5,7 @@ import { getMessages } from 'next-intl/server';
 import { QueryProvider } from '@daneshjoam/shared-ui';
 import { ThemeProvider } from '@/components/theme-provider';
 import { cn } from '@/lib/utils';
-import './globals.css';
+import '@/app/globals.css';
 
 const iranSans = localFont({
   src: '../../public/fonts/IRANSansXVF.ttf',

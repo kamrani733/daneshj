@@ -6,7 +6,7 @@ import { useEffect, useRef, useState, type ReactNode } from 'react';
 
 import { cn } from '@/lib/utils';
 
-import type { HomeMenuItem } from './nav-data';
+import type { HomeMenuItem } from '@/components/site/nav-data';
 
 type HomeMenuPanelProps = {
   items: HomeMenuItem[];

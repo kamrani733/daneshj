@@ -6,8 +6,8 @@ import type { CountStatConfig } from '@notifications/data/stats';
 import { formatFaNumber } from '@/lib/format-fa';
 import { cn } from '@/lib/utils';
 
-import { StatIconTile } from './icon-tile';
-import { StatTrend } from './trend';
+import { StatIconTile } from '@notifications/components/stats/icon-tile';
+import { StatTrend } from '@notifications/components/stats/trend';
 
 type StatCountCardProps = {
   stat: CountStatConfig;

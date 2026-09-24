@@ -5,7 +5,7 @@ import type { DiscountOffer } from '@public-panel/types/ui';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 
-import { CatalogOfferCardShell } from './offer-card-shell';
+import { CatalogOfferCardShell } from '@public-panel/components/catalog/offer-card-shell';
 
 type DiscountOfferCardProps = {
   offer: DiscountOffer;

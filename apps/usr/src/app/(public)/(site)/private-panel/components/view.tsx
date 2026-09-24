@@ -6,8 +6,8 @@ import { usePrivatePanelProfileQuery } from '@private-panel/api';
 import type { PrivatePanelProfile } from '@private-panel/data/private-panel-ui';
 import { PanelLoadingOverlay, ProfileHeroCard } from '@/components/panel';
 
-import { PrivatePanelHeading } from './page-heading';
-import { PrivatePanelTabs } from './panel-tabs';
+import { PrivatePanelHeading } from '@private-panel/components/page-heading';
+import { PrivatePanelTabs } from '@private-panel/components/panel-tabs';
 
 type PrivatePanelViewProps = {
   accessToken?: string | null;
