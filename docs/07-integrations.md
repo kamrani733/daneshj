@@ -11,7 +11,7 @@ last_updated: "2026-09-25"
 
 | Service | Purpose | Base URL env | Contract (OpenAPI) | Frontend status |
 |---|---|---|---|---|
-| Auth MS | Login, OTP, password, session, refresh, logout | `NEXT_PUBLIC_API_URL` or `/api` + `AUTH_API_URL` rewrite | TBD (swagger URL in `.env.example` comments) | REAL when `NEXT_PUBLIC_API_URL` set; else **MOCK** via `withMockFallback` |
+| Auth MS | Login, OTP, password, session, refresh, logout | `NEXT_PUBLIC_API_URL` or `/api` + `AUTH_API_URL` rewrite | TBD (swagger URL in `.env.example` comments) | REAL when `NEXT_PUBLIC_API_URL` set. Dev with it unset: **MOCK** (`isAuthApiMocked` + `withMockFallback` on request failure). Production builds never mock |
 | Actor MS | Profiles (owner/admin/visitor), service titles | `NEXT_PUBLIC_ACTOR_API_URL` / `ACTOR_API_URL` → `/api` | TBD | REAL endpoints; React Query **disabled** unless `NEXT_PUBLIC_ACTOR_API_URL` set (known bug) |
 | Notification MS | Inbox, read state, reports, charts, stats, actor settings | `NEXT_PUBLIC_NOTIFICATION_API_URL` / `NOTIFICATION_API_URL` | TBD | REAL for list/read/reports; settings **hybrid** with `settings-mock.ts` |
 | Interactive Ops MS | Follow, like, score, share on public profiles | `NEXT_PUBLIC_INTERACTIVE_OPS_API_URL` / `INTERACTIVE_OPS_API_URL` | TBD | REAL; default rewrite host hardcoded if env unset |
@@ -24,7 +24,7 @@ Summary from audit §4 — full path list in `docs/ai/00-project-audit.md` §4.
 
 | Area | Method / path (pattern) | Used by | Status |
 |------|-------------------------|---------|--------|
-| Auth | `POST /auth/actor_send_code`, `actor_verify_code`, `refresh_token`, `get_token_info`, login/password/session endpoints | `(auth)/api/auth.ts`, auth UI | MOCK if no `NEXT_PUBLIC_API_URL`; else REAL |
+| Auth | `POST /auth/actor_send_code`, `actor_verify_code`, `refresh_token`, `get_token_info`, login/password/session endpoints | `(auth)/api/auth.ts`, auth UI | MOCK in dev if no `NEXT_PUBLIC_API_URL` (failed request returns mock); REAL otherwise. Impossible in production builds |
 | Actor | `GET /profiles_base/get_actor_info`, `GET/PUT/PATCH/POST /profiles_*/*` | private/public panel `api/profiles-*.ts` | REAL (query gating issue) |
 | Actor | `GET /service_titles/service-title/list-to-all` | `service-titles.ts` | REAL |
 | Notification | `GET/POST /notification/actor-notifications/*`, unread counts | notifications inbox/header | REAL |
@@ -39,7 +39,7 @@ Summary from audit §4 — full path list in `docs/ai/00-project-audit.md` §4.
 | Mock | Replaces | Remove when |
 |---|---|---|
 | `settings-mock.ts` | Notification settings categories/channels | Backend confirms fully backend-driven settings (TBD) |
-| `(auth)/api/mock.ts` + `isAuthApiMocked()` | Auth MS | `NEXT_PUBLIC_API_URL` set in all envs |
+| `(auth)/api/mock.ts` + `isAuthApiMocked()` | Auth MS in dev when `NEXT_PUBLIC_API_URL` is unset (try request, then mock). Also immediate mock for send-otp-for-login, session-limit continue, and no-op logout/delete | Production build (`NODE_ENV` inlined): `isAuthApiMocked()` is false and `withMockFallback` rethrows |
 | `home/data/search-mock.ts` | SRV provider/product search | SRV search API integrated |
 | `public-panel/data/public-panel-mock.ts` | Loading placeholders for visitor profile | N/A (placeholder until fetch completes) |
 

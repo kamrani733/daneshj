@@ -4,6 +4,17 @@ const createNextIntlPlugin = require('next-intl/plugin');
 
 const withNextIntl = createNextIntlPlugin('./src/i18n.ts');
 
+if (process.env.NODE_ENV === 'production') {
+  const hasAuthUrl = Boolean(
+    process.env.NEXT_PUBLIC_API_URL?.trim() || process.env.AUTH_API_URL?.trim()
+  );
+  if (!hasAuthUrl) {
+    throw new Error(
+      'Production build requires NEXT_PUBLIC_API_URL or AUTH_API_URL.'
+    );
+  }
+}
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   transpilePackages: [

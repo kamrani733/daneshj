@@ -77,7 +77,7 @@ See [04-routing.md](./04-routing.md).
 
 | Variable | Purpose |
 |----------|---------|
-| `NEXT_PUBLIC_API_URL` | Auth MS base URL; unset → auth mocks (`isAuthApiMocked`) |
+| `NEXT_PUBLIC_API_URL` | Auth MS base URL. Unset in dev → auth mocks (`isAuthApiMocked`). Production build requires this or `AUTH_API_URL`; mocks are compiled out |
 | `NEXT_PUBLIC_ACTOR_API_URL` | Actor MS browser base (often `/api`); also gates `canQueryActor()` — see known issues |
 | `NEXT_PUBLIC_NOTIFICATION_API_URL` | Notification MS browser base |
 | `NEXT_PUBLIC_INTERACTIVE_OPS_API_URL` | Interactive Ops browser base |

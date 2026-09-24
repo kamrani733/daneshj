@@ -8,6 +8,11 @@ export async function withMockFallback<T>(
   fetcher: () => Promise<T>,
   fallback: T
 ): Promise<T> {
+  // next build inlines NODE_ENV, so the fallback branch is absent from production bundles.
+  if (process.env.NODE_ENV === 'production') {
+    return fetcher();
+  }
+
   try {
     return await fetcher();
   } catch (error) {

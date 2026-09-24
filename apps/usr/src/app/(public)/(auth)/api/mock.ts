@@ -7,7 +7,14 @@ import type {
   VerifyCodeResponse,
 } from './types';
 
+/**
+ * Dev-only. True when `NEXT_PUBLIC_API_URL` is unset: callers try the request
+ * (base URL `/api`) and `withMockFallback` returns mock data if it throws.
+ * Some auth calls skip the network and return a mock immediately.
+ * Production builds inline `NODE_ENV` and never take this path.
+ */
 export function isAuthApiMocked() {
+  if (process.env.NODE_ENV === 'production') return false;
   return !process.env.NEXT_PUBLIC_API_URL;
 }
 

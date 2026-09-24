@@ -11,13 +11,13 @@ last_updated: "2026-09-25"
 
 | Variable | Required | Client-exposed | Purpose |
 |---|---|---|---|
-| `NEXT_PUBLIC_API_URL` | Dev without mocks: yes | Yes | Auth MS base URL; unset → auth mocks |
+| `NEXT_PUBLIC_API_URL` | Production: this or `AUTH_API_URL` | Yes | Auth MS base URL. Unset in dev → auth mocks. Production builds never mock |
 | `NEXT_PUBLIC_ACTOR_API_URL` | TBD in production | Yes | Actor MS browser base; also gates profile queries today |
 | `NEXT_PUBLIC_NOTIFICATION_API_URL` | When using notification APIs | Yes | Notification MS browser base (often `/api`) |
 | `NEXT_PUBLIC_INTERACTIVE_OPS_API_URL` | When using interactive ops | Yes | Interactive Ops browser base (often `/api`) |
 | `NEXT_PUBLIC_FILE_UPLOAD_URL` | For document upload | Yes | Upload endpoint for profile files |
 | `NEXT_PUBLIC_RECAPTCHA_SITE_KEY` | Optional | Yes | reCAPTCHA v2 (password login); test key fallback |
-| `AUTH_API_URL` | For `/api/auth` rewrites | No | Upstream Auth MS |
+| `AUTH_API_URL` | Production: this or `NEXT_PUBLIC_API_URL` | No | Upstream Auth MS. Also satisfies the production build check |
 | `ACTOR_API_URL` | For Actor rewrites | No | Upstream Actor MS |
 | `NOTIFICATION_API_URL` | For `/api/notification` rewrites | No | Upstream Notification MS |
 | `INTERACTIVE_OPS_API_URL` | Recommended in prod | No | Upstream Interactive Ops (default host in config if unset) |
