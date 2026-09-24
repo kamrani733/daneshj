@@ -2,6 +2,19 @@
   "name": "@daneshjoam/usr",
   "version": "0.0.1",
   "private": true,
+  "nx": {
+    "targets": {
+      "typecheck": {
+        "executor": "nx:run-commands",
+        "dependsOn": ["^typecheck"],
+        "cache": true,
+        "options": {
+          "command": "tsc --noEmit -p tsconfig.json",
+          "cwd": "apps/usr"
+        }
+      }
+    }
+  },
   "scripts": {
     "vercel-build": "next build"
   },
