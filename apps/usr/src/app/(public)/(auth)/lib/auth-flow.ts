@@ -3,21 +3,25 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { createJSONStorage, persist, type StateStorage } from 'zustand/middleware';
 
 import type {
   AuthOperation,
   AuthPurpose,
   CodeType,
-  IdentityInfo,
   IdentityType,
   LoginIdentityType,
   PageType,
 } from '@auth/api';
 
+import { clearAuthFlowStep } from './auth-flow-actions';
+
 export type { AuthPurpose } from '@auth/api';
 
 export const RESEND_COOLDOWN_SECONDS = 144;
+
+const LEGACY_AUTH_FLOW_KEY = 'auth-flow';
+const WIZARD_STORAGE_KEY = 'auth-flow-wizard';
 
 export type AuthFlowKind = AuthPurpose;
 
@@ -33,43 +37,87 @@ export type SendVerifyCodeContext = {
   pageType?: PageType;
 };
 
-export type PendingSessionLimit = {
-  accessToken: string;
-  loginType: number;
-  identityInfo: IdentityInfo;
-};
-
-type AuthFlowState = {
+export type PersistedAuthFlow = {
   kind: AuthFlowKind | null;
   identifier: string | null;
   sendVerifyContext: SendVerifyCodeContext | null;
-  pendingSessionLimit: PendingSessionLimit | null;
-  resetAccessToken: string | null;
-  /** Temp access token after OTP for two-step password login */
-  verifyPasswordAccessToken: string | null;
   resendAvailableAt: number | null;
   otpVerified: boolean;
+  hasVerifyPasswordToken: boolean;
+  hasResetToken: boolean;
+  hasSessionLimit: boolean;
+};
+
+type AuthFlowState = PersistedAuthFlow & {
   startFlow: (kind: AuthFlowKind, identifier: string) => void;
   setSendVerifyContext: (context: SendVerifyCodeContext) => void;
-  setPendingSessionLimit: (pending: PendingSessionLimit | null) => void;
-  setResetAccessToken: (token: string) => void;
-  setVerifyPasswordAccessToken: (token: string | null) => void;
+  setHasVerifyPasswordToken: (value: boolean) => void;
+  setHasResetToken: (value: boolean) => void;
+  setHasSessionLimit: (value: boolean) => void;
   markOtpSent: () => void;
   markOtpVerified: () => void;
   clear: () => void;
 };
 
+export function toPersistedAuthFlow(state: PersistedAuthFlow): PersistedAuthFlow {
+  const sendVerifyContext = state.sendVerifyContext
+    ? { ...state.sendVerifyContext, devOtpCode: undefined }
+    : null;
+  return {
+    kind: state.kind,
+    identifier: state.identifier,
+    sendVerifyContext,
+    resendAvailableAt: state.resendAvailableAt,
+    otpVerified: state.otpVerified,
+    hasVerifyPasswordToken: state.hasVerifyPasswordToken,
+    hasResetToken: state.hasResetToken,
+    hasSessionLimit: state.hasSessionLimit,
+  };
+}
+
+const emptyWizard: PersistedAuthFlow = {
+  kind: null,
+  identifier: null,
+  sendVerifyContext: null,
+  resendAvailableAt: null,
+  otpVerified: false,
+  hasVerifyPasswordToken: false,
+  hasResetToken: false,
+  hasSessionLimit: false,
+};
+
+const memoryStorage: StateStorage = {
+  getItem: () => null,
+  setItem: () => undefined,
+  removeItem: () => undefined,
+};
+
+function wizardStorage(): StateStorage {
+  if (typeof window === 'undefined') return memoryStorage;
+  const storage = window.sessionStorage;
+  const dropLegacyToken = () => {
+    window.localStorage.removeItem(LEGACY_AUTH_FLOW_KEY);
+  };
+  return {
+    getItem: (name) => {
+      dropLegacyToken();
+      return storage.getItem(name);
+    },
+    setItem: (name, value) => {
+      dropLegacyToken();
+      storage.setItem(name, value);
+    },
+    removeItem: (name) => {
+      dropLegacyToken();
+      storage.removeItem(name);
+    },
+  };
+}
+
 export const useAuthFlowStore = create<AuthFlowState>()(
   persist(
     (set, get) => ({
-      kind: null,
-      identifier: null,
-      sendVerifyContext: null,
-      pendingSessionLimit: null,
-      resetAccessToken: null,
-      verifyPasswordAccessToken: null,
-      resendAvailableAt: null,
-      otpVerified: false,
+      ...emptyWizard,
       startFlow: (kind, identifier) => {
         const prev = get();
         const sameFlow = prev.kind === kind && prev.identifier === identifier;
@@ -77,40 +125,54 @@ export const useAuthFlowStore = create<AuthFlowState>()(
           kind,
           identifier,
           sendVerifyContext: sameFlow ? prev.sendVerifyContext : null,
-          pendingSessionLimit: null,
           otpVerified: false,
-          resetAccessToken: null,
-          verifyPasswordAccessToken: sameFlow
-            ? prev.verifyPasswordAccessToken
-            : null,
+          hasResetToken: false,
+          hasSessionLimit: false,
+          hasVerifyPasswordToken: sameFlow ? prev.hasVerifyPasswordToken : false,
           resendAvailableAt: sameFlow ? prev.resendAvailableAt : null,
         });
       },
       setSendVerifyContext: (context) => set({ sendVerifyContext: context }),
-      setPendingSessionLimit: (pending) => set({ pendingSessionLimit: pending }),
-      setResetAccessToken: (token) => set({ resetAccessToken: token }),
-      setVerifyPasswordAccessToken: (token) =>
-        set({ verifyPasswordAccessToken: token }),
+      setHasVerifyPasswordToken: (value) => set({ hasVerifyPasswordToken: value }),
+      setHasResetToken: (value) => set({ hasResetToken: value }),
+      setHasSessionLimit: (value) => set({ hasSessionLimit: value }),
       markOtpSent: () =>
         set({
           resendAvailableAt: Date.now() + RESEND_COOLDOWN_SECONDS * 1000,
         }),
       markOtpVerified: () => set({ otpVerified: true }),
-      clear: () =>
-        set({
-          kind: null,
-          identifier: null,
-          sendVerifyContext: null,
-          pendingSessionLimit: null,
-          resetAccessToken: null,
-          verifyPasswordAccessToken: null,
-          resendAvailableAt: null,
-          otpVerified: false,
-        }),
+      clear: () => set(emptyWizard),
     }),
-    { name: 'auth-flow' }
+    {
+      name: WIZARD_STORAGE_KEY,
+      storage: createJSONStorage(wizardStorage),
+      partialize: (state) => toPersistedAuthFlow(state),
+    }
   )
 );
+
+export function useClearAuthFlow() {
+  const clear = useAuthFlowStore((s) => s.clear);
+  return async () => {
+    clear();
+    await clearAuthFlowStep();
+  };
+}
+
+function useAuthFlowHydrated() {
+  const [hydrated, setHydrated] = useState(false);
+
+  useEffect(() => {
+    const persistApi = useAuthFlowStore.persist;
+    if (persistApi.hasHydrated()) {
+      setHydrated(true);
+      return;
+    }
+    return persistApi.onFinishHydration(() => setHydrated(true));
+  }, []);
+
+  return hydrated;
+}
 
 function secondsLeft(until: number | null) {
   if (!until) return 0;
@@ -152,9 +214,7 @@ export function useAuthFlowGuard(
   const identifier = useAuthFlowStore((s) => s.identifier);
   const sendVerifyContext = useAuthFlowStore((s) => s.sendVerifyContext);
   const otpVerified = useAuthFlowStore((s) => s.otpVerified);
-  const [hydrated, setHydrated] = useState(false);
-
-  useEffect(() => setHydrated(true), []);
+  const hydrated = useAuthFlowHydrated();
 
   useEffect(() => {
     if (!hydrated) return;
@@ -182,24 +242,19 @@ export function useSessionLimitGuard(kind: AuthFlowKind, fallback: string) {
   const router = useRouter();
   const flowKind = useAuthFlowStore((s) => s.kind);
   const identifier = useAuthFlowStore((s) => s.identifier);
-  const pendingSessionLimit = useAuthFlowStore((s) => s.pendingSessionLimit);
-  const [hydrated, setHydrated] = useState(false);
-
-  useEffect(() => setHydrated(true), []);
+  const hasSessionLimit = useAuthFlowStore((s) => s.hasSessionLimit);
+  const hydrated = useAuthFlowHydrated();
 
   useEffect(() => {
     if (!hydrated) return;
-    const invalid =
-      !identifier || flowKind !== kind || !pendingSessionLimit;
+    const invalid = !identifier || flowKind !== kind || !hasSessionLimit;
     if (invalid) router.replace(fallback);
-  }, [hydrated, identifier, flowKind, pendingSessionLimit, kind, fallback, router]);
+  }, [hydrated, identifier, flowKind, hasSessionLimit, kind, fallback, router]);
 
-  const ready =
-    hydrated && !!identifier && flowKind === kind && !!pendingSessionLimit;
+  const ready = hydrated && !!identifier && flowKind === kind && hasSessionLimit;
 
   return {
     ready,
     identifier: identifier ?? '',
-    pendingSessionLimit,
   };
 }

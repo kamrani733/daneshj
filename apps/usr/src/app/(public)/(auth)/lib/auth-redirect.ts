@@ -4,9 +4,9 @@ import type { Session } from '@daneshjoam/shared-types';
 export async function finishAuthAndRedirect(
   session: Session,
   successPath: string,
-  clearFlow: () => void
+  clearFlow: () => void | Promise<void>
 ) {
   await establishSession(session);
-  clearFlow();
+  await clearFlow();
   window.location.assign(successPath);
 }

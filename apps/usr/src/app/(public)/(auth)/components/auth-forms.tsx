@@ -32,6 +32,7 @@ import {
   formatCountdown,
   useAuthFlowGuard,
   useAuthFlowStore,
+  useClearAuthFlow,
   useOtpCountdown,
 } from '@auth/lib/auth-flow';
 import {
@@ -216,14 +217,12 @@ export function OtpForm({
   const resendAt = useAuthFlowStore((s) => s.resendAvailableAt);
   const sendVerifyContext = useAuthFlowStore((s) => s.sendVerifyContext);
   const setSendVerifyContext = useAuthFlowStore((s) => s.setSendVerifyContext);
-  const setPendingSessionLimit = useAuthFlowStore((s) => s.setPendingSessionLimit);
-  const setVerifyPasswordAccessToken = useAuthFlowStore(
-    (s) => s.setVerifyPasswordAccessToken
-  );
+  const setHasSessionLimit = useAuthFlowStore((s) => s.setHasSessionLimit);
+  const setHasVerifyPasswordToken = useAuthFlowStore((s) => s.setHasVerifyPasswordToken);
   const markOtpSent = useAuthFlowStore((s) => s.markOtpSent);
   const markOtpVerified = useAuthFlowStore((s) => s.markOtpVerified);
-  const setResetAccessToken = useAuthFlowStore((s) => s.setResetAccessToken);
-  const clearFlow = useAuthFlowStore((s) => s.clear);
+  const setHasResetToken = useAuthFlowStore((s) => s.setHasResetToken);
+  const clearFlow = useClearAuthFlow();
   const { secondsLeft, canResend } = useOtpCountdown(resendAt);
   const { ready, identifier, sendVerifyContext: guardContext } = useAuthFlowGuard(
     purpose,
@@ -270,12 +269,8 @@ export function OtpForm({
         purpose,
       });
 
-      if (result.sessionLimitReached && result.pendingAccessToken && result.identityInfo) {
-        setPendingSessionLimit({
-          accessToken: result.pendingAccessToken,
-          loginType: result.loginType ?? 1,
-          identityInfo: result.identityInfo,
-        });
+      if (result.step === 'session-limit') {
+        setHasSessionLimit(true);
         router.push(authSessionsPath(purpose));
         return;
       }
@@ -286,23 +281,19 @@ export function OtpForm({
         return;
       }
 
-      if (
-        purpose === 'login' &&
-        result.redirectVerifyPassword &&
-        result.verifyPasswordAccessToken
-      ) {
-        setVerifyPasswordAccessToken(result.verifyPasswordAccessToken);
+      if (purpose === 'login' && result.step === 'verify-password') {
+        setHasVerifyPasswordToken(true);
         markOtpVerified();
         router.push(AUTH_ROUTES.loginPassword);
         return;
       }
 
       if (purpose === 'forgot-password') {
-        if (!result.redirectVerifyPassword || !result.resetAccessToken) {
+        if (result.step !== 'reset-password') {
           setError(t('resetTokenMissing'));
           return;
         }
-        setResetAccessToken(result.resetAccessToken);
+        setHasResetToken(true);
         markOtpVerified();
         router.push(authNextAfterOtp(purpose));
         return;
@@ -411,8 +402,8 @@ export function TotpForm({ successPath = AUTH_ROUTES.afterLogin }: TotpFormProps
   const t = useTranslations('totp');
   const auth = useTranslations('auth');
   const router = useRouter();
-  const clearFlow = useAuthFlowStore((s) => s.clear);
-  const setPendingSessionLimit = useAuthFlowStore((s) => s.setPendingSessionLimit);
+  const clearFlow = useClearAuthFlow();
+  const setHasSessionLimit = useAuthFlowStore((s) => s.setHasSessionLimit);
   const { ready, identifier, sendVerifyContext } = useAuthFlowGuard(
     'login',
     AUTH_ROUTES.login,
@@ -447,12 +438,8 @@ export function TotpForm({ successPath = AUTH_ROUTES.afterLogin }: TotpFormProps
         purpose: 'login',
       });
 
-      if (result.sessionLimitReached && result.pendingAccessToken && result.identityInfo) {
-        setPendingSessionLimit({
-          accessToken: result.pendingAccessToken,
-          loginType: result.loginType ?? 1,
-          identityInfo: result.identityInfo,
-        });
+      if (result.step === 'session-limit') {
+        setHasSessionLimit(true);
         router.push(AUTH_ROUTES.loginSessions);
         return;
       }
@@ -510,11 +497,9 @@ export function PasswordLoginForm({
   const t = useTranslations('login');
   const auth = useTranslations('auth');
   const router = useRouter();
-  const clearFlow = useAuthFlowStore((s) => s.clear);
-  const setPendingSessionLimit = useAuthFlowStore((s) => s.setPendingSessionLimit);
-  const verifyPasswordAccessToken = useAuthFlowStore(
-    (s) => s.verifyPasswordAccessToken
-  );
+  const clearFlow = useClearAuthFlow();
+  const setHasSessionLimit = useAuthFlowStore((s) => s.setHasSessionLimit);
+  const hasVerifyPasswordToken = useAuthFlowStore((s) => s.hasVerifyPasswordToken);
   const markOtpSent = useAuthFlowStore((s) => s.markOtpSent);
   const setSendVerifyContext = useAuthFlowStore((s) => s.setSendVerifyContext);
   const sendVerifyContext = useAuthFlowStore((s) => s.sendVerifyContext);
@@ -528,7 +513,7 @@ export function PasswordLoginForm({
   const [error, setError] = useState<string | null>(null);
   const [switchingToOtp, setSwitchingToOtp] = useState(false);
 
-  const isTwoStep = !!verifyPasswordAccessToken;
+  const isTwoStep = hasVerifyPasswordToken;
   const isPending =
     loginMutation.isPending ||
     verifyPasswordMutation.isPending ||
@@ -556,7 +541,6 @@ export function PasswordLoginForm({
             identity: identifier,
             password,
             recaptchaResponse: recaptchaToken,
-            accessToken: verifyPasswordAccessToken!,
           })
         : await loginMutation.mutateAsync({
             identity: identifier,
@@ -564,16 +548,8 @@ export function PasswordLoginForm({
             recaptchaResponse: recaptchaToken,
           });
 
-      if (
-        result.sessionLimitReached &&
-        result.pendingAccessToken &&
-        result.identityInfo
-      ) {
-        setPendingSessionLimit({
-          accessToken: result.pendingAccessToken,
-          loginType: result.loginType ?? 4,
-          identityInfo: result.identityInfo,
-        });
+      if (result.step === 'session-limit') {
+        setHasSessionLimit(true);
         router.push(AUTH_ROUTES.loginSessions);
         return;
       }
@@ -686,8 +662,8 @@ export function ResetPasswordForm({
 }: ResetPasswordFormProps) {
   const t = useTranslations('forgotPassword');
   const auth = useTranslations('auth');
-  const clearFlow = useAuthFlowStore((s) => s.clear);
-  const resetAccessToken = useAuthFlowStore((s) => s.resetAccessToken);
+  const clearFlow = useClearAuthFlow();
+  const hasResetToken = useAuthFlowStore((s) => s.hasResetToken);
   const { ready } = useAuthFlowGuard(
     'forgot-password',
     AUTH_ROUTES.forgot,
@@ -699,7 +675,7 @@ export function ResetPasswordForm({
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
 
-  if (!ready || !resetAccessToken) return null;
+  if (!ready || !hasResetToken) return null;
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -718,9 +694,8 @@ export function ResetPasswordForm({
       await resetPasswordMutation.mutateAsync({
         password,
         confirmPassword,
-        accessToken: resetAccessToken!,
       });
-      clearFlow();
+      await clearFlow();
       window.location.assign(successPath);
     } catch (err) {
       if (err instanceof Error && err.message === 'Already authenticated.') {

@@ -4,6 +4,7 @@ import { getSession, login, logout } from '@daneshjoam/auth';
 import type { Session } from '@daneshjoam/shared-types';
 
 import { actorLogout, getTokenInfo, refreshToken } from '../api/auth';
+import { getAuthRequestMeta } from './auth-request-meta';
 
 /** Refresh when fewer than 10 minutes remain on the access token. */
 const REFRESH_SKEW_SECONDS = 10 * 60;
@@ -26,10 +27,13 @@ export async function clearSession() {
 
   if (session?.accessToken && session.sessionKey) {
     try {
-      await actorLogout({
-        accessToken: session.accessToken,
-        sessionKey: session.sessionKey,
-      });
+      await actorLogout(
+        {
+          accessToken: session.accessToken,
+          sessionKey: session.sessionKey,
+        },
+        await getAuthRequestMeta()
+      );
     } catch {
       // Still clear local cookie if the API call fails.
     }
@@ -50,9 +54,11 @@ export async function ensureFreshSession(): Promise<boolean> {
 
   let shouldRefresh = true;
 
+  const meta = await getAuthRequestMeta();
+
   if (session.accessToken) {
     try {
-      const info = await getTokenInfo(session.accessToken);
+      const info = await getTokenInfo(session.accessToken, meta);
       const secondsLeft = info.exp - Math.floor(Date.now() / 1000);
       shouldRefresh = secondsLeft <= REFRESH_SKEW_SECONDS;
     } catch {
@@ -66,10 +72,13 @@ export async function ensureFreshSession(): Promise<boolean> {
   }
 
   try {
-    const tokens = await refreshToken({
-      refreshToken: session.refreshToken,
-      sessionKey: session.sessionKey,
-    });
+    const tokens = await refreshToken(
+      {
+        refreshToken: session.refreshToken,
+        sessionKey: session.sessionKey,
+      },
+      meta
+    );
 
     await login({
       ...session,

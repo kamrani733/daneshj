@@ -56,12 +56,14 @@ export function toVerifyCodeQuery(payload: VerifyCodePayload): ActorVerifyCodeQu
   };
 }
 
-export function toVerifyCodeBody(payload: VerifyCodePayload): ActorVerifyCodeBody {
+export function toVerifyCodeBody(
+  payload: VerifyCodePayload,
+  userAgent?: string
+): ActorVerifyCodeBody {
   return {
     identity: payload.identity,
     code: payload.code,
-    user_agent:
-      typeof navigator !== 'undefined' ? navigator.userAgent : undefined,
+    user_agent: userAgent,
   };
 }
 

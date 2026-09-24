@@ -1,4 +1,4 @@
-import { withMockFallback } from '@daneshjoam/api-client';
+import { createApiClient, withMockFallback, type HttpClient } from '@daneshjoam/api-client';
 import type { Session } from '@daneshjoam/shared-types';
 
 import { usrHttpClient } from '@/shared/api/usr-http';
@@ -49,6 +49,47 @@ import type {
   VerifyPasswordPayload,
 } from './types';
 
+export type AuthRequestMeta = {
+  headers?: Record<string, string>;
+  userAgent?: string;
+};
+
+function resolveServerAuthBaseUrl(): string {
+  const serverUrl = process.env.AUTH_API_URL?.trim();
+  const publicUrl = process.env.NEXT_PUBLIC_API_URL?.trim();
+  return (serverUrl || publicUrl || '/api').replace(/\/$/, '');
+}
+
+let serverHttpClient: HttpClient | undefined;
+
+function getAuthHttpClient(): HttpClient {
+  if (typeof window !== 'undefined') return usrHttpClient;
+  if (!serverHttpClient) {
+    const baseURL = resolveServerAuthBaseUrl();
+    serverHttpClient = createApiClient({
+      baseURL,
+      withCredentials: !baseURL.startsWith('http'),
+    });
+  }
+  return serverHttpClient;
+}
+
+function requestUserAgent(meta?: AuthRequestMeta): string | undefined {
+  if (meta?.userAgent) return meta.userAgent;
+  if (typeof navigator !== 'undefined') return navigator.userAgent;
+  return undefined;
+}
+
+function authHeaders(
+  accessToken: string | undefined,
+  meta?: AuthRequestMeta
+): Record<string, string> {
+  return {
+    ...(meta?.headers ?? {}),
+    ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
+  };
+}
+
 function assertApiSuccess<T>(response: ApiResponse<T>, requireData = true): T {
   if (!response.success || (requireData && response.data == null)) {
     throw new Error(formatApiResponseError(response.message, response.errors));
@@ -61,11 +102,12 @@ async function postAuth<T>(
   body: unknown,
   params: object,
   accessToken?: string,
-  requireData = true
+  requireData = true,
+  meta?: AuthRequestMeta
 ): Promise<{ data: T; message: string | null }> {
-  const { data: response } = await usrHttpClient.post<ApiResponse<T>>(path, body, {
+  const { data: response } = await getAuthHttpClient().post<ApiResponse<T>>(path, body, {
     params,
-    headers: accessToken ? { Authorization: `Bearer ${accessToken}` } : undefined,
+    headers: authHeaders(accessToken, meta),
   });
   return { data: assertApiSuccess(response, requireData), message: response.message };
 }
@@ -75,11 +117,12 @@ async function patchAuth<T>(
   body: unknown,
   params: object,
   accessToken: string,
-  requireData = true
+  requireData = true,
+  meta?: AuthRequestMeta
 ): Promise<T> {
-  const { data: response } = await usrHttpClient.patch<ApiResponse<T>>(path, body, {
+  const { data: response } = await getAuthHttpClient().patch<ApiResponse<T>>(path, body, {
     params,
-    headers: { Authorization: `Bearer ${accessToken}` },
+    headers: authHeaders(accessToken, meta),
   });
   return assertApiSuccess(response, requireData);
 }
@@ -87,17 +130,19 @@ async function patchAuth<T>(
 async function getAuth<T>(
   path: string,
   params: object,
-  accessToken: string
+  accessToken: string,
+  meta?: AuthRequestMeta
 ): Promise<T> {
-  const { data: response } = await usrHttpClient.get<ApiResponse<T>>(path, {
+  const { data: response } = await getAuthHttpClient().get<ApiResponse<T>>(path, {
     params,
-    headers: { Authorization: `Bearer ${accessToken}` },
+    headers: authHeaders(accessToken, meta),
   });
   return assertApiSuccess(response);
 }
 
 export async function sendVerifyCode(
-  payload: SendVerifyCodePayload
+  payload: SendVerifyCodePayload,
+  meta?: AuthRequestMeta
 ): Promise<SendVerifyCodeResponse> {
   if (isAuthApiMocked()) {
     return withMockFallback(
@@ -105,7 +150,10 @@ export async function sendVerifyCode(
         const { data, message } = await postAuth<SendCodeData>(
           '/auth/actor_send_code',
           toSendCodeBody(payload),
-          toSendCodeQuery(payload)
+          toSendCodeQuery(payload),
+          undefined,
+          true,
+          meta
         );
         return mapSendCodeResponse(data, message);
       },
@@ -116,21 +164,29 @@ export async function sendVerifyCode(
   const { data, message } = await postAuth<SendCodeData>(
     '/auth/actor_send_code',
     toSendCodeBody(payload),
-    toSendCodeQuery(payload)
+    toSendCodeQuery(payload),
+    undefined,
+    true,
+    meta
   );
   return mapSendCodeResponse(data, message);
 }
 
 export async function verifyCode(
-  payload: VerifyCodePayload
+  payload: VerifyCodePayload,
+  meta?: AuthRequestMeta
 ): Promise<VerifyCodeResponse> {
+  const body = toVerifyCodeBody(payload, requestUserAgent(meta));
   if (isAuthApiMocked()) {
     return withMockFallback(
       async () => {
         const { data } = await postAuth<VerifyCodeData>(
           '/auth/actor_verify_code',
-          toVerifyCodeBody(payload),
-          toVerifyCodeQuery(payload)
+          body,
+          toVerifyCodeQuery(payload),
+          undefined,
+          true,
+          meta
         );
         return mapVerifyCodeResponse(data, payload.purpose);
       },
@@ -140,15 +196,19 @@ export async function verifyCode(
 
   const { data } = await postAuth<VerifyCodeData>(
     '/auth/actor_verify_code',
-    toVerifyCodeBody(payload),
-    toVerifyCodeQuery(payload)
+    body,
+    toVerifyCodeQuery(payload),
+    undefined,
+    true,
+    meta
   );
   return mapVerifyCodeResponse(data, payload.purpose);
 }
 
 /** POST /auth/refresh_token — stay logged in (no Bearer required). */
 export async function refreshToken(
-  payload: RefreshTokenPayload
+  payload: RefreshTokenPayload,
+  meta?: AuthRequestMeta
 ): Promise<RefreshTokenResponse> {
   if (isAuthApiMocked()) {
     return withMockFallback(async () => {
@@ -158,7 +218,10 @@ export async function refreshToken(
           refresh_token: payload.refreshToken,
           session_key: payload.sessionKey,
         },
-        { actor_type: USR_ACTOR_TYPE }
+        { actor_type: USR_ACTOR_TYPE },
+        undefined,
+        true,
+        meta
       );
       return {
         accessToken: data.access_token,
@@ -173,7 +236,10 @@ export async function refreshToken(
       refresh_token: payload.refreshToken,
       session_key: payload.sessionKey,
     },
-    { actor_type: USR_ACTOR_TYPE }
+    { actor_type: USR_ACTOR_TYPE },
+    undefined,
+    true,
+    meta
   );
 
   return {
@@ -183,8 +249,11 @@ export async function refreshToken(
 }
 
 /** GET /auth/get_token_info — check access-token expiry (iat/exp). */
-export async function getTokenInfo(accessToken: string): Promise<TokenInfoData> {
-  return getAuth<TokenInfoData>('/auth/get_token_info', {}, accessToken);
+export async function getTokenInfo(
+  accessToken: string,
+  meta?: AuthRequestMeta
+): Promise<TokenInfoData> {
+  return getAuth<TokenInfoData>('/auth/get_token_info', {}, accessToken, meta);
 }
 
 /** POST /auth/actor_send_otp_for_login — send OTP for login step 1. */
@@ -257,7 +326,8 @@ function mapPasswordLoginResponse(
 
 /** POST /auth/actor_verify_password — two-step login (password after OTP). */
 export async function verifyPassword(
-  payload: VerifyPasswordPayload
+  payload: VerifyPasswordPayload,
+  meta?: AuthRequestMeta
 ): Promise<VerifyCodeResponse> {
   const { data } = await postAuth<VerifyPasswordData>(
     '/auth/actor_verify_password',
@@ -265,14 +335,15 @@ export async function verifyPassword(
       identity: payload.identity,
       password: payload.password,
       recaptcha_response: payload.recaptchaResponse,
-      user_agent:
-        typeof navigator !== 'undefined' ? navigator.userAgent : undefined,
+      user_agent: requestUserAgent(meta),
     },
     {
       actor_type: USR_ACTOR_TYPE,
       login_source: 'Web',
     },
-    payload.accessToken
+    payload.accessToken,
+    true,
+    meta
   );
 
   return mapPasswordLoginResponse(data, payload.identity);
@@ -280,7 +351,8 @@ export async function verifyPassword(
 
 /** POST /auth/actor_login_by_identity_and_password — one-step password login. */
 export async function loginByIdentityAndPassword(
-  payload: LoginByIdentityPasswordPayload
+  payload: LoginByIdentityPasswordPayload,
+  meta?: AuthRequestMeta
 ): Promise<VerifyCodeResponse> {
   const { data } = await postAuth<VerifyPasswordData>(
     '/auth/actor_login_by_identity_and_password',
@@ -288,11 +360,13 @@ export async function loginByIdentityAndPassword(
       identity: payload.identity,
       password: payload.password,
       recaptcha_response: payload.recaptchaResponse,
-      user_agent:
-        typeof navigator !== 'undefined' ? navigator.userAgent : undefined,
+      user_agent: requestUserAgent(meta),
       login_source: 'Web',
     },
-    { actor_type: USR_ACTOR_TYPE }
+    { actor_type: USR_ACTOR_TYPE },
+    undefined,
+    true,
+    meta
   );
 
   return mapPasswordLoginResponse(data, payload.identity);
@@ -326,7 +400,8 @@ export async function getSessions(
 }
 
 export async function getSessionsForLimitReached(
-  accessToken: string
+  accessToken: string,
+  meta?: AuthRequestMeta
 ): Promise<SessionData[]> {
   if (isAuthApiMocked()) {
     return withMockFallback(
@@ -334,7 +409,8 @@ export async function getSessionsForLimitReached(
         getAuth<SessionData[]>(
           '/auth/display_active_sessions_for_limit_reached',
           { actor_type: USR_ACTOR_TYPE },
-          accessToken
+          accessToken,
+          meta
         ),
       mockSessions()
     );
@@ -343,7 +419,8 @@ export async function getSessionsForLimitReached(
   return getAuth<SessionData[]>(
     '/auth/display_active_sessions_for_limit_reached',
     { actor_type: USR_ACTOR_TYPE },
-    accessToken
+    accessToken,
+    meta
   );
 }
 
@@ -382,7 +459,10 @@ export async function deleteSession(
 }
 
 /** POST /auth/actor_logout — logout current session (USR-Aut-3N1). */
-export async function actorLogout(payload: ActorLogoutPayload): Promise<void> {
+export async function actorLogout(
+  payload: ActorLogoutPayload,
+  meta?: AuthRequestMeta
+): Promise<void> {
   if (isAuthApiMocked()) return;
 
   await postAuth<null>(
@@ -390,12 +470,14 @@ export async function actorLogout(payload: ActorLogoutPayload): Promise<void> {
     { session_key: payload.sessionKey },
     { actor_type: USR_ACTOR_TYPE },
     payload.accessToken,
-    false
+    false,
+    meta
   );
 }
 
 export async function inactiveSessionThenGetToken(
-  payload: InactiveSessionThenGetTokenPayload
+  payload: InactiveSessionThenGetTokenPayload,
+  meta?: AuthRequestMeta
 ): Promise<VerifyCodeResponse> {
   if (isAuthApiMocked()) {
     return mockVerifyCode({
@@ -412,14 +494,15 @@ export async function inactiveSessionThenGetToken(
     '/auth/inactive_session_then_get_token',
     {
       session_list: payload.sessionIds,
-      user_agent:
-        typeof navigator !== 'undefined' ? navigator.userAgent : undefined,
+      user_agent: requestUserAgent(meta),
       login_source: 'Web',
       identity_info: toIdentityInfoRequest(payload.identityInfo),
       login_type: payload.loginType,
     },
     { actor_type: USR_ACTOR_TYPE },
-    payload.accessToken
+    payload.accessToken,
+    true,
+    meta
   );
 
   if (data.access_token && data.session_info?.session_key) {
@@ -442,7 +525,10 @@ export async function getPublicSecurityQuestions(
   );
 }
 
-export async function resetPassword(payload: ResetPasswordPayload): Promise<void> {
+export async function resetPassword(
+  payload: ResetPasswordPayload,
+  meta?: AuthRequestMeta
+): Promise<void> {
   if (!payload.accessToken?.trim()) {
     throw new Error('Authentication credentials were not provided.');
   }
@@ -459,7 +545,8 @@ export async function resetPassword(payload: ResetPasswordPayload): Promise<void
         },
         { actor_type: USR_ACTOR_TYPE },
         payload.accessToken,
-        false
+        false,
+        meta
       );
     }, undefined);
     return;
@@ -475,7 +562,8 @@ export async function resetPassword(payload: ResetPasswordPayload): Promise<void
     },
     { actor_type: USR_ACTOR_TYPE },
     payload.accessToken,
-    false
+    false,
+    meta
   );
 }
 

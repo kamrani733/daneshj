@@ -3,20 +3,22 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 
 import {
+  continueAfterSessionLimitAction,
+  getSessionsForLimitReachedAction,
+  loginByIdentityAndPasswordAction,
+  resetPasswordAction,
+  sendVerifyCodeAction,
+  verifyCodeAction,
+  verifyPasswordAction,
+} from '../lib/auth-flow-actions';
+import {
   changePassword,
   deleteSession,
   deleteSessionForLimitReached,
   getPublicSecurityQuestions,
   getSessions,
-  getSessionsForLimitReached,
-  inactiveSessionThenGetToken,
-  loginByIdentityAndPassword,
   refreshToken,
-  resetPassword,
   sendOtpForLogin,
-  sendVerifyCode,
-  verifyCode,
-  verifyPassword,
 } from './auth';
 import { authQueryKeys } from './query-keys';
 import type {
@@ -35,15 +37,18 @@ import type {
 } from './types';
 
 export function useSendVerifyCodeMutation() {
-  return useMutation({ mutationFn: sendVerifyCode });
+  return useMutation({ mutationFn: sendVerifyCodeAction });
 }
 
 export function useVerifyCodeMutation() {
-  return useMutation({ mutationFn: verifyCode });
+  return useMutation({ mutationFn: verifyCodeAction });
 }
 
 export function useResetPasswordMutation() {
-  return useMutation({ mutationFn: resetPassword });
+  return useMutation({
+    mutationFn: (payload: { password: string; confirmPassword: string }) =>
+      resetPasswordAction(payload),
+  });
 }
 
 export function usePublicSecurityQuestionsQuery(
@@ -62,7 +67,9 @@ export function useChangePasswordMutation() {
 }
 
 export function useRefreshTokenMutation() {
-  return useMutation({ mutationFn: refreshToken });
+  return useMutation({
+    mutationFn: (payload: RefreshTokenPayload) => refreshToken(payload),
+  });
 }
 
 export function useSendOtpForLoginMutation() {
@@ -70,11 +77,17 @@ export function useSendOtpForLoginMutation() {
 }
 
 export function useVerifyPasswordMutation() {
-  return useMutation({ mutationFn: verifyPassword });
+  return useMutation({
+    mutationFn: (payload: {
+      identity: string;
+      password: string;
+      recaptchaResponse: string;
+    }) => verifyPasswordAction(payload),
+  });
 }
 
 export function useLoginByIdentityAndPasswordMutation() {
-  return useMutation({ mutationFn: loginByIdentityAndPassword });
+  return useMutation({ mutationFn: loginByIdentityAndPasswordAction });
 }
 
 export function useGetSessionsQuery(
@@ -90,14 +103,11 @@ export function useGetSessionsQuery(
   });
 }
 
-export function useGetSessionsForLimitReachedQuery(
-  accessToken: string | null,
-  enabled = true
-) {
+export function useGetSessionsForLimitReachedQuery(enabled = true) {
   return useQuery({
     queryKey: authQueryKeys.sessionsForLimitReached(),
-    queryFn: () => getSessionsForLimitReached(accessToken!),
-    enabled: enabled && !!accessToken,
+    queryFn: () => getSessionsForLimitReachedAction(),
+    enabled,
   });
 }
 
@@ -110,7 +120,9 @@ export function useDeleteSessionMutation() {
 }
 
 export function useInactiveSessionThenGetTokenMutation() {
-  return useMutation({ mutationFn: inactiveSessionThenGetToken });
+  return useMutation({
+    mutationFn: (sessionIds: number[]) => continueAfterSessionLimitAction(sessionIds),
+  });
 }
 
 /** @deprecated Use useSendVerifyCodeMutation */

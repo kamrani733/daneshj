@@ -24,8 +24,10 @@ import {
   type SessionData,
 } from '@auth/api';
 import { finishAuthAndRedirect } from '@auth/lib/auth-redirect';
+import { clearAuthFlowStep } from '@auth/lib/auth-flow-actions';
 import {
   useAuthFlowStore,
+  useClearAuthFlow,
   useOtpCountdown,
   useSessionLimitGuard,
 } from '@auth/lib/auth-flow';
@@ -198,13 +200,10 @@ export function SessionManagementForm({
   successPath = AUTH_ROUTES.afterLogin,
 }: SessionManagementFormProps) {
   const t = useTranslations('sessions');
-  const clearFlow = useAuthFlowStore((s) => s.clear);
-  const setPendingSessionLimit = useAuthFlowStore((s) => s.setPendingSessionLimit);
+  const clearFlow = useClearAuthFlow();
+  const setHasSessionLimit = useAuthFlowStore((s) => s.setHasSessionLimit);
 
-  const { ready, pendingSessionLimit } = useSessionLimitGuard(
-    purpose,
-    authFallback(purpose)
-  );
+  const { ready } = useSessionLimitGuard(purpose, authFallback(purpose));
 
   const [deadline] = useState(() => Date.now() + SESSION_LIMIT_WINDOW_SECONDS * 1000);
   const { secondsLeft } = useOtpCountdown(deadline);
@@ -217,22 +216,19 @@ export function SessionManagementForm({
     data: sessions = [],
     isLoading,
     isError,
-  } = useGetSessionsForLimitReachedQuery(
-    pendingSessionLimit?.accessToken ?? null,
-    ready
-  );
+  } = useGetSessionsForLimitReachedQuery(ready);
 
   const continueMutation = useInactiveSessionThenGetTokenMutation();
 
   useEffect(() => {
     if (ready && secondsLeft <= 0) {
-      setPendingSessionLimit(null);
+      setHasSessionLimit(false);
+      void clearAuthFlowStep();
     }
-  }, [ready, secondsLeft, setPendingSessionLimit]);
+  }, [ready, secondsLeft, setHasSessionLimit]);
 
-  if (!ready || !pendingSessionLimit) return null;
+  if (!ready) return null;
 
-  const pending = pendingSessionLimit;
   const showEmpty = !isLoading && !isError && sessions.length === 0;
 
   async function onConfirmLogout() {
@@ -242,12 +238,7 @@ export function SessionManagementForm({
     setError(null);
     setBusyId(sessionId);
     try {
-      const result = await continueMutation.mutateAsync({
-        accessToken: pending.accessToken,
-        sessionIds: [sessionId],
-        loginType: pending.loginType,
-        identityInfo: pending.identityInfo,
-      });
+      const result = await continueMutation.mutateAsync([sessionId]);
 
       if (!result.session) {
         setError(t('continueFailed'));
@@ -255,7 +246,7 @@ export function SessionManagementForm({
       }
 
       setConfirmId(null);
-      setPendingSessionLimit(null);
+      setHasSessionLimit(false);
       await finishAuthAndRedirect(result.session, successPath, clearFlow);
     } catch {
       setError(t('continueFailed'));

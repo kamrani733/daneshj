@@ -24,7 +24,7 @@ last_updated: "2026-09-25"
 | Language | TypeScript **~5.9.2**; `strict: true`, `noImplicitReturns`, `noUnusedLocals`, `noFallthroughCasesInSwitch`, `noImplicitOverride` (`tsconfig.base.json`) |
 | Styling | Tailwind CSS **v4** (`@import "tailwindcss"`), design tokens in `apps/usr/src/app/globals.css`; shadcn/Radix-style UI in `apps/usr/src/components/ui/` |
 | Server state | **TanStack Query v5** (`@tanstack/react-query`); defaults in `libs/shared-ui/src/lib/query-client.ts` |
-| Client state | httpOnly session cookie + server `getSession`; **Zustand** (`useAuthStore`, `useAuthFlowStore` with persist for auth wizard only) |
+| Client state | httpOnly session cookie + server `getSession`; **Zustand** auth wizard in `sessionStorage` (step tokens in httpOnly `auth_flow_step`, not `localStorage`) |
 | Forms / validation | No `react-hook-form`; **Zod** for visibility fields (`visibility-validation.ts`); otherwise manual validation in controllers |
 | i18n | **next-intl** ^4.13.1, locale fixed **`fa`** (`apps/usr/src/i18n.ts`, `apps/usr/messages/fa.json`) |
 | Dates | In-house Jalali util `apps/usr/src/lib/jalali.ts`; display via `format-fa.ts` / `JalaliDatePicker` |
