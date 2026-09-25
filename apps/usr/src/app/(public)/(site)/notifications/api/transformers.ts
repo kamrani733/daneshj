@@ -12,8 +12,10 @@ import {
 
 import type {
   ActorChannelSettingDto,
+  ActorNotificationChartsDataDto,
   ActorNotificationDto,
   ActorNotificationListData,
+  ActorNotificationStatisticsDto,
   ActorReceivePeriod,
   ActorSettingChannel,
   ActorSettingItem,
@@ -34,7 +36,9 @@ import type {
   NotificationListResult,
   NotificationStatisticsDto,
   NotificationType,
+  PieChartDto,
   ReportChannel,
+  TimeBarChartDto,
   ReportPriority,
   StatisticsReportResult,
   UnreadCountData,
@@ -273,6 +277,22 @@ export function toStatisticsReportQuery(payload: GetStatisticsReportPayload) {
   });
 }
 
+/** YAML query for /notification/report/actor_charts_report */
+export function toActorChartsReportQuery(payload: GetChartsReportPayload) {
+  return toRequestQuery({
+    sent_start_date: payload.startDate,
+    sent_end_date: payload.endDate,
+  });
+}
+
+/** YAML query for /notification/report/actor_statistics_report */
+export function toActorStatisticsReportQuery(payload: GetStatisticsReportPayload) {
+  return toRequestQuery({
+    sent_start_date: payload.startDate,
+    sent_end_date: payload.endDate,
+  });
+}
+
 /** Normalize API rate that may be 0–1 or 0–100 into a display percent. */
 function toDisplayPercent(value: number): number {
   if (!Number.isFinite(value)) return 0;
@@ -484,6 +504,158 @@ export function mapChartsReport(
     readVsUnread,
     categoryReadRate,
     receivedByCategory,
+    message,
+  };
+}
+
+function mapTimeBarChartToSeries(
+  chart: TimeBarChartDto | undefined
+): ChartsBarPoint[] {
+  return (chart?.series ?? []).map((point) => ({
+    label: formatChartDateLabel(point.date),
+    value: point.count ?? 0,
+  }));
+}
+
+function mapPieChartToDonut(
+  chart: PieChartDto | undefined,
+  primaryColor: string
+): ChartsDonutView {
+  const series = chart?.series ?? [];
+  const sorted = [...series].sort((a, b) => b.percentage - a.percentage);
+  const primary = sorted[0];
+  const other = sorted[1];
+  const total = Math.max(
+    series.reduce((sum, item) => sum + (item.count ?? 0), 0),
+    0.0001
+  );
+
+  if (!primary) {
+    return {
+      slices: [
+        { key: 'primary', value: 0.01 },
+        { key: 'other', value: 0.01 },
+      ],
+      centerPercent: 0,
+      centerLabel: '—',
+      primaryColor,
+      otherColor: CHART_OTHER,
+      legend: [],
+      totalCount: 0,
+    };
+  }
+
+  const primaryPercent = Math.round(primary.percentage * 10) / 10;
+  const otherPercent =
+    other != null
+      ? Math.round(other.percentage * 10) / 10
+      : Math.max(0, Math.round((100 - primaryPercent) * 10) / 10);
+
+  return {
+    slices: [
+      { key: 'primary', value: Math.max(primary.count, 0.01) },
+      {
+        key: 'other',
+        value: Math.max(other?.count ?? 0, 0.01),
+      },
+    ],
+    centerPercent: primaryPercent,
+    centerLabel: primary.label,
+    primaryColor,
+    otherColor: CHART_OTHER,
+    legend: [
+      {
+        label: primary.label,
+        color: primaryColor,
+        display: { kind: 'percent', value: primaryPercent },
+      },
+      {
+        label: other?.label ?? '—',
+        color: CHART_OTHER,
+        display: { kind: 'percent', value: otherPercent },
+      },
+    ],
+    totalCount: Math.round(total),
+  };
+}
+
+/** Map actor_charts_report payload → same UI model as admin charts_report. */
+export function mapActorChartsReport(
+  data: ActorNotificationChartsDataDto | null | undefined,
+  message: string | null = null
+): ChartsReportResult {
+  const bars = data?.bar_charts_by_time;
+  const pies = data?.pie_charts;
+
+  const manualSeries = bars?.manual_notifications_received_chart?.series ?? [];
+  const systemSeries = bars?.system_notifications_received_chart?.series ?? [];
+  const manualTotal = manualSeries.reduce((sum, row) => sum + (row.count ?? 0), 0);
+  const systemTotal = systemSeries.reduce((sum, row) => sum + (row.count ?? 0), 0);
+
+  const receivedByCategory = toPrimaryOtherDonut(
+    [
+      { label: 'دستی', value: manualTotal },
+      { label: 'سیستمی', value: systemTotal },
+    ],
+    CHART_TEAL,
+    'count'
+  );
+
+  return {
+    reactionTimeSeries: mapTimeBarChartToSeries(
+      bars?.manual_notifications_received_chart
+    ),
+    conversionRateSeries: mapTimeBarChartToSeries(
+      bars?.system_notifications_received_chart
+    ),
+    readVsUnread: mapPieChartToDonut(
+      pies?.unread_notifications_ratio_chart,
+      CHART_TEAL
+    ),
+    categoryReadRate: mapPieChartToDonut(
+      pies?.link_click_ratio_chart,
+      CHART_PRIMARY
+    ),
+    receivedByCategory,
+    message,
+  };
+}
+
+/** Map actor_statistics_report payload → same UI model as admin statistics_report. */
+export function mapActorStatisticsReport(
+  data: ActorNotificationStatisticsDto | null | undefined,
+  message: string | null = null
+): StatisticsReportResult {
+  const absolute = data?.absolute_statistics;
+  const relative = data?.relative_statistics;
+
+  return {
+    countStats: [
+      {
+        id: 'manual',
+        titleKey: 'manualReceived',
+        value: absolute?.manual_notifications_received_count ?? 0,
+      },
+      {
+        id: 'system',
+        titleKey: 'systemReceived',
+        value: absolute?.system_notifications_received_count ?? 0,
+      },
+    ],
+    ratioStats: [
+      {
+        id: 'unread',
+        titleKey: 'readRatio',
+        percent: toDisplayPercent(relative?.unread_notifications_percentage ?? 0),
+      },
+      {
+        id: 'linkClick',
+        titleKey: 'linkClickRatio',
+        percent: toDisplayPercent(
+          relative?.link_click_to_total_link_ratio ?? 0
+        ),
+      },
+    ],
     message,
   };
 }

@@ -23,11 +23,13 @@ import { NotificationsDonutChart } from '@notifications/components/charts/donut-
 
 type NotificationsChartsPanelProps = {
   accessToken?: string | null;
+  sessionUserId?: string | null;
 };
 
-/** Figma charts block — wired to GET /notification/report/charts_report. */
+/** Figma charts block — actor or admin charts report (see `getChartsReport`). */
 export function NotificationsChartsPanel({
   accessToken,
+  sessionUserId,
 }: NotificationsChartsPanelProps) {
   const t = useTranslations('notifications.charts');
   const [open, setOpen] = useState(true);
@@ -39,6 +41,7 @@ export function NotificationsChartsPanel({
   const chartsQuery = useChartsReportQuery(
     {
       accessToken,
+      sessionUserId,
       startDate: dateRange.startDate,
       endDate: dateRange.endDate,
     },

@@ -347,6 +347,40 @@ export interface ReceivedByCategoryChartDto {
   series: ReceivedByCategoryPointDto[];
 }
 
+/** YAML: ActorNotificationChartsData (actor_charts_report). */
+export interface ActorNotificationChartsDataDto {
+  bar_charts_by_time?: {
+    manual_notifications_received_chart?: TimeBarChartDto;
+    system_notifications_received_chart?: TimeBarChartDto;
+  };
+  pie_charts?: {
+    unread_notifications_ratio_chart?: PieChartDto;
+    link_click_ratio_chart?: PieChartDto;
+  };
+}
+
+export interface TimeBarChartDto {
+  chart_type?: string;
+  series?: Array<{ date: string; count: number }>;
+}
+
+export interface PieChartDto {
+  chart_type?: string;
+  series?: Array<{ label: string; count: number; percentage: number }>;
+}
+
+/** YAML: ActorNotificationStatistics (actor_statistics_report). */
+export interface ActorNotificationStatisticsDto {
+  absolute_statistics?: {
+    manual_notifications_received_count?: number;
+    system_notifications_received_count?: number;
+  };
+  relative_statistics?: {
+    unread_notifications_percentage?: number;
+    link_click_to_total_link_ratio?: number;
+  };
+}
+
 /** YAML: NotificationChartsData */
 export interface NotificationChartsDataDto {
   user_reaction_time_chart: UserReactionTimeChartDto;
@@ -367,6 +401,8 @@ export type ChartsReportActorType =
 
 export interface GetChartsReportPayload {
   accessToken: string;
+  /** Session `user.id` — routes admin vs actor report endpoints. */
+  sessionUserId?: string | null;
   actorType?: ChartsReportActorType | string;
   startDate?: string;
   endDate?: string;
@@ -460,6 +496,8 @@ export type StatisticsReportChannel =
 
 export interface GetStatisticsReportPayload {
   accessToken: string;
+  /** Session `user.id` — routes admin vs actor report endpoints. */
+  sessionUserId?: string | null;
   actorType?: string;
   channel?: StatisticsReportChannel | string;
   notificationType?: NotificationType;
@@ -482,7 +520,7 @@ export type StatisticsRatioStat = {
   percent: number;
 };
 
-/** App-facing statistics report for UI — GET statistics_report (Adm-Ntf-6N10). */
+/** App-facing statistics report for UI — admin or actor statistics report. */
 export interface StatisticsReportResult {
   countStats: StatisticsCountStat[];
   ratioStats: StatisticsRatioStat[];

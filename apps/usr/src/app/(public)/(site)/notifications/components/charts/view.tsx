@@ -5,18 +5,23 @@ import { NotificationsPageShell } from '@notifications/components/layout/page-sh
 
 type NotificationsChartsViewProps = {
   accessToken?: string | null;
+  sessionUserId?: string | null;
 };
 
-/** Notifications charts page — Figma نمودار + charts_report API. */
+/** Notifications charts page — actor or admin charts report (see `getChartsReport`). */
 export function NotificationsChartsView({
   accessToken,
+  sessionUserId,
 }: NotificationsChartsViewProps) {
   return (
     <NotificationsPageShell
       titleKey="charts.title"
       breadcrumbCurrentKey="charts.breadcrumbCurrent"
     >
-      <NotificationsChartsPanel accessToken={accessToken} />
+      <NotificationsChartsPanel
+        accessToken={accessToken}
+        sessionUserId={sessionUserId}
+      />
     </NotificationsPageShell>
   );
 }

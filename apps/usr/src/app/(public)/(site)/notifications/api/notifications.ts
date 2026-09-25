@@ -1,22 +1,29 @@
+import { isAdminActorUserId } from '@/lib/session-actor';
 import { notificationHttpClient } from '@/shared/api/notification-http';
 
 import { formatApiResponseError } from '@notifications/api/errors';
 import {
+  mapActorChartsReport,
   mapActorNotification,
   mapActorSettingsList,
+  mapActorStatisticsReport,
   mapChartsReport,
   mapDetailedStatusReportList,
   mapNotificationList,
   mapStatisticsReport,
   mapUnreadCounts,
+  toActorChartsReportQuery,
+  toActorStatisticsReportQuery,
   toChartsReportQuery,
   toDetailedStatusReportQuery,
   toListNotificationsQuery,
   toStatisticsReportQuery,
 } from '@notifications/api/transformers';
 import type {
+  ActorNotificationChartsDataDto,
   ActorNotificationDto,
   ActorNotificationListData,
+  ActorNotificationStatisticsDto,
   ActorSettingItem,
   ActorSettingsDto,
   ApiResponse,
@@ -121,13 +128,13 @@ export async function listNotifications(
   return mapNotificationList(data, message);
 }
 
-/** POST /notification/actor-notifications/{id}/read — USR-Ntf-1N6 / 1N8 */
+/** POST /notification/actor-notifications/read/{sent_notification_id} — USR-Ntf-1N6 / 1N8 */
 export async function markNotificationAsRead(
   payload: MarkNotificationAsReadPayload
 ): Promise<MarkNotificationAsReadData> {
   requireAccessToken(payload.accessToken);
   const { data } = await postNotification<MarkNotificationAsReadData>(
-    `/notification/actor-notifications/${payload.sentNotificationId}/read`,
+    `/notification/actor-notifications/read/${payload.sentNotificationId}`,
     payload.accessToken
   );
   return data;
@@ -184,30 +191,57 @@ export async function getDetailedStatusReport(
   return mapDetailedStatusReportList(data, message);
 }
 
-/** GET /notification/report/charts_report — Adm-Ntf-6N11 */
+/**
+ * Charts report — Adm-Ntf-6N11 (`charts_report`) or Usr/ASR-Ntf-6N13 (`actor_charts_report`).
+ */
 export async function getChartsReport(
   payload: GetChartsReportPayload
 ): Promise<ChartsReportResult> {
   requireAccessToken(payload.accessToken);
-  const { data, message } = await getNotification<NotificationChartsDataDto>(
-    '/notification/report/charts_report',
+  const adminReport = isAdminActorUserId(payload.sessionUserId);
+
+  if (adminReport) {
+    const { data, message } = await getNotification<NotificationChartsDataDto>(
+      '/notification/report/charts_report',
+      payload.accessToken,
+      toChartsReportQuery(payload)
+    );
+    return mapChartsReport(data, message);
+  }
+
+  const { data, message } = await getNotification<ActorNotificationChartsDataDto>(
+    '/notification/report/actor_charts_report',
     payload.accessToken,
-    toChartsReportQuery(payload)
+    toActorChartsReportQuery(payload)
   );
-  return mapChartsReport(data, message);
+  return mapActorChartsReport(data, message);
 }
 
-/** GET /notification/report/statistics_report — Adm-Ntf-6N10 */
+/**
+ * Statistics report — Adm-Ntf-6N10 (`statistics_report`) or Usr/ASR-Ntf-6N12 (`actor_statistics_report`).
+ */
 export async function getStatisticsReport(
   payload: GetStatisticsReportPayload
 ): Promise<StatisticsReportResult> {
   requireAccessToken(payload.accessToken);
-  const { data, message } = await getNotification<NotificationStatisticsDto>(
-    '/notification/report/statistics_report',
-    payload.accessToken,
-    toStatisticsReportQuery(payload)
-  );
-  return mapStatisticsReport(data, message);
+  const adminReport = isAdminActorUserId(payload.sessionUserId);
+
+  if (adminReport) {
+    const { data, message } = await getNotification<NotificationStatisticsDto>(
+      '/notification/report/statistics_report',
+      payload.accessToken,
+      toStatisticsReportQuery(payload)
+    );
+    return mapStatisticsReport(data, message);
+  }
+
+  const { data, message } =
+    await getNotification<ActorNotificationStatisticsDto>(
+      '/notification/report/actor_statistics_report',
+      payload.accessToken,
+      toActorStatisticsReportQuery(payload)
+    );
+  return mapActorStatisticsReport(data, message);
 }
 
 /**

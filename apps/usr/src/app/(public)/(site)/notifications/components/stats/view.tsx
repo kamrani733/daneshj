@@ -17,16 +17,21 @@ import { StatRatioCard } from '@notifications/components/stats/ratio-card';
 
 type NotificationsStatsViewProps = {
   accessToken?: string | null;
+  sessionUserId?: string | null;
 };
 
-/** Notifications stats page — Figma سکشن آمار + statistics_report API. */
+/** Notifications stats — actor or admin statistics report (see `getStatisticsReport`). */
 export function NotificationsStatsView({
   accessToken,
+  sessionUserId,
 }: NotificationsStatsViewProps) {
   const t = useTranslations('notifications.stats');
   const canQuery = !!accessToken;
 
-  const statsQuery = useStatisticsReportQuery({ accessToken }, canQuery);
+  const statsQuery = useStatisticsReportQuery(
+    { accessToken, sessionUserId },
+    canQuery
+  );
   const data = statsQuery.data;
   const isLoading = statsQuery.isFetching && !data;
   const errorMessage = statsQuery.isError

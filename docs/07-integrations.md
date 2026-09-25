@@ -31,7 +31,8 @@ Summary from audit §4 — full path list in `docs/ai/00-project-audit.md` §4.
 | Actor | `GET /service_titles/service-title/list-to-all` | `service-titles.ts` | REAL |
 | Notification | `GET/POST /notification/actor-notifications/*`, unread counts | notifications inbox/header | REAL |
 | Notification | `GET /notification/report/detailed_status_report` | reports page | REAL (all actor types in spec) |
-| Notification | `GET /notification/report/statistics_report`, `charts_report` | stats, charts pages | REAL in code; spec marks these **Admin-only** — user UI may need `actor_statistics_report` / `actor_charts_report` (B5) |
+| Notification | `GET /notification/report/statistics_report`, `charts_report` | stats, charts (admin session) | REAL |
+| Notification | `GET /notification/report/actor_statistics_report`, `actor_charts_report` | stats, charts (non-admin session) | REAL |
 | Notification | `GET/POST /notification/actor-settings/*` | settings | REAL + **HARDCODED** metadata merge |
 | Interactive ops | `POST/GET /interactive-ops/{follow,like,score,share}/*` | `public-panel/api/interactive-ops.ts` | REAL |
 | Home | — | `home/data/search-mock.ts` | **MOCKED** (no API) |
