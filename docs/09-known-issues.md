@@ -11,9 +11,7 @@ last_updated: "2026-09-25"
 
 | # | Question | Blocks |
 |---|---|---|
-| 1 | Source of truth for actors/permissions (JWT claims, `loginType`, actor type)? | Auth helper, every guard |
 | 2 | Are `apps/adm` and `apps/bus` planned frontends or scaffolding to delete? | Admin/provider panel location, Nx tags |
-| 3 | Where are OpenAPI specs for Auth, Actor, Notification, Interactive Ops? | Generated types |
 | 4 | Backend readiness for Msg, Dsc, Nws, Nwl, Cln, Rwd? | Mock vs real per service |
 | 5 | Should `/dashboard` exist, or links point to `private-panel` / admin app? | Navigation |
 | 6 | Is `NEXT_PUBLIC_ACTOR_API_URL` required in production or do `/api` rewrites suffice? | Config, security |
@@ -81,6 +79,8 @@ See [10-design-system.md](./10-design-system.md#hardcoded-colors-in-code-should-
 
 ## Resolved
 
+- 2026-09-25 — **Open decision 3 (OpenAPI location):** Auth MS and Actor MS specs live in [`docs/api/`](./api/) (`auth-ms.openapi.yaml`, `actor-ms.openapi.yaml`) with an endpoint index in [`docs/api/README.md`](./api/README.md). Notification and Interactive Ops specs still TBD (open decision 4 unchanged).
+- 2026-09-25 — **Open decision 1 (permission source):** Frontend permission matrices come from Auth MS — `GET /actor_accesses/get_access_actor` for authenticated actors (Bearer per actor type) and `GET /actor_accesses/get_access_guest` for guests. JWT / `loginType` / token info remain for **identity and session**, not as the authoritative operation-level grant list. **Actor-type mismatch:** OpenAPI security schemes name five actor types — **User, Admin, University, Industry, Business** (see `docs/api/README.md`). SRS actor codes are three product roles — **Usr**, **ASR** (provider), **Adm** — plus Guest. Map API types to SRS at the UI/guard layer (e.g. University/Industry/Business → provider panels; User → student account) until SRS or backend align naming.
 - 2026-09-25 — SRS converted to Markdown in `docs/srs/` (was open question: "Where is the SRS?").
 - 2026-09-25 — Duplicate `files/srs/` to be removed; `docs/srs/` is canonical.
 - 2026-09-25 — Scaffold page specs removed (`apps/usr/specs/index.spec.tsx`, `apps/adm/specs/index.spec.tsx`). They imported a page module that does not exist and cannot render async server components. `jalali.ts` and `format-fa.ts` now have unit tests. `apps/adm` Jest passes with no tests (`passWithNoTests`).

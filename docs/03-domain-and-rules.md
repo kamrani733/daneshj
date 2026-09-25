@@ -19,7 +19,7 @@ Derived from `srs/`. Where the SRS is silent or flagged, the rule says TBD. Code
 | Admin | `Adm` | Full moderation/configuration |
 | System | `Sys` | Automatic jobs only (`Sys-Rwd-2N2`, `Sys-Nwl-9N7`) |
 
-Permission source of truth: TBD (JWT claims / `loginType` / actor type) — see [09-known-issues.md](./09-known-issues.md).
+Permission source of truth (operation-level grants): Auth MS `GET /actor_accesses/get_access_actor` (authenticated) and `GET /actor_accesses/get_access_guest` (guest) — see [07-integrations.md](./07-integrations.md) and [api/README.md](./api/README.md). JWT / session (`get_token_info`, `loginType`) identify the actor; guards consume the access payloads from Auth MS. API actor types: User, Admin, University, Industry, Business; SRS product roles: Usr, ASR, Adm (+ Guest) — map at the UI layer until aligned.
 Policy: deny by default, grant per matrix, backend enforces.
 
 ## Access matrix (by capability)

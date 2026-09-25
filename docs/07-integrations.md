@@ -7,12 +7,14 @@ last_updated: "2026-09-25"
 
 # Integrations
 
+OpenAPI specs (repo copy): [`docs/api/`](./api/) — index in [`docs/api/README.md`](./api/README.md). Type generation plan: [`plans/api-types.md`](./plans/api-types.md).
+
 ## Microservices
 
 | Service | Purpose | Base URL env | Contract (OpenAPI) | Frontend status |
 |---|---|---|---|---|
-| Auth MS | Login, OTP, password, session, refresh, logout | `NEXT_PUBLIC_API_URL` or `/api` + `AUTH_API_URL` rewrite | TBD (swagger URL in `.env.example` comments) | REAL when `NEXT_PUBLIC_API_URL` set. Dev with it unset: **MOCK** (`isAuthApiMocked` + `withMockFallback` on request failure). Production builds never mock |
-| Actor MS | Profiles (owner/admin/visitor), service titles | `NEXT_PUBLIC_ACTOR_API_URL` / `ACTOR_API_URL` → `/api` | TBD | REAL endpoints; React Query **disabled** unless `NEXT_PUBLIC_ACTOR_API_URL` set (known bug) |
+| Auth MS | Login, OTP, password, session, refresh, logout; actor access matrices (`/actor_accesses/*`) | `NEXT_PUBLIC_API_URL` or `/api` + `AUTH_API_URL` rewrite | OpenAPI in [`docs/api/auth-ms.openapi.yaml`](./api/auth-ms.openapi.yaml) (v6.0.0) | REAL when `NEXT_PUBLIC_API_URL` set. Dev with it unset: **MOCK** (`isAuthApiMocked` + `withMockFallback` on request failure). Production builds never mock |
+| Actor MS | Profiles (owner/admin/visitor), service titles | `NEXT_PUBLIC_ACTOR_API_URL` / `ACTOR_API_URL` → `/api` | OpenAPI in [`docs/api/actor-ms.openapi.yaml`](./api/actor-ms.openapi.yaml) (v1.0.0) | REAL endpoints; React Query **disabled** unless `NEXT_PUBLIC_ACTOR_API_URL` set (known bug) |
 | Notification MS | Inbox, read state, reports, charts, stats, actor settings | `NEXT_PUBLIC_NOTIFICATION_API_URL` / `NOTIFICATION_API_URL` | TBD | REAL for list/read/reports; settings **hybrid** with `settings-mock.ts` |
 | Interactive Ops MS | Follow, like, score, share on public profiles | `NEXT_PUBLIC_INTERACTIVE_OPS_API_URL` / `INTERACTIVE_OPS_API_URL` | TBD | REAL; default rewrite host hardcoded if env unset |
 | Dsc, Nws, Nwl, Cln, Msg, Rwd, Rfl | SRS services | TBD | TBD | Backend readiness TBD |
