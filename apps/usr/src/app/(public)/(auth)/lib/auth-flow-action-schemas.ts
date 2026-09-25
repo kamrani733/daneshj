@@ -1,4 +1,19 @@
+import { ApiError } from '@daneshjoam/api-client';
 import { z } from 'zod';
+
+export const AUTH_ACTION_INVALID_PAYLOAD_MESSAGE =
+  'اطلاعات ارسالی نامعتبر است. لطفاً دوباره تلاش کنید.';
+
+export function parseAuthActionPayload<TSchema extends z.ZodType>(
+  schema: TSchema,
+  payload: unknown
+): z.infer<TSchema> {
+  const result = schema.safeParse(payload);
+  if (!result.success) {
+    throw new ApiError(AUTH_ACTION_INVALID_PAYLOAD_MESSAGE, 400);
+  }
+  return result.data;
+}
 
 const authPurposeSchema = z.enum(['login', 'forgot-password']);
 
@@ -13,9 +28,9 @@ const pageTypeSchema = z.enum(['login_by_username', 'two_step_login']);
 export const sendVerifyCodePayloadSchema = z.object({
   identity: z.string().min(1),
   purpose: authPurposeSchema,
-  referralCode: z.string().optional(),
-  loginIdentityType: loginIdentityTypeSchema.optional(),
-  pageType: pageTypeSchema.optional(),
+  referralCode: z.optional(z.string()),
+  loginIdentityType: z.optional(loginIdentityTypeSchema),
+  pageType: z.optional(pageTypeSchema),
 });
 
 export const verifyCodePayloadSchema = z.object({

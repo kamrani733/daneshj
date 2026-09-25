@@ -1,9 +1,18 @@
-import { createApiClient, withMockFallback, type HttpClient } from '@daneshjoam/api-client';
+import {
+  createApiClient,
+  isApiError,
+  withMockFallback,
+  type HttpClient,
+} from '@daneshjoam/api-client';
+import type { AxiosError } from 'axios';
 import type { Session } from '@daneshjoam/shared-types';
 
 import { usrHttpClient } from '@/shared/api/usr-http';
 import { USR_ACTOR_TYPE } from '@auth/api/constants';
-import { formatApiResponseError } from '@auth/api/errors';
+import {
+  authNetworkApiError,
+  formatApiResponseError,
+} from '@auth/api/errors';
 import {
   isAuthApiMocked,
   mockRefreshToken,
@@ -60,7 +69,29 @@ function resolveServerAuthBaseUrl(): string {
   return (serverUrl || publicUrl || '/api').replace(/\/$/, '');
 }
 
+const SERVER_AUTH_REQUEST_TIMEOUT_MS = 10_000;
+
 let serverHttpClient: HttpClient | undefined;
+
+function isAuthTransportFailure(error: unknown): boolean {
+  if (!error || typeof error !== 'object') return false;
+  const axiosError = error as AxiosError;
+  if (axiosError.code === 'ECONNABORTED' || axiosError.code === 'ERR_NETWORK') {
+    return true;
+  }
+  return axiosError.response == null;
+}
+
+function mapServerAuthTransportError(error: unknown): unknown {
+  if (typeof window !== 'undefined') return error;
+  if (isApiError(error) && error.status === 0) {
+    return authNetworkApiError();
+  }
+  if (isAuthTransportFailure(error)) {
+    return authNetworkApiError();
+  }
+  return error;
+}
 
 function getAuthHttpClient(): HttpClient {
   if (typeof window !== 'undefined') return usrHttpClient;
@@ -69,9 +100,22 @@ function getAuthHttpClient(): HttpClient {
     serverHttpClient = createApiClient({
       baseURL,
       withCredentials: !baseURL.startsWith('http'),
+      timeout: SERVER_AUTH_REQUEST_TIMEOUT_MS,
     });
+    serverHttpClient.interceptors.response.use(
+      (response) => response,
+      (error) => Promise.reject(mapServerAuthTransportError(error))
+    );
   }
   return serverHttpClient;
+}
+
+async function runServerAuthRequest<T>(request: () => Promise<T>): Promise<T> {
+  try {
+    return await request();
+  } catch (error) {
+    throw mapServerAuthTransportError(error);
+  }
 }
 
 function requestUserAgent(meta?: AuthRequestMeta): string | undefined {
@@ -105,10 +149,12 @@ async function postAuth<T>(
   requireData = true,
   meta?: AuthRequestMeta
 ): Promise<{ data: T; message: string | null }> {
-  const { data: response } = await getAuthHttpClient().post<ApiResponse<T>>(path, body, {
-    params,
-    headers: authHeaders(accessToken, meta),
-  });
+  const { data: response } = await runServerAuthRequest(() =>
+    getAuthHttpClient().post<ApiResponse<T>>(path, body, {
+      params,
+      headers: authHeaders(accessToken, meta),
+    })
+  );
   return { data: assertApiSuccess(response, requireData), message: response.message };
 }
 
@@ -120,10 +166,12 @@ async function patchAuth<T>(
   requireData = true,
   meta?: AuthRequestMeta
 ): Promise<T> {
-  const { data: response } = await getAuthHttpClient().patch<ApiResponse<T>>(path, body, {
-    params,
-    headers: authHeaders(accessToken, meta),
-  });
+  const { data: response } = await runServerAuthRequest(() =>
+    getAuthHttpClient().patch<ApiResponse<T>>(path, body, {
+      params,
+      headers: authHeaders(accessToken, meta),
+    })
+  );
   return assertApiSuccess(response, requireData);
 }
 
@@ -133,10 +181,12 @@ async function getAuth<T>(
   accessToken: string,
   meta?: AuthRequestMeta
 ): Promise<T> {
-  const { data: response } = await getAuthHttpClient().get<ApiResponse<T>>(path, {
-    params,
-    headers: authHeaders(accessToken, meta),
-  });
+  const { data: response } = await runServerAuthRequest(() =>
+    getAuthHttpClient().get<ApiResponse<T>>(path, {
+      params,
+      headers: authHeaders(accessToken, meta),
+    })
+  );
   return assertApiSuccess(response);
 }
 

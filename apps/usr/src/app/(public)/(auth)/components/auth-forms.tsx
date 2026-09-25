@@ -133,9 +133,9 @@ export function IdentifierForm({
       const result = await sendVerifyCodeMutation.mutateAsync({
         identity: value,
         purpose,
-        referralCode: referral,
-        loginIdentityType,
-        pageType: isForgotPassword ? 'login_by_username' : undefined,
+        ...(referral ? { referralCode: referral } : {}),
+        ...(loginIdentityType ? { loginIdentityType } : {}),
+        ...(isForgotPassword ? { pageType: 'login_by_username' as const } : {}),
       });
 
       startFlow(purpose, value);
@@ -322,9 +322,11 @@ export function OtpForm({
       const result = await sendVerifyCodeMutation.mutateAsync({
         identity: identifier,
         purpose,
-        referralCode: context.referralCode,
-        loginIdentityType: context.loginIdentityType,
-        pageType: context.pageType,
+        ...(context.referralCode ? { referralCode: context.referralCode } : {}),
+        ...(context.loginIdentityType
+          ? { loginIdentityType: context.loginIdentityType }
+          : {}),
+        ...(context.pageType ? { pageType: context.pageType } : {}),
       });
       setSendVerifyContext({
         ...context,

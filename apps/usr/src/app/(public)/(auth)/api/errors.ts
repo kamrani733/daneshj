@@ -1,6 +1,13 @@
-import { isApiError } from '@daneshjoam/api-client';
+import { ApiError, isApiError } from '@daneshjoam/api-client';
 
 import type { ApiResponse } from '@auth/api/types';
+
+export const AUTH_NETWORK_ERROR_MESSAGE =
+  'ارتباط با سرور برقرار نشد، دوباره تلاش کنید';
+
+export function authNetworkApiError(): ApiError {
+  return new ApiError(AUTH_NETWORK_ERROR_MESSAGE, 0);
+}
 
 function isApiResponseBody(data: unknown): data is ApiResponse<unknown> {
   return (

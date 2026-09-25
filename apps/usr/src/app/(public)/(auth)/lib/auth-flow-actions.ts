@@ -21,6 +21,7 @@ import type {
 import { getAuthRequestMeta } from '@auth/lib/auth-request-meta';
 import {
   loginByIdentityPasswordPayloadSchema,
+  parseAuthActionPayload,
   resetPasswordPayloadSchema,
   sendVerifyCodePayloadSchema,
   sessionIdsSchema,
@@ -72,7 +73,7 @@ async function publishAuthResult(
 export async function sendVerifyCodeAction(
   payload: SendVerifyCodePayload
 ): Promise<SendVerifyCodeResponse> {
-  const input = sendVerifyCodePayloadSchema.parse(payload);
+  const input = parseAuthActionPayload(sendVerifyCodePayloadSchema, payload);
   const result = await sendVerifyCode(input, await getAuthRequestMeta());
   return stripProductionOtp(result);
 }
@@ -80,7 +81,7 @@ export async function sendVerifyCodeAction(
 export async function verifyCodeAction(
   payload: VerifyCodePayload
 ): Promise<ClientAuthResult> {
-  const input = verifyCodePayloadSchema.parse(payload);
+  const input = parseAuthActionPayload(verifyCodePayloadSchema, payload);
   const result = await verifyCode(input, await getAuthRequestMeta());
   return publishAuthResult(result);
 }
@@ -90,7 +91,7 @@ export async function verifyPasswordAction(payload: {
   password: string;
   recaptchaResponse: string;
 }): Promise<ClientAuthResult> {
-  const input = verifyPasswordPayloadSchema.parse(payload);
+  const input = parseAuthActionPayload(verifyPasswordPayloadSchema, payload);
   const step = await readAuthFlowStep();
   if (step?.step !== 'verify-password') {
     throw new Error('Authentication credentials were not provided.');
@@ -106,7 +107,10 @@ export async function verifyPasswordAction(payload: {
 export async function loginByIdentityAndPasswordAction(
   payload: LoginByIdentityPasswordPayload
 ): Promise<ClientAuthResult> {
-  const input = loginByIdentityPasswordPayloadSchema.parse(payload);
+  const input = parseAuthActionPayload(
+    loginByIdentityPasswordPayloadSchema,
+    payload
+  );
   const result = await loginByIdentityAndPassword(
     input,
     await getAuthRequestMeta()
@@ -118,7 +122,7 @@ export async function resetPasswordAction(payload: {
   password: string;
   confirmPassword: string;
 }): Promise<void> {
-  const input = resetPasswordPayloadSchema.parse(payload);
+  const input = parseAuthActionPayload(resetPasswordPayloadSchema, payload);
   const step = await readAuthFlowStep();
   if (step?.step !== 'reset-password') {
     throw new Error('Authentication credentials were not provided.');
@@ -146,7 +150,7 @@ export async function getSessionsForLimitReachedAction(): Promise<SessionData[]>
 export async function continueAfterSessionLimitAction(
   sessionIds: number[]
 ): Promise<ClientAuthResult> {
-  const input = sessionIdsSchema.parse(sessionIds);
+  const input = parseAuthActionPayload(sessionIdsSchema, sessionIds);
   const step = await readAuthFlowStep();
   if (step?.step !== 'session-limit' || !step.identityInfo) {
     throw new Error('Authentication credentials were not provided.');
