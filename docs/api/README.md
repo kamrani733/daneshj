@@ -1,8 +1,10 @@
-# API index — Auth MS & Actor MS
+# API index — Daneshjoam microservices
 
-Generated from the OpenAPI files in this folder (source of truth: the `.openapi.yaml` files). Use this index to find an endpoint, then read only that operation in the YAML.
+Generated from the OpenAPI files in this folder (the `.openapi.yaml` files are the source of truth). Find the endpoint here, then read only that operation in the YAML.
 
-Security schemes (both services): `UserBearerAuth`, `AdminBearerAuth`, `UniversityBearerAuth`, `IndustryBearerAuth`, `BusinessBearerAuth` — i.e. five actor types: User, Admin, University, Industry, Business.
+Security schemes (all services): `UserBearerAuth`, `AdminBearerAuth`, `UniversityBearerAuth`, `IndustryBearerAuth`, `BusinessBearerAuth` — five actor types: User, Admin, University, Industry, Business. "—" = no security declared in the spec.
+
+Known spec issues: see docs/09-known-issues.md (Interactive Ops declares no security; some Notification endpoints the user UI needs are Admin-only).
 
 ## Auth MS (v6.0.0) — `auth-ms.openapi.yaml`
 
@@ -245,4 +247,66 @@ Security schemes (both services): `UserBearerAuth`, `AdminBearerAuth`, `Universi
 | GET | `/service_titles/service-title/retrieve` | Display details Service Title | Admin |
 | POST | `/service_titles/service-title/seed` | service_titles_service_title_seed_create | Admin |
 | PATCH | `/service_titles/service-title/update` | Update Service Title | Admin |
+
+## Notification MS (v1.0.0) — `notification-ms.openapi.yaml`
+
+| Method | Path | Summary | Security |
+|---|---|---|---|
+| GET | `/core/actor_test_token` | test token | Admin,Business,Industry,University,User |
+| POST | `/notification/actor-notifications/click/{recipient_id}` | click on notification link | Admin |
+| GET | `/notification/actor-notifications/last5` | Display last 5 notifications of actor | Admin,Business,Industry,University,User |
+| GET | `/notification/actor-notifications/list` | Display all  notifications of actor | Admin,Business,Industry,University,User |
+| POST | `/notification/actor-notifications/read-all` | mark as read all notifications | Admin,Business,Industry,University,User |
+| POST | `/notification/actor-notifications/read-last-5` | mark as read last 5 notifications  | Admin,Business,Industry,University,User |
+| POST | `/notification/actor-notifications/read/{sent_notification_id}` | read a notificaiton | Admin,Business,Industry,University,User |
+| GET | `/notification/actor-notifications/unread-count` | count unread notifications | Admin |
+| POST | `/notification/actor-settings/create` | Apply actor notification settings | Admin,Business,Industry,University,User |
+| GET | `/notification/actor-settings/list` | Get actor notification settings | Admin |
+| POST | `/notification/category/create` | create category | Admin |
+| DELETE | `/notification/category/delete/{id}` | delete category | Admin |
+| GET | `/notification/category/list` | list of categories | Admin |
+| PUT | `/notification/category/update/{id}` | update category | Admin |
+| POST | `/notification/language/create` | create language | Admin |
+| DELETE | `/notification/language/delete/{id}` | delete language (soft delete) | Admin |
+| GET | `/notification/language/list` | list of languages | Admin |
+| PUT | `/notification/language/update/{id}` | update language | Admin |
+| GET | `/notification/report/actor_charts_report` | get actor/user notification charts report | Admin,Business,Industry,University,User |
+| GET | `/notification/report/actor_statistics_report` | get actor/user notification statistics report | Admin,Business,Industry,University,User |
+| GET | `/notification/report/category_history_report` | get category history report | Admin |
+| GET | `/notification/report/charts_report` | get charts report (bar charts by time and pie charts) | Admin |
+| GET | `/notification/report/detailed_status_report` | get detailed status report | Admin,Business,Industry,University,User |
+| GET | `/notification/report/ignorance_reports` | get notification ignorance report | Admin |
+| GET | `/notification/report/manual_notification_history_reports` | get manual notification history report | Admin |
+| GET | `/notification/report/notification_reports` | get notificatoin reports | Admin |
+| GET | `/notification/report/read_reports` | get notification read reports | Admin |
+| GET | `/notification/report/statistics_report` | get notification statistics report | Admin |
+| GET | `/notification/report/system_notification_audit_log` | get detailed status report | Admin |
+| GET | `/notification/report/system_notification_history_reports` | get system notification history report | Admin |
+| GET | `/notification/report/top_unread_reports` | get report of unread notifications | Admin |
+| POST | `/notification/sent-notification/manual1/send` | create and send manual notification | Admin |
+| POST | `/notification/sent-notification/manual2/send` | manual notification 2  | Admin |
+| GET | `/notification/sent-notifications/manual/list` | List of manual notifications | Admin |
+| POST | `/notification/sent-notifications/system` | sent system notification  | Admin |
+| POST | `/notification/system/create` | create system notification | Admin |
+| DELETE | `/notification/system/delete/{id}` | delete System notifications  | Admin |
+| GET | `/notification/system/list` | System notifications List | Admin |
+| PATCH | `/notification/system/update/{id}` | update System notifications  | Admin |
+
+## Interactive Ops MS (v1.0.0) — `interactive-ops-ms.openapi.yaml`
+
+| Method | Path | Summary | Security |
+|---|---|---|---|
+| GET | `/core/ino_test_token/` | test token | Admin,Business,Industry,University,User |
+| POST | `/interactive-ops/follow` | Follow/Unfollow user/industry/university/business/service/product by actor | — |
+| GET | `/interactive-ops/follow/followers` | Get followers list of user/industry/university/business/service/product by actor | — |
+| GET | `/interactive-ops/follow/followings` | Get followings list of user/industry/university/business by actor | — |
+| POST | `/interactive-ops/like` | Like/Dislike user/industry/university/business/service/product/comment by actor | — |
+| GET | `/interactive-ops/like/dislikees` | Get dislikees list of user/industry/university/business by actor | — |
+| GET | `/interactive-ops/like/dislikers` | Get dislikers list of user/industry/university/business/service/product/comment by actor | — |
+| GET | `/interactive-ops/like/likees` | Get likees list of user/industry/university/business by actor | — |
+| GET | `/interactive-ops/like/likers` | Get likers list of user/industry/university/business/service/product/comment by actor | — |
+| POST | `/interactive-ops/score` | Score to industry/university/business/service/product by actor | — |
+| GET | `/interactive-ops/score/average` | View Average score of industry/university/business/service/product | — |
+| POST | `/interactive-ops/share` | Share user/industry/university/business/service/product page by actor | — |
+| POST | `/interactive-ops/test_api` | this is sample for create api in django structure | Admin |
 

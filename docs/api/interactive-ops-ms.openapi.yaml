@@ -1,0 +1,1427 @@
+openapi: 3.0.3
+info:
+  title: InteractiveoperationsMS Microservice API
+  version: 1.0.0
+  description: "\n\n    \n### Change Log: \n\n### \U0001F4C5 Date Of Update: 1405/05/19\n**Version:**
+    1.0.0  \n**List of New Endpoints:**  \n- `/app_name/test_api`\n- `/interactive-ops/follow`\n-
+    `/interactive-ops/follow/followers` \n- `/interactive-ops/follow/followings` \n-
+    `/interactive-ops/like`\n- `/interactive-ops/like/likers`\n- `/interactive-ops/like/likees`\n-
+    `/interactive-ops/like/dislikers`\n- `/interactive-ops/like/dislikees`\n- `/interactive-ops/share`\n-
+    `/interactive-ops/score`\n- `/interactive-ops/score/average`                                    \n\n\n\n---\n\n###
+    \U0001F4C5 Date Of Update: 1404/../.. \n**Version:** 1.0.0  \n**List of Changed
+    Endpoints:**  \n- `/..../.......`  \n\n---\n\n\n\n    "
+paths:
+  /core/ino_test_token/:
+    get:
+      operationId: core_ino_test_token_retrieve
+      description: "\n        Test token\n        "
+      summary: test token
+      tags:
+      - 'All Actor: Test Token'
+      responses:
+        '200':
+          description: No response body
+      security:
+      - UserBearerAuth: []
+      - AdminBearerAuth: []
+      - UniversityBearerAuth: []
+      - IndustryBearerAuth: []
+      - BusinessBearerAuth: []
+  /interactive-ops/follow:
+    post:
+      operationId: interactive_ops_follow_create
+      description: "\n           Last Version Update: 1.0.0\n\n           SRS Codes:
+        \n           دنبال کردن توسط کاربر یا سرویس دهنده\n           Usr-Ino-2N1,
+        Asr-Ino-2N1, Usr-Ino-2N2, Asr-Ino-2N2\n\n           Change Log:\n           [Explanation
+        about endpoint changes in endpoint]\n\n           Description of endpoint:\n
+        \          \"Get actor_id, actor_type, target_id, target_type و is_active
+        from user/service provider.\"\n           \"If there is no record, create
+        new record. else, is_active will be updated.\"\n           "
+      summary: Follow/Unfollow user/industry/university/business/service/product by
+        actor
+      tags:
+      - 'All actor: Follow/unfollow an entitiy - Code: 1-53-1'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FollowRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/FollowRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/FollowRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NameResponse'
+              examples:
+                CorrectFollowExample:
+                  value:
+                    data:
+                      actor_type: 1
+                      actor_id: 1
+                      target_type: 2
+                      target_id: 2
+                      is_active: true
+                    message: user with user id 1 followed business with id 2 successfully.
+                    status_code: 200
+                    errors: {}
+                    success: true
+                  summary: Correct follow Example
+                CorrectUnfollowExample:
+                  value:
+                    data:
+                      actor_type: 1
+                      actor_id: 1
+                      target_type: 6
+                      target_id: 3
+                      is_active: false
+                    message: user with id 1 unfollowed service with id 3 successfully.
+                    status_code: 200
+                    errors: {}
+                    success: true
+                  summary: Correct unfollow Example
+          description: Example of follow and unfollow
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+              examples:
+                BadRequestExample:
+                  value:
+                    data: null
+                    message: null
+                    status_code: 400
+                    errors:
+                      name: string
+                    success: false
+                  summary: Bad request example
+          description: Bad request example
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+              examples:
+                InternalServerErrorExample:
+                  value:
+                    data: null
+                    message: Internal server error
+                    status_code: 500
+                    errors: {}
+                    success: false
+                  summary: Internal Server Error Example
+          description: Internal server error response body
+      security: null
+  /interactive-ops/follow/followers:
+    get:
+      operationId: interactive_ops_follow_followers_retrieve
+      description: "\n        Last Version Update: 1.0.0\n\n        SRS Codes: \n
+        \       مشاهده لیست دنبال کنندگان یک موجودیت توسط کاربر/سرویس دهنده\n        Usr-Ino-1N1,
+        Asr-Ino-1N1, Adm-Ino-1N1\n\n        Change Log:\n        [Explanation about
+        endpoint changes in endpoint]\n\n        Description of endpoint:\n        \"Get
+        target_id, target_type from user/service provider/admin. \"\n        \"api
+        returns list of followers of entity.\"\n        "
+      summary: Get followers list of user/industry/university/business/service/product
+        by actor
+      parameters:
+      - in: query
+        name: target_id
+        schema:
+          type: integer
+        description: target's ID
+        required: true
+      - in: query
+        name: target_type
+        schema:
+          type: integer
+          enum:
+          - 1
+          - 2
+          - 3
+          - 4
+          - 5
+          - 6
+        required: true
+      tags:
+      - 'All actor: Follow List - Code: 1-53-1'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NameResponse'
+              examples:
+                FetchListOfFollowersOfEntityExample:
+                  value:
+                    data:
+                      target_type: 1
+                      target_id: 2
+                    message: User with id 2 has 100 followers.
+                    status_code: 200
+                    errors: {}
+                    success: true
+                  summary: Fetch list of followers of entity Example
+          description: Example to fetch List of followers.
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+              examples:
+                BadRequestExample:
+                  value:
+                    data: null
+                    message: null
+                    status_code: 400
+                    errors:
+                      name: string
+                    success: false
+                  summary: Bad request example
+          description: Bad request example
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+              examples:
+                InternalServerErrorExample:
+                  value:
+                    data: null
+                    message: Internal server error
+                    status_code: 500
+                    errors: {}
+                    success: false
+                  summary: Internal Server Error Example
+          description: Internal server error response body
+      security: null
+  /interactive-ops/follow/followings:
+    get:
+      operationId: interactive_ops_follow_followings_retrieve
+      description: "\n        Last Version Update: 1.0.0\n\n        SRS Codes: \n
+        \       مشاهده لیست دنبال شدگان توسط یک موجودیت توسط کاربر/سرویس دهنده\n        Usr-Ino-1N2,
+        Asr-Ino-1N2, Adm-Ino-1N2\n\n        Change Log:\n        [Explanation about
+        endpoint changes in endpoint]\n\n        Description of endpoint:\n        \"Get
+        actor_id, actor_type from user/service provider/admin . \"\n        \"api
+        returns list of followings of entity.\"\n        "
+      summary: Get followings list of user/industry/university/business by actor
+      parameters:
+      - in: query
+        name: actor_id
+        schema:
+          type: integer
+        description: actor's ID
+        required: true
+      - in: query
+        name: actor_type
+        schema:
+          type: integer
+          enum:
+          - 1
+          - 2
+          - 3
+          - 4
+        required: true
+      tags:
+      - 'All actor: Follow List - Code: 1-53-1'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NameResponse'
+              examples:
+                FetchListOfFollowingsOfEntityExample.:
+                  value:
+                    data:
+                      actor_type: 1
+                      actor_id: 1
+                    message: User with id 1 is following 3 entities.
+                    status_code: 200
+                    errors: {}
+                    success: true
+                  summary: Fetch list of followings of entity Example.
+          description: Example to fetch followings list
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+              examples:
+                BadRequestExample:
+                  value:
+                    data: null
+                    message: null
+                    status_code: 400
+                    errors:
+                      name: string
+                    success: false
+                  summary: Bad request example
+          description: Bad request example
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+              examples:
+                InternalServerErrorExample:
+                  value:
+                    data: null
+                    message: Internal server error
+                    status_code: 500
+                    errors: {}
+                    success: false
+                  summary: Internal Server Error Example
+          description: Internal server error response body
+      security: null
+  /interactive-ops/like:
+    post:
+      operationId: interactive_ops_like_create
+      description: "\n           Last Version Update: 1.0.0\n\n           SRS Codes:
+        \n           ایجاد یا تغییر ری اکشن روی یک موجودیت توسط کاربر/سرویس دهنده\n
+        \          Usr-Ino-2N3, Asr-Ino-2N3, Usr-Ino-2N4, Asr-Ino-2N4, Usr-Ino-2N5,
+        Asr-Ino-2N5, Usr-Ino-2N6, Asr-Ino-2N6\n           Usr-Ino-2E7, Asr-Ino-2E7,
+        Usr-Ino-2E8, Asr-Ino-2E8\n           \n           Change Log:\n           [Explanation
+        about endpoint changes in endpoint]\n\n           Description of endpoint:\n
+        \          \"Get actor_id, actor_type, target_id, target_type و like_status
+        from user/service provider. \"\n            \"If there is no record, create
+        new record. else, like_status will be updated.\"\n           "
+      summary: Like/Dislike user/industry/university/business/service/product/comment
+        by actor
+      tags:
+      - 'All actor: Like/Dislike an entity - Code: 1-53-1'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LikeRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/LikeRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/LikeRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NameResponse'
+              examples:
+                CreateOrUpdateRequestToCreateLikeExample:
+                  value:
+                    data:
+                      actor_type: 1
+                      actor_id: 1
+                      target_type: 7
+                      target_id: 2
+                      status: 1
+                    message: user with id 1 liked comment with id 2 successfully
+                    status_code: 200
+                    errors: {}
+                    success: true
+                  summary: Create or update request to create like Example
+                CreateOrUpdateRequestToCreateDislikeExample:
+                  value:
+                    data:
+                      actor_type: 1
+                      actor_id: 5
+                      target_type: 5
+                      target_id: 3
+                      status: 3
+                    message: user with id 5 disliked product with id 3 successfully
+                    status_code: 200
+                    errors: {}
+                    success: true
+                  summary: Create or update request to create dislike Example
+                UpdateRequestToRemoveReactionExample:
+                  value:
+                    data:
+                      actor_type: 1
+                      actor_id: 1
+                      target_type: 3
+                      target_id: 4
+                      status: 2
+                    message: user with id 1 updated his reaction to industry with
+                      id 4 to 'None' successfully
+                    status_code: 200
+                    errors: {}
+                    success: true
+                  summary: Update request to remove reaction Example
+          description: Example for create Like/Dislike or remove reaction on target
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+              examples:
+                BadRequestExample:
+                  value:
+                    data: null
+                    message: null
+                    status_code: 400
+                    errors:
+                      name: string
+                    success: false
+                  summary: Bad request example
+          description: Bad request example
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+              examples:
+                InternalServerErrorExample:
+                  value:
+                    data: null
+                    message: Internal server error
+                    status_code: 500
+                    errors: {}
+                    success: false
+                  summary: Internal Server Error Example
+          description: Internal server error response body
+      security: null
+  /interactive-ops/like/dislikees:
+    get:
+      operationId: interactive_ops_like_dislikees_retrieve
+      description: "\n        Last Version Update: 1.0.0\n\n        SRS Codes: \n
+        \       مشاهده لیست نپسند شدگان توسط یک موجودیت توسط کاربر/سرویس دهنده\n        Usr-Ino-1N6,
+        Asr-Ino-1N6, Adm-Ino-1N6\n\n        Change Log:\n        [Explanation about
+        endpoint changes in endpoint]\n\n        Description of endpoint:\n        \"Get
+        actor_id, actor_type from user/service provider/admin . \"\n        \"api
+        returns list of dislikees of entity.\"\n        "
+      summary: Get dislikees list of user/industry/university/business by actor
+      parameters:
+      - in: query
+        name: actor_id
+        schema:
+          type: integer
+        description: actor's ID
+        required: true
+      - in: query
+        name: actor_type
+        schema:
+          type: integer
+          enum:
+          - 1
+          - 2
+          - 3
+          - 4
+        required: true
+      tags:
+      - 'All actor: Dislike List - Code: 1-53-1'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NameResponse'
+              examples:
+                FetchListOfDislikeesOfEntityExample:
+                  value:
+                    data:
+                      actor_type: 3
+                      actor_id: 5
+                    message: Industry with id 5 has disliked 150 entities.
+                    status_code: 200
+                    errors: {}
+                    success: true
+                  summary: Fetch list of dislikees of entity Example
+          description: Example to fetch dislikees list
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+              examples:
+                BadRequestExample:
+                  value:
+                    data: null
+                    message: null
+                    status_code: 400
+                    errors:
+                      name: string
+                    success: false
+                  summary: Bad request example
+          description: Bad request example
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+              examples:
+                InternalServerErrorExample:
+                  value:
+                    data: null
+                    message: Internal server error
+                    status_code: 500
+                    errors: {}
+                    success: false
+                  summary: Internal Server Error Example
+          description: Internal server error response body
+      security: null
+  /interactive-ops/like/dislikers:
+    get:
+      operationId: interactive_ops_like_dislikers_retrieve
+      description: "\n        Last Version Update: 1.0.0\n\n        SRS Codes: \n
+        \       مشاهده لیست نسپند کنندگان یک موجودیت توسط کاربر/سرویس دهنده\n        Usr-Ino-1N5,
+        Asr-Ino-1N5, Adm-Ino-1N5\n\n        Change Log:\n        [Explanation about
+        endpoint changes in endpoint]\n\n        Description of endpoint:\n        \"Get
+        target_id, target_type from user/service provider/admin . \"\n        \"api
+        returns list of dislikers of entity.\"\n        "
+      summary: Get dislikers list of user/industry/university/business/service/product/comment
+        by actor
+      parameters:
+      - in: query
+        name: target_id
+        schema:
+          type: integer
+        description: targets's ID
+        required: true
+      - in: query
+        name: target_type
+        schema:
+          type: integer
+          enum:
+          - 1
+          - 2
+          - 3
+          - 4
+          - 5
+          - 6
+        required: true
+      tags:
+      - 'All actor: Dislike List - Code: 1-53-1'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NameResponse'
+              examples:
+                FetchListOfDislikersOfEntityExample:
+                  value:
+                    data:
+                      target_type: 5
+                      target_id: 3
+                    message: Product with id 3 has received 100 dislikes.
+                    status_code: 200
+                    errors: {}
+                    success: true
+                  summary: Fetch list of dislikers of entity Example
+          description: Example to fetch dislikers list
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+              examples:
+                BadRequestExample:
+                  value:
+                    data: null
+                    message: null
+                    status_code: 400
+                    errors:
+                      name: string
+                    success: false
+                  summary: Bad request example
+          description: Bad request example
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+              examples:
+                InternalServerErrorExample:
+                  value:
+                    data: null
+                    message: Internal server error
+                    status_code: 500
+                    errors: {}
+                    success: false
+                  summary: Internal Server Error Example
+          description: Internal server error response body
+      security: null
+  /interactive-ops/like/likees:
+    get:
+      operationId: interactive_ops_like_likees_retrieve
+      description: "\n        Last Version Update: 1.0.0\n\n        SRS Codes: \n
+        \       مشاهده لیست پسند شدگان توسط یک موجودیت توسط کاربر/سرویس دهنده\n        Usr-Ino-1N4,
+        Asr-Ino-1N4, Adm-Ino-1N4\n\n        Change Log:\n        [Explanation about
+        endpoint changes in endpoint]\n\n        Description of endpoint:\n        \"Get
+        actor_id, actor_type from user/service provider/admin . \"\n        \"api
+        returns list of likees of entity.\"\n        "
+      summary: Get likees list of user/industry/university/business by actor
+      parameters:
+      - in: query
+        name: actor_id
+        schema:
+          type: integer
+        description: actor's ID
+        required: true
+      - in: query
+        name: actor_type
+        schema:
+          type: integer
+          enum:
+          - 1
+          - 2
+          - 3
+          - 4
+        required: true
+      tags:
+      - 'All actor: Like List - Code: 1-53-1'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NameResponse'
+              examples:
+                FetchListOfLikeesOfActorExample:
+                  value:
+                    data:
+                      actor_type: 1
+                      actor_id: 1
+                    message: User with id 1 has liked 200 entities.
+                    status_code: 200
+                    errors: {}
+                    success: true
+                  summary: Fetch list of likees of actor Example
+          description: Example to fetch likees list
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+              examples:
+                BadRequestExample:
+                  value:
+                    data: null
+                    message: null
+                    status_code: 400
+                    errors:
+                      name: string
+                    success: false
+                  summary: Bad request example
+          description: Bad request example
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+              examples:
+                InternalServerErrorExample:
+                  value:
+                    data: null
+                    message: Internal server error
+                    status_code: 500
+                    errors: {}
+                    success: false
+                  summary: Internal Server Error Example
+          description: Internal server error response body
+      security: null
+  /interactive-ops/like/likers:
+    get:
+      operationId: interactive_ops_like_likers_retrieve
+      description: "\n                Last Version Update: 1.0.0\n        \n                SRS
+        Codes: \n                مشاهده لیست پسند کنندگان یک موجودیت توسط کاربر/سرویس
+        دهنده\n                Usr-Ino-1N3, Asr-Ino-1N3, Adm-Ino-1N3\n        \n                Change
+        Log:\n                [Explanation about endpoint changes in endpoint]\n        \n
+        \               Description of endpoint:\n                \"Get target_id,
+        target_type from user/service provider/admin. \"\n                \"api returns
+        list of followings of entity.\"\n                "
+      summary: Get likers list of user/industry/university/business/service/product/comment
+        by actor
+      parameters:
+      - in: query
+        name: target_id
+        schema:
+          type: integer
+        description: target's ID
+        required: true
+      - in: query
+        name: target_type
+        schema:
+          type: integer
+          enum:
+          - 1
+          - 2
+          - 3
+          - 4
+          - 5
+          - 6
+        required: true
+      tags:
+      - 'All actor: Like List - Code: 1-53-1'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NameResponse'
+              examples:
+                FetchListOfLikersOfEntityExample:
+                  value:
+                    data:
+                      target_type: 7
+                      target_id: 2
+                    message: Comment with id 2 has received 150 likes.
+                    status_code: 200
+                    errors: {}
+                    success: true
+                  summary: Fetch list of likers of entity Example
+          description: Example to fetch likers list
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+              examples:
+                BadRequestExample:
+                  value:
+                    data: null
+                    message: null
+                    status_code: 400
+                    errors:
+                      name: string
+                    success: false
+                  summary: Bad request example
+          description: Bad request example
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+              examples:
+                InternalServerErrorExample:
+                  value:
+                    data: null
+                    message: Internal server error
+                    status_code: 500
+                    errors: {}
+                    success: false
+                  summary: Internal Server Error Example
+          description: Internal server error response body
+      security: null
+  /interactive-ops/score:
+    post:
+      operationId: interactive_ops_score_create
+      description: "\n        Last Version Update: 1.0.0\n\n        SRS Codes:\n        امتیازدهی
+        به موجودیت توسط کاربر یا سرویس دهنده\n        Usr-Ino-2N9, Asr-Ino-2N9\n\n
+        \       Change Log:\n        [Explanation about endpoint changes in endpoint]\n
+        \       \n        Description of endpoint:\n        \"Get actor_id, actor_type,
+        target_id, target_type و score from user/service provider. \"\n        \"If
+        there is no record, creates new record. else, score will be updated.\"\n        "
+      summary: Score to industry/university/business/service/product by actor
+      tags:
+      - 'All actor: Score entity - Code: 1-53-1'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScoreRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ScoreRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ScoreRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NameResponse'
+              examples:
+                CreateScoreExample:
+                  value:
+                    data:
+                      actor_type: 1
+                      actor_id: 1
+                      target_type: 4
+                      target_id: 2
+                      score: 4
+                    message: user with id 1 submitted score 4 on business with id
+                      2.
+                    status_code: 200
+                    errors: {}
+                    success: true
+                  summary: create score Example
+          description: Example to score to
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+              examples:
+                BadRequestExample:
+                  value:
+                    data: null
+                    message: null
+                    status_code: 400
+                    errors:
+                      name: string
+                    success: false
+                  summary: Bad request example
+          description: Bad request example
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+              examples:
+                InternalServerErrorExample:
+                  value:
+                    data: null
+                    message: Internal server error
+                    status_code: 500
+                    errors: {}
+                    success: false
+                  summary: Internal Server Error Example
+          description: Internal server error response body
+      security: null
+  /interactive-ops/score/average:
+    get:
+      operationId: interactive_ops_score_average_retrieve
+      description: "  \n        Last Version Update: 1.0.0\n\n        SRS Codes:\n
+        \       مشاهده میانگین امتیازات موجودیت توسط کاربر/سرویس دهنده\n        ?
+        USR1-Ino-?N?, Asr1-Ino-?N? Adm1-Ino-?N? ? \n\n        Change Log:\n        [Explanation
+        about endpoint changes in endpoint]\n                \n        Description
+        of endpoint:\n        \"Get target_id, target_type from user/service provider.
+        \"\n        \"If there is no record, returns none. else, it shows average
+        score and number of scorers of an entity.\"\n        "
+      summary: View Average score of industry/university/business/service/product
+      parameters:
+      - in: query
+        name: target_id
+        schema:
+          type: integer
+        description: Entity ID
+        required: true
+      - in: query
+        name: target_type
+        schema:
+          type: string
+          enum:
+          - 1
+          - 2
+          - 3
+          - 4
+          - 5
+          - 6
+        required: true
+      tags:
+      - 'All actor: Score entity - Code: 1-53-1'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NameResponse'
+              examples:
+                FetchAverageScoreExample:
+                  value:
+                    data:
+                      target_type: 4
+                      target_id: 2
+                    message: Business with id 2 has an average score of 4.5 based
+                      on 20 submitted scores.
+                    status_code: 200
+                    errors: {}
+                    success: true
+                  summary: Fetch average score Example
+          description: Example to fetch Average score of entity
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+              examples:
+                BadRequestExample:
+                  value:
+                    data: null
+                    message: null
+                    status_code: 400
+                    errors:
+                      name: string
+                    success: false
+                  summary: Bad request example
+          description: Bad request example
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+              examples:
+                InternalServerErrorExample:
+                  value:
+                    data: null
+                    message: Internal server error
+                    status_code: 500
+                    errors: {}
+                    success: false
+                  summary: Internal Server Error Example
+          description: Internal server error response body
+      security: null
+  /interactive-ops/share:
+    post:
+      operationId: interactive_ops_share_create
+      description: "\n           Last Version Update: 1.0.0\n\n           SRS Codes:\n
+        \          به اشتراک گذاری در سایت \n           Usr-Ino-2N7, Asr-Ino-2N7\n
+        \          به اشتراک گذاری در دیگر پلتفرم ها\n           Usr-Ino-2N8, Asr-Ino-2N8\n
+        \          \n           Change Log:\n           [Explanation about endpoint
+        changes in endpoint]\n           \n           Description of endpoint:\n           \"Get
+        actor_id, actor_type, target_id, target_type, platform, destination_type و
+        destination_id, url, reason from user/service provider.\"\n            \"Create
+        new record.\"\n            \"destination_id, destination_type and reason could
+        be null.\"\n           "
+      summary: Share user/industry/university/business/service/product page by actor
+      tags:
+      - 'All actor: Share entity - Code: 1-53-1'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ShareRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ShareRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ShareRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NameResponse'
+              examples:
+                CreateShareInSiteExample:
+                  value:
+                    data:
+                      actor_type: 4
+                      actor_id: 1
+                      target_type: 5
+                      target_id: 2
+                      platform: 1
+                      destination_type: 3
+                      destination_id: 4
+                      url: https://daneshjoam.com/shared-content
+                      reason: I found this product really useful and wanted to share
+                        it with others.
+                    message: business with id 1 shared product with id 2 successfully
+                      with industry with id 4 on site.
+                    status_code: 200
+                    errors: {}
+                    success: true
+                  summary: Create share in site Example
+                CreateShareInSiteWithoutReasonExample:
+                  value:
+                    data:
+                      actor_type: 1
+                      actor_id: 7
+                      target_type: 6
+                      target_id: 1
+                      platform: 1
+                      destination_type: 1
+                      destination_id: 9
+                      url: https://daneshjoam.com/shared-content
+                      reason: ''
+                    message: business with id 7 shared service with id 1 successfully
+                      with user with id 9 on site.
+                    status_code: 200
+                    errors: {}
+                    success: true
+                  summary: Create share in site without reason Example
+                CreateShareToTelegramAppExample:
+                  value:
+                    data:
+                      actor_type: 1
+                      actor_id: 3
+                      target_type: 6
+                      target_id: 4
+                      platform: 2
+                      destination_type: null
+                      destination_id: null
+                      url: https://daneshjoam.com/shared-service
+                      reason: ''
+                    message: business with id 3 shared service with id 4 successfully
+                      with someone on telegram.
+                    status_code: 200
+                    errors: {}
+                    success: true
+                  summary: Create share to telegram app Example
+                CreateShareToWhatsappAppExample:
+                  value:
+                    data:
+                      actor_type: 3
+                      actor_id: 9
+                      target_type: 1
+                      target_id: 14
+                      platform: 3
+                      destination_type: null
+                      destination_id: null
+                      url: https://daneshjoam.com/shared-service
+                      reason: ''
+                    message: industry with id 9 shared user with id 14 successfully
+                      with someone on whatsapp.
+                    status_code: 200
+                    errors: {}
+                    success: true
+                  summary: Create share to whatsapp app Example
+          description: Example to create Share base on platform
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+              examples:
+                BadRequestExample:
+                  value:
+                    data: null
+                    message: null
+                    status_code: 400
+                    errors:
+                      name: string
+                    success: false
+                  summary: Bad request example
+          description: Bad request example
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+              examples:
+                InternalServerErrorExample:
+                  value:
+                    data: null
+                    message: Internal server error
+                    status_code: 500
+                    errors: {}
+                    success: false
+                  summary: Internal Server Error Example
+          description: Internal server error response body
+      security: null
+  /interactive-ops/test_api:
+    post:
+      operationId: interactive_ops_test_api_create
+      description: "\n           Last Version Update: 1.0.0\n           SRS Codes:\n
+        \          افزودن فرایند\n           Adm-Prf-16N4\n           Change Log:\n
+        \          [Explanation about endpoint changes in endpoint]\n           \n-
+        **change operation_code to str in output**\n- **fix bug display error for
+        duplicate name in message**\n\n\n           -------------------------------------------------------------------------------------------------------------\n
+        \          Description of endpoint:\n           ..................\n           \n
+        \          **Note: \n           - add note for front-end, tester, .....\n
+        \          - ..............\n\n           "
+      summary: this is sample for create api in django structure
+      parameters:
+      - in: query
+        name: actor_ids
+        schema:
+          type: string
+        required: true
+      - in: query
+        name: actor_type
+        schema:
+          type: string
+          enum:
+          - Admin
+          - Business
+          - Industry
+          - University
+          - User
+        required: true
+      tags:
+      - 'Admin: Test Api - Code:Prf-16'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NameResponse'
+              examples:
+                CreateInstanceByModelNameExample:
+                  value:
+                    data:
+                      actor_id: 23
+                      actor_type: User
+                      actor_ids:
+                      - 1
+                      - 4
+                      - 45
+                    message: successfully created.
+                    status_code: 201
+                    errors: {}
+                    success: true
+                  summary: create instance by model name Example
+          description: create instance by model name response
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+              examples:
+                BadRequestExample:
+                  value:
+                    data: null
+                    message: null
+                    status_code: 400
+                    errors:
+                      name: string
+                    success: false
+                  summary: Bad request example
+          description: Bad request example
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+              examples:
+                InternalServerErrorExample:
+                  value:
+                    data: null
+                    message: Internal server error
+                    status_code: 500
+                    errors: {}
+                    success: false
+                  summary: Internal Server Error Example
+          description: Internal server error response body
+      security:
+      - AdminBearerAuth: []
+components:
+  schemas:
+    BaseResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          additionalProperties: {}
+          nullable: true
+          readOnly: true
+        message:
+          type: string
+          nullable: true
+        status_code:
+          type: integer
+        errors:
+          type: object
+          additionalProperties: {}
+        success:
+          type: boolean
+      required:
+      - data
+      - errors
+      - status_code
+      - success
+    DataNameResponse:
+      type: object
+      properties:
+        actor_id:
+          type: integer
+        actor_type:
+          type: integer
+        actor_ids:
+          type: array
+          items: {}
+      required:
+      - actor_id
+      - actor_ids
+      - actor_type
+    FollowRequest:
+      type: object
+      description: |-
+        Mixin for preventing actor from interacting with itself.
+        Applies to follow / like / dislike / score.
+      properties:
+        actor_type:
+          enum:
+          - 1
+          - 2
+          - 3
+          - 4
+          type: integer
+          description: |-
+            * `1` - user
+            * `2` - university
+            * `3` - industry
+            * `4` - business
+          x-spec-enum-id: 613def96ace8e986
+        actor_id:
+          type: integer
+        target_type:
+          enum:
+          - 1
+          - 2
+          - 3
+          - 4
+          - 5
+          - 6
+          type: integer
+          description: |-
+            * `1` - user
+            * `2` - university
+            * `3` - industry
+            * `4` - business
+            * `5` - product
+            * `6` - service
+          x-spec-enum-id: a0255ac05d521c90
+        target_id:
+          type: integer
+        is_active:
+          type: boolean
+      required:
+      - actor_id
+      - actor_type
+      - is_active
+      - target_id
+      - target_type
+    LikeRequest:
+      type: object
+      description: |-
+        Mixin for preventing actor from interacting with itself.
+        Applies to follow / like / dislike / score.
+      properties:
+        actor_type:
+          enum:
+          - 1
+          - 2
+          - 3
+          - 4
+          type: integer
+          description: |-
+            * `1` - user
+            * `2` - university
+            * `3` - industry
+            * `4` - business
+          x-spec-enum-id: 613def96ace8e986
+        actor_id:
+          type: integer
+        target_type:
+          enum:
+          - 1
+          - 2
+          - 3
+          - 4
+          - 5
+          - 6
+          - 7
+          type: integer
+          description: |-
+            * `1` - user
+            * `2` - university
+            * `3` - industry
+            * `4` - business
+            * `5` - product
+            * `6` - service
+            * `7` - comment
+          x-spec-enum-id: 32142dcd02367e82
+        target_id:
+          type: integer
+        like_status:
+          enum:
+          - 1
+          - 2
+          - 3
+          type: integer
+          description: |-
+            * `1` - like
+            * `2` - none
+            * `3` - dislike
+          x-spec-enum-id: e8de0d05b52d5675
+      required:
+      - actor_id
+      - actor_type
+      - like_status
+      - target_id
+      - target_type
+    NameResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/DataNameResponse'
+        message:
+          type: string
+          nullable: true
+        status_code:
+          type: integer
+        errors:
+          type: object
+          additionalProperties: {}
+        success:
+          type: boolean
+      required:
+      - data
+      - errors
+      - status_code
+      - success
+    ScoreRequest:
+      type: object
+      description: |-
+        Mixin for preventing actor from interacting with itself.
+        Applies to follow / like / dislike / score.
+      properties:
+        actor_type:
+          enum:
+          - 1
+          - 2
+          - 3
+          - 4
+          type: integer
+          description: |-
+            * `1` - user
+            * `2` - university
+            * `3` - industry
+            * `4` - business
+          x-spec-enum-id: 613def96ace8e986
+        actor_id:
+          type: integer
+        target_type:
+          enum:
+          - 2
+          - 3
+          - 4
+          - 5
+          - 6
+          type: integer
+          description: |-
+            * `2` - university
+            * `3` - industry
+            * `4` - business
+            * `5` - product
+            * `6` - service
+          x-spec-enum-id: 2f5fa42bddf0a95e
+        target_id:
+          type: integer
+        score:
+          type: integer
+      required:
+      - actor_id
+      - actor_type
+      - score
+      - target_id
+      - target_type
+    ShareRequest:
+      type: object
+      properties:
+        actor_type:
+          enum:
+          - 1
+          - 2
+          - 3
+          - 4
+          type: integer
+          description: |-
+            * `1` - user
+            * `2` - university
+            * `3` - industry
+            * `4` - business
+          x-spec-enum-id: 613def96ace8e986
+        actor_id:
+          type: integer
+        target_type:
+          enum:
+          - 1
+          - 2
+          - 3
+          - 4
+          - 5
+          - 6
+          - 7
+          type: integer
+          description: |-
+            * `1` - user
+            * `2` - university
+            * `3` - industry
+            * `4` - business
+            * `5` - product
+            * `6` - service
+            * `7` - comment
+          x-spec-enum-id: 32142dcd02367e82
+        target_id:
+          type: integer
+        platform:
+          enum:
+          - 1
+          - 2
+          - 3
+          type: integer
+          description: |-
+            * `1` - in site
+            * `2` - telegram
+            * `3` - whatsapp
+          x-spec-enum-id: 793354f0a9f7be5d
+        destination_type:
+          enum:
+          - 1
+          - 2
+          - 3
+          - 4
+          - 5
+          - 6
+          - 7
+          - null
+          type: integer
+          description: |-
+            * `1` - user
+            * `2` - university
+            * `3` - industry
+            * `4` - business
+            * `5` - product
+            * `6` - service
+            * `7` - comment
+          x-spec-enum-id: 32142dcd02367e82
+          nullable: true
+        destination_id:
+          type: integer
+          nullable: true
+        reason:
+          type: string
+          nullable: true
+          default: ''
+        url:
+          type: string
+          format: uri
+          nullable: true
+          default: ''
+      required:
+      - actor_id
+      - actor_type
+      - platform
+      - target_id
+      - target_type
+  securitySchemes:
+    UserBearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token for User endpoints
+    AdminBearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token for Admin endpoints
+    UniversityBearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token for University endpoints
+    IndustryBearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token for Industry endpoints
+    BusinessBearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token for Business endpoints
