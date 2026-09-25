@@ -21,6 +21,9 @@ type CommentComposerProps = {
   onCancel: () => void;
   labels: CommentComposerLabels;
   maxLength?: number;
+  expanded?: boolean;
+  defaultExpanded?: boolean;
+  onExpandedChange?: (expanded: boolean) => void;
   onFocus?: () => void;
   className?: string;
 };
@@ -32,10 +35,21 @@ export function CommentComposer({
   onCancel,
   labels,
   maxLength = COMMENT_COMPOSER_MAX_LENGTH,
+  expanded: expandedProp,
+  defaultExpanded = false,
+  onExpandedChange,
   onFocus,
   className,
 }: CommentComposerProps) {
-  const [expanded, setExpanded] = useState(false);
+  const [expandedUncontrolled, setExpandedUncontrolled] = useState(defaultExpanded);
+  const expanded = expandedProp ?? expandedUncontrolled;
+  const setExpanded = (next: boolean) => {
+    onExpandedChange?.(next);
+    if (expandedProp === undefined) {
+      setExpandedUncontrolled(next);
+    }
+  };
+
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const canSubmit = value.trim().length > 0;
 
@@ -61,23 +75,24 @@ export function CommentComposer({
           placeholder={labels.placeholder}
           rows={expanded ? 4 : 1}
           className={cn(
-            'w-full resize-none rounded-medium bg-surface-container-lowest px-3 py-3',
-            'text-start text-body-small font-medium text-on-surface',
-            'placeholder:text-on-surface-variant focus-visible:outline-none',
+            'w-full resize-none rounded-medium px-3 py-3 shadow-app-elevation-2',
+            'text-start font-medium text-on-surface',
+            'placeholder:text-outline focus-visible:outline-none',
+            'bg-on-primary',
             expanded
-              ? 'h-[119px] border border-primary pb-8'
-              : 'h-[55px] border border-outline-variant'
+              ? 'min-h-[120px] border border-primary pb-8 text-label-large'
+              : 'min-h-14 border border-outline-variant text-label-medium'
           )}
         />
         {expanded ? (
-          <span className="pointer-events-none absolute bottom-3 end-3 text-label-small text-on-surface-variant">
+          <span className="pointer-events-none absolute bottom-3 end-3 text-label-small text-outline">
             {labels.charCount}
           </span>
         ) : null}
       </label>
 
       {expanded ? (
-        <div dir="ltr" className="flex items-center gap-3">
+        <div dir="ltr" className="flex items-center gap-2">
           <Button type="button" size="pillSm" disabled={!canSubmit} onClick={onSubmit}>
             {labels.submit}
           </Button>
