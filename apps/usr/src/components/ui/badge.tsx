@@ -34,9 +34,10 @@ const badgeVariants = cva(
          */
         sell:
           "h-8 rounded-[8px] border-0 bg-warning-50 px-3 text-sm font-medium leading-5 tracking-[0.0071em] text-warning-700 shadow-app-elevation-1",
-        time: "h-auto rounded-small border-0 bg-primary-container px-2 py-1 text-label-small font-medium text-on-primary-container",
+        time:
+          "h-8 gap-1 rounded-full border-0 bg-primary-container px-2.5 py-2 text-label-small font-medium text-primary shadow-app-elevation-1 [&>svg]:size-4",
         viewcount:
-          "h-auto gap-1 rounded-small border-0 bg-secondary-container px-2 py-1 text-label-small font-medium text-on-secondary-container",
+          "h-8 gap-2 rounded-full border-0 bg-secondary-container py-1.5 ps-2 pe-3 text-label-large font-medium text-on-secondary-container shadow-app-elevation-1 [&>svg]:size-[18px]",
       },
     },
     defaultVariants: {
