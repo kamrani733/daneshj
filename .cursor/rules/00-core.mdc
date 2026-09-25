@@ -78,3 +78,12 @@ work. For feature work also read `docs/srs/README.md` and the service file in `d
   Merge through a pull request after CI is green.
 - Changes to auth, session, payment or permission flows are not done until the manual verification steps in the
   plan have been completed and reported by the owner. List those steps; never claim them as verified yourself.
+
+## Git safety
+
+- Never run destructive git commands unless I ask for that exact command: `git reset --hard`, `git clean`,
+  `git checkout -- .` / `git restore .`, `git push --force`, `git stash drop`/`clear`, or rewriting shared history.
+  They can destroy uncommitted work of other agents or of the owner.
+- One agent per working directory. Parallel tasks run in separate git worktrees on separate branches.
+- If the working tree contains changes you did not make, leave them untouched, do not include them in your
+  commits, and tell me.
