@@ -16,7 +16,7 @@ const buttonVariants = cva(
         outline:
           "border border-input bg-background hover:bg-accent hover:text-accent-foreground",
         secondary:
-          "bg-secondary text-secondary-foreground hover:bg-secondary/80",
+          "bg-surface-container-highest text-on-surface hover:bg-surface-container-highest/80",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         /** Home filter/sort toolbar — muted ink + soft hover */
         toolbar:

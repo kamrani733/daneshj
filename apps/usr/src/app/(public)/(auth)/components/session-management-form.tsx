@@ -136,7 +136,7 @@ function SessionMobileCard({
   ];
 
   return (
-    <Card className="border border-green-200 bg-surface py-0 ring-0 dark:border-white/10 dark:bg-white/5">
+    <Card className="border border-green-200 bg-surface-container-lowest py-0 ring-0 dark:border-white/10 dark:bg-white/5">
       <CardContent className="divide-y divide-green-100 px-4 py-1 dark:divide-white/10">
         {fields.map((field) => (
           <SessionFieldRow key={field.label} label={field.label} value={field.value} />
@@ -356,7 +356,7 @@ export function SessionManagementForm({
                 {sessions.map((session) => (
                   <TableRow
                     key={session.id}
-                    className="border border-green-400 bg-surface hover:bg-surface dark:border-white/10 dark:bg-white/5"
+                    className="border border-green-400 bg-surface-container-lowest hover:bg-surface-container-lowest dark:border-white/10 dark:bg-white/5"
                   >
                     <TableCell className="rounded-s-xl px-6 py-4 text-start" dir="ltr">
                       {session.device}

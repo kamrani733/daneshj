@@ -3,47 +3,10 @@
 import { useTranslations } from 'next-intl';
 
 import { UiKitComponents } from '@/components/dev/ui-kit-components';
+import { UiKitMigrated } from '@/components/dev/ui-kit-migrated';
+import { COLOR_ROLES, SHAPES, TYPE_SAMPLES } from '@/components/dev/ui-kit-tokens';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { cn } from '@/lib/utils';
-
-const COLOR_ROLES = [
-  ['primary', 'bg-primary text-on-primary'],
-  ['on-primary', 'bg-on-primary text-primary'],
-  ['primary-container', 'bg-primary-container text-on-primary-container'],
-  ['brand-secondary', 'bg-brand-secondary text-on-brand-secondary'],
-  ['background', 'bg-background text-foreground border border-outline-variant'],
-  ['surface (card)', 'bg-surface text-on-surface border border-outline-variant'],
-  [
-    'surface-container-lowest',
-    'bg-surface-container-lowest text-on-surface border border-outline-variant',
-  ],
-  ['error', 'bg-error text-on-error'],
-  ['featured-container', 'bg-featured-container text-featured'],
-  ['rating', 'bg-surface-container text-rating'],
-  ['like-active', 'bg-surface-container text-like-active'],
-  ['outline', 'bg-background text-outline border border-outline'],
-] as const;
-
-const TYPE_SAMPLES = [
-  ['display-small', 'text-display-small'],
-  ['headline-large', 'text-headline-large'],
-  ['headline-medium', 'text-headline-medium'],
-  ['title-large', 'text-title-large'],
-  ['title-medium', 'text-title-medium'],
-  ['body-large', 'text-body-large'],
-  ['body-medium', 'text-body-medium'],
-  ['label-large', 'text-label-large'],
-  ['label-small', 'text-label-small'],
-] as const;
-
-const SHAPES = [
-  'rounded-extra-small',
-  'rounded-small',
-  'rounded-medium',
-  'rounded-large',
-  'rounded-large-increased',
-  'rounded-extra-large',
-] as const;
 
 export function UiKitView() {
   const t = useTranslations('uiKit');
@@ -107,6 +70,7 @@ export function UiKitView() {
         </ul>
       </section>
 
+      <UiKitMigrated />
       <UiKitComponents />
     </main>
   );

@@ -2,7 +2,7 @@ import { cn } from '@/lib/utils';
 
 type SectionHeadingProps = {
   title: string;
-  tone?: 'primary' | 'brand-secondary';
+  tone?: 'primary' | 'secondary';
   align?: 'start' | 'center' | 'end';
   className?: string;
 };
@@ -26,7 +26,7 @@ export function SectionHeading({
       <h2
         className={cn(
           'px-2 text-headline-medium font-bold',
-          tone === 'primary' ? 'text-primary' : 'text-brand-secondary'
+          tone === 'primary' ? 'text-primary' : 'text-secondary'
         )}
       >
         {title}
@@ -35,7 +35,7 @@ export function SectionHeading({
         aria-hidden
         className={cn(
           'h-0 w-full border-b-2',
-          tone === 'primary' ? 'border-primary' : 'border-brand-secondary'
+          tone === 'primary' ? 'border-primary' : 'border-secondary'
         )}
       />
     </div>

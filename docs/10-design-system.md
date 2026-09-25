@@ -17,13 +17,17 @@ Language: **Material Design 3 roles + shadcn/Radix + Tailwind v4. Never add MUI*
 4. **RTL by construction.** Logical properties only; directional icons mirror.
 5. **Visual check first.** Every shared component is shown on `/dev/ui-kit` before it is used on a screen.
 6. **No hex / arbitrary type or radius in new TSX.** Use M3 semantic tokens so dark mode follows automatically.
+7. **Figma variable names are the source of truth.** A token named like a Figma variable (`Schemes/Secondary` →
+   `--color-secondary`) carries the Figma value from `docs/ai/m3-tokens.css` v3. Where shadcn used such a name with
+   another meaning, the shadcn usage moves to the correct role (e.g. neutral `secondary` variants →
+   `surface-container-highest` / `on-surface`).
 
 ## Sources
 
 | What | Where |
 |---|---|
 | Figma file | [Untitled](https://www.figma.com/design/aKH5AZkwgcEfmh96gHTTWE/Untitled?node-id=0-1) (public panel dark: `400-139432`) |
-| CSS variables | `apps/usr/src/app/globals.css` — Tailwind v4 `@theme` + M3 roles from `docs/ai/m3-tokens.css` v2 |
+| CSS variables | `apps/usr/src/app/globals.css` — Tailwind v4 `@theme` + M3 roles from `docs/ai/m3-tokens.css` v3 |
 | Theme / Tailwind mapping | `apps/usr/src/app/globals.css` (semantic tokens in `@theme`, dark flip in `.dark`) |
 | Shared UI library | `apps/usr/src/components/ui/` (shadcn/Radix). **Never MUI.** |
 | Icons | `apps/usr/src/components/icons/material-icons.tsx` (inline SVG components) + `lucide-react` icons |
@@ -49,11 +53,16 @@ primitives and map semantic tokens onto them, so Figma and code can still be com
 |---|---|---|---|---|---|
 | `brand` / `primary` | Primary brand, primary buttons | `#008d63` | `#8dd5b2` | `--color-primary` | `bg-primary`, `text-primary` |
 | `brand-hover` | Hover of brand surfaces | `#006c4b` | `#2ea377` | `--color-primary-hover` | — |
-| `secondary` | Secondary accent | `#dee4de` | `#2c322e` | `--color-secondary` | `bg-secondary` |
-| `bg-page` | App background | `#fafaf5` | `#0f1511` | `--color-background` | `bg-background` |
-| `bg-surface` | **Cards, panels** (legacy name — not M3 page) | `#fffbff` | `#171d19` | `--color-surface` | `bg-surface` |
+| `secondary` / `on-secondary` | Brand orange: logo, CTA, section bars (Figma `Schemes/Secondary`) | `#e06333` / `#ffffff` | `#ffb59b` / `#55200b` | `--color-secondary`, `--color-on-secondary` | `bg-secondary`, `text-on-secondary` |
+| `secondary-container` | Provider badge, view-count chip | `#ffdbcf` / `#72351f` | `#723520` / `#ffdbcf` | `--color-secondary-container`, `--color-on-secondary-container` | `bg-secondary-container` |
+| `background` | App / page background | `#fafaf7` | `#0f1511` | `--color-background`, `--color-on-background` | `bg-background` |
+| `surface` | M3 surface (Figma `Schemes/Surface`) — **not** a card | `#fafaf5` | `#0f1511` | `--color-surface` | `bg-surface` |
+| `on-surface` | Text on surfaces | `#171d19` | `#dee4de` | `--color-on-surface` | `text-on-surface` |
+| `surface-variant` | M3 surface variant | `#e3e0da` | `#404943` | `--color-surface-variant` | `bg-surface-variant` |
+| `surface-container-*` | Container tiers low → highest | `#f8f8f0` · `#efede6` · `#e4e1db` (high, highest) | `#171d19` · `#1b211d` · `#252b28` / `#303632` | `--color-surface-container-*` | `bg-surface-container-*` |
+| `inverse-on-surface` | Text on inverse surface | `#f1efe9` | `#2c322e` | `--color-inverse-on-surface` | `text-inverse-on-surface` |
 | `bg-subtle` | Table headers, zebra, inputs | `#eff1ed` | `#2c322e` | `--color-muted` | `bg-muted` |
-| `text-primary` | Body text | `#171d19` | `#eff1ed` | `--color-foreground` | `text-foreground` |
+| `foreground` (shadcn) | Body text — legacy; unify with `on-surface` later (known issues) | `#171d19` | `#eff1ed` | `--color-foreground` | `text-foreground` |
 | `text-secondary` | Secondary text | `#57605b` | `#8a938c` | `--color-content-muted` | `text-content-muted` |
 | `text-muted` | Hints, placeholders | `#8a938c` | `#8a938c` | `--color-muted-foreground` | `text-muted-foreground` |
 | `text-on-brand` / `on-primary` | Text on brand fill | `#ffffff` | `#003825` | `--color-on-primary` | `text-on-primary`, `text-primary-foreground` |
@@ -65,13 +74,16 @@ primitives and map semantic tokens onto them, so Figma and code can still be com
 | `info` | Info / in-process fg + tint | `#244c5b` / `#c1e9fb` | `#567c8d` / `#073543` | `--color-info`, `--color-info-subtle` | `text-info`, `bg-info-subtle` |
 | `disabled` | Disabled fill + text | opacity 50% via `disabled:opacity-50` | — | — | `disabled:opacity-50` |
 | `overlay` | Modal / hover scrim | `rgb(0 0 0 / 0.32)` | same | `--color-overlay` | `bg-overlay` |
-| `brand-secondary` | Logo orange, CTA, section bars | `#e06333` | `#ffb59b` | `--color-brand-secondary` | `bg-brand-secondary` |
 | `rating` | Card stars | `#ffd393` | `#ffd393` | `--color-rating` | `text-rating` |
-| `like-active` | Comment like (not stats bar) | `#f66060` | `#f66060` | `--color-like-active` | `text-like-active` |
+| `like` | Comment like (not stats bar) | `#f66060` | `#f66060` | `--color-like` | `text-like` |
+| `primary-fixed-dim` | M3 fixed dim | `#8dd5b2` | — | `--color-primary-fixed-dim` | `bg-primary-fixed-dim` |
+| `state-primary-10`, `state-primary-container-32` | M3 state layers | `#008d631a`, `#a9f2cd52` | — | `--color-state-*` | `bg-state-primary-10` |
 | `featured` / `featured-container` | Featured comment | `#f59e0b` / `#fff5eb` | `#f59e0b` / `#211d18` | `--color-featured*` | `text-featured`, `bg-featured-container` |
-| `surface-container-lowest` | New cards (M3) | `#ffffff` | `#0a0f0c` | `--color-surface-container-lowest` | `bg-surface-container-lowest` |
+| `surface-container-lowest` | Cards (M3) | `#ffffff` | `#0a0f0c` | `--color-surface-container-lowest` | `bg-surface-container-lowest` |
 
-Public-panel pages use `bg-background` for the page and `bg-surface-container-lowest` for cards. Do not use `bg-surface` as the page wash — that token still means “card”. See [09-known-issues.md](./09-known-issues.md).
+Pages use `bg-background`; cards use the role their Figma frame uses, else `bg-surface-container-lowest`.
+The removed names `brand-secondary`, `on-brand-secondary`, `warning-container`, `on-warning-container`,
+`like-active` and shadcn `secondary-foreground` have no aliases.
 
 ### Hardcoded colors in code (should map to tokens)
 
@@ -109,7 +121,9 @@ One map for every service, so the same state always looks the same. **Proposal �
 
 ## Typography
 
-M3 type scale is in `globals.css` (`text-display-large` … `text-label-small`, each with line-height).
+M3 type scale is in `globals.css` (`text-display-large` … `text-label-small`, each with line-height). Line heights
+follow Figma where it differs from M3: `headline-medium` 28/40, `headline-small` 24/36, `label-medium` 12/20; custom
+`title-semi-large` 18/24. Figma letter-spacing is not applied (breaks Persian joining).
 Weights by convention: headings `font-bold`, titles/labels/buttons `font-medium`, body `font-normal`.
 New UI uses these tokens, not `text-[28px]` / `text-[32px]`.
 
@@ -125,7 +139,7 @@ digits per the formatting util (`lib/jalali.ts` `toFaDigits`, `formatFaNumber`).
 |---|---|
 | Spacing | Tailwind 4-px base: `gap-1` (4px), `gap-2` (8px), `gap-3` (12px), `gap-4` (16px), `gap-6` (24px), etc. |
 | Radius | M3: `rounded-extra-small` (4) … `rounded-extra-large` (28); `--radius: 0.5rem` remains the shadcn base |
-| Shadow | `--shadow-app-elevation-1` through `--shadow-app-elevation-4` (Material 3 style); utility classes `shadow-app-elevation-1` … `shadow-app-elevation-4` |
+| Shadow | `--shadow-app-elevation-1` through `--shadow-app-elevation-4` (Material 3 style); utility classes `shadow-app-elevation-1` … `shadow-app-elevation-4` (1–2 equal Figma `M3/Elevation Light/1–2`); `shadow-comment` (Figma `Comment effect`, light only) |
 | Breakpoints | Tailwind defaults + custom inline: `min-[720px]`, `min-[834px]`; standard `sm` (640px), `md` (768px), `lg` (1024px), `xl` (1280px) |
 | z-index | TBD (no explicit scale in globals.css — uses Tailwind defaults inline) |
 

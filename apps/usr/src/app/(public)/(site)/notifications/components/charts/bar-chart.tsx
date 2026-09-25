@@ -64,7 +64,7 @@ export function NotificationsBarChart({
             contentStyle={{
               borderRadius: 8,
               border: '1px solid var(--color-border)',
-              background: 'var(--color-surface)',
+              background: 'var(--color-surface-container-lowest)',
               color: 'var(--color-content)',
               fontSize: 12,
             }}

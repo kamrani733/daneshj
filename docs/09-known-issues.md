@@ -51,7 +51,7 @@ See [srs/README.md](./srs/README.md) → Known issues, Declared but not detailed
 | `TEMP_ADMIN_ACCESS_TOKEN` bypass | `temporary-admin-login.ts` | **High** | Restrict to non-prod or remove |
 | Duplicated API error/HTTP layers | multiple `http.ts` files | Medium | Consolidate in `@daneshjoam/api-client` |
 | No global toast / error boundary | app-wide | Medium | Add `error.tsx` + toast pattern |
-| `--color-surface` name ≠ M3 `surface` | `globals.css` vs `docs/ai/m3-tokens.css` | Medium | Existing `bg-surface` = **card**. M3 v2 `surface` = **page**. Do not overwrite. Public-panel uses `background` + `surface-container-lowest` |
+| `foreground` vs `on-surface` | `globals.css` | Low | shadcn `--color-foreground` dark `#eff1ed` vs Figma `on-surface` dark `#dee4de` — unify later |
 | Public-panel «دیدگاه‌های منتقل‌شده» product rule | `public-panel/components/comments/` | Medium | Keep client-side transfer; profile comment SRS not in `docs/srs` (not Msg) |
 | Comments without API | `public-panel/components/comments/` | Medium | Stay behind `api/` + `mock/`; **not** Msg |
 | Home search entirely mock | `home/data/search-mock.ts` | Medium | Integrate SRV search API |
@@ -84,3 +84,4 @@ See [10-design-system.md](./10-design-system.md#hardcoded-colors-in-code-should-
 - 2026-09-25 — Duplicate `files/srs/` to be removed; `docs/srs/` is canonical.
 - 2026-09-25 — Scaffold page specs removed (`apps/usr/specs/index.spec.tsx`, `apps/adm/specs/index.spec.tsx`). They imported a page module that does not exist and cannot render async server components. `jalali.ts` and `format-fa.ts` now have unit tests. `apps/adm` Jest passes with no tests (`passWithNoTests`).
 - 2026-09-25 — Dark mode is in scope. M3 tokens added; approved dark `primary` / `on-primary` / `error` / `on-error` overwrites. `--color-surface` left as “card”.
+- 2026-09-25 — Figma variable names are the source of truth (v3). `surface`, `background`, `on-surface` (dark), `secondary` take Figma values; card usages moved to `surface-container-lowest`, shadcn neutral `secondary` variants to `surface-container-highest` / `on-surface`.

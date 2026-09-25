@@ -30,7 +30,7 @@ export function UiKitComponents() {
 
       <div className="flex flex-wrap items-center gap-4">
         <SectionHeading title={t('headingPrimary')} />
-        <SectionHeading title={t('headingSecondary')} tone="brand-secondary" />
+        <SectionHeading title={t('headingSecondary')} tone="secondary" />
         <CountChip label={t('chipSample')} />
         <FeaturedBadge label={t('featured')} />
         <Badge variant="time">{t('timeChip')}</Badge>

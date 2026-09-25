@@ -19,8 +19,11 @@ whenever a token or shared component is added or changed.
   (exact paths listed in the design-system doc).
 - A needed value that is not in the token set: stop and ask. Never invent a value.
 - Components use semantic M3 tokens (`bg-primary`, `text-on-surface`, `border-outline`, `bg-surface-container-lowest`),
-  never primitive palette steps. Existing `bg-surface` means **card**, not page — public-panel page wash is
-  `bg-background`.
+  never primitive palette steps. Pages use `bg-background`; cards use the Figma role of that element, else
+  `bg-surface-container-lowest`. `bg-surface` is the M3 surface, not a card.
+- Figma variable names are the source of truth: a token named like a Figma variable carries the value from
+  `docs/ai/m3-tokens.css` v3. If shadcn uses that name with another meaning, move the shadcn usage to the correct
+  role; never keep the shadcn meaning under the Figma name. No aliases for renamed tokens.
 - No hex and no arbitrary `text-[…]` / `rounded-[…]` in new TSX.
 - Palette vs screen exports: the documented palette always wins. If a Figma screen shows a different shade,
   flag it; once I confirm, the resolution is always "use the palette", never "use the screen".

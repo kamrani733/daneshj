@@ -11,7 +11,7 @@ const badgeVariants = cva(
       variant: {
         default: "bg-primary text-primary-foreground [a]:hover:bg-primary/80",
         secondary:
-          "bg-secondary text-secondary-foreground [a]:hover:bg-secondary/80",
+          "bg-surface-container-highest text-on-surface [a]:hover:bg-surface-container-highest/80",
         destructive:
           "bg-destructive/10 text-destructive focus-visible:ring-destructive/20 dark:bg-destructive/20 dark:focus-visible:ring-destructive/40 [a]:hover:bg-destructive/20",
         outline:
@@ -36,7 +36,7 @@ const badgeVariants = cva(
           "h-8 rounded-[8px] border-0 bg-warning-50 px-3 text-sm font-medium leading-5 tracking-[0.0071em] text-warning-700 shadow-app-elevation-1",
         time: "h-auto rounded-small border-0 bg-primary-container px-2 py-1 text-label-small font-medium text-on-primary-container",
         viewcount:
-          "h-auto gap-1 rounded-small border-0 bg-warning-container px-2 py-1 text-label-small font-medium text-on-warning-container",
+          "h-auto gap-1 rounded-small border-0 bg-secondary-container px-2 py-1 text-label-small font-medium text-on-secondary-container",
       },
     },
     defaultVariants: {
