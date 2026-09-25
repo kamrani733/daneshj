@@ -45,9 +45,22 @@ Summary from audit §4 — full path list in `docs/ai/00-project-audit.md` §4.
 | `settings-mock.ts` | Notification category tree + `categoryId` mapping (`category/list` Admin-only in spec) | Backend exposes category list (and aligned IDs) to actor tokens |
 | `(auth)/api/mock.ts` + `isAuthApiMocked()` | Auth MS in dev when `NEXT_PUBLIC_API_URL` is unset (try request, then mock). Also immediate mock for send-otp-for-login, session-limit continue, and no-op logout/delete | Production build (`NODE_ENV` inlined): `isAuthApiMocked()` is false and `withMockFallback` rethrows |
 | `home/data/search-mock.ts` | SRV provider/product search | SRV search API integrated |
-| `public-panel/data/public-panel-mock.ts` | Loading placeholders for visitor profile | N/A (placeholder until fetch completes) |
+| `public-panel/data/public-panel-mock.ts` | Rich fixture source for demo mode + loading placeholders | Demo mode uses `public-panel/mock/*` when gate + cookie active |
 
-## Failure behaviour
+## Demo mode (public panel presentations)
+
+Optional **presentation demo mode** for `/public-panel` only (Session 2.5). Other routes can adopt the same pattern later.
+
+| Piece | Location | Behaviour |
+|---|---|---|
+| Env gate | `NEXT_PUBLIC_DEMO_MODE_ENABLED=true` | Toggle + fixtures only when set. Production builds leave it unset (security item 0: no mocks in production). |
+| Cookie | `demo_mode=1` | Shared by server (RSC layout) and client (React Query, toggle). |
+| Resolver | `apps/usr/src/lib/demo-mode/` | `resolvePublicPanelApiRuntime` picks real `api/` vs lazy `mock/` twins. |
+| Fixtures | `public-panel/mock/fixtures.ts`, `interactive-ops-demo.ts` | Full visitor panel from `MOCK_PUBLIC_PANEL`; Interactive Ops counters in memory. |
+| UI | Header toggle (presentation icon), `PublicPanelDemoBanner` | Toggle only on `/public-panel` when gate is on. |
+
+Demo mode **does not** bypass auth or permission rules; it only replaces read data and keeps mutations local (no backend calls when cookie + gate are active).
+
 
 Shared error normalization → `ApiError` ([05-data-models.md](./05-data-models.md)). 401 → refresh then login;
 403 → no-permission state; 429 → rate-limit message; 5xx → error state with retry.

@@ -21,6 +21,7 @@ last_updated: "2026-09-25"
 | `ACTOR_API_URL` | For Actor rewrites | No | Upstream Actor MS |
 | `NOTIFICATION_API_URL` | For `/api/notification` rewrites | No | Upstream Notification MS |
 | `INTERACTIVE_OPS_API_URL` | Recommended in prod | No | Upstream Interactive Ops (default host in config if unset) |
+| `NEXT_PUBLIC_DEMO_MODE_ENABLED` | No | Yes | When `true`, enables the public-panel presentation demo toggle and lazy-loaded fixtures (dev/preview only; leave unset in production) |
 | `TEMP_ADMIN_ACCESS_TOKEN` | Dev/admin only | No | Temporary admin impersonation |
 | `NODE_ENV` | Automatic | No | Cookie `secure` on session |
 
