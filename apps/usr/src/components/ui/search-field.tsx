@@ -32,6 +32,21 @@ const SIZE_STYLES = {
   },
 } as const;
 
+const VARIANT_STYLES = {
+  default: {
+    wrap: '',
+    input:
+      'rounded-full border border-app-filter-border bg-app-search-fill text-app-filter-ink placeholder:text-app-filter-muted focus-visible:border-app-filter-border dark:border-app-filter-border dark:bg-app-search-fill dark:text-app-filter-ink dark:placeholder:text-app-filter-muted dark:focus-visible:border-app-filter-border',
+    icon: 'text-app-filter-muted',
+  },
+  panelComments: {
+    wrap: '',
+    input:
+      'rounded-full border border-outline-variant bg-surface-container-low text-body-large text-on-surface placeholder:text-on-surface-variant focus-visible:border-outline-variant focus-visible:ring-2 focus-visible:ring-primary/20',
+    icon: 'text-on-surface-variant',
+  },
+} as const;
+
 export type SearchFieldProps = Omit<
   React.ComponentProps<'input'>,
   'type' | 'size'
@@ -39,6 +54,7 @@ export type SearchFieldProps = Omit<
   /** Accessible label (visually hidden). */
   label: string;
   size?: keyof typeof SIZE_STYLES;
+  variant?: keyof typeof VARIANT_STYLES;
   containerClassName?: string;
 };
 
@@ -51,6 +67,7 @@ export const SearchField = React.forwardRef<HTMLInputElement, SearchFieldProps>(
     {
       label,
       size = 'sm',
+      variant = 'default',
       className,
       containerClassName,
       dir = 'rtl',
@@ -59,14 +76,24 @@ export const SearchField = React.forwardRef<HTMLInputElement, SearchFieldProps>(
     ref
   ) => {
     const styles = SIZE_STYLES[size];
+    const variantStyles = VARIANT_STYLES[variant];
+    const resolvedSize = variant === 'panelComments' ? SIZE_STYLES.lg : styles;
 
     return (
-      <label className={cn('relative block w-full', styles.wrap, containerClassName)}>
+      <label
+        className={cn(
+          'relative block w-full',
+          resolvedSize.wrap,
+          variantStyles.wrap,
+          containerClassName
+        )}
+      >
         <span className="sr-only">{label}</span>
         <Search
           className={cn(
-            'pointer-events-none absolute top-1/2 -translate-y-1/2 text-app-filter-muted',
-            styles.icon
+            'pointer-events-none absolute top-1/2 -translate-y-1/2',
+            resolvedSize.icon,
+            variantStyles.icon
           )}
           strokeWidth={1.5}
           aria-hidden
@@ -76,15 +103,12 @@ export const SearchField = React.forwardRef<HTMLInputElement, SearchFieldProps>(
           type="search"
           dir={dir}
           className={cn(
-            'h-full w-full rounded-full border border-app-filter-border bg-app-search-fill',
-            'text-start font-medium text-app-filter-ink shadow-none outline-none',
-            'placeholder:text-app-filter-muted',
-            'focus-visible:border-app-filter-border focus-visible:ring-0',
-            'dark:border-app-filter-border dark:bg-app-search-fill dark:text-app-filter-ink',
-            'dark:placeholder:text-app-filter-muted dark:focus-visible:border-app-filter-border',
+            'h-full w-full text-start font-medium shadow-none outline-none',
+            'focus-visible:ring-0',
             '[&::-webkit-search-cancel-button]:appearance-none',
-            styles.input,
-            styles.pad,
+            variantStyles.input,
+            resolvedSize.input,
+            resolvedSize.pad,
             className
           )}
           {...props}
