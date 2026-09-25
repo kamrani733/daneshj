@@ -17,7 +17,6 @@ last_updated: "2026-09-25"
 | 6 | Is `NEXT_PUBLIC_ACTOR_API_URL` required in production or do `/api` rewrites suffice? | Config, security |
 | 7 | Production domains and env matrix on Vercel? | Deployment |
 | 8 | CI `e2e`: expected to pass? No Playwright project exists. | CI |
-| 9 | Notification settings: fully backend-driven or permanently hybrid with `settings-mock.ts`? | Notification MS |
 | 10 | Is there an SRS for the platform shell (auth, profiles, notifications, panels)? | Docs for built areas |
 | 11 | ~~Dark mode in scope?~~ **Yes** (2026-09-25) | — |
 | 12 | Soft-delete retention period and who configures it | Delete/restore UI copy |
@@ -33,6 +32,20 @@ last_updated: "2026-09-25"
 | T4 | z-index scale | No explicit scale in `globals.css`; inline `z-[…]` in components |
 | T5 | Overlay color token | `--color-overlay` added (2026-09-25); migrate `bg-black/…` on touch |
 | T6 | Realtime for notifications/messages | No WebSocket client found; polling interval TBD |
+
+## Backend questions (OpenAPI vs `apps/usr`)
+
+Repo specs: [`docs/api/`](./api/) — index in [`docs/api/README.md`](./api/README.md). Compare with Notification calls in `apps/usr/src/app/(public)/(site)/notifications/api/notifications.ts`, settings in `notifications/hooks/use-notifications-settings.ts` + `notifications/data/settings-mock.ts`, header bell in `apps/usr/src/components/site/notifications-panel.tsx`, and Interactive Ops in `apps/usr/src/app/(public)/(site)/public-panel/api/interactive-ops.ts`.
+
+| ID | Question for backend | Severity | Code assumes | Spec (`notification-ms` / `interactive-ops-ms`) |
+|---|---|---|---|---|
+| B1 | Should logged-in **User** (and other non-Admin actor types) call `GET /notification/actor-notifications/unread-count` for the site header badge? | **High** | User session Bearer on unread-count (`notifications.ts`, `notifications-panel.tsx`) | `AdminBearerAuth` only |
+| B2 | Should actors load prefs via `GET /notification/actor-settings/list`, or is another actor-scoped list endpoint planned? | **High** | User Bearer on settings page (`getActorSettings` / `useActorSettingsQuery`) | `AdminBearerAuth` only (`create` allows all actor types) |
+| B3 | Will `POST /notification/actor-notifications/click/{recipient_id}` be opened to the notification recipient actor types (SRS link-click tracking)? | Medium | Not wired yet; inbox uses read endpoints only | `AdminBearerAuth` only |
+| B4 | Will actors get a read-only categories API (e.g. extend `GET /notification/category/list` or a new list-for-actor path) for settings UI and filter trees? | **High** | Category tree and `categoryId` values come from `settings-mock.ts` and `notifications-filter-data.ts` (no `category/list` call) | `GET /notification/category/list` is Admin-only |
+| B5 | User **stats** and **charts** pages: should the frontend use `GET /notification/report/actor_statistics_report` and `GET /notification/report/actor_charts_report` instead of the admin report paths? | **High** | `getStatisticsReport` → `/notification/report/statistics_report` (`stats/view.tsx`); `getChartsReport` → `/notification/report/charts_report` (`charts/panel.tsx`). Comments tag Adm-Ntf-6N10/6N11 | `statistics_report` and `charts_report` are Admin-only; `actor_statistics_report` and `actor_charts_report` allow User + provider actor types |
+| B6 | Confirm mark-read URL: is the contract `POST .../read/{sent_notification_id}` only, or is `POST .../{sent_notification_id}/read` also supported? | **High** | `markNotificationAsRead` posts to `/notification/actor-notifications/${id}/read` | `POST /notification/actor-notifications/read/{sent_notification_id}` |
+| B7 | Interactive Ops: what authentication and authorization apply to follow/like/score/share and list/average GETs in production? | **High** | Sends `Authorization: Bearer` when the visitor is logged in; no actor-type checks in the client | OpenAPI sets `security: null` (no scheme) on all `/interactive-ops/*` product endpoints except `test_api` |
 
 ## SRS problems
 
@@ -79,7 +92,8 @@ See [10-design-system.md](./10-design-system.md#hardcoded-colors-in-code-should-
 
 ## Resolved
 
-- 2026-09-25 — **Open decision 3 (OpenAPI location):** Auth MS and Actor MS specs live in [`docs/api/`](./api/) (`auth-ms.openapi.yaml`, `actor-ms.openapi.yaml`) with an endpoint index in [`docs/api/README.md`](./api/README.md). Notification and Interactive Ops specs still TBD (open decision 4 unchanged).
+- 2026-09-25 — **Open decision 9 (notification settings mock):** Hybrid until actors can load category metadata from the API. `GET /notification/category/list` is **Admin-only** in [`notification-ms.openapi.yaml`](./api/notification-ms.openapi.yaml), so the Figma settings tree and `categoryId` mapping stay in `settings-mock.ts`; `actor-settings/list` (also Admin-only in the spec) plus `actor-settings/create` (all actor types) hydrate/save channel prefs. Revisit when backend exposes categories (and optionally settings list) to User/provider tokens.
+- 2026-09-25 — **Open decision 3 (OpenAPI location):** All four microservice specs live in [`docs/api/`](./api/) (`auth-ms.openapi.yaml`, `actor-ms.openapi.yaml`, `notification-ms.openapi.yaml`, `interactive-ops-ms.openapi.yaml`) with an endpoint index in [`docs/api/README.md`](./api/README.md).
 - 2026-09-25 — **Open decision 1 (permission source):** Frontend permission matrices come from Auth MS — `GET /actor_accesses/get_access_actor` for authenticated actors (Bearer per actor type) and `GET /actor_accesses/get_access_guest` for guests. JWT / `loginType` / token info remain for **identity and session**, not as the authoritative operation-level grant list. **Actor-type mismatch:** OpenAPI security schemes name five actor types — **User, Admin, University, Industry, Business** (see `docs/api/README.md`). SRS actor codes are three product roles — **Usr**, **ASR** (provider), **Adm** — plus Guest. Map API types to SRS at the UI/guard layer (e.g. University/Industry/Business → provider panels; User → student account) until SRS or backend align naming.
 - 2026-09-25 — SRS converted to Markdown in `docs/srs/` (was open question: "Where is the SRS?").
 - 2026-09-25 — Duplicate `files/srs/` to be removed; `docs/srs/` is canonical.
