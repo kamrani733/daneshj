@@ -48,6 +48,7 @@ See [srs/README.md](./srs/README.md) → Known issues, Declared but not detailed
 | Hardcoded default interactive-ops backend host in `next.config.js` | `apps/usr/next.config.js` | **High** | Require env in prod; redact in docs |
 | `/dashboard` protected but no page | `middleware.ts`, `auth-routes.ts` | **High** | Add page or remove links/guard |
 | Auth OTP dev shortcuts / client-side OTP storage | `auth-forms.tsx`, `auth-flow.ts` | **High** | Remove before production |
+| Server-side auth (server actions) vs Auth MS network policy | `auth-flow-actions.ts`, `auth/api/auth.ts` | **High** | Auth calls now run server-side (server actions). If Auth MS rejects traffic from outside Iran, login will fail on Vercel. Confirm with backend before deploying. |
 | `TEMP_ADMIN_ACCESS_TOKEN` bypass | `temporary-admin-login.ts` | **High** | Restrict to non-prod or remove |
 | Duplicated API error/HTTP layers | multiple `http.ts` files | Medium | Consolidate in `@daneshjoam/api-client` |
 | No global toast / error boundary | app-wide | Medium | Add `error.tsx` + toast pattern |

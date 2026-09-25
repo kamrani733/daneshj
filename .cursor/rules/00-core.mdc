@@ -74,8 +74,8 @@ work. For feature work also read `docs/srs/README.md` and the service file in `d
 
 ## Branches and verification
 
-- Work on a task branch (`fix/security-hardening`, `feat/public-panel`), never commit directly to `dev` or `main`.
-  Merge through a pull request after CI is green.
+- All work happens directly on `dev`. Never commit to `main`.
+- Merge through a pull request after CI is green.
 - Changes to auth, session, payment or permission flows are not done until the manual verification steps in the
   plan have been completed and reported by the owner. List those steps; never claim them as verified yourself.
 
