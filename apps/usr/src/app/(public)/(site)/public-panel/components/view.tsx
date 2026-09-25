@@ -10,6 +10,8 @@ import { PanelLoadingOverlay, ProfileHeroCard } from '@/components/panel';
 import { ErrorState } from '@/components/ui/error-state';
 
 import { CommentsSection } from '@public-panel/components/comments/section';
+import { PublicPanelDemoBanner } from '@public-panel/components/demo-mode/public-panel-demo-banner';
+import { usePublicPanelDemoMode } from '@public-panel/components/demo-mode/public-panel-demo-provider';
 import { PanelInfoBanner } from '@public-panel/components/profile/info-banner';
 import { ProfileStatsBar } from '@public-panel/components/profile/stats-bar';
 import { PublicPanelHeading } from '@public-panel/components/shared/heading';
@@ -30,6 +32,7 @@ export function PublicPanelView({
   viewerActorId,
 }: PublicPanelViewProps) {
   const t = useTranslations('publicPanel');
+  const demoMode = usePublicPanelDemoMode();
   const profileQuery = usePublicPanelProfileQuery(
     accessToken,
     actorId,
@@ -37,16 +40,19 @@ export function PublicPanelView({
   );
   const profile = profileQuery.data ?? EMPTY_PUBLIC_PANEL;
   const isLoading =
+    !demoMode &&
     profileQuery.isFetching &&
     (profileQuery.isPlaceholderData || !profile.displayName);
 
   return (
-    <main
-      dir="rtl"
-      className="relative mx-auto flex w-full max-w-[1322px] flex-col gap-8 bg-transparent px-4 py-6 min-[834px]:gap-12 min-[834px]:px-[95px] min-[834px]:py-8"
-    >
-      {isLoading ? <PanelLoadingOverlay message={t('loading')} /> : null}
-      {profileQuery.isError && !isLoading ? (
+    <>
+      <PublicPanelDemoBanner />
+      <main
+        dir="rtl"
+        className="relative mx-auto flex w-full max-w-[1322px] flex-col gap-8 bg-transparent px-4 py-6 min-[834px]:gap-12 min-[834px]:px-[95px] min-[834px]:py-8"
+      >
+        {isLoading ? <PanelLoadingOverlay message={t('loading')} /> : null}
+        {profileQuery.isError && !isLoading && !demoMode ? (
         <ErrorState
           message={t('loadError')}
           retryLabel={t('retry')}
@@ -84,5 +90,6 @@ export function PublicPanelView({
         viewerActorId={viewerActorId}
       />
     </main>
+    </>
   );
 }
