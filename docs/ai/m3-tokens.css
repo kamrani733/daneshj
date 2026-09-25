@@ -1,71 +1,69 @@
-/* Daneshjoam design tokens — Material Design 3, v2 (verified against the designer's light AND dark exports).
- * Sources: [design] = observed in design/public-panel SVGs (light ↔ dark paired by identical geometry)
- *          [m3]     = generated from seed #008d63 (SchemeTonalSpot) and matching the dark export
- *          [infer]  = inferred, confirm with the designer
- * Paste into apps/usr/src/app/globals.css. Where a token with the same name already exists, REPORT the difference
- * and ask before overwriting (it changes existing screens). Use semantic tokens only in components. */
+/* Daneshjoam design tokens — v3. LIGHT values are the official Figma library variables
+ * (libraries "1Material 3 Design Kit RTL Persian-using" / "STU - *", read via Figma MCP from node 400:139432).
+ * DARK values come from the designer's dark export (docs/ai/dark-mode-analysis.md); Figma did not expose dark modes.
+ * Figma variable name in [brackets]. Paste into apps/usr/src/app/globals.css; for existing names with different
+ * values, report and ask before overwriting. */
 
 @theme {
-  /* ── Brand ── */
-  --color-primary: #008d63;                  /* [design] brand green, logo */
-  --color-on-primary: #ffffff;
-  --color-primary-container: #d3f4e1;        /* [design] pairs with dark #005138 */
-  --color-on-primary-container: #005138;     /* [design] */
-  --color-brand-secondary: #e06333;          /* [design] brand orange, logo, section bars, CTA, provider badge */
-  --color-on-brand-secondary: #ffffff;
+  --color-primary: #008d63;                   /* [Schemes/Primary] */
+  --color-on-primary: #ffffff;                /* [Schemes/On Primary] */
+  --color-primary-container: #d3f4e1;         /* [Schemes/Primary Container] */
+  --color-on-primary-container: #005138;      /* [Schemes/On Primary Container] */
+  --color-primary-fixed-dim: #8dd5b2;         /* [Schemes/Primary Fixed Dim] */
 
-  /* ── Surfaces (warm light values from the design; dark = M3) ── */
-  --color-surface: #fafaf7;                  /* [design] page background */
-  --color-surface-bright: #fafaf5;           /* [design] header, raised areas */
-  --color-surface-container-lowest: #ffffff; /* [m3] */
-  --color-surface-container-low: #f8f8f0;    /* [design] */
-  --color-surface-container: #efede6;        /* [design] toggle tracks, chips */
-  --color-surface-container-high: #e4e1db;   /* [infer] */
-  --color-surface-container-highest: #e3e0da;/* [infer] */
-  --color-inverse-surface: #2c322e;          /* [m3] */
-  --color-inverse-on-surface: #edf2ec;       /* [m3] */
+  --color-secondary: #e06333;                 /* [Schemes/Secondary] brand orange */
+  --color-on-secondary: #ffffff;              /* [Schemes/On Secondary] */
+  --color-secondary-container: #ffdbcf;       /* [Schemes/Secondary Container] provider badge, view-count chip */
+  --color-on-secondary-container: #72351f;    /* [Schemes/On Secondary Container] */
 
-  /* ── Content & lines ── */
-  --color-on-surface: #171d19;               /* [design][m3] */
-  --color-on-surface-variant: #404943;       /* [design][m3] */
-  --color-outline: #707973;                  /* [design][m3] */
-  --color-outline-variant: #bfc9c1;          /* [design][m3] */
+  --color-background: #fafaf7;                /* [Schemes/Background] page */
+  --color-on-background: #171d19;             /* [Schemes/On Background] */
+  --color-surface: #fafaf5;                   /* [Schemes/Surface] */
+  --color-surface-bright: #fafaf5;            /* [Schemes/Surface Bright] header */
+  --color-surface-variant: #e3e0da;           /* [Schemes/Surface Variant] */
+  --color-surface-container-lowest: #ffffff;  /* [Schemes/Surface Container Lowest] */
+  --color-surface-container-low: #f8f8f0;     /* [Schemes/Surface Container Low] */
+  --color-surface-container: #efede6;         /* [Schemes/Surface Container] */
+  --color-surface-container-highest: #e4e1db; /* [Schemes/Surface Container Highest] */
+  --color-inverse-on-surface: #f1efe9;        /* [Schemes/Inverse On Surface] */
 
-  /* ── Status ── */
-  --color-error: #ba1a1a;                    /* [design][m3] */
-  --color-on-error: #ffffff;
-  --color-error-container: #ffdad6;          /* [m3] */
-  --color-on-error-container: #93000a;       /* [m3] */
-  --color-warning-container: #ffdbcf;        /* [design] */
-  --color-on-warning-container: #72351f;     /* [design] */
-  --color-tertiary-container: #c1e9fb;       /* [design][m3] info tint */
-  --color-on-tertiary-container: #244c5b;    /* [design][m3] */
+  --color-on-surface: #171d19;                /* [Schemes/On Surface] */
+  --color-on-surface-variant: #404943;        /* [Schemes/On Surface Variant] */
+  --color-outline: #707973;                   /* [Schemes/Outline] */
+  --color-outline-variant: #bfc9c1;           /* [Schemes/Outline Variant] */
+  --color-error: #ba1a1a;                     /* [Schemes/Error] */
 
-  /* ── Product-specific ── */
-  --color-featured: #f59e0b;                 /* [design] featured-comment star, same in dark */
-  --color-featured-container: #fff5eb;       /* [design] featured-comment background */
-  --color-rating: #ffd393;                   /* [design] rating stars on cards; dark value not in export */
-  --color-like-active: #f66060;              /* [infer] red icon in comment action rows, same in dark — confirm */
-  --color-overlay: rgb(0 0 0 / 0.32);        /* [m3] scrim */
+  /* Product colors (custom Figma variables) */
+  --color-rating: #ffd393;                    /* [Orange] rating stars */
+  --color-featured: #f59e0b;                  /* [orange] featured-comment star */
+  --color-like: #f66060;                      /* [Like] liked state */
+  --color-featured-container: #fff5eb;        /* [Card BG] featured-comment background */
+  --color-overlay: rgb(0 0 0 / 0.32);         /* M3 scrim */
 
-  /* ── Type scale (M3) — size + line height; weights by convention ── */
-  --text-display-large: 3.5625rem;   --text-display-large--line-height: 4rem;
-  --text-display-medium: 2.8125rem;  --text-display-medium--line-height: 3.25rem;
-  --text-display-small: 2.25rem;     --text-display-small--line-height: 2.75rem;
-  --text-headline-large: 2rem;       --text-headline-large--line-height: 2.5rem;
-  --text-headline-medium: 1.75rem;   --text-headline-medium--line-height: 2.25rem;
-  --text-headline-small: 1.5rem;     --text-headline-small--line-height: 2rem;
-  --text-title-large: 1.375rem;      --text-title-large--line-height: 1.75rem;
-  --text-title-medium: 1rem;         --text-title-medium--line-height: 1.5rem;
-  --text-title-small: 0.875rem;      --text-title-small--line-height: 1.25rem;
-  --text-body-large: 1rem;           --text-body-large--line-height: 1.5rem;
-  --text-body-medium: 0.875rem;      --text-body-medium--line-height: 1.25rem;
-  --text-body-small: 0.75rem;        --text-body-small--line-height: 1rem;
-  --text-label-large: 0.875rem;      --text-label-large--line-height: 1.25rem;
-  --text-label-medium: 0.75rem;      --text-label-medium--line-height: 1rem;
-  --text-label-small: 0.6875rem;     --text-label-small--line-height: 1rem;
+  /* State layers */
+  --color-state-primary-10: #008d631a;        /* [State Layers/Primary/Opacity-10] */
+  --color-state-primary-container-32: #a9f2cd52; /* [State Layers/Primary Container/Opacity-32] */
 
-  /* ── Shape (M3) ── */
+  /* Elevation */
+  --shadow-elevation-1: 0 1px 3px 1px #00000026, 0 1px 2px 0 #0000004d;  /* [M3/Elevation Light/1] */
+  --shadow-elevation-2: 0 2px 6px 2px #00000026, 0 1px 2px 0 #0000004d;  /* [M3/Elevation Light/2] */
+  --shadow-comment: 0 2px 4px 0 #0000000d;                                /* [Comment effect] */
+
+  /* Type (Figma text styles). Weight via font-medium/semibold/bold per style name (-emphasized = 600, -Bold = 700).
+     Figma letter-spacing (0.1 / 0.15) is intentionally NOT applied: letter-spacing breaks Persian letter joining. */
+  --text-headline-large: 2rem;       --text-headline-large--line-height: 2.5rem;    /* 32/40 */
+  --text-headline-medium: 1.75rem;   --text-headline-medium--line-height: 2.5rem;   /* 28/40 in Figma (M3: 36) */
+  --text-headline-small: 1.5rem;     --text-headline-small--line-height: 2.25rem;   /* 24/36 in Figma (M3: 32) */
+  --text-title-large: 1.375rem;      --text-title-large--line-height: 1.75rem;      /* 22/28 */
+  --text-title-semi-large: 1.125rem; --text-title-semi-large--line-height: 1.5rem;  /* 18/24 custom style */
+  --text-title-medium: 1rem;         --text-title-medium--line-height: 1.5rem;      /* 16/24 */
+  --text-title-small: 0.875rem;      --text-title-small--line-height: 1.25rem;      /* 14/20 */
+  --text-body-large: 1rem;           --text-body-large--line-height: 1.5rem;        /* 16/24 */
+  --text-body-medium: 0.875rem;      --text-body-medium--line-height: 1.25rem;      /* 14/20 */
+  --text-label-large: 0.875rem;      --text-label-large--line-height: 1.25rem;      /* 14/20 */
+  --text-label-medium: 0.75rem;      --text-label-medium--line-height: 1.25rem;     /* 12/20 in Figma (M3: 16) */
+  --text-label-small: 0.6875rem;     --text-label-small--line-height: 1rem;         /* 11/16 */
+
   --radius-extra-small: 0.25rem;
   --radius-small: 0.5rem;
   --radius-medium: 0.75rem;
@@ -75,36 +73,28 @@
 }
 
 .dark {
-  --color-primary: #8dd5b2;                  /* [design] light #008d63 → dark #8dd5b2 */
-  --color-on-primary: #003825;               /* [design][m3] */
-  --color-primary-container: #005138;        /* [design] */
-  --color-on-primary-container: #a9f2cd;     /* [design] */
-  --color-brand-secondary: #ffb59b;          /* [design] light #e06333 → dark #ffb59b */
-  --color-on-brand-secondary: #55200b;       /* [design] */
-
-  --color-surface: #0f1511;                  /* [design] page (light #fafaf7) */
-  --color-surface-bright: #353b37;           /* [design] header (light #fafaf5) */
-  --color-surface-container-lowest: #0a0f0c; /* [design][m3] */
-  --color-surface-container-low: #171d19;    /* [design] (light #f8f8f0) */
-  --color-surface-container: #1b211d;        /* [design] (light #efede6) */
-  --color-surface-container-high: #252b28;   /* [m3] */
-  --color-surface-container-highest: #303632;/* [design][m3] */
-  --color-inverse-surface: #dee4de;          /* [m3] */
-  --color-inverse-on-surface: #2c322e;       /* [design][m3] */
-
-  --color-on-surface: #dee4de;               /* [design] (light #171d19) */
-  --color-on-surface-variant: #bfc9c1;       /* [design] (light #404943) */
-  --color-outline: #8a938c;                  /* [design] (light #707973) */
-  --color-outline-variant: #404943;          /* [design] (light #bfc9c1) */
-
-  --color-error: #ffb4ab;                    /* [design] (light #ba1a1a) */
-  --color-on-error: #690005;                 /* [m3] */
-  --color-error-container: #93000a;          /* [m3] */
-  --color-on-error-container: #ffdad6;       /* [m3] */
-  --color-warning-container: #723520;        /* [m3] tone 30 — the export keeps #ffdbcf on one badge; confirm */
-  --color-on-warning-container: #ffdbcf;     /* [m3] */
-  --color-tertiary-container: #244c5b;       /* [m3] */
-  --color-on-tertiary-container: #c1e9fb;    /* [m3] */
-
-  --color-featured-container: #211d18;       /* [design] featured-comment background in dark */
+  --color-primary: #8dd5b2;
+  --color-on-primary: #003825;
+  --color-primary-container: #005138;
+  --color-on-primary-container: #a9f2cd;
+  --color-secondary: #ffb59b;
+  --color-on-secondary: #55200b;
+  --color-secondary-container: #723520;       /* M3 tone 30 — confirm with designer */
+  --color-on-secondary-container: #ffdbcf;
+  --color-background: #0f1511;
+  --color-on-background: #dee4de;
+  --color-surface: #0f1511;
+  --color-surface-bright: #353b37;
+  --color-surface-variant: #404943;
+  --color-surface-container-lowest: #0a0f0c;
+  --color-surface-container-low: #171d19;
+  --color-surface-container: #1b211d;
+  --color-surface-container-highest: #303632;
+  --color-inverse-on-surface: #2c322e;
+  --color-on-surface: #dee4de;
+  --color-on-surface-variant: #bfc9c1;
+  --color-outline: #8a938c;
+  --color-outline-variant: #404943;
+  --color-error: #ffb4ab;
+  --color-featured-container: #211d18;
 }
