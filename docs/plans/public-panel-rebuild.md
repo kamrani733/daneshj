@@ -308,6 +308,7 @@ Each session is a new Cursor chat. Memory between sessions = this plan + `docs/d
 |---|---|---|---|---|
 | 1 | Plan update + commit 0: tokens, design-system doc/rule, /dev/ui-kit | none | 1 | owner checks /dev/ui-kit light/dark + listed migrated usages |
 | 2 | Shared components + ui-kit demos: section heading, count chip, stat item, price, rating, badges (time, view-count), featured badge, search field variant, sort menu, replies toggle, composer (3 states), comment item/thread | one instance each, found inside the section nodes below; composer = `400:139556` + states `400:141108`, `400:141276`, `400:141444` | 1 per component group | owner checks /dev/ui-kit |
+| 2.5 | Demo mode (public panel only): env gate, header toggle, cookie, api mock switch, presentation banner | none | 1 per step group | owner tries demo toggle on `/public-panel` |
 | 3 | Top: breadcrumb/title, profile hero (public variant), stats bar + split dialogs, promo banner + dots, academic records; guest view + non-provider differences | `400:139501`, `400:139504`, `400:139505`, `400:139506`, `400:139507` · `400:152145`–`400:152149`; guest `400:140940`; non-provider `400:140092`; dialogs liked `400:143292`, disliked `400:143280`, follow `400:143304`, following `400:143538`, sharing `400:143550` | 1 per section | owner checks page top, light/dark/mobile, guest |
 | 4 | Provider info: contact grid, tabs, «محصولات من» (discount, news, newsletter cards), other-info tab; catalog api/ + mock/ | `400:139509`, `400:139510`, `400:139513`, `400:139518`, `400:139520`, `400:139530`, `400:139539` · `400:152152`, `400:152132`, `400:152156`, `400:152162`, `400:152174` | 1 per section | owner checks catalog |
 | 5a | Comments base: intro, composer, transferred list, registered list, sort/search, featured item, replies toggle, empty state; comments api/ + mock/; split comments/card.tsx | `400:139552`, `400:139556`, `400:139558`, `400:139567`, sorting `400:143264`, comment menus `400:143170`, `400:143241`, empty `400:142206` · `400:152182` | 1 per part | owner checks comments |
@@ -321,6 +322,7 @@ Each session is a new Cursor chat. Memory between sessions = this plan + `docs/d
 | 0 | Additive M3 tokens + approved overwrites + v3 alignment (§3, second pass in session 1); `10-design-system.md` + `10-design-system.mdc` → “M3 roles + shadcn, never MUI”; `/dev/ui-kit` (roles, type, shapes, light/dark); known-issues (surface name + transferred TBD); mobile theme toggle | `feat(ui): adopt M3 tokens and ui-kit` |
 | 1 | Shared components + demos (incl. ErrorState / GuestPromptState) | `feat(ui): public-panel shared components` |
 | 2.0 | Guest visitor profile via `/api` (drop `NEXT_PUBLIC_ACTOR_API_URL` gate; token optional on visitor query) | `fix(actor): load visitor profile without public actor URL` |
+| 2.5 | Demo mode: env gate, cookie, header toggle, api mock switch, banner, docs | `feat(public-panel): presentation demo mode` |
 | 2.1 | Breadcrumb + title (`400:152630`, `400:139432`) | section commit |
 | 2.2 | Profile hero variant | |
 | 2.3 | Stats bar + split dialogs | |
