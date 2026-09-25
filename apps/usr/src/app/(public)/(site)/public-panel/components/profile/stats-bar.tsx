@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
+import type { PublicPanelCapabilities } from '@public-panel/capabilities';
 import { useProfileStatsBar } from '@public-panel/hooks/use-profile-stats-bar';
 import type { PublicPanelProfile } from '@public-panel/types/ui';
 import { Button } from '@/components/ui/button';
@@ -27,6 +28,7 @@ type ProfileStatsBarProps = {
   profile: PublicPanelProfile;
   accessToken?: string | null;
   viewerActorId?: number | null;
+  capabilities: PublicPanelCapabilities;
 };
 
 function HeartCheckIcon({ className }: { className?: string }) {
@@ -69,9 +71,15 @@ export function ProfileStatsBar({
   profile,
   accessToken,
   viewerActorId,
+  capabilities,
 }: ProfileStatsBarProps) {
   const t = useTranslations('publicPanel');
-  const vm = useProfileStatsBar({ profile, accessToken, viewerActorId });
+  const vm = useProfileStatsBar({
+    profile,
+    accessToken,
+    viewerActorId,
+    capabilities,
+  });
 
   return (
     <div

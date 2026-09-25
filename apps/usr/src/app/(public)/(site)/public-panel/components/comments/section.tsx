@@ -13,8 +13,10 @@ import {
   appendReply,
   filterAndSortComments,
 } from '@public-panel/utils/comments';
+import type { PublicPanelCapabilities } from '@public-panel/capabilities';
 import { EmptyState } from '@/components/panel';
 import { Badge } from '@/components/ui/badge';
+import { GuestPromptState } from '@/components/ui/guest-prompt-state';
 import { Button } from '@/components/ui/button';
 import { SearchField } from '@/components/ui/search-field';
 import { formatFaNumber } from '@/lib/format-fa';
@@ -30,6 +32,7 @@ type CommentsSectionProps = {
   comments: PanelComment[];
   accessToken?: string | null;
   viewerActorId?: number | null;
+  capabilities: PublicPanelCapabilities;
 };
 
 /** Comments composer and transferred / registered panels. */
@@ -38,6 +41,7 @@ export function CommentsSection({
   comments: initialComments,
   accessToken,
   viewerActorId,
+  capabilities,
 }: CommentsSectionProps) {
   const t = useTranslations('publicPanel.comments');
   const tFlow = useTranslations('publicPanel.comments.transferFlow');
@@ -141,65 +145,73 @@ export function CommentsSection({
           </p>
         </div>
 
-        <div className="flex w-full items-start gap-4">
-          <div className="flex size-[41px] shrink-0 items-center justify-center rounded-full bg-border text-[13px] font-bold text-white">
-            SA
-          </div>
+        {capabilities.commentComposerMode === 'guestPrompt' ? (
+          <GuestPromptState
+            message={t('guestPrompt')}
+            loginLabel={t('guestLogin')}
+          />
+        ) : null}
+        {capabilities.commentComposerMode === 'composer' ? (
+          <div className="flex w-full items-start gap-4">
+            <div className="flex size-[41px] shrink-0 items-center justify-center rounded-full bg-border text-[13px] font-bold text-white">
+              SA
+            </div>
 
-          <div className="flex min-w-0 flex-1 flex-col gap-3">
-            <label className="relative block w-full">
-              <span className="sr-only">{t('placeholder')}</span>
-              <textarea
-                ref={textareaRef}
-                value={draft}
-                maxLength={COMMENT_MAX_LENGTH}
-                onChange={(event) => setDraft(event.target.value)}
-                onFocus={() => setExpanded(true)}
-                placeholder={t('placeholder')}
-                rows={expanded ? 4 : 2}
-                className={cn(
-                  'w-full resize-none rounded-xl border bg-app-stat-card px-3 py-3 text-start text-xs font-medium leading-5 text-app-filter-ink',
-                  'shadow-[0_2px_6px_2px_rgba(0,0,0,0.15),0_1px_2px_0_rgba(0,0,0,0.3)]',
-                  'placeholder:text-neutral-600 focus-visible:outline-none',
-                  'dark:border-border dark:bg-app-stat-card dark:text-app-filter-ink dark:placeholder:text-app-filter-muted',
-                  expanded
-                    ? 'border-primary pb-8 focus-visible:ring-0 dark:border-primary-100'
-                    : 'border-border focus-visible:ring-2 focus-visible:ring-primary/30'
-                )}
-              />
+            <div className="flex min-w-0 flex-1 flex-col gap-3">
+              <label className="relative block w-full">
+                <span className="sr-only">{t('placeholder')}</span>
+                <textarea
+                  ref={textareaRef}
+                  value={draft}
+                  maxLength={COMMENT_MAX_LENGTH}
+                  onChange={(event) => setDraft(event.target.value)}
+                  onFocus={() => setExpanded(true)}
+                  placeholder={t('placeholder')}
+                  rows={expanded ? 4 : 2}
+                  className={cn(
+                    'w-full resize-none rounded-xl border bg-app-stat-card px-3 py-3 text-start text-xs font-medium leading-5 text-app-filter-ink',
+                    'shadow-[0_2px_6px_2px_rgba(0,0,0,0.15),0_1px_2px_0_rgba(0,0,0,0.3)]',
+                    'placeholder:text-neutral-600 focus-visible:outline-none',
+                    'dark:border-border dark:bg-app-stat-card dark:text-app-filter-ink dark:placeholder:text-app-filter-muted',
+                    expanded
+                      ? 'border-primary pb-8 focus-visible:ring-0 dark:border-primary-100'
+                      : 'border-border focus-visible:ring-2 focus-visible:ring-primary/30'
+                  )}
+                />
+                {expanded ? (
+                  <span className="pointer-events-none absolute bottom-3 end-3 text-[11px] leading-4 text-neutral-600 dark:text-app-filter-muted">
+                    {t('charCount', {
+                      count: formatFaNumber(draft.length),
+                      max: formatFaNumber(COMMENT_MAX_LENGTH),
+                    })}
+                  </span>
+                ) : null}
+              </label>
+
               {expanded ? (
-                <span className="pointer-events-none absolute bottom-3 end-3 text-[11px] leading-4 text-neutral-600 dark:text-app-filter-muted">
-                  {t('charCount', {
-                    count: formatFaNumber(draft.length),
-                    max: formatFaNumber(COMMENT_MAX_LENGTH),
-                  })}
-                </span>
+                <div dir="ltr" className="flex items-center gap-3">
+                  <Button
+                    type="button"
+                    size="pillSm"
+                    disabled={!draft.trim()}
+                    onClick={handleSubmit}
+                    className="rounded-lg dark:bg-primary-100 dark:text-primary-900 dark:hover:bg-primary-100/90"
+                  >
+                    {t('submit')}
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="link"
+                    onClick={handleCancel}
+                    className="h-auto px-0 text-sm font-medium text-primary dark:text-primary-100"
+                  >
+                    {t('cancel')}
+                  </Button>
+                </div>
               ) : null}
-            </label>
-
-            {expanded ? (
-              <div dir="ltr" className="flex items-center gap-3">
-                <Button
-                  type="button"
-                  size="pillSm"
-                  disabled={!draft.trim()}
-                  onClick={handleSubmit}
-                  className="rounded-lg dark:bg-primary-100 dark:text-primary-900 dark:hover:bg-primary-100/90"
-                >
-                  {t('submit')}
-                </Button>
-                <Button
-                  type="button"
-                  variant="link"
-                  onClick={handleCancel}
-                  className="h-auto px-0 text-sm font-medium text-primary dark:text-primary-100"
-                >
-                  {t('cancel')}
-                </Button>
-              </div>
-            ) : null}
+            </div>
           </div>
-        </div>
+        ) : null}
 
         <CommentListPanel
           kind="transferred"
@@ -213,6 +225,7 @@ export function CommentsSection({
           transferredCount={transferredCount}
           accessToken={accessToken}
           viewerActorId={viewerActorId}
+          capabilities={capabilities}
           onTransfer={handleTransfer}
           onDelete={handleDelete}
           onEditNote={handleEditNote}
@@ -231,6 +244,7 @@ export function CommentsSection({
           transferredCount={transferredCount}
           accessToken={accessToken}
           viewerActorId={viewerActorId}
+          capabilities={capabilities}
           onTransfer={handleTransfer}
           onDelete={handleDelete}
           onEditNote={handleEditNote}
@@ -251,6 +265,7 @@ function CommentListPanel({
   transferredCount,
   accessToken,
   viewerActorId,
+  capabilities,
   onTransfer,
   onDelete,
   onEditNote,
@@ -265,6 +280,7 @@ function CommentListPanel({
   transferredCount: number;
   accessToken?: string | null;
   viewerActorId?: number | null;
+  capabilities: PublicPanelCapabilities;
   onTransfer?: (commentId: string, note: string) => void;
   onDelete?: (commentId: string) => void;
   onEditNote?: (commentId: string, note: string) => void;
@@ -337,6 +353,7 @@ function CommentListPanel({
                 transferredCount={transferredCount}
                 accessToken={accessToken}
                 viewerActorId={viewerActorId}
+                capabilities={capabilities}
                 onTransfer={onTransfer}
                 onDelete={onDelete}
                 onEditNote={onEditNote}

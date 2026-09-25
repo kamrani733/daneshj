@@ -2,7 +2,7 @@
 title: "Implementation Plan: public panel rebuild"
 description: "Approved plan — rebuild /public-panel to the M3 Figma in light and dark, keep Actor + interactive-ops integrations"
 category: "plan"
-last_updated: "2026-09-25"
+last_updated: "2026-09-26"
 owner: "owner"
 ---
 
@@ -269,6 +269,42 @@ Changing these files changes **home, cooperation, private-panel, notifications, 
 | **Private-panel / notifications** | Global `html` font — switch is app-wide, not public-panel-only. | Treat as separate ADR + full-app regression. |
 
 **Verdict:** Switch is **probably safe functionally** for digits and LTR islands, but **not** a drop-in swap (VF vs FaNum files, global blast radius). Stay on VF + `formatFaNumber` for Phase 2; revisit with static FaNum files and an app-wide visual QA checklist.
+
+### 5.16 Demo personas (presentation mode)
+
+Gate: `NEXT_PUBLIC_DEMO_MODE_ENABLED=true` **and** `demo_mode=1`. Cookie `demo_persona` (default
+`visitor-individual-provider`). Persona never changes the real session, server guards, or backend calls.
+
+Model: **viewer role** (`owner` | `user` | `guest`) × **panel type** (`individual` provider vs `user`
+non-provider) + **content** (`aboutMe` empty for guest fixture). Demo fixtures come from
+`public-panel/mock/fixtures.ts`; viewer identity from `public-panel/demo/viewer-context.ts`. UI reads
+`getPublicPanelCapabilities()` only (no persona checks inside sections).
+
+| Persona ID | Label (fa) | Figma frames | Panel fixture | Viewer |
+|---|---|---|---|---|
+| `owner-individual-provider` | صاحب پنل (سرویس‌دهنده انفرادی) | `400:139432`, row 2 `400:139600` / `400:139930` — **owner** = `400:139930` (stats `400:139505` without visitor follow/like/share) | Individual provider mock | Owner (`viewerActorId` = panel `actorId`) |
+| `visitor-individual-provider` | بازدیدکننده (پنل سرویس‌دهنده انفرادی) | `400:139432`, `400:139762` | Individual provider mock | Signed-in user |
+| `visitor-non-provider` | بازدیدکننده (پنل غیر سرویس‌دهنده انفرادی) | `400:140092`, `400:140219` | User (non-provider) mock — no provider badge / service block | Signed-in user |
+| `guest` | کاربر میهمان (صاحب پنل «درباره من» را پر نکرده) | `400:140940` | Individual mock, `bio` empty | Guest (no token / actor) |
+
+**Section visibility matrix** (✅ = shown / enabled · ⛔ = hidden / disabled · — = read-only lists still visible):
+
+| Section / action | Owner individual | Visitor individual | Visitor non-provider | Guest |
+|---|---|---|---|---|
+| Breadcrumb, title, hero (avatar, role, location, personal socials) | ✅ | ✅ | ✅ (no provider badge) | ✅ (no «درباره من» block — empty bio) |
+| Stats counts (four columns) | ✅ | ✅ | ✅ | ✅ |
+| Follow / like / dislike / share (stats bar) | ⛔ | ✅ | ✅ | ⛔ |
+| Promo, academic records | ✅ | ✅ | ✅ | ✅ |
+| Provider info + contact grid + catalog tabs (`400:139509`–`400:139539`) | ✅ | ✅ | ⛔ | ✅ |
+| Comments lists (transferred + registered) | ✅ read | ✅ read | ✅ read | ✅ read |
+| Comment composer | ⛔ (owner tools on cards) | ✅ composer | ✅ composer | `GuestPromptState` (`400:140940`) |
+| Comment visitor like / dislike | ⛔ | ✅ | ✅ | ⛔ |
+| Comment transfer | ✅ | ✅ | ✅ | ⛔ |
+| Owner comment actions (feature, reply as owner, delete / edit via menu) | ✅ | ⛔ | ⛔ | ⛔ |
+
+Sources: §5.1 (owner vs visitor), `docs/03-domain-and-rules.md` (guest = no interactive actions),
+`docs/ai/figma-map.md` section nodes. Compare at **section** granularity only (e.g. stats `400:139505`,
+service title `400:139509`, composer `400:139556` / guest gate on `400:140940`).
 
 ---
 

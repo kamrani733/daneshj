@@ -2,7 +2,7 @@
 title: "Integrations"
 description: "Backend microservices, endpoint inventory, readiness and mock status"
 category: "architecture"
-last_updated: "2026-09-25"
+last_updated: "2026-09-26"
 ---
 
 # Integrations
@@ -55,11 +55,14 @@ Optional **presentation demo mode** for `/public-panel` only (Session 2.5). Othe
 |---|---|---|
 | Env gate | `NEXT_PUBLIC_DEMO_MODE_ENABLED=true` | Toggle + fixtures only when set. Production builds leave it unset (security item 0: no mocks in production). |
 | Cookie | `demo_mode=1` | Shared by server (RSC layout) and client (React Query, toggle). |
+| Persona cookie | `demo_persona=<id>` | Presentation viewer + panel shape. Default `visitor-individual-provider`. IDs: `owner-individual-provider`, `visitor-individual-provider`, `visitor-non-provider`, `guest`. |
 | Resolver | `apps/usr/src/lib/demo-mode/` | `resolvePublicPanelApiRuntime` picks real `api/` vs lazy `mock/` twins. |
-| Fixtures | `public-panel/mock/fixtures.ts`, `interactive-ops-demo.ts` | Full visitor panel from `MOCK_PUBLIC_PANEL`; Interactive Ops counters in memory. |
-| UI | Header toggle (presentation icon), `PublicPanelDemoBanner` | Toggle only on `/public-panel` when gate is on. |
+| Fixtures | `public-panel/mock/fixtures.ts`, `interactive-ops-demo.ts` | Profile per persona; Interactive Ops counters in memory. |
+| Viewer shim | `public-panel/demo/viewer-context.ts` | Demo-only `viewerActorId` / token; real session unchanged. |
+| Capabilities | `public-panel/capabilities.ts` | Sections read visibility from the same rules as production. |
+| UI | `PublicPanelDemoToolbar` (persona dropdown + toggle), `PublicPanelDemoBanner` | Only on `/public-panel` when gate is on. Persona switch invalidates demo React Query keys (no full reload). |
 
-Demo mode **does not** bypass auth or permission rules; it only replaces read data and keeps mutations local (no backend calls when cookie + gate are active).
+Demo mode **does not** bypass auth or permission rules on real routes; on `/public-panel` with gate + cookie it replaces read data, simulates the selected persona locally, and keeps mutations in-memory (no backend calls).
 
 
 Shared error normalization → `ApiError` ([05-data-models.md](./05-data-models.md)). 401 → refresh then login;

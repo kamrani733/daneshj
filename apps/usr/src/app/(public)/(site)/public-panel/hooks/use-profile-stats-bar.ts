@@ -12,6 +12,7 @@ import {
   usePanelInteractiveStatsQuery,
   useShareMutation,
 } from '@public-panel/api';
+import type { PublicPanelCapabilities } from '@public-panel/capabilities';
 import type { PublicPanelProfile } from '@public-panel/types/ui';
 import type { StatsPeopleKind, StatsPerson } from '@public-panel/types/stats';
 
@@ -19,12 +20,14 @@ type UseProfileStatsBarPayload = {
   profile: PublicPanelProfile;
   accessToken?: string | null;
   viewerActorId?: number | null;
+  capabilities: PublicPanelCapabilities;
 };
 
 export function useProfileStatsBar({
   profile,
   accessToken,
   viewerActorId,
+  capabilities,
 }: UseProfileStatsBarPayload) {
   const [following, setFollowing] = useState(false);
   const [reaction, setReaction] = useState<'like' | 'dislike' | 'none'>(
@@ -63,13 +66,9 @@ export function useProfileStatsBar({
   const likeMutation = useLikeMutation();
   const shareMutation = useShareMutation();
 
-  const isOwnProfile = viewerActorId != null && viewerActorId === profile.actorId;
-  const showActions = !isOwnProfile;
-  const canInteract =
-    !!accessToken &&
-    viewerActorId != null &&
-    viewerActorId > 0 &&
-    viewerActorId !== profile.actorId;
+  const isOwnProfile = capabilities.isPanelOwner;
+  const showActions = capabilities.showVisitorEngagementActions;
+  const canInteract = capabilities.canInteractWithPanel;
 
   const displayStats = {
     followers: stats.followers,

@@ -36,7 +36,7 @@ import {
 } from '@/components/site/menu-panel';
 import { NotificationsPanel } from '@/components/site/notifications-panel';
 import { UserProfileMenu } from '@/components/site/user-profile-menu';
-import { PublicPanelDemoModeToggle } from '@public-panel/components/demo-mode/public-panel-demo-toggle';
+import { PublicPanelDemoToolbar } from '@public-panel/components/demo-mode/public-panel-demo-toolbar';
 
 /** Figma menu order (LTR, logo last on the right edge) */
 type NavLink =
@@ -119,7 +119,7 @@ export function SiteHeader({
               profileLabel={t('profile')}
               loginLabel={tHome('login')}
             />
-            <PublicPanelDemoModeToggle size="md" />
+            <PublicPanelDemoToolbar size="md" />
             <NotificationButton
               count={0}
               label={t('notifications')}
@@ -224,7 +224,7 @@ function HeaderIconGroup({
         loginLabel={loginLabel}
         size="sm"
       />
-      <PublicPanelDemoModeToggle size="sm" />
+      <PublicPanelDemoToolbar size="sm" />
       <NotificationButton
         count={0}
         label={notificationsLabel}

@@ -24,6 +24,7 @@ import {
   TARGET_TYPE,
   useLikeMutation,
 } from '@public-panel/api';
+import type { PublicPanelCapabilities } from '@public-panel/capabilities';
 import type { PanelComment } from '@public-panel/types/ui';
 import { AppDialog } from '@/components/ui/app-dialog';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -48,6 +49,7 @@ type CommentCardProps = {
   transferredCount?: number;
   accessToken?: string | null;
   viewerActorId?: number | null;
+  capabilities: PublicPanelCapabilities;
   onTransfer?: (commentId: string, note: string) => void;
   onDelete?: (commentId: string) => void;
   onEditNote?: (commentId: string, note: string) => void;
@@ -62,6 +64,7 @@ export function CommentCard({
   transferredCount = 0,
   accessToken,
   viewerActorId,
+  capabilities,
   onTransfer,
   onDelete,
   onEditNote,
@@ -94,7 +97,7 @@ export function CommentCard({
 
   const targetId = Number.parseInt(comment.id.replace(/\D/g, ''), 10);
   const canInteract =
-    !!accessToken &&
+    capabilities.canInteractWithComments &&
     viewerActorId != null &&
     viewerActorId > 0 &&
     Number.isFinite(targetId);
@@ -184,6 +187,9 @@ export function CommentCard({
       featured={featured}
       disabled={likeMutation.isPending}
       transferDisabled={isTransferred}
+      showVisitorReactions={capabilities.showCommentVisitorReactions}
+      showOwnerTools={capabilities.showCommentOwnerActions}
+      showTransfer={capabilities.showCommentTransferAction}
       onLike={() => void handleReaction('like')}
       onDislike={() => void handleReaction('dislike')}
       onTransfer={() => setTransferOpen(true)}
@@ -209,6 +215,7 @@ export function CommentCard({
           className
         )}
       >
+        {capabilities.showCommentOwnerActions ? (
         <div className="absolute end-3 top-3">
           <Popover open={menuOpen} onOpenChange={setMenuOpen}>
             <PopoverTrigger asChild>
@@ -264,6 +271,7 @@ export function CommentCard({
             </PopoverContent>
           </Popover>
         </div>
+        ) : null}
 
         <AppDialog
           open={deleteOpen}
@@ -415,59 +423,61 @@ export function CommentCard({
                 </Badge>
               ) : null}
             </div>
-            <Popover open={menuOpen} onOpenChange={setMenuOpen}>
-              <PopoverTrigger asChild>
-                <button
-                  type="button"
-                  aria-label={t('more')}
-                  className="shrink-0 text-neutral-600 hover:text-app-filter-ink dark:text-app-filter-muted dark:hover:text-app-filter-ink"
+            {capabilities.showCommentOwnerActions ? (
+              <Popover open={menuOpen} onOpenChange={setMenuOpen}>
+                <PopoverTrigger asChild>
+                  <button
+                    type="button"
+                    aria-label={t('more')}
+                    className="shrink-0 text-neutral-600 hover:text-app-filter-ink dark:text-app-filter-muted dark:hover:text-app-filter-ink"
+                  >
+                    <MoreVertical className="size-5" strokeWidth={1.5} />
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent
+                  align="end"
+                  sideOffset={6}
+                  dir="rtl"
+                  className="w-[240px] gap-0 rounded-xl border-0 bg-app-search-fill p-1 shadow-app-elevation-2 ring-0 dark:bg-app-search-category"
                 >
-                  <MoreVertical className="size-5" strokeWidth={1.5} />
-                </button>
-              </PopoverTrigger>
-              <PopoverContent
-                align="end"
-                sideOffset={6}
-                dir="rtl"
-                className="w-[240px] gap-0 rounded-xl border-0 bg-app-search-fill p-1 shadow-app-elevation-2 ring-0 dark:bg-app-search-category"
-              >
-                <ul className="flex flex-col py-1">
-                  <li>
-                    <button
-                      type="button"
-                      className="flex h-11 w-full items-center px-3 text-start text-sm font-medium text-app-filter-ink hover:bg-black/[0.04] dark:hover:bg-white/10"
-                      onClick={() => {
-                        setMenuOpen(false);
-                        setDeleteOpen(true);
-                      }}
-                    >
-                      {tFlow('menuDeleteRegistered')}
-                    </button>
-                  </li>
-                  <li>
-                    <button
-                      type="button"
-                      className="flex h-11 w-full items-center px-3 text-start text-sm font-medium text-app-filter-ink hover:bg-black/[0.04] dark:hover:bg-white/10"
-                      onClick={() => {
-                        setMenuOpen(false);
-                        setTransferOpen(true);
-                      }}
-                    >
-                      {tFlow('menuEditNote')}
-                    </button>
-                  </li>
-                  <li>
-                    <button
-                      type="button"
-                      className="flex h-11 w-full items-center px-3 text-start text-sm font-medium text-app-filter-ink hover:bg-black/[0.04] dark:hover:bg-white/10"
-                      onClick={() => setMenuOpen(false)}
-                    >
-                      {tFlow('menuReport')}
-                    </button>
-                  </li>
-                </ul>
-              </PopoverContent>
-            </Popover>
+                  <ul className="flex flex-col py-1">
+                    <li>
+                      <button
+                        type="button"
+                        className="flex h-11 w-full items-center px-3 text-start text-sm font-medium text-app-filter-ink hover:bg-black/[0.04] dark:hover:bg-white/10"
+                        onClick={() => {
+                          setMenuOpen(false);
+                          setDeleteOpen(true);
+                        }}
+                      >
+                        {tFlow('menuDeleteRegistered')}
+                      </button>
+                    </li>
+                    <li>
+                      <button
+                        type="button"
+                        className="flex h-11 w-full items-center px-3 text-start text-sm font-medium text-app-filter-ink hover:bg-black/[0.04] dark:hover:bg-white/10"
+                        onClick={() => {
+                          setMenuOpen(false);
+                          setTransferOpen(true);
+                        }}
+                      >
+                        {tFlow('menuEditNote')}
+                      </button>
+                    </li>
+                    <li>
+                      <button
+                        type="button"
+                        className="flex h-11 w-full items-center px-3 text-start text-sm font-medium text-app-filter-ink hover:bg-black/[0.04] dark:hover:bg-white/10"
+                        onClick={() => setMenuOpen(false)}
+                      >
+                        {tFlow('menuReport')}
+                      </button>
+                    </li>
+                  </ul>
+                </PopoverContent>
+              </Popover>
+            ) : null}
           </header>
 
           <p className="w-full text-start text-sm font-medium leading-5 text-app-filter-ink">
@@ -509,6 +519,7 @@ export function CommentCard({
                   transferredCount={transferredCount}
                   accessToken={accessToken}
                   viewerActorId={viewerActorId}
+                  capabilities={capabilities}
                   onTransfer={onTransfer}
                   onDelete={onDelete}
                   onEditNote={onEditNote}
@@ -578,6 +589,9 @@ function InteractionRow({
   onTransfer,
   onReply,
   onToggleFeature,
+  showVisitorReactions,
+  showOwnerTools,
+  showTransfer,
   labels,
 }: {
   likes: number;
@@ -587,6 +601,9 @@ function InteractionRow({
   featured: boolean;
   disabled?: boolean;
   transferDisabled?: boolean;
+  showVisitorReactions: boolean;
+  showOwnerTools: boolean;
+  showTransfer: boolean;
   onLike: () => void;
   onDislike: () => void;
   onTransfer: () => void;
@@ -603,6 +620,10 @@ function InteractionRow({
   };
 }) {
   const liked = reaction === 'like';
+  const hasActions =
+    showVisitorReactions || showOwnerTools || showTransfer;
+
+  if (!hasActions) return null;
 
   return (
     <div className="flex w-full justify-end">
@@ -610,53 +631,63 @@ function InteractionRow({
         dir="rtl"
         className="flex flex-wrap items-center gap-1 text-neutral-600 dark:text-app-filter-muted"
       >
-        <ActionButton
-          label={labels.like}
-          count={likes}
-          active={liked}
-          activeClassName="text-destructive"
-          disabled={disabled}
-          onClick={onLike}
-          icon={
-            <Heart
-              className="size-5"
-              fill="none"
-              strokeWidth={1.5}
+        {showVisitorReactions ? (
+          <>
+            <ActionButton
+              label={labels.like}
+              count={likes}
+              active={liked}
+              activeClassName="text-destructive"
+              disabled={disabled}
+              onClick={onLike}
+              icon={
+                <Heart
+                  className="size-5"
+                  fill="none"
+                  strokeWidth={1.5}
+                />
+              }
             />
-          }
-        />
-        <ActionButton
-          label={labels.dislike}
-          count={dislikes}
-          active={reaction === 'dislike'}
-          disabled={disabled}
-          onClick={onDislike}
-          icon={<ThumbsDown className="size-5" strokeWidth={1.5} />}
-        />
-        <ActionButton
-          label={labels.transfer}
-          count={shares}
-          disabled={transferDisabled}
-          onClick={onTransfer}
-          icon={<Repeat2 className="size-5" strokeWidth={1.5} />}
-        />
-        <ActionButton
-          label={labels.reply}
-          onClick={onReply}
-          icon={<Reply className="size-5" strokeWidth={1.5} />}
-        />
-        <ActionButton
-          label={featured ? labels.unfeature : labels.feature}
-          active={featured}
-          activeClassName="text-warning"
-          onClick={onToggleFeature}
-          icon={
-            <Star
-              className={cn('size-5', featured && 'text-warning')}
-              strokeWidth={1.5}
+            <ActionButton
+              label={labels.dislike}
+              count={dislikes}
+              active={reaction === 'dislike'}
+              disabled={disabled}
+              onClick={onDislike}
+              icon={<ThumbsDown className="size-5" strokeWidth={1.5} />}
             />
-          }
-        />
+          </>
+        ) : null}
+        {showTransfer ? (
+          <ActionButton
+            label={labels.transfer}
+            count={shares}
+            disabled={transferDisabled}
+            onClick={onTransfer}
+            icon={<Repeat2 className="size-5" strokeWidth={1.5} />}
+          />
+        ) : null}
+        {showOwnerTools ? (
+          <>
+            <ActionButton
+              label={labels.reply}
+              onClick={onReply}
+              icon={<Reply className="size-5" strokeWidth={1.5} />}
+            />
+            <ActionButton
+              label={featured ? labels.unfeature : labels.feature}
+              active={featured}
+              activeClassName="text-warning"
+              onClick={onToggleFeature}
+              icon={
+                <Star
+                  className={cn('size-5', featured && 'text-warning')}
+                  strokeWidth={1.5}
+                />
+              }
+            />
+          </>
+        ) : null}
       </div>
     </div>
   );

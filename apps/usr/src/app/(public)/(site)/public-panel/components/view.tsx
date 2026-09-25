@@ -17,6 +17,8 @@ import { ProfileStatsBar } from '@public-panel/components/profile/stats-bar';
 import { PublicPanelHeading } from '@public-panel/components/shared/heading';
 import { RecordsAccordion } from '@public-panel/components/profile/records-accordion';
 import { ServiceInfoSection } from '@public-panel/components/catalog/service-info-section';
+import { usePublicPanelCapabilities } from '@public-panel/hooks/use-public-panel-capabilities';
+import { usePublicPanelViewer } from '@public-panel/hooks/use-public-panel-viewer';
 
 type PublicPanelViewProps = {
   accessToken?: string | null;
@@ -39,6 +41,12 @@ export function PublicPanelView({
     actorType
   );
   const profile = profileQuery.data ?? EMPTY_PUBLIC_PANEL;
+  const viewer = usePublicPanelViewer(
+    { accessToken, viewerActorId },
+    profile.actorId
+  );
+  const capabilities = usePublicPanelCapabilities(profile, viewer);
+
   const isLoading =
     !demoMode &&
     profileQuery.isFetching &&
@@ -53,43 +61,47 @@ export function PublicPanelView({
       >
         {isLoading ? <PanelLoadingOverlay message={t('loading')} /> : null}
         {profileQuery.isError && !isLoading && !demoMode ? (
-        <ErrorState
-          message={t('loadError')}
-          retryLabel={t('retry')}
-          onRetry={() => void profileQuery.refetch()}
-        />
-      ) : null}
+          <ErrorState
+            message={t('loadError')}
+            retryLabel={t('retry')}
+            onRetry={() => void profileQuery.refetch()}
+          />
+        ) : null}
 
-      <PublicPanelHeading displayName={profile.displayName} />
+        <PublicPanelHeading displayName={profile.displayName} />
 
-      <div className="flex w-full flex-col gap-8 min-[834px]:gap-12">
-        <ProfileHeroCard profile={profile} />
-        <ProfileStatsBar
-          profile={profile}
-          accessToken={accessToken}
-          viewerActorId={viewerActorId}
-        />
-        <PanelInfoBanner />
-        <RecordsAccordion
+        <div className="flex w-full flex-col gap-8 min-[834px]:gap-12">
+          <ProfileHeroCard profile={profile} />
+          <ProfileStatsBar
+            profile={profile}
+            accessToken={viewer.accessToken}
+            viewerActorId={viewer.viewerActorId}
+            capabilities={capabilities}
+          />
+          <PanelInfoBanner />
+          <RecordsAccordion
+            username={profile.username}
+            records={profile.academicRecords}
+            address={profile.educationAddress}
+          />
+        </div>
+
+        {capabilities.showServiceInfoSection ? (
+          <ServiceInfoSection
+            links={profile.serviceSocialLinks}
+            catalog={profile.serviceCatalog}
+            otherInfo={profile.otherInfo}
+          />
+        ) : null}
+        <CommentsSection
+          key={`${profile.actorId}-${capabilities.commentComposerMode}`}
           username={profile.username}
-          records={profile.academicRecords}
-          address={profile.educationAddress}
+          comments={profile.comments}
+          accessToken={viewer.accessToken}
+          viewerActorId={viewer.viewerActorId}
+          capabilities={capabilities}
         />
-      </div>
-
-      <ServiceInfoSection
-        links={profile.serviceSocialLinks}
-        catalog={profile.serviceCatalog}
-        otherInfo={profile.otherInfo}
-      />
-      <CommentsSection
-        key={profile.actorId}
-        username={profile.username}
-        comments={profile.comments}
-        accessToken={accessToken}
-        viewerActorId={viewerActorId}
-      />
-    </main>
+      </main>
     </>
   );
 }
