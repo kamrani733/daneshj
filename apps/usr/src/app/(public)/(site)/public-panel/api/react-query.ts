@@ -2,7 +2,10 @@
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
+import { isDemoModeGateEnabled } from '@/lib/demo-mode/config';
 import { EMPTY_PUBLIC_PANEL } from '@public-panel/data/public-panel-ui';
+import { usePublicPanelDemoMode } from '@public-panel/components/demo-mode/public-panel-demo-provider';
+import { DEMO_DEFAULT_ACTOR_ID } from '@public-panel/mock/fixtures';
 
 import {
   followEntity,
@@ -65,9 +68,10 @@ export function useFollowersQuery(
   },
   enabled = true
 ) {
+  const demoMode = usePublicPanelDemoMode();
   const { accessToken, ...filters } = payload;
   return useQuery({
-    queryKey: interactiveOpsQueryKeys.followers(filters),
+    queryKey: interactiveOpsQueryKeys.followers(filters, demoMode),
     queryFn: () => getFollowers({ ...filters, accessToken }),
     enabled: enabled && canQueryInteractiveOps() && filters.targetId > 0,
   });
@@ -79,9 +83,10 @@ export function useFollowingsQuery(
   },
   enabled = true
 ) {
+  const demoMode = usePublicPanelDemoMode();
   const { accessToken, ...filters } = payload;
   return useQuery({
-    queryKey: interactiveOpsQueryKeys.followings(filters),
+    queryKey: interactiveOpsQueryKeys.followings(filters, demoMode),
     queryFn: () => getFollowings({ ...filters, accessToken }),
     enabled: enabled && canQueryInteractiveOps() && filters.actorId > 0,
   });
@@ -93,9 +98,10 @@ export function useLikersQuery(
   },
   enabled = true
 ) {
+  const demoMode = usePublicPanelDemoMode();
   const { accessToken, ...filters } = payload;
   return useQuery({
-    queryKey: interactiveOpsQueryKeys.likers(filters),
+    queryKey: interactiveOpsQueryKeys.likers(filters, demoMode),
     queryFn: () => getLikers({ ...filters, accessToken }),
     enabled: enabled && canQueryInteractiveOps() && filters.targetId > 0,
   });
@@ -107,9 +113,10 @@ export function useLikeesQuery(
   },
   enabled = true
 ) {
+  const demoMode = usePublicPanelDemoMode();
   const { accessToken, ...filters } = payload;
   return useQuery({
-    queryKey: interactiveOpsQueryKeys.likees(filters),
+    queryKey: interactiveOpsQueryKeys.likees(filters, demoMode),
     queryFn: () => getLikees({ ...filters, accessToken }),
     enabled: enabled && canQueryInteractiveOps() && filters.actorId > 0,
   });
@@ -121,9 +128,10 @@ export function useDislikersQuery(
   },
   enabled = true
 ) {
+  const demoMode = usePublicPanelDemoMode();
   const { accessToken, ...filters } = payload;
   return useQuery({
-    queryKey: interactiveOpsQueryKeys.dislikers(filters),
+    queryKey: interactiveOpsQueryKeys.dislikers(filters, demoMode),
     queryFn: () => getDislikers({ ...filters, accessToken }),
     enabled: enabled && canQueryInteractiveOps() && filters.targetId > 0,
   });
@@ -292,9 +300,10 @@ export function useDislikeesQuery(
   },
   enabled = true
 ) {
+  const demoMode = usePublicPanelDemoMode();
   const { accessToken, ...filters } = payload;
   return useQuery({
-    queryKey: interactiveOpsQueryKeys.dislikees(filters),
+    queryKey: interactiveOpsQueryKeys.dislikees(filters, demoMode),
     queryFn: () => getDislikees({ ...filters, accessToken }),
     enabled: enabled && canQueryInteractiveOps() && filters.actorId > 0,
   });
@@ -308,10 +317,12 @@ export function useAverageScoreQuery(
   },
   enabled = true
 ) {
+  const demoMode = usePublicPanelDemoMode();
   return useQuery({
     queryKey: interactiveOpsQueryKeys.averageScore(
       payload.targetId,
-      payload.targetType
+      payload.targetType,
+      demoMode
     ),
     queryFn: () =>
       getAverageScore({
@@ -345,8 +356,14 @@ function canFetchActor(accessToken: string | null | undefined) {
 async function fetchVisitorPublicPanel(
   accessToken: string | null | undefined,
   actorId: number,
-  kind: PublicPanelKind
+  kind: PublicPanelKind,
+  demoMode: boolean
 ) {
+  if (demoMode && isDemoModeGateEnabled()) {
+    const { getDemoPublicPanelProfile } = await import('@public-panel/mock/fixtures');
+    return getDemoPublicPanelProfile(actorId, kind);
+  }
+
   if (kind === 'business') {
     const businessData = await retrieveBusinessPublicPanelForVisitor({
       accessToken,
@@ -381,13 +398,22 @@ export function usePublicPanelProfileQuery(
   actorId: number | null | undefined,
   kind: PublicPanelKind = 'user'
 ) {
+  const demoMode = usePublicPanelDemoMode();
   const targetId = actorId ?? 0;
+  const effectiveActorId =
+    demoMode && isDemoModeGateEnabled() && targetId <= 0
+      ? DEMO_DEFAULT_ACTOR_ID
+      : targetId;
   return useQuery({
-    queryKey: publicPanelActorQueryKeys.profile(targetId, kind),
-    queryFn: () => fetchVisitorPublicPanel(accessToken, targetId, kind),
-    enabled: canFetchVisitorProfile(targetId),
+    queryKey: publicPanelActorQueryKeys.profile(effectiveActorId, kind, demoMode),
+    queryFn: () =>
+      fetchVisitorPublicPanel(accessToken, effectiveActorId, kind, demoMode),
+    enabled:
+      demoMode && isDemoModeGateEnabled()
+        ? true
+        : canFetchVisitorProfile(targetId),
     staleTime: 60_000,
-    placeholderData: EMPTY_PUBLIC_PANEL,
+    placeholderData: demoMode ? undefined : EMPTY_PUBLIC_PANEL,
   });
 }
 
@@ -397,11 +423,21 @@ export function usePublicPanelVisitorQuery(
   kind: PublicPanelKind = 'user',
   enabled = true
 ) {
+  const demoMode = usePublicPanelDemoMode();
   const targetId = actorId ?? 0;
+  const effectiveActorId =
+    demoMode && isDemoModeGateEnabled() && targetId <= 0
+      ? DEMO_DEFAULT_ACTOR_ID
+      : targetId;
   return useQuery({
-    queryKey: publicPanelActorQueryKeys.visitor(targetId, kind),
-    queryFn: () => fetchVisitorPublicPanel(accessToken, targetId, kind),
-    enabled: enabled && canFetchVisitorProfile(targetId),
+    queryKey: publicPanelActorQueryKeys.visitor(effectiveActorId, kind, demoMode),
+    queryFn: () =>
+      fetchVisitorPublicPanel(accessToken, effectiveActorId, kind, demoMode),
+    enabled:
+      enabled &&
+      (demoMode && isDemoModeGateEnabled()
+        ? true
+        : canFetchVisitorProfile(targetId)),
   });
 }
 
@@ -411,10 +447,12 @@ export function usePublicPanelStatusQuery(
   },
   enabled = true
 ) {
+  const demoMode = usePublicPanelDemoMode();
   return useQuery({
     queryKey: publicPanelActorQueryKeys.status(
       payload.actorType,
-      payload.actorId
+      payload.actorId,
+      demoMode
     ),
     queryFn: () =>
       payload.actorId

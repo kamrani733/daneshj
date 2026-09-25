@@ -1,5 +1,7 @@
 import { interactiveOpsHttpClient } from '@/shared/api/interactive-ops-http';
 
+import { resolvePublicPanelApiRuntime } from '@/lib/demo-mode/resolve-api.client';
+
 import {
   mapAverageScore,
   mapInteractiveCount,
@@ -26,6 +28,17 @@ import type {
   ShareResult,
   TargetQueryPayload,
 } from '@public-panel/types/api';
+
+async function withInteractiveOpsDemo<T>(
+  runReal: () => Promise<T>,
+  runDemo: () => Promise<T>
+): Promise<T> {
+  return resolvePublicPanelApiRuntime(runReal, runDemo);
+}
+
+async function loadInteractiveOpsDemo() {
+  return import('@public-panel/mock/interactive-ops-demo');
+}
 
 function formatApiResponseError(
   message: string | null | undefined,
@@ -91,113 +104,158 @@ async function postInteractiveOps<T>(
 export async function followEntity(
   payload: FollowPayload
 ): Promise<FollowResult> {
-  const { data, message } = await postInteractiveOps<InteractiveListDataDto>(
-    '/interactive-ops/follow',
-    payload.accessToken,
-    toFollowBody(payload)
+  return withInteractiveOpsDemo(
+    async () => {
+      const { data, message } = await postInteractiveOps<InteractiveListDataDto>(
+        '/interactive-ops/follow',
+        payload.accessToken,
+        toFollowBody(payload)
+      );
+      return {
+        isActive: Boolean(data?.is_active ?? payload.isActive),
+        message,
+      };
+    },
+    async () => (await loadInteractiveOpsDemo()).followEntity(payload)
   );
-  return {
-    isActive: Boolean(data?.is_active ?? payload.isActive),
-    message,
-  };
 }
 
 /** GET /interactive-ops/follow/followers/ — USR1-53-1N8 */
 export async function getFollowers(
   payload: TargetQueryPayload
 ): Promise<InteractiveCountResult> {
-  const { data, message } = await getInteractiveOps<InteractiveListDataDto>(
-    '/interactive-ops/follow/followers/',
-    payload.accessToken,
-    toTargetQuery(payload)
+  return withInteractiveOpsDemo(
+    async () => {
+      const { data, message } = await getInteractiveOps<InteractiveListDataDto>(
+        '/interactive-ops/follow/followers/',
+        payload.accessToken,
+        toTargetQuery(payload)
+      );
+      return mapInteractiveCount(data, message);
+    },
+    async () => (await loadInteractiveOpsDemo()).getFollowers(payload)
   );
-  return mapInteractiveCount(data, message);
 }
 
 /** GET /interactive-ops/follow/followings/ — USR1-53-1N9 */
 export async function getFollowings(
   payload: ActorQueryPayload
 ): Promise<InteractiveCountResult> {
-  const { data, message } = await getInteractiveOps<InteractiveListDataDto>(
-    '/interactive-ops/follow/followings/',
-    payload.accessToken,
-    toActorQuery(payload)
+  return withInteractiveOpsDemo(
+    async () => {
+      const { data, message } = await getInteractiveOps<InteractiveListDataDto>(
+        '/interactive-ops/follow/followings/',
+        payload.accessToken,
+        toActorQuery(payload)
+      );
+      return mapInteractiveCount(data, message);
+    },
+    async () => (await loadInteractiveOpsDemo()).getFollowings(payload)
   );
-  return mapInteractiveCount(data, message);
 }
 
 /** POST /interactive-ops/like — USR1-53-1N2 / 1N3 */
 export async function reactToEntity(payload: LikePayload): Promise<LikeResult> {
-  const { data, message } = await postInteractiveOps<InteractiveListDataDto>(
-    '/interactive-ops/like',
-    payload.accessToken,
-    toLikeBody(payload)
+  return withInteractiveOpsDemo(
+    async () => {
+      const { data, message } = await postInteractiveOps<InteractiveListDataDto>(
+        '/interactive-ops/like',
+        payload.accessToken,
+        toLikeBody(payload)
+      );
+      return {
+        status: toLikeStatus(data?.status ?? payload.likeStatus),
+        message,
+      };
+    },
+    async () => (await loadInteractiveOpsDemo()).reactToEntity(payload)
   );
-  return {
-    status: toLikeStatus(data?.status ?? payload.likeStatus),
-    message,
-  };
 }
 
 /** GET /interactive-ops/like/likers/ — USR1-53-1N10 */
 export async function getLikers(
   payload: TargetQueryPayload
 ): Promise<InteractiveCountResult> {
-  const { data, message } = await getInteractiveOps<InteractiveListDataDto>(
-    '/interactive-ops/like/likers/',
-    payload.accessToken,
-    toTargetQuery(payload)
+  return withInteractiveOpsDemo(
+    async () => {
+      const { data, message } = await getInteractiveOps<InteractiveListDataDto>(
+        '/interactive-ops/like/likers/',
+        payload.accessToken,
+        toTargetQuery(payload)
+      );
+      return mapInteractiveCount(data, message);
+    },
+    async () => (await loadInteractiveOpsDemo()).getLikers(payload)
   );
-  return mapInteractiveCount(data, message);
 }
 
 /** GET /interactive-ops/like/likees/ — USR1-53-1N11 */
 export async function getLikees(
   payload: ActorQueryPayload
 ): Promise<InteractiveCountResult> {
-  const { data, message } = await getInteractiveOps<InteractiveListDataDto>(
-    '/interactive-ops/like/likees/',
-    payload.accessToken,
-    toActorQuery(payload)
+  return withInteractiveOpsDemo(
+    async () => {
+      const { data, message } = await getInteractiveOps<InteractiveListDataDto>(
+        '/interactive-ops/like/likees/',
+        payload.accessToken,
+        toActorQuery(payload)
+      );
+      return mapInteractiveCount(data, message);
+    },
+    async () => (await loadInteractiveOpsDemo()).getLikees(payload)
   );
-  return mapInteractiveCount(data, message);
 }
 
 /** GET /interactive-ops/like/dislikers/ — USR1-53-1N12 */
 export async function getDislikers(
   payload: TargetQueryPayload
 ): Promise<InteractiveCountResult> {
-  const { data, message } = await getInteractiveOps<InteractiveListDataDto>(
-    '/interactive-ops/like/dislikers/',
-    payload.accessToken,
-    toTargetQuery(payload)
+  return withInteractiveOpsDemo(
+    async () => {
+      const { data, message } = await getInteractiveOps<InteractiveListDataDto>(
+        '/interactive-ops/like/dislikers/',
+        payload.accessToken,
+        toTargetQuery(payload)
+      );
+      return mapInteractiveCount(data, message);
+    },
+    async () => (await loadInteractiveOpsDemo()).getDislikers(payload)
   );
-  return mapInteractiveCount(data, message);
 }
 
 /** GET /interactive-ops/like/dislikees/ — USR1-53-1N13 */
 export async function getDislikees(
   payload: ActorQueryPayload
 ): Promise<InteractiveCountResult> {
-  const { data, message } = await getInteractiveOps<InteractiveListDataDto>(
-    '/interactive-ops/like/dislikees/',
-    payload.accessToken,
-    toActorQuery(payload)
+  return withInteractiveOpsDemo(
+    async () => {
+      const { data, message } = await getInteractiveOps<InteractiveListDataDto>(
+        '/interactive-ops/like/dislikees/',
+        payload.accessToken,
+        toActorQuery(payload)
+      );
+      return mapInteractiveCount(data, message);
+    },
+    async () => (await loadInteractiveOpsDemo()).getDislikees(payload)
   );
-  return mapInteractiveCount(data, message);
 }
 
 /** POST /interactive-ops/score — Usr1-53-1N6 */
 export async function submitScore(
   payload: ScorePayload
 ): Promise<{ score: number; message: string | null }> {
-  const { data, message } = await postInteractiveOps<InteractiveListDataDto>(
-    '/interactive-ops/score',
-    payload.accessToken,
-    toScoreBody(payload)
+  return withInteractiveOpsDemo(
+    async () => {
+      const { data, message } = await postInteractiveOps<InteractiveListDataDto>(
+        '/interactive-ops/score',
+        payload.accessToken,
+        toScoreBody(payload)
+      );
+      const score = typeof data?.score === 'number' ? data.score : payload.score;
+      return { score, message };
+    },
+    async () => (await loadInteractiveOpsDemo()).submitScore(payload)
   );
-  const score = typeof data?.score === 'number' ? data.score : payload.score;
-  return { score, message };
 }
 
 /** GET /interactive-ops/score/average — USR1-53-1N7 */
@@ -206,23 +264,33 @@ export async function getAverageScore(payload: {
   targetId: number;
   targetType: ScorePayload['targetType'];
 }): Promise<AverageScoreResult> {
-  const { data, message } = await getInteractiveOps<InteractiveListDataDto>(
-    '/interactive-ops/score/average',
-    payload.accessToken,
-    {
-      target_id: payload.targetId,
-      target_type: payload.targetType,
-    }
+  return withInteractiveOpsDemo(
+    async () => {
+      const { data, message } = await getInteractiveOps<InteractiveListDataDto>(
+        '/interactive-ops/score/average',
+        payload.accessToken,
+        {
+          target_id: payload.targetId,
+          target_type: payload.targetType,
+        }
+      );
+      return mapAverageScore(data, message);
+    },
+    async () => (await loadInteractiveOpsDemo()).getAverageScore(payload)
   );
-  return mapAverageScore(data, message);
 }
 
 /** POST /interactive-ops/share — USR1-53-1N4 / 1N5 */
 export async function shareEntity(payload: SharePayload): Promise<ShareResult> {
-  const { message } = await postInteractiveOps<InteractiveListDataDto>(
-    '/interactive-ops/share',
-    payload.accessToken,
-    toShareBody(payload)
+  return withInteractiveOpsDemo(
+    async () => {
+      const { message } = await postInteractiveOps<InteractiveListDataDto>(
+        '/interactive-ops/share',
+        payload.accessToken,
+        toShareBody(payload)
+      );
+      return { message };
+    },
+    async () => (await loadInteractiveOpsDemo()).shareEntity(payload)
   );
-  return { message };
 }
