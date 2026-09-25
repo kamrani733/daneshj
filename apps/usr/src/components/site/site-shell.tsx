@@ -7,6 +7,11 @@ import { SiteBgPattern } from '@/components/site/site-bg-pattern';
 import { SiteFooter } from '@/components/site/site-footer';
 import { SiteHeader } from '@/components/site/site-header';
 import { SiteMotivationBox } from '@/components/site/site-motivation-box';
+import { readDemoModeCookieServer } from '@/lib/demo-mode/cookies.server';
+import { isDemoModeGateEnabled } from '@/lib/demo-mode/config';
+import { readDemoPersonaCookieServer } from '@/lib/demo-mode/persona-cookies.server';
+import { DEFAULT_DEMO_PERSONA } from '@/lib/demo-mode/persona';
+import { PublicPanelDemoProvider } from '@public-panel/components/demo-mode/public-panel-demo-provider';
 
 type SiteShellProps = {
   children: ReactNode;
@@ -17,8 +22,18 @@ export async function SiteShell({ children }: SiteShellProps) {
   const isUserSession =
     session?.user.id.startsWith('User_') || session?.loginType === 1;
   const userType = session ? (isUserSession ? 'user' : 'admin') : undefined;
+  const initialDemoActive = isDemoModeGateEnabled()
+    ? await readDemoModeCookieServer()
+    : false;
+  const initialDemoPersona = isDemoModeGateEnabled()
+    ? await readDemoPersonaCookieServer()
+    : DEFAULT_DEMO_PERSONA;
 
   return (
+    <PublicPanelDemoProvider
+      initialActive={initialDemoActive}
+      initialPersona={initialDemoPersona}
+    >
     <div className="relative min-h-screen overflow-x-clip bg-app-scene" dir="rtl">
       <SessionKeepAlive
         enabled={!!session?.refreshToken && !!session.sessionKey}
@@ -36,5 +51,6 @@ export async function SiteShell({ children }: SiteShellProps) {
         <SiteFooter />
       </div>
     </div>
+    </PublicPanelDemoProvider>
   );
 }

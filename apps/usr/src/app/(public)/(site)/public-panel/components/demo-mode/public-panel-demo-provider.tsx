@@ -12,19 +12,13 @@ import {
 import { useRouter } from 'next/navigation';
 import { useQueryClient } from '@tanstack/react-query';
 
-import {
-  readDemoModeCookieClient,
-  writeDemoModeCookieClient,
-} from '@/lib/demo-mode/cookies.client';
+import { writeDemoModeCookieClient } from '@/lib/demo-mode/cookies.client';
 import { isDemoModeGateEnabled } from '@/lib/demo-mode/config';
 import {
   DEFAULT_DEMO_PERSONA,
   type DemoPersonaId,
 } from '@/lib/demo-mode/persona';
-import {
-  readDemoPersonaCookieClient,
-  writeDemoPersonaCookieClient,
-} from '@/lib/demo-mode/persona-cookies.client';
+import { writeDemoPersonaCookieClient } from '@/lib/demo-mode/persona-cookies.client';
 
 type PublicPanelDemoContextValue = {
   active: boolean;
@@ -109,16 +103,12 @@ export function PublicPanelDemoProvider({
 
 export function usePublicPanelDemoMode(): boolean {
   const ctx = useContext(PublicPanelDemoContext);
-  if (ctx.active) return true;
-  if (!isDemoModeGateEnabled()) return false;
-  return readDemoModeCookieClient();
+  return isDemoModeGateEnabled() ? ctx.active : false;
 }
 
 export function usePublicPanelDemoPersona(): DemoPersonaId {
   const ctx = useContext(PublicPanelDemoContext);
-  if (!isDemoModeGateEnabled()) return DEFAULT_DEMO_PERSONA;
-  if (ctx.active) return ctx.persona;
-  return readDemoPersonaCookieClient();
+  return isDemoModeGateEnabled() ? ctx.persona : DEFAULT_DEMO_PERSONA;
 }
 
 export function usePublicPanelDemoModeActions() {

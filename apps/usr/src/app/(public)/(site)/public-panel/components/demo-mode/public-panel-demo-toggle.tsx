@@ -1,18 +1,17 @@
 'use client';
 
 import { Presentation } from 'lucide-react';
-import { useQueryClient } from '@tanstack/react-query';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { useEffect, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
-import {
-  readDemoModeCookieClient,
-  writeDemoModeCookieClient,
-} from '@/lib/demo-mode/cookies.client';
 import { isDemoModeGateEnabled } from '@/lib/demo-mode/config';
 import { cn } from '@/lib/utils';
+
+import {
+  usePublicPanelDemoMode,
+  usePublicPanelDemoModeActions,
+} from '@public-panel/components/demo-mode/public-panel-demo-provider';
 
 type PublicPanelDemoModeToggleProps = {
   size?: 'sm' | 'md';
@@ -20,30 +19,16 @@ type PublicPanelDemoModeToggleProps = {
 
 export function PublicPanelDemoModeToggle({ size = 'md' }: PublicPanelDemoModeToggleProps) {
   const pathname = usePathname();
-  const router = useRouter();
-  const queryClient = useQueryClient();
   const t = useTranslations('publicPanel.demo');
-  const [active, setActive] = useState(false);
-
-  useEffect(() => {
-    setActive(readDemoModeCookieClient());
-  }, [pathname]);
+  const active = usePublicPanelDemoMode();
+  const { setDemoMode } = usePublicPanelDemoModeActions();
 
   if (!isDemoModeGateEnabled() || !pathname?.startsWith('/public-panel')) {
     return null;
   }
 
   const handleToggle = () => {
-    const next = !active;
-    writeDemoModeCookieClient(next);
-    setActive(next);
-    if (next) {
-      void import('@public-panel/mock/interactive-ops-demo').then((mod) => {
-        mod.resetDemoInteractiveOpsState();
-      });
-    }
-    void queryClient.invalidateQueries();
-    router.refresh();
+    setDemoMode(!active);
   };
 
   return (

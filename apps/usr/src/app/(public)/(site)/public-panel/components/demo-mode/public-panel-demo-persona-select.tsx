@@ -2,19 +2,18 @@
 
 import { usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { useEffect, useState } from 'react';
 
 import { isDemoModeGateEnabled } from '@/lib/demo-mode/config';
 import {
   DEMO_PERSONA_IDS,
   type DemoPersonaId,
 } from '@/lib/demo-mode/persona';
-import { readDemoPersonaCookieClient } from '@/lib/demo-mode/persona-cookies.client';
 import { cn } from '@/lib/utils';
 
 import {
   usePublicPanelDemoMode,
   usePublicPanelDemoModeActions,
+  usePublicPanelDemoPersona,
 } from '@public-panel/components/demo-mode/public-panel-demo-provider';
 
 type PublicPanelDemoPersonaSelectProps = {
@@ -27,14 +26,8 @@ export function PublicPanelDemoPersonaSelect({
   const pathname = usePathname();
   const t = useTranslations('publicPanel.demo');
   const demoActive = usePublicPanelDemoMode();
+  const persona = usePublicPanelDemoPersona();
   const { setPersona } = usePublicPanelDemoModeActions();
-  const [value, setValue] = useState<DemoPersonaId>(() =>
-    readDemoPersonaCookieClient()
-  );
-
-  useEffect(() => {
-    setValue(readDemoPersonaCookieClient());
-  }, [pathname, demoActive]);
 
   if (
     !isDemoModeGateEnabled() ||
@@ -55,11 +48,9 @@ export function PublicPanelDemoPersonaSelect({
         {t('personaLabel')}
       </span>
       <select
-        value={value}
+        value={persona}
         onChange={(event) => {
-          const next = event.target.value as DemoPersonaId;
-          setValue(next);
-          setPersona(next);
+          setPersona(event.target.value as DemoPersonaId);
         }}
         className={cn(
           'min-w-0 flex-1 appearance-none bg-transparent font-semibold text-app-filter-ink',
