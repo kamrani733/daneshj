@@ -44,3 +44,49 @@ Values: `docs/ai/m3-tokens.css` v3.
 
 - Read texts, sizes and spacing with `get_design_context` on the frame or a child node; do not guess from exports.
 - For each implemented state, cite the node ID in the plan and in the PR description.
+
+## Section node index (use these, never the whole frame or page)
+
+Desktop main frame `400:139432` (individual provider, light):
+
+| Section | Node | Size |
+|---|---|---|
+| Header (shared) | `400:139433` Top Navigation Bar | 1512×88 |
+| Page title + breadcrumb | `400:139501` panel title | 1322×136 |
+| Profile hero | `400:139504` main top frame | 1322×358 |
+| Stats / interaction box | `400:139505` Ineraction box | 1312×157 |
+| Promo banner | `400:139506` Banner | 1322×240 |
+| Academic records accordion | `400:139507` Academic records | 1312×76 |
+| Provider info title | `400:139509` title | 317×40 |
+| Contact grid | `400:139510` Provider social media | 1512×238 |
+| Tabs | `400:139513` tabs | 453×48 |
+| «محصولات من» title | `400:139518` title | 190×40 |
+| Discount cards | `400:139520` Discount | 1312×449 |
+| News cards | `400:139530` News | 1312×569 |
+| Newsletter cards | `400:139539` Newsletter | 1312×508 |
+| Comments title | `400:139550` title | 139×40 |
+| Comments intro | `400:139552` text frame | 946×32 |
+| Composer (collapsed) | `400:139556` NewCommentInputContainer | 1216×56 |
+| Transferred comments | `400:139558` Qouted | 1152×1012 |
+| Registered comments | `400:139567` main comments | 1170×1132 |
+| CTA band (shared) | `400:139435` Motivation box | 1512×362 |
+| Footer (shared) | `400:139436` Footer | 1512×546 |
+| Background pattern | `400:139437` BG Pattern | decorative, 60+ vectors — do not fetch |
+
+Mobile frame `400:152066` (393 wide):
+
+| Section | Node |
+|---|---|
+| Mobile top bar / header | `400:152183`, `400:152142` |
+| Title | `400:152145` |
+| Profile hero (mobile) | `400:152146` main top frame-Mobile |
+| Interaction box | `400:152147` |
+| Banner | `400:152148` |
+| Academic records | `400:152149` |
+| Contact grid | `400:152152` |
+| Tabs | `400:152132` |
+| Discount cards | `400:152156` |
+| News cards | `400:152162` |
+| Newsletters | `400:152174` |
+| Comments | `400:152182` |
+| CTA (mobile) + footer | `400:152131`, `400:152130` |

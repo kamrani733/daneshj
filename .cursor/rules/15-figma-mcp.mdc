@@ -1,0 +1,31 @@
+---
+description: How to use the Figma MCP economically — read this before any Figma MCP call
+alwaysApply: false
+---
+
+# Figma MCP usage (token budget)
+
+Figma MCP calls are rate-limited and their output fills the context window. Every call must be targeted.
+
+## Never
+- Never call `get_metadata` or `get_design_context` on the page (`0:1`) or on a whole page frame
+  (`400:139432`, `400:152066`, …). The page metadata alone is ~700 KB.
+- Never call `get_variable_defs` / `search_design_system`: tokens are already in docs/ai/m3-tokens.css (v3).
+- Never fetch the background pattern (`400:139437`, `400:152067`) or download photos/raster assets; use existing
+  placeholder images.
+- Never fetch dark frames for layout: dark = same layout + tokens. At most one small screenshot to verify.
+- Never re-fetch a node whose spec already exists in docs/design-specs/.
+
+## Always
+1. Look up the node ID in docs/ai/figma-map.md (Section node index). Do not explore to find nodes.
+2. Before calling Figma, check docs/design-specs/public-panel/<section>.md. If it exists, use it and do not call.
+3. Call `get_design_context` on ONE section node. For repeated items (cards, comments, dialog rows) fetch ONE
+   instance, not the list. If the output is metadata-only (too large), drill into the child node that you need.
+4. Screenshots: only when layout is unclear, `maxDimension` ≤ 800.
+5. Immediately write what you extracted to docs/design-specs/public-panel/<section>.md, compact:
+   node IDs · texts (verbatim Persian) · layout (direction, gaps, paddings, sizes) · token mapping
+   (Figma variable → our token) · text style → our text token · component reuse decision. No raw generated code.
+6. The generated reference code from Figma is a hint only: rewrite with our components, tokens, logical CSS
+   properties and fa.json strings.
+7. Mobile: fetch the matching mobile section node in the same step as its desktop section, and add a
+   "Mobile" block to the same spec file.
