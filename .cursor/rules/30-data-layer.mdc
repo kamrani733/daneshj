@@ -27,6 +27,9 @@ Contracts and status per microservice: `docs/07-integrations.md`. Types: `docs/0
 
 - Server state lives in the query cache, not in component state or global stores. Query keys come from one
   factory per service (`<service>Keys.list(filters)`, `<service>Keys.detail(id)`).
+- Never pass a server action directly as `mutationFn` or `queryFn`; wrap it so only the intended arguments
+  reach the server (e.g. `mutationFn: (vars) => myAction(vars)`). TanStack Query v5 passes a mutation/query
+  context as a second argument, which Next.js would otherwise serialize to the action.
 - Explicit `staleTime` per data type: long for categories, reasons, static pages (terms/help); short for
   messages, notifications, wallet balance, voucher/receipt state.
 - After a mutation, invalidate exactly the affected keys. No blanket invalidation.

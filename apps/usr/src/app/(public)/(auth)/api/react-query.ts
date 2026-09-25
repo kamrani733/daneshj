@@ -37,11 +37,16 @@ import type {
 } from '@auth/api/types';
 
 export function useSendVerifyCodeMutation() {
-  return useMutation({ mutationFn: sendVerifyCodeAction });
+  return useMutation({
+    mutationFn: (payload: SendVerifyCodePayload) =>
+      sendVerifyCodeAction(payload),
+  });
 }
 
 export function useVerifyCodeMutation() {
-  return useMutation({ mutationFn: verifyCodeAction });
+  return useMutation({
+    mutationFn: (payload: VerifyCodePayload) => verifyCodeAction(payload),
+  });
 }
 
 export function useResetPasswordMutation() {
@@ -63,7 +68,9 @@ export function usePublicSecurityQuestionsQuery(
 }
 
 export function useChangePasswordMutation() {
-  return useMutation({ mutationFn: changePassword });
+  return useMutation({
+    mutationFn: (payload: ChangePasswordPayload) => changePassword(payload),
+  });
 }
 
 export function useRefreshTokenMutation() {
@@ -73,7 +80,9 @@ export function useRefreshTokenMutation() {
 }
 
 export function useSendOtpForLoginMutation() {
-  return useMutation({ mutationFn: sendOtpForLogin });
+  return useMutation({
+    mutationFn: (payload: SendOtpForLoginPayload) => sendOtpForLogin(payload),
+  });
 }
 
 export function useVerifyPasswordMutation() {
@@ -87,7 +96,10 @@ export function useVerifyPasswordMutation() {
 }
 
 export function useLoginByIdentityAndPasswordMutation() {
-  return useMutation({ mutationFn: loginByIdentityAndPasswordAction });
+  return useMutation({
+    mutationFn: (payload: LoginByIdentityPasswordPayload) =>
+      loginByIdentityAndPasswordAction(payload),
+  });
 }
 
 export function useGetSessionsQuery(
@@ -112,11 +124,16 @@ export function useGetSessionsForLimitReachedQuery(enabled = true) {
 }
 
 export function useDeleteSessionForLimitReachedMutation() {
-  return useMutation({ mutationFn: deleteSessionForLimitReached });
+  return useMutation({
+    mutationFn: (payload: DeleteSessionForLimitReachedPayload) =>
+      deleteSessionForLimitReached(payload),
+  });
 }
 
 export function useDeleteSessionMutation() {
-  return useMutation({ mutationFn: deleteSession });
+  return useMutation({
+    mutationFn: (payload: DeleteSessionPayload) => deleteSession(payload),
+  });
 }
 
 export function useInactiveSessionThenGetTokenMutation() {
