@@ -16,26 +16,19 @@ export function SectionHeading({
   return (
     <div
       className={cn(
-        'inline-flex flex-col gap-2',
-        align === 'center' && 'items-center',
-        align === 'start' && 'items-start',
-        align === 'end' && 'items-end',
+        'inline-flex items-center gap-2 px-2',
+        align === 'center' && 'justify-center',
+        align === 'start' && 'justify-start',
+        align === 'end' && 'justify-end',
         className
       )}
     >
-      <h2
-        className={cn(
-          'px-2 text-headline-medium font-bold',
-          tone === 'primary' ? 'text-primary' : 'text-secondary'
-        )}
-      >
-        {title}
-      </h2>
+      <h2 className="text-headline-medium font-bold text-on-primary-container">{title}</h2>
       <span
         aria-hidden
         className={cn(
-          'h-0 w-full border-b-2',
-          tone === 'primary' ? 'border-primary' : 'border-secondary'
+          'shrink-0 rounded-[2px]',
+          tone === 'primary' ? 'h-8 w-3 bg-primary' : 'h-6 w-2 bg-secondary'
         )}
       />
     </div>
