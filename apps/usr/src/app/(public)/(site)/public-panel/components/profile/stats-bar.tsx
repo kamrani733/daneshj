@@ -2,6 +2,7 @@
 
 import {
   Heart,
+  HeartCrack,
   HeartPlus,
   Share2,
   ThumbsDown,
@@ -23,6 +24,7 @@ import {
   StatsPeopleDialog,
   StatsShareDialog,
 } from '@public-panel/components/profile/stats-dialogs';
+import { useGuardedAction } from '@public-panel/components/shared/guest-access-dialog';
 
 type ProfileStatsBarProps = {
   profile: PublicPanelProfile;
@@ -56,14 +58,19 @@ function HeartCheckIcon({ className }: { className?: string }) {
   );
 }
 
+type StatKey = keyof PublicPanelProfile['stats'] | 'dislikers';
+
 const STAT_ITEMS: {
-  key: keyof PublicPanelProfile['stats'];
+  key: StatKey;
   Icon: LucideIcon | 'heartCheck';
+  adminOnly?: boolean;
 }[] = [
   { key: 'followers', Icon: UserPlus },
   { key: 'following', Icon: UserCheck },
   { key: 'likers', Icon: HeartPlus },
   { key: 'liked', Icon: 'heartCheck' },
+  // UsrPb_DspIntr: dislike count and list only for admin.
+  { key: 'dislikers', Icon: HeartCrack, adminOnly: true },
 ];
 
 /** Stats, reactions, and follow action row. */
@@ -80,6 +87,11 @@ export function ProfileStatsBar({
     viewerActorId,
     capabilities,
   });
+  const guard = useGuardedAction();
+  const access = vm.engagementAccess;
+  const statItems = STAT_ITEMS.filter(
+    (item) => !item.adminOnly || capabilities.showDislikes
+  );
 
   return (
     <div
@@ -90,23 +102,31 @@ export function ProfileStatsBar({
         'min-[1100px]:flex-row min-[1100px]:items-center min-[1100px]:justify-between min-[1100px]:gap-8 min-[1100px]:px-[38px]'
       )}
     >
-      <ul className="flex w-full items-start justify-between gap-1 min-[834px]:justify-center min-[834px]:gap-6 min-[1100px]:w-auto min-[1100px]:justify-start min-[1100px]:gap-8">
-        {STAT_ITEMS.map(({ key, Icon }) => (
+      <ul
+        className={cn(
+          'flex w-full items-start justify-between gap-1 min-[834px]:justify-center min-[834px]:gap-6 min-[1100px]:gap-8',
+          // Counts only (owner / guest): centered across the bar.
+          vm.showActions
+            ? 'min-[1100px]:w-auto min-[1100px]:justify-start'
+            : 'min-[1100px]:justify-center min-[1100px]:gap-24'
+        )}
+      >
+        {statItems.map(({ key, Icon }) => (
           <li key={key}>
             <button
               type="button"
               onClick={() => vm.setPeopleKind(key)}
               className="flex min-w-0 flex-col items-center gap-1 rounded-xl text-center transition-colors hover:bg-black/[0.03] dark:hover:bg-white/[0.04] min-[834px]:w-[88px]"
             >
-              <span className="text-xl font-bold leading-7 text-app-filter-ink min-[834px]:text-[28px] min-[834px]:leading-9 min-[1100px]:text-[34px] min-[1100px]:leading-[49px]">
+              <span className="text-2xl font-bold leading-8 text-app-filter-ink min-[834px]:text-[28px] min-[834px]:leading-9 min-[1100px]:text-[34px] min-[1100px]:leading-[49px]">
                 {formatFaNumber(vm.displayStats[key])}
               </span>
-              <span className="inline-flex items-center gap-1 whitespace-nowrap text-[10px] font-semibold leading-4 text-app-filter-muted dark:text-app-filter-ink min-[834px]:gap-1.5 min-[834px]:text-sm min-[834px]:leading-5 min-[1100px]:gap-2 min-[1100px]:text-[17px] min-[1100px]:leading-6">
+              <span className="inline-flex items-center gap-1 whitespace-nowrap text-xs font-semibold leading-4 text-app-filter-muted dark:text-app-filter-ink min-[834px]:gap-1.5 min-[834px]:text-sm min-[834px]:leading-5 min-[1100px]:gap-2 min-[1100px]:text-[17px] min-[1100px]:leading-6">
                 {Icon === 'heartCheck' ? (
-                  <HeartCheckIcon className="size-3.5 min-[834px]:size-5" />
+                  <HeartCheckIcon className="hidden size-3.5 min-[720px]:inline-flex min-[834px]:size-5" />
                 ) : (
                   <Icon
-                    className="size-3.5 shrink-0 min-[834px]:size-4 min-[1100px]:size-5"
+                    className="hidden size-3.5 shrink-0 min-[720px]:block min-[834px]:size-4 min-[1100px]:size-5"
                     strokeWidth={1.75}
                     aria-hidden
                   />
@@ -134,7 +154,9 @@ export function ProfileStatsBar({
               <button
                 type="button"
                 disabled={vm.likeMutation.isPending}
-                onClick={() => void vm.handleReaction('like')}
+                onClick={() =>
+                  guard(access, () => void vm.handleReaction('like'))
+                }
                 className={cn(
                   'flex h-11 items-center gap-1 px-1 text-sm font-bold leading-6 text-app-filter-muted dark:text-app-filter-ink disabled:opacity-100',
                   'min-[834px]:h-12 min-[834px]:text-base min-[1100px]:h-14',
@@ -155,7 +177,10 @@ export function ProfileStatsBar({
               <button
                 type="button"
                 disabled={vm.likeMutation.isPending}
-                onClick={() => void vm.handleReaction('dislike')}
+                onClick={() =>
+                  guard(access, () => void vm.handleReaction('dislike'))
+                }
+                aria-pressed={vm.reaction === 'dislike'}
                 className={cn(
                   'flex h-11 items-center gap-1 px-1 text-sm font-bold leading-6 text-app-filter-muted dark:text-app-filter-ink disabled:opacity-100',
                   'min-[834px]:h-12 min-[834px]:text-base min-[1100px]:h-14',
@@ -167,14 +192,14 @@ export function ProfileStatsBar({
                   strokeWidth={1.5}
                   aria-hidden
                 />
-                <span>{formatFaNumber(vm.stats.thumbsDown)}</span>
+                {/* Dislike count is admin-only (UsrPb_DspIntr); visitors see their own pressed state. */}
               </button>
             </li>
             <li>
               <button
                 type="button"
                 disabled={vm.shareMutation.isPending}
-                onClick={() => vm.setShareOpen(true)}
+                onClick={() => guard(access, () => vm.setShareOpen(true))}
                 className={cn(
                   'flex h-11 items-center gap-1 px-1 text-sm font-bold leading-6 text-app-filter-muted dark:text-app-filter-ink disabled:opacity-100',
                   'min-[834px]:h-12 min-[834px]:text-base min-[1100px]:h-14'
@@ -195,9 +220,9 @@ export function ProfileStatsBar({
             size="pillSm"
             variant={vm.following ? 'outline' : 'default'}
             disabled={vm.followMutation.isPending}
-            onClick={() => void vm.handleFollow()}
+            onClick={() => guard(access, () => void vm.handleFollow())}
             className={cn(
-              'h-auto w-full max-w-[240px] shrink-0 rounded-full px-6 py-3.5 text-base font-medium leading-6',
+              'h-auto min-w-[128px] shrink-0 rounded-full px-8 py-3.5 text-base font-medium leading-6',
               'min-[834px]:w-auto min-[834px]:min-w-[140px] min-[834px]:py-4',
               'min-[1100px]:min-w-[153px] disabled:opacity-100',
               vm.following
@@ -215,6 +240,9 @@ export function ProfileStatsBar({
         open={vm.peopleKind != null}
         people={vm.peopleKind ? vm.people[vm.peopleKind] : []}
         loading={vm.isLoading && vm.peopleKind != null}
+        actions={capabilities.peopleListActions}
+        username={profile.username}
+        onGuestAction={() => guard('guestMessage', () => undefined)}
         onPersonAction={(person, nextFollowing) => {
           void vm.handlePeopleAction(person, nextFollowing);
         }}

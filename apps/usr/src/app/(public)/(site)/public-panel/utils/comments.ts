@@ -42,10 +42,16 @@ export function filterAndSortComments(
       )
     : comments;
 
+  // `date` keeps the API order (newest first); the others sort descending.
   const sorted = [...filtered];
-  if (sort === 'oldest') sorted.reverse();
-  if (sort === 'mostLiked') {
-    sorted.sort((a, b) => b.likes - a.likes);
+  if (sort === 'likes') sorted.sort((a, b) => b.likes - a.likes);
+  if (sort === 'dislikes') sorted.sort((a, b) => b.dislikes - a.dislikes);
+  if (sort === 'replies') {
+    sorted.sort((a, b) => (b.replies?.length ?? 0) - (a.replies?.length ?? 0));
   }
-  return sorted;
+  // Featured comments stay on top (Figma «برگزیدن یک دیدگاه»); order inside each group kept.
+  return [
+    ...sorted.filter((comment) => comment.featured),
+    ...sorted.filter((comment) => !comment.featured),
+  ];
 }

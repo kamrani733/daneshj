@@ -142,6 +142,8 @@ export interface InteractivePerson {
   username: string;
   displayName: string;
   avatarSrc?: string;
+  /** Viewer already follows this person (demo fixtures; API does not return it yet). */
+  isFollowing?: boolean;
 }
 
 export interface InteractiveCountResult {

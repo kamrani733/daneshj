@@ -732,9 +732,13 @@
       "personaLabel": "نمایش به‌عنوان",
       "personas": {
         "owner-individual-provider": "صاحب پنل (سرویس‌دهنده انفرادی)",
-        "visitor-individual-provider": "بازدیدکننده (پنل سرویس‌دهنده انفرادی)",
-        "visitor-non-provider": "بازدیدکننده (پنل غیر سرویس‌دهنده انفرادی)",
-        "guest": "کاربر میهمان (درباره من خالی)"
+        "owner-non-provider": "صاحب پنل (کاربر غیر سرویس‌دهنده)",
+        "visitor-individual-provider": "کاربر بازدیدکننده (پنل سرویس‌دهنده انفرادی)",
+        "visitor-non-provider": "کاربر بازدیدکننده (پنل غیر سرویس‌دهنده)",
+        "guest-individual-provider": "کاربر میهمان (پنل سرویس‌دهنده انفرادی)",
+        "guest-non-provider": "کاربر میهمان (پنل غیر سرویس‌دهنده)",
+        "admin-individual-provider": "راهبر (پنل سرویس‌دهنده انفرادی)",
+        "admin-non-provider": "راهبر (پنل غیر سرویس‌دهنده)"
       }
     },
     "follow": "دنبال کردن",
@@ -745,7 +749,8 @@
       "followers": "دنبال کننده",
       "following": "دنبال شونده",
       "likers": "پسند کننده",
-      "liked": "پسند شونده"
+      "liked": "پسند شونده",
+      "dislikers": "نپسند کننده"
     },
     "statsDialog": {
       "followersTitle": "این افراد پنل عمومی شما را دنبال می‌کنند",
@@ -767,7 +772,12 @@
         "likes": "تعداد پسندیدن",
         "dislikes": "تعداد نپسندیدن",
         "replies": "تعداد پاسخ"
-      }
+      },
+      "followersTitleOther": "این افراد پنل عمومی {username} را دنبال می‌کنند",
+      "followingTitleOther": "{username} پنل عمومی این افراد را دنبال می‌کند",
+      "likersTitleOther": "این افراد پنل عمومی {username} را پسندیده اند",
+      "likedTitleOther": "{username} پنل عمومی این افراد را پسندیده است",
+      "dislikersTitleOther": "این افراد پنل عمومی {username} را نپسندیده اند"
     },
     "infoBanner": {
       "title": "دانشجوام، فراتر از تخفیف",
@@ -815,9 +825,7 @@
       "searchRegistered": "جستجوی دیدگاه های ثبت شده",
       "sortLabel": "مرتب‌سازی",
       "sort": {
-        "newest": "جدیدترین",
-        "oldest": "قدیمی‌ترین",
-        "mostLiked": "بیشترین پسند"
+        "newest": "جدیدترین"
       },
       "badgeTransferred": "منتقل شد",
       "badgeFeatured": "برگزیده شده",
@@ -858,11 +866,20 @@
         "menuDelete": "حذف دیدگاه منتقل شده",
         "menuDeleteRegistered": "حذف دیدگاه",
         "menuEditNote": "ویرایش توضیح علاقه‌مندی",
-        "menuReport": "گزارش دیدگاه نامناسب"
-      }
+        "menuReport": "گزارش دیدگاه نامناسب",
+        "menuRestore": "بازگردانی دیدگاه"
+      },
+      "viewerName": "شما",
+      "viewerHandle": "me",
+      "badgeDeleted": "حذف شده"
     },
     "servicePrice": "قیمت",
-    "copied": "محتوا کپی شد"
+    "copied": "محتوا کپی شد",
+    "guestAccess": {
+      "m21": "این قابلیت برای شما فعال نمی‌باشد. در صورت تمایل، می‌توانید از طریق گزینه ثبت‌نام، به کاربر عادی تبدیل شده تا از سطح دسترسی بالاتری بهره مند شوید.",
+      "register": "ثبت نام",
+      "close": "بستن"
+    }
   },
   "privatePanel": {
     "breadcrumb": {

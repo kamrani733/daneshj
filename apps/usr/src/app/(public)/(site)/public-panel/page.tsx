@@ -20,6 +20,11 @@ export default async function PublicPanelPage({
   const params = await searchParams;
   const viewerActorId = parseActorId(session?.user?.id);
   const actorId = parseActorId(params.actor_id) ?? viewerActorId;
+  // Same rule as SiteShell: non-user login type = admin session.
+  const viewerIsAdmin = Boolean(
+    session &&
+      !(session.user.id.startsWith('User_') || session.loginType === 1)
+  );
 
   return (
     <PublicPanelView
@@ -27,6 +32,7 @@ export default async function PublicPanelPage({
       actorId={actorId}
       actorType={parsePublicPanelKind(params.actor_type)}
       viewerActorId={viewerActorId}
+      viewerIsAdmin={viewerIsAdmin}
     />
   );
 }

@@ -67,7 +67,8 @@ export type ServiceCatalog = {
 
 export type CommentKind = 'transferred' | 'registered';
 
-export type CommentSort = 'newest' | 'oldest' | 'mostLiked';
+/** Figma «Sorting overlay»: date added (default) · likes · dislikes · replies. */
+export type CommentSort = 'date' | 'likes' | 'dislikes' | 'replies';
 
 export type PanelComment = {
   id: string;
@@ -88,6 +89,10 @@ export type PanelComment = {
   originalAuthorHandle?: string;
   statusLabel?: string;
   timeLabel?: string;
+  /** Author's actor id — lets the viewer delete their own comment / reply. */
+  authorActorId?: number;
+  /** Soft-deleted; only admins still see it (and can restore it). */
+  deleted?: boolean;
 };
 
 export type ResumeFile = {

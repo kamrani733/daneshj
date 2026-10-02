@@ -228,6 +228,7 @@ export function usePanelInteractiveStatsQuery(
     following: followings.data?.people ?? [],
     likers: likers.data?.people ?? [],
     liked: likees.data?.people ?? [],
+    dislikers: dislikers.data?.people ?? [],
   };
 
   return {

@@ -44,6 +44,11 @@ export function useProfileStatsBar({
     setShareUrl(window.location.href);
   }, []);
 
+  // Profile arrives after first render (placeholder → data); keep the count in sync.
+  useEffect(() => {
+    setShares(profile.engagement.shares);
+  }, [profile.engagement.shares]);
+
   const { stats, people, isLoading } = usePanelInteractiveStatsQuery(
     {
       accessToken,
@@ -67,7 +72,8 @@ export function useProfileStatsBar({
   const shareMutation = useShareMutation();
 
   const isOwnProfile = capabilities.isPanelOwner;
-  const showActions = capabilities.showVisitorEngagementActions;
+  const engagementAccess = capabilities.engagementActions;
+  const showActions = engagementAccess !== 'hidden';
   const canInteract = capabilities.canInteractWithPanel;
 
   const displayStats = {
@@ -75,6 +81,7 @@ export function useProfileStatsBar({
     following: stats.following,
     likers: stats.likers,
     liked: stats.liked,
+    dislikers: stats.thumbsDown,
   };
 
   async function handleFollow() {
@@ -156,29 +163,36 @@ export function useProfileStatsBar({
     person: Pick<StatsPerson, 'actorId' | 'id' | 'isFollowing'>,
     nextFollowing?: boolean,
   ) {
+    if (capabilities.peopleListActions === 'none') return;
     if (!accessToken || viewerActorId == null || viewerActorId <= 0) return;
     const targetId = person.actorId ?? Number(person.id);
     if (!Number.isFinite(targetId) || targetId <= 0) return;
 
-    if (peopleKind === 'liked') {
-      await likeMutation.mutateAsync({
+    // Visitors only toggle their own follow of the listed person.
+    if (capabilities.peopleListActions === 'visitor') {
+      await followMutation.mutateAsync({
         accessToken,
         actorType: ACTOR_TYPE.user,
         actorId: viewerActorId,
         targetType: TARGET_TYPE.user,
         targetId,
-        likeStatus: LIKE_STATUS.none,
+        isActive: Boolean(nextFollowing),
       });
       return;
     }
 
+    // Owner (Figma dialogs): followers → remove · following → unfollow ·
+    // likers / liked → follow toggle.
     if (
       peopleKind === 'following' ||
       peopleKind === 'likers' ||
+      peopleKind === 'liked' ||
       peopleKind === 'followers'
     ) {
       const isActive =
-        peopleKind === 'likers' ? Boolean(nextFollowing) : false;
+        peopleKind === 'likers' || peopleKind === 'liked'
+          ? Boolean(nextFollowing)
+          : false;
       if (peopleKind === 'followers' && !isOwnProfile) return;
       await followMutation.mutateAsync({
         accessToken,
@@ -193,6 +207,7 @@ export function useProfileStatsBar({
 
   return {
     displayStats,
+    engagementAccess,
     followMutation,
     following,
     handleFollow,

@@ -9,13 +9,16 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { SearchField } from '@/components/ui/search-field';
 import { cn } from '@/lib/utils';
+import type { PeopleListActions } from '@public-panel/capabilities';
 import type { StatsPeopleKind, StatsPerson } from '@public-panel/types/stats';
 
-const TITLE_KEY: Record<StatsPeopleKind, string> = {
-  followers: 'followersTitle',
-  following: 'followingTitle',
-  likers: 'likersTitle',
-  liked: 'likedTitle',
+/** Owner wording («شما») from the Figma dialogs; others name the panel owner. */
+const TITLE_KEY: Record<StatsPeopleKind, { owner: string; other: string }> = {
+  followers: { owner: 'followersTitle', other: 'followersTitleOther' },
+  following: { owner: 'followingTitle', other: 'followingTitleOther' },
+  likers: { owner: 'likersTitle', other: 'likersTitleOther' },
+  liked: { owner: 'likedTitle', other: 'likedTitleOther' },
+  dislikers: { owner: 'dislikersTitleOther', other: 'dislikersTitleOther' },
 };
 
 type StatsPeopleDialogProps = {
@@ -24,6 +27,11 @@ type StatsPeopleDialogProps = {
   onOpenChange: (open: boolean) => void;
   people?: StatsPerson[];
   loading?: boolean;
+  /** Who is viewing — decides the row button (`none` = no button). */
+  actions: PeopleListActions;
+  /** Panel owner's username for non-owner titles. */
+  username: string;
+  onGuestAction?: () => void;
   onPersonAction?: (person: StatsPerson, nextFollowing?: boolean) => void;
 };
 
@@ -34,6 +42,9 @@ export function StatsPeopleDialog({
   onOpenChange,
   people = [],
   loading = false,
+  actions,
+  username,
+  onGuestAction,
   onPersonAction,
 }: StatsPeopleDialogProps) {
   const t = useTranslations('publicPanel');
@@ -60,8 +71,27 @@ export function StatsPeopleDialog({
 
   if (!kind) return null;
 
+  const buttonKind: ButtonKind | null =
+    actions === 'none'
+      ? null
+      : actions === 'owner'
+        ? kind === 'followers'
+          ? 'remove'
+          : kind === 'following'
+            ? 'unfollow'
+            : 'toggle'
+        : 'toggle';
+  const title = tDialog(
+    actions === 'owner' ? TITLE_KEY[kind].owner : TITLE_KEY[kind].other,
+    { username },
+  );
+
   function handleAction(person: StatsPerson) {
-    if (kind === 'followers' || kind === 'following' || kind === 'liked') {
+    if (actions === 'guestMessage') {
+      onGuestAction?.();
+      return;
+    }
+    if (buttonKind === 'remove' || buttonKind === 'unfollow') {
       setItems((prev) => prev.filter((p) => p.id !== person.id));
       onPersonAction?.(person, false);
       return;
@@ -80,14 +110,14 @@ export function StatsPeopleDialog({
       open={open}
       onOpenChange={onOpenChange}
       variant="content"
-      title={tDialog(TITLE_KEY[kind])}
+      title={title}
       className={cn(
         'flex max-h-[85vh] max-w-[420px] flex-col gap-4 overflow-hidden p-4',
         'dark:bg-app-search-category sm:max-w-[480px]',
       )}
     >
       <h2 className="ps-10 text-start text-base font-bold leading-7 text-app-filter-ink">
-        {tDialog(TITLE_KEY[kind])}
+        {title}
       </h2>
 
       <button
@@ -145,8 +175,9 @@ export function StatsPeopleDialog({
                 </span>
               </div>
 
+              {buttonKind ? (
               <PeopleActionButton
-                kind={kind}
+                kind={buttonKind}
                 person={person}
                 labels={{
                   follow: t('follow'),
@@ -155,6 +186,7 @@ export function StatsPeopleDialog({
                 }}
                 onClick={() => handleAction(person)}
               />
+              ) : null}
             </li>
           ))}
         </ul>
@@ -163,18 +195,20 @@ export function StatsPeopleDialog({
   );
 }
 
+type ButtonKind = 'remove' | 'unfollow' | 'toggle';
+
 function PeopleActionButton({
   kind,
   person,
   labels,
   onClick,
 }: {
-  kind: StatsPeopleKind;
+  kind: ButtonKind;
   person: StatsPerson;
   labels: { follow: string; unfollow: string; remove: string };
   onClick: () => void;
 }) {
-  if (kind === 'followers') {
+  if (kind === 'remove') {
     return (
       <Button
         type="button"
@@ -187,7 +221,7 @@ function PeopleActionButton({
     );
   }
 
-  if (kind === 'likers') {
+  if (kind === 'toggle') {
     const following = Boolean(person.isFollowing);
     return (
       <Button

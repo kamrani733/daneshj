@@ -1,6 +1,5 @@
 'use client';
 
-import { ArrowUpDown } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useMemo, useRef, useState } from 'react';
 
@@ -19,6 +18,7 @@ import { Badge } from '@/components/ui/badge';
 import { GuestPromptState } from '@/components/ui/guest-prompt-state';
 import { Button } from '@/components/ui/button';
 import { SearchField } from '@/components/ui/search-field';
+import { SortMenu } from '@/components/ui/sort-menu';
 import { formatFaNumber } from '@/lib/format-fa';
 import { cn } from '@/lib/utils';
 
@@ -26,6 +26,8 @@ import { CommentCard } from '@public-panel/components/comments/card';
 import { SectionTitle } from '@public-panel/components/shared/section-title';
 
 const COMMENT_MAX_LENGTH = 1500;
+
+const SORT_OPTIONS: CommentSort[] = ['date', 'likes', 'dislikes', 'replies'];
 
 type CommentsSectionProps = {
   username: string;
@@ -50,40 +52,64 @@ export function CommentsSection({
   const [expanded, setExpanded] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  const transferred = comments.filter((c) => c.kind === 'transferred');
-  const registered = comments.filter((c) => c.kind === 'registered');
+  // Soft-deleted comments stay visible only to admins (restore, UsrPb_RstCmt).
+  const visibleComments = capabilities.commentRestore
+    ? comments
+    : comments.filter((c) => !c.deleted);
+  const transferred = visibleComments.filter((c) => c.kind === 'transferred');
+  const registered = visibleComments.filter((c) => c.kind === 'registered');
   const transferredCount = transferred.length;
 
-  const handleTransfer = (commentId: string, note: string) => {
-    setComments((prev) => {
-      const source = prev.find((c) => c.id === commentId);
-      if (!source || source.kind !== 'registered') return prev;
+  // A visitor transfers into *their own* public panel (UsrPb_TrfCmt), so this
+  // panel's lists stay as they are; only the comment's transfer count grows.
+  const handleTransfer = (commentId: string, _note: string) => {
+    setComments(
+      updateComment(commentId, (c) => ({ ...c, shares: c.shares + 1 }))
+    );
+  };
 
-      const transferredComment: PanelComment = {
-        ...source,
-        id: `t-${source.id}-${Date.now()}`,
-        kind: 'transferred',
-        featured: false,
+  const updateComment = (
+    commentId: string,
+    patch: (comment: PanelComment) => PanelComment | null
+  ): ((list: PanelComment[]) => PanelComment[]) => {
+    const walk = (list: PanelComment[]): PanelComment[] =>
+      list.flatMap((c) => {
+        if (c.id === commentId) {
+          const next = patch(c);
+          return next ? [next] : [];
+        }
+        return c.replies ? [{ ...c, replies: walk(c.replies) }] : [c];
+      });
+    return walk;
+  };
+
+  // Admin delete is soft (restorable); others remove from their view.
+  const handleDelete = (commentId: string) => {
+    setComments(
+      updateComment(commentId, (c) =>
+        capabilities.commentRestore ? { ...c, deleted: true } : null
+      )
+    );
+  };
+
+  // UsrPb_FavCmt — owner toggles «برگزیده»; featured comments sort to the top.
+  const handleToggleFeature = (commentId: string) => {
+    setComments(
+      updateComment(commentId, (c) => ({ ...c, featured: !c.featured }))
+    );
+  };
+
+  const handleRestore = (commentId: string) => {
+    setComments(updateComment(commentId, (c) => ({ ...c, deleted: false })));
+  };
+
+  const viewerAuthor = capabilities.isPanelOwner
+    ? {
         authorName: tFlow('ownerName'),
         authorHandle: tFlow('ownerHandle'),
         authorAvatar: '/images/public-panel/avatar.png',
-        quoteNote: note || undefined,
-        originalAuthorName: source.authorName,
-        originalAuthorHandle: source.authorHandle,
-        statusLabel: t('badgeTransferred'),
-        replies: undefined,
-      };
-
-      return [
-        transferredComment,
-        ...prev.filter((c) => c.id !== commentId),
-      ];
-    });
-  };
-
-  const handleDelete = (commentId: string) => {
-    setComments((prev) => prev.filter((c) => c.id !== commentId));
-  };
+      }
+    : { authorName: t('viewerName'), authorHandle: t('viewerHandle') };
 
   const handleEditNote = (commentId: string, note: string) => {
     setComments((prev) =>
@@ -98,9 +124,8 @@ export function CommentsSection({
   const handleReply = (commentId: string, body: string) => {
     const reply: PanelComment = {
       id: `reply-${Date.now()}`,
-      authorName: tFlow('ownerName'),
-      authorHandle: tFlow('ownerHandle'),
-      authorAvatar: '/images/public-panel/avatar.png',
+      ...viewerAuthor,
+      authorActorId: viewerActorId ?? undefined,
       body,
       createdAt: new Intl.DateTimeFormat('fa-IR').format(new Date()),
       kind: 'registered',
@@ -121,7 +146,21 @@ export function CommentsSection({
   const handleSubmit = () => {
     const value = draft.trim();
     if (!value) return;
-    // Wire to create-comment API when available.
+    // Client-only until a panel-comment API exists (SRS TBD).
+    setComments((prev) => [
+      {
+        id: `c-${Date.now()}`,
+        ...viewerAuthor,
+        authorActorId: viewerActorId ?? undefined,
+        body: value,
+        createdAt: new Intl.DateTimeFormat('fa-IR').format(new Date()),
+        kind: 'registered',
+        likes: 0,
+        dislikes: 0,
+        shares: 0,
+      },
+      ...prev,
+    ]);
     setDraft('');
     setExpanded(false);
     textareaRef.current?.blur();
@@ -132,7 +171,7 @@ export function CommentsSection({
       dir="rtl"
       className="mx-auto flex w-full max-w-[1216px] flex-col items-center gap-8"
     >
-      <SectionTitle title={t('title')} className="mx-auto" />
+      <SectionTitle title={t('title')} align="start" />
 
       <div className="flex w-full flex-col items-stretch gap-6">
         <div className="flex w-full items-center justify-start gap-3">
@@ -228,6 +267,8 @@ export function CommentsSection({
           capabilities={capabilities}
           onTransfer={handleTransfer}
           onDelete={handleDelete}
+          onRestore={handleRestore}
+          onToggleFeature={handleToggleFeature}
           onEditNote={handleEditNote}
           onReply={handleReply}
         />
@@ -247,6 +288,8 @@ export function CommentsSection({
           capabilities={capabilities}
           onTransfer={handleTransfer}
           onDelete={handleDelete}
+          onRestore={handleRestore}
+          onToggleFeature={handleToggleFeature}
           onEditNote={handleEditNote}
           onReply={handleReply}
         />
@@ -268,6 +311,8 @@ function CommentListPanel({
   capabilities,
   onTransfer,
   onDelete,
+  onRestore,
+  onToggleFeature,
   onEditNote,
   onReply,
 }: {
@@ -283,19 +328,22 @@ function CommentListPanel({
   capabilities: PublicPanelCapabilities;
   onTransfer?: (commentId: string, note: string) => void;
   onDelete?: (commentId: string) => void;
+  onRestore?: (commentId: string) => void;
+  onToggleFeature?: (commentId: string) => void;
   onEditNote?: (commentId: string, note: string) => void;
   onReply?: (commentId: string, body: string) => void;
 }) {
   const t = useTranslations('publicPanel.comments');
+  const tSort = useTranslations('publicPanel.statsDialog.sort');
   const [query, setQuery] = useState('');
-  const [sort, setSort] = useState<CommentSort>('newest');
+  const [sort, setSort] = useState<CommentSort>('date');
 
   const filtered = useMemo(() => {
     return filterAndSortComments(comments, query, sort);
   }, [comments, query, sort]);
 
   return (
-    <section className="flex w-full flex-col gap-8 rounded-2xl bg-app-stat-card p-8 shadow-[0_4px_20px_0_rgba(0,0,0,0.05)]">
+    <section className="flex w-full flex-col gap-6 rounded-2xl bg-app-stat-card p-4 shadow-[0_4px_20px_0_rgba(0,0,0,0.05)] min-[720px]:gap-8 min-[720px]:p-8">
       <header className="flex w-full items-center justify-between gap-3">
         <h3 className="text-start text-lg font-bold text-app-filter-ink">
           {title}
@@ -305,34 +353,27 @@ function CommentListPanel({
         </Badge>
       </header>
 
-      <div className="flex w-full items-center justify-between gap-3">
-        <label className="relative shrink-0">
-          <span className="sr-only">{t('sortLabel')}</span>
-          <select
-            value={sort}
-            onChange={(event) => setSort(event.target.value as CommentSort)}
-            className={cn(
-              'h-12 w-[176px] appearance-none rounded-full border border-border bg-transparent py-1.5 pe-3 ps-10 text-start text-sm font-medium text-app-filter-muted',
-              'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30',
-              'dark:border-border dark:text-app-filter-ink'
-            )}
-          >
-            <option value="newest">{t('sort.newest')}</option>
-            <option value="oldest">{t('sort.oldest')}</option>
-            <option value="mostLiked">{t('sort.mostLiked')}</option>
-          </select>
-          <ArrowUpDown
-            className="pointer-events-none absolute start-3 top-1/2 size-4 -translate-y-1/2 text-app-filter-muted"
-            aria-hidden
-          />
-        </label>
+      {/* Phones: search on top, icon-only sort below at the start (responsive export). */}
+      <div className="flex w-full flex-col-reverse gap-3 min-[720px]:flex-row min-[720px]:items-center min-[720px]:justify-between">
+        <SortMenu
+          label={t('sortLabel')}
+          value={sort}
+          onChange={setSort}
+          trigger={kind === 'transferred' ? 'button' : 'select'}
+          selectedLabel={sort === 'date' ? t('sort.newest') : undefined}
+          options={SORT_OPTIONS.map((value) => ({
+            value,
+            label: tSort(value),
+          }))}
+          className="self-start min-[720px]:self-auto"
+        />
 
         <SearchField
           label={searchPlaceholder}
           value={query}
           onChange={(event) => setQuery(event.target.value)}
           placeholder={searchPlaceholder}
-          containerClassName="max-w-[280px] shrink"
+          containerClassName="w-full shrink min-[720px]:max-w-[280px]"
         />
       </div>
 
@@ -356,6 +397,8 @@ function CommentListPanel({
                 capabilities={capabilities}
                 onTransfer={onTransfer}
                 onDelete={onDelete}
+                onRestore={onRestore}
+                onToggleFeature={onToggleFeature}
                 onEditNote={onEditNote}
                 onReply={onReply}
               />

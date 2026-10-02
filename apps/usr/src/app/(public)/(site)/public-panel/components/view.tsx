@@ -14,6 +14,7 @@ import { PublicPanelDemoBanner } from '@public-panel/components/demo-mode/public
 import { usePublicPanelDemoMode } from '@public-panel/components/demo-mode/public-panel-demo-provider';
 import { PanelInfoBanner } from '@public-panel/components/profile/info-banner';
 import { ProfileStatsBar } from '@public-panel/components/profile/stats-bar';
+import { GuestAccessProvider } from '@public-panel/components/shared/guest-access-dialog';
 import { PublicPanelHeading } from '@public-panel/components/shared/heading';
 import { RecordsAccordion } from '@public-panel/components/profile/records-accordion';
 import { ServiceInfoSection } from '@public-panel/components/catalog/service-info-section';
@@ -25,6 +26,7 @@ type PublicPanelViewProps = {
   actorId?: number | null;
   actorType?: PublicPanelKind;
   viewerActorId?: number | null;
+  viewerIsAdmin?: boolean;
 };
 
 export function PublicPanelView({
@@ -32,6 +34,7 @@ export function PublicPanelView({
   actorId,
   actorType = 'user',
   viewerActorId,
+  viewerIsAdmin = false,
 }: PublicPanelViewProps) {
   const t = useTranslations('publicPanel');
   const demoMode = usePublicPanelDemoMode();
@@ -42,7 +45,7 @@ export function PublicPanelView({
   );
   const profile = profileQuery.data ?? EMPTY_PUBLIC_PANEL;
   const viewer = usePublicPanelViewer(
-    { accessToken, viewerActorId },
+    { accessToken, viewerActorId, viewerIsAdmin },
     profile.actorId
   );
   const capabilities = usePublicPanelCapabilities(profile, viewer);
@@ -53,7 +56,7 @@ export function PublicPanelView({
     (profileQuery.isPlaceholderData || !profile.displayName);
 
   return (
-    <>
+    <GuestAccessProvider>
       <PublicPanelDemoBanner />
       <main
         dir="rtl"
@@ -102,6 +105,6 @@ export function PublicPanelView({
           capabilities={capabilities}
         />
       </main>
-    </>
+    </GuestAccessProvider>
   );
 }

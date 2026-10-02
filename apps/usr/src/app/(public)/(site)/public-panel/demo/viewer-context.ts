@@ -1,6 +1,7 @@
 import {
   DEMO_PERSONA_DEFINITIONS,
   DEMO_PRESENTATION_ACCESS_TOKEN,
+  DEMO_PRESENTATION_ADMIN_ACTOR_ID,
   DEMO_PRESENTATION_VISITOR_ACTOR_ID,
   type DemoPersonaId,
 } from '@/lib/demo-mode/persona';
@@ -8,6 +9,7 @@ import {
 export type PublicPanelViewerContext = {
   viewerActorId: number | null;
   accessToken: string | null;
+  viewerIsAdmin: boolean;
 };
 
 /** Demo-only viewer identity; never use outside demo mode + gate. */
@@ -21,18 +23,22 @@ export function resolveDemoViewerContext(
       return {
         viewerActorId: panelOwnerActorId,
         accessToken: DEMO_PRESENTATION_ACCESS_TOKEN,
+        viewerIsAdmin: false,
       };
     case 'user':
       return {
         viewerActorId: DEMO_PRESENTATION_VISITOR_ACTOR_ID,
         accessToken: DEMO_PRESENTATION_ACCESS_TOKEN,
+        viewerIsAdmin: false,
+      };
+    case 'admin':
+      return {
+        viewerActorId: DEMO_PRESENTATION_ADMIN_ACTOR_ID,
+        accessToken: DEMO_PRESENTATION_ACCESS_TOKEN,
+        viewerIsAdmin: true,
       };
     case 'guest':
-      return {
-        viewerActorId: null,
-        accessToken: null,
-      };
     default:
-      return { viewerActorId: null, accessToken: null };
+      return { viewerActorId: null, accessToken: null, viewerIsAdmin: false };
   }
 }

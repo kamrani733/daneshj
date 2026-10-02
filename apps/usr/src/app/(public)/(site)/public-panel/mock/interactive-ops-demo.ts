@@ -50,6 +50,7 @@ function demoPeople() {
     username: person.username,
     displayName: person.displayName,
     avatarSrc: person.avatarSrc,
+    isFollowing: person.isFollowing,
   }));
 }
 

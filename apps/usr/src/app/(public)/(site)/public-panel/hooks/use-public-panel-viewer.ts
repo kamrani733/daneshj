@@ -12,6 +12,8 @@ import {
 export type PublicPanelViewerProps = {
   accessToken?: string | null;
   viewerActorId?: number | null;
+  /** Admin session (UI gating only — the backend enforces every action). */
+  viewerIsAdmin?: boolean;
 };
 
 export function usePublicPanelViewer(
@@ -21,12 +23,19 @@ export function usePublicPanelViewer(
   const demoMode = usePublicPanelDemoMode();
   const persona = usePublicPanelDemoPersona();
 
-  const { accessToken, viewerActorId } = serverViewer;
+  const { accessToken, viewerActorId, viewerIsAdmin } = serverViewer;
 
   return useMemo(() => {
     if (!demoMode || !isDemoModeGateEnabled()) {
-      return { accessToken, viewerActorId };
+      return { accessToken, viewerActorId, viewerIsAdmin };
     }
     return resolveDemoViewerContext(persona, panelOwnerActorId);
-  }, [accessToken, demoMode, persona, panelOwnerActorId, viewerActorId]);
+  }, [
+    accessToken,
+    demoMode,
+    persona,
+    panelOwnerActorId,
+    viewerActorId,
+    viewerIsAdmin,
+  ]);
 }

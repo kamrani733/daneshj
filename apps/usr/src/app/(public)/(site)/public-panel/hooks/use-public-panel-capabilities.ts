@@ -20,7 +20,8 @@ export function usePublicPanelCapabilities(
         profile,
         viewerActorId: viewer.viewerActorId,
         accessToken: viewer.accessToken,
+        viewerIsAdmin: viewer.viewerIsAdmin,
       }),
-    [profile, viewer.accessToken, viewer.viewerActorId]
+    [profile, viewer.accessToken, viewer.viewerActorId, viewer.viewerIsAdmin]
   );
 }
