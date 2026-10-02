@@ -7,6 +7,9 @@ export type SocialNetwork =
   | 'x'
   | 'whatsapp'
   | 'linkedin'
+  | 'github'
+  | 'mobile'
+  | 'phone'
   | 'website';
 
 export type PanelSocialLink = {

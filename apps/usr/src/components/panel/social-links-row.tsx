@@ -3,6 +3,7 @@
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
+import { partitionServiceSocialLinks } from '@/components/panel/social-contact';
 import type { PanelSocialLink, SocialNetwork } from '@/components/panel/types';
 import {
   Popover,
@@ -14,9 +15,12 @@ import { cn } from '@/lib/utils';
 type SocialLinksRowProps = {
   links: PanelSocialLink[];
   className?: string;
-  size?: 'sm' | 'md' | 'lg';
+  /** `xl` = fixed 56px (phone service grid). */
+  size?: 'sm' | 'md' | 'lg' | 'xl';
   variant?: 'outline' | 'filled';
   dir?: 'ltr' | 'rtl';
+  /** `serviceGrid`: hero networks on row 1, Git · mobile · phone · website on row 2 (Figma `400:139510`). */
+  layout?: 'row' | 'serviceGrid';
 };
 
 const ICON_PATHS: Record<SocialNetwork, string> = {
@@ -26,6 +30,9 @@ const ICON_PATHS: Record<SocialNetwork, string> = {
   x: '/images/social/x.svg',
   whatsapp: '/images/social/whatsapp.svg',
   linkedin: '/images/social/linkedin.svg',
+  github: '/images/social/github.svg',
+  mobile: '/images/social/mobile.svg',
+  phone: '/images/social/phone.svg',
   website: '/images/social/website.svg',
 } as const;
 
@@ -37,6 +44,9 @@ const BRAND_STYLES: Record<SocialNetwork, string> = {
   x: 'bg-neutral-black text-primary-foreground',
   whatsapp: 'bg-[#25D366] text-primary-foreground',
   linkedin: 'bg-info-700 text-primary-foreground',
+  github: 'bg-neutral-black text-primary-foreground',
+  mobile: 'bg-primary-700 text-primary-foreground',
+  phone: 'bg-primary-700 text-primary-foreground',
   website: 'bg-info-600 text-primary-foreground',
 };
 
@@ -53,6 +63,7 @@ function getCopyValue(link: PanelSocialLink): string {
     const match = href.match(/t\.me\/([^/?#]+)/i);
     return match ? `@${match[1]}` : href;
   }
+  if (network === 'mobile' || network === 'phone') return href.replace(/^tel:/i, '');
   return href.replace(/^https?:\/\//i, '');
 }
 
@@ -62,7 +73,55 @@ export function SocialLinksRow({
   size = 'sm',
   variant = 'filled',
   dir,
+  layout = 'row',
 }: SocialLinksRowProps) {
+  if (layout === 'serviceGrid') {
+    const { row1, row2 } = partitionServiceSocialLinks(links);
+    return (
+      <>
+        {/* Phones: one wrapping list, four 56px icons per row (responsive export). */}
+        <SocialLinksList
+          links={[...row1, ...row2]}
+          className="mx-auto max-w-[272px] justify-center gap-4 min-[720px]:hidden"
+          size="xl"
+          variant={variant}
+          dir={dir}
+        />
+      <div className="hidden flex-col items-center gap-4 min-[720px]:flex">
+        {[row1, row2].map((row, index) =>
+          row.length > 0 ? (
+            <SocialLinksRow
+              key={index}
+              links={row}
+              className={cn('flex-nowrap', className)}
+              size={size}
+              variant={variant}
+              dir={dir}
+            />
+          ) : null,
+        )}
+      </div>
+      </>
+    );
+  }
+  return (
+    <SocialLinksList
+      links={links}
+      className={className}
+      size={size}
+      variant={variant}
+      dir={dir}
+    />
+  );
+}
+
+function SocialLinksList({
+  links,
+  className,
+  size = 'sm',
+  variant = 'filled',
+  dir,
+}: Omit<SocialLinksRowProps, 'layout'>) {
   const t = useTranslations('panel');
   const tSocial = useTranslations('panel.social');
   const [openNetwork, setOpenNetwork] = useState<SocialNetwork | null>(null);
@@ -70,9 +129,23 @@ export function SocialLinksRow({
     null,
   );
 
-  const box = size === 'lg' ? 'size-14' : size === 'md' ? 'size-12' : 'size-10';
+  // `lg` steps down on phones so six icons fit one row (6×44 + gaps ≤ 343).
+  const box =
+    size === 'xl'
+      ? 'size-14'
+      : size === 'lg'
+      ? 'size-11 min-[720px]:size-14'
+      : size === 'md'
+        ? 'size-10 min-[720px]:size-12'
+        : 'size-10';
   const iconSize =
-    size === 'lg' ? 'size-6' : size === 'md' ? 'size-6' : 'size-[18px]';
+    size === 'xl'
+      ? 'size-7'
+      : size === 'lg'
+      ? 'size-5 min-[720px]:size-6'
+      : size === 'md'
+        ? 'size-5 min-[720px]:size-6'
+        : 'size-[18px]';
 
   async function handleCopy(link: PanelSocialLink) {
     const value = getCopyValue(link);

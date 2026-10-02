@@ -34,7 +34,9 @@ export function ServiceInfoSection({
         links={links}
         size="lg"
         variant="filled"
-        className="justify-center gap-4"
+        layout="serviceGrid"
+        className="justify-center gap-3 min-[720px]:gap-4"
+        dir="ltr"
       />
       <PublicPanelTabs catalog={catalog} otherInfo={otherInfo} />
     </section>
