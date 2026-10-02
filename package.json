@@ -2,7 +2,9 @@
   "name": "@daneshjoam/source",
   "version": "0.0.0",
   "license": "MIT",
-  "scripts": {},
+  "scripts": {
+    "vercel-build": "pnpm --filter @daneshjoam/usr run vercel-build"
+  },
   "private": true,
   "dependencies": {
     "axios": "^1.18.1",

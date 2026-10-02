@@ -55,8 +55,21 @@ Note: Nx target is **`dev`**, not `serve`, for `usr`.
 
 ## Production
 
-Vercel runs `pnpm run vercel-build` (`apps/usr/scripts/vercel-build.mjs` → `next build`). On Vercel
-(`VERCEL=1`), missing build env vars fall back to the same dev Stella values as `apps/usr/.env.example`
-(unless overridden in the project Environment Variables). Local `nx build usr` / `next build` still
-requires `NEXT_PUBLIC_API_URL` or `AUTH_API_URL`. Production deployments should set real MS URLs in the
-Vercel dashboard. Domains and full env matrix per environment: TBD.
+This repo has one Vercel project: **`apps/usr`**. `apps/adm` and `apps/bus` are not deployed.
+
+In the Vercel dashboard, set **Root Directory** to `apps/usr` (Project Settings → General). That is
+the supported way to pin a monorepo app. Repo files cover both dashboard setups:
+
+| File | When it applies |
+|---|---|
+| Root `vercel.json` | Root Directory is the repository root (`.`) — install/build only `@daneshjoam/usr` |
+| `apps/usr/vercel.json` | Root Directory is `apps/usr` |
+| `.vercelignore` | Excludes `apps/adm` and `apps/bus` from the upload |
+| `apps/usr/scripts/vercel-ignore.mjs` | Skips a deploy when `usr` and its workspace graph did not change |
+| `apps/usr/scripts/vercel-build.mjs` | Runs `next build` |
+
+On Vercel (`VERCEL=1`), missing build env vars fall back to the same dev Stella values as
+`apps/usr/.env.example` (unless overridden in the project Environment Variables). Local
+`nx build usr` / `next build` still requires `NEXT_PUBLIC_API_URL` or `AUTH_API_URL`. Production
+deployments should set real MS URLs in the Vercel dashboard. Domains and full env matrix per
+environment: TBD.

@@ -2,7 +2,7 @@
 title: "Project Context"
 description: "Source of truth for AI assistants — stack, structure, conventions, status"
 category: "meta"
-last_updated: "2026-09-25"
+last_updated: "2026-10-02"
 ---
 
 # Project Context
@@ -31,7 +31,7 @@ last_updated: "2026-09-25"
 | Backend | Microservices: Auth, Actor, Notification, Interactive Ops (others planned) |
 | Auth | httpOnly `session` cookie (base64 JSON `Session`); bearer `accessToken` passed to client queries; `loginType` / `User_` id prefix used ad hoc in `SiteShell` — RBAC TBD |
 | Package manager | **pnpm** (workspace `apps/*`, `libs/*`) |
-| Deployment | Vercel (per `vercel-build` script) — domains/env matrix TBD |
+| Deployment | Vercel, **`apps/usr` only** (`vercel-build`) — domains/env matrix TBD |
 | Tests | Jest on `usr`/`adm` (minimal); **no Playwright project** though CI runs `e2e` |
 
 ### Scripts / targets
@@ -43,10 +43,10 @@ last_updated: "2026-09-25"
 | `pnpm exec nx start usr` | `next start` after build |
 | `pnpm exec nx lint usr` | ESLint in `apps/usr` |
 | `pnpm exec nx test usr` | Jest in `apps/usr` |
-| `pnpm run vercel-build` (in `apps/usr`) | `next build` for Vercel |
+| `pnpm run vercel-build` | Builds `apps/usr` only (root or `apps/usr`) |
 | CI | `nx run-many -t lint test build typecheck e2e` (`.github/workflows/ci.yml`) |
 
-Root `package.json` `scripts` is empty `{}`; use Nx targets above.
+Root `package.json` has `vercel-build` (delegates to `apps/usr`); other work uses Nx targets above.
 
 ## Architecture overview
 
