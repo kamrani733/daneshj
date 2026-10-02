@@ -16,7 +16,7 @@
     }
   },
   "scripts": {
-    "vercel-build": "next build"
+    "vercel-build": "node scripts/vercel-build.mjs"
   },
   "dependencies": {
     "@daneshjoam/api-client": "workspace:*",

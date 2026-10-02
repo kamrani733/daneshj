@@ -2,7 +2,7 @@
 title: "Configuration"
 description: "Environment variables, local setup, commands, production configuration"
 category: "architecture"
-last_updated: "2026-09-25"
+last_updated: "2026-10-02"
 ---
 
 # Configuration
@@ -55,4 +55,8 @@ Note: Nx target is **`dev`**, not `serve`, for `usr`.
 
 ## Production
 
-Vercel (`vercel-build` → `next build`). Domains, env matrix per environment: TBD.
+Vercel runs `pnpm run vercel-build` (`apps/usr/scripts/vercel-build.mjs` → `next build`). On Vercel
+(`VERCEL=1`), missing build env vars fall back to the same dev Stella values as `apps/usr/.env.example`
+(unless overridden in the project Environment Variables). Local `nx build usr` / `next build` still
+requires `NEXT_PUBLIC_API_URL` or `AUTH_API_URL`. Production deployments should set real MS URLs in the
+Vercel dashboard. Domains and full env matrix per environment: TBD.
