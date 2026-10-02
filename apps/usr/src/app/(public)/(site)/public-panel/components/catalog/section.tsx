@@ -1,11 +1,11 @@
 'use client';
 
-import { useTranslations } from 'next-intl';
 import type { ReactNode } from 'react';
 
 import { cn } from '@/lib/utils';
 
-import { TitleUnderline } from '@public-panel/components/shared/title-underline';
+import { SectionHeading } from '@/components/ui/section-heading';
+import { formatFaNumber } from '@/lib/format-fa';
 
 type CatalogSectionProps = {
   title: string;
@@ -23,33 +23,24 @@ export function CatalogSection({
   className,
   gridClassName,
 }: CatalogSectionProps) {
-  const t = useTranslations('publicPanel');
-
   return (
     <section
       className={cn('flex w-full flex-col items-stretch gap-8', className)}
     >
-      <div className="flex w-full flex-col items-end">
-        <div className="flex w-fit flex-col items-stretch gap-2 px-4">
-          <h3 className="px-2 text-end text-lg font-bold leading-6 text-primary-700 dark:text-primary-100">
-            {title} ({count})
-          </h3>
-          <TitleUnderline />
-        </div>
-      </div>
+      <SectionHeading
+        title={`${title} (${formatFaNumber(count)})`}
+        tone="secondary"
+        size="title"
+        as="h4"
+        align="start"
+        className="self-start"
+      />
 
-      <div className={cn('grid gap-4', gridClassName)} dir="ltr">
+      <div className={cn('grid gap-4', gridClassName)}>
         {children}
       </div>
 
-      <div className="flex w-full justify-start" dir="ltr">
-        <button
-          type="button"
-          className="text-sm font-medium text-warning hover:underline"
-        >
-          {t('viewAll')}
-        </button>
-      </div>
+      {/* «مشاهده همه» hidden until destination routes exist (plan §5.4). */}
     </section>
   );
 }

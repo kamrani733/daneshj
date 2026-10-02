@@ -9,9 +9,11 @@ import type {
 } from '@public-panel/types/ui';
 import { EmptyState } from '@/components/panel';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { formatFaNumber } from '@/lib/format-fa';
 import { cn } from '@/lib/utils';
 
 import { CatalogSection } from '@public-panel/components/catalog/section';
+import { SectionTitle } from '@public-panel/components/shared/section-title';
 import { DiscountOfferCard } from '@public-panel/components/catalog/discount-offer-card';
 import { NewsOfferCard } from '@public-panel/components/catalog/news-offer-card';
 import { NewsletterOfferCard } from '@public-panel/components/catalog/newsletter-offer-card';
@@ -33,8 +35,19 @@ export function PublicPanelTabs({ catalog, otherInfo }: PublicPanelTabsProps) {
     catalog.newsletters.length > 0;
 
   return (
-    <Tabs defaultValue="services" className="w-full items-stretch gap-6">
+    <Tabs defaultValue="services" dir="rtl" className="w-full items-stretch gap-6">
       <TabsList className="w-full justify-center gap-8 border-b border-border pb-0 dark:gap-3 dark:border-0 dark:pb-0">
+        <TabsTrigger
+          value="services"
+          className={cn(
+            'gap-2 pb-3 text-base data-[state=active]:border-primary data-[state=active]:text-primary',
+            'dark:rounded-lg dark:border-0 dark:bg-transparent dark:px-4 dark:py-2.5 dark:pb-2.5 dark:text-primary-100',
+            'dark:data-[state=active]:bg-primary-100 dark:data-[state=active]:text-primary-900'
+          )}
+        >
+          <ShoppingCart className="size-5" strokeWidth={1.5} aria-hidden />
+          {t('tabs.services', { count: formatFaNumber(servicesCount) })}
+        </TabsTrigger>
         <TabsTrigger
           value="other"
           className={cn(
@@ -46,17 +59,6 @@ export function PublicPanelTabs({ catalog, otherInfo }: PublicPanelTabsProps) {
           <Info className="size-5" strokeWidth={1.5} aria-hidden />
           {t('tabs.other')}
         </TabsTrigger>
-        <TabsTrigger
-          value="services"
-          className={cn(
-            'gap-2 pb-3 text-base data-[state=active]:border-primary data-[state=active]:text-primary',
-            'dark:rounded-lg dark:border-0 dark:bg-transparent dark:px-4 dark:py-2.5 dark:pb-2.5 dark:text-primary-100',
-            'dark:data-[state=active]:bg-primary-100 dark:data-[state=active]:text-primary-900'
-          )}
-        >
-          <ShoppingCart className="size-5" strokeWidth={1.5} aria-hidden />
-          {t('tabs.services', { count: servicesCount })}
-        </TabsTrigger>
       </TabsList>
 
       <TabsContent value="services" className="mt-0 flex flex-col gap-8">
@@ -67,6 +69,7 @@ export function PublicPanelTabs({ catalog, otherInfo }: PublicPanelTabsProps) {
           />
         ) : (
           <>
+            <SectionTitle title={t('catalog.myProducts')} align="start" />
             {catalog.discounts.length > 0 ? (
               <CatalogSection
                 title={t('catalog.discounts')}

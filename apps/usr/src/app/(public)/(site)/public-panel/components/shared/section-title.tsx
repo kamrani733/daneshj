@@ -1,27 +1,24 @@
+import { SectionHeading } from '@/components/ui/section-heading';
 import { cn } from '@/lib/utils';
-
-import { TitleUnderline } from '@public-panel/components/shared/title-underline';
 
 type SectionTitleProps = {
   title: string;
   className?: string;
-  /** Kept for call-site compat. */
-  markSize?: 'md' | 'lg';
+  align?: 'start' | 'center';
 };
 
-/** Middle title: centered green headline with thin underline. */
-export function SectionTitle({ title, className }: SectionTitleProps) {
+/** Public-panel section title: secondary bar heading (Public Panel export). */
+export function SectionTitle({
+  title,
+  className,
+  align = 'center',
+}: SectionTitleProps) {
   return (
-    <div
-      className={cn(
-        'inline-flex flex-col items-center gap-2 px-4',
-        className
-      )}
-    >
-      <h2 className="px-2 text-center text-[28px] font-bold leading-10 text-primary-700 dark:text-primary-100">
-        {title}
-      </h2>
-      <TitleUnderline />
-    </div>
+    <SectionHeading
+      title={title}
+      tone="secondary"
+      align={align}
+      className={cn(align === 'start' && 'self-start', className)}
+    />
   );
 }

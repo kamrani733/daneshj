@@ -9,10 +9,7 @@ import type {
   EducationAddress,
 } from '@public-panel/types/ui';
 import { AcademicRecordCard, EducationAddressCard } from '@/components/panel';
-import { formatFaNumber } from '@/lib/format-fa';
 import { cn } from '@/lib/utils';
-
-import { TitleUnderline } from '@public-panel/components/shared/title-underline';
 
 type RecordsAccordionProps = {
   username: string;
@@ -28,28 +25,29 @@ export function RecordsAccordion({
   const t = useTranslations('publicPanel');
   const [open, setOpen] = useState(false);
 
+  // Empty records → section hidden (`400:142206`).
+  if (records.length === 0) return null;
+
   return (
     <section className="flex w-full flex-col items-start gap-5 py-2">
       <button
         type="button"
         aria-expanded={open}
         onClick={() => setOpen((v) => !v)}
-        className="flex w-fit flex-col items-start gap-1.5 px-2"
+        className="inline-flex w-fit items-center gap-2 px-2"
       >
-        <span className="inline-flex items-center gap-1.5 text-lg font-bold leading-6 text-primary-700 dark:text-primary-100">
-          <ChevronDown
-            className={cn(
-              'size-5 shrink-0 transition-transform',
-              open && 'rotate-180'
-            )}
-            aria-hidden
-          />
-          {t('academicRecords', {
-            username,
-            count: formatFaNumber(records.length),
-          })}
+        {/* Secondary bar heading + trailing chevron (Public Panel export, «سوابق تحصیلی»). */}
+        <span aria-hidden className="h-6 w-2 shrink-0 rounded-[2px] bg-secondary" />
+        <span className="text-title-medium font-bold text-on-primary-container min-[720px]:text-title-large">
+          {t('academicRecords', { username })}
         </span>
-        <TitleUnderline className="w-full" />
+        <ChevronDown
+          className={cn(
+            'size-5 shrink-0 text-on-surface transition-transform',
+            open && 'rotate-180'
+          )}
+          aria-hidden
+        />
       </button>
 
       {open ? (
