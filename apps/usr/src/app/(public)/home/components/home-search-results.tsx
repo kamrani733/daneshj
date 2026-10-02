@@ -3,6 +3,9 @@
 import { useTranslations } from 'next-intl';
 import { useEffect, useMemo, useState } from 'react';
 
+import { DiscountCard, type DiscountCardData } from '@/components/cards';
+import { Badge } from '@/components/ui/badge';
+import { formatFaNumber, formatToman } from '@/lib/format-fa';
 import { cn } from '@/lib/utils';
 
 import {
@@ -22,7 +25,6 @@ import {
   getSelectedChipId,
 } from '@home/lib/search-category-chips';
 import { HomeSearchFilterBar } from '@home/components/home-search-filter-bar';
-import { SearchResultCard } from '@home/components/search-result-card';
 import { SearchResultsHeader } from '@home/components/search-results-header';
 
 type HomeSearchResultsProps = {
@@ -125,26 +127,52 @@ export function HomeSearchResults({
           )}
         >
           {items.map((item) => (
-            <SearchResultCard
+            <DiscountCard
               key={item.id}
-              title={item.title}
-              businessName={item.subtitle}
-              imageSrc={item.imageSrc}
-              imageAlt={item.title}
-              rating={item.rating}
-              reviewCount={item.reviewCount ?? item.popularity}
-              price={item.price}
-              originalPrice={item.originalPrice}
-              discountPercent={item.discountPercent}
-              badge={item.badge}
-              timeLabel={item.timeLabel}
-              sellCount={item.sellCount}
-              address={item.address}
-              className="w-full"
+              {...toDiscountCard(item)}
+              ratingVisibility="always"
+              extraChips={
+                <>
+                  {item.badge ? (
+                    <Badge className="h-8 rounded-full border-0 bg-warning-subtle px-3 text-label-large font-medium text-warning-700 dark:text-warning-50">
+                      {item.badge}
+                    </Badge>
+                  ) : null}
+                  {typeof item.sellCount === 'number' ? (
+                    <Badge variant="sell">{formatFaNumber(item.sellCount)} خرید</Badge>
+                  ) : null}
+                  {item.address ? <Badge variant="meta">{item.address}</Badge> : null}
+                </>
+              }
+              className="w-full max-w-[320px] min-[640px]:max-w-none"
             />
           ))}
         </div>
       )}
     </section>
   );
+}
+
+/** Search mock item → shared discount card (prices / percent formatted in Persian). */
+function toDiscountCard(item: SearchResultItem): DiscountCardData {
+  const hasDiscount =
+    typeof item.discountPercent === 'number' && item.discountPercent > 0;
+  const beforePrice =
+    item.originalPrice ??
+    (hasDiscount
+      ? Math.round(item.price / (1 - (item.discountPercent as number) / 100))
+      : undefined);
+  return {
+    title: item.title,
+    businessName: item.subtitle,
+    imageSrc: item.imageSrc,
+    postedAgo: item.timeLabel,
+    discountBadge: hasDiscount
+      ? `${formatFaNumber(item.discountPercent as number)}٪ تخفیف`
+      : undefined,
+    originalPrice: beforePrice != null ? formatToman(beforePrice) : undefined,
+    finalPrice: formatToman(item.price),
+    rating: item.rating,
+    reviewCount: item.reviewCount ?? item.popularity,
+  };
 }

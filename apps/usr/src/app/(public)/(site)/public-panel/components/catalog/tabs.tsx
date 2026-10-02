@@ -10,13 +10,11 @@ import type {
 import { EmptyState } from '@/components/panel';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { formatFaNumber } from '@/lib/format-fa';
+import { DiscountCard, NewsCard, NewsletterCard } from '@/components/cards';
 import { cn } from '@/lib/utils';
 
 import { CatalogSection } from '@public-panel/components/catalog/section';
 import { SectionTitle } from '@public-panel/components/shared/section-title';
-import { DiscountOfferCard } from '@public-panel/components/catalog/discount-offer-card';
-import { NewsOfferCard } from '@public-panel/components/catalog/news-offer-card';
-import { NewsletterOfferCard } from '@public-panel/components/catalog/newsletter-offer-card';
 import { OtherInfoPanel } from '@public-panel/components/catalog/other-info-panel';
 
 type PublicPanelTabsProps = {
@@ -77,7 +75,7 @@ export function PublicPanelTabs({ catalog, otherInfo }: PublicPanelTabsProps) {
                 gridClassName="grid-cols-1 min-[560px]:grid-cols-2 min-[960px]:grid-cols-4"
               >
                 {catalog.discounts.map((offer) => (
-                  <DiscountOfferCard key={offer.id} offer={offer} />
+                  <DiscountCard key={offer.id} {...offer} />
                 ))}
               </CatalogSection>
             ) : null}
@@ -89,7 +87,7 @@ export function PublicPanelTabs({ catalog, otherInfo }: PublicPanelTabsProps) {
                 gridClassName="grid-cols-1 min-[720px]:grid-cols-2 min-[1100px]:grid-cols-3"
               >
                 {catalog.news.map((item) => (
-                  <NewsOfferCard key={item.id} item={item} />
+                  <NewsCard key={item.id} {...item} />
                 ))}
               </CatalogSection>
             ) : null}
@@ -101,7 +99,7 @@ export function PublicPanelTabs({ catalog, otherInfo }: PublicPanelTabsProps) {
                 gridClassName="grid-cols-1 min-[560px]:grid-cols-2 min-[960px]:grid-cols-4"
               >
                 {catalog.newsletters.map((item) => (
-                  <NewsletterOfferCard key={item.id} item={item} />
+                  <NewsletterCard key={item.id} {...item} />
                 ))}
               </CatalogSection>
             ) : null}
