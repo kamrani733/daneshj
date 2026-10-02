@@ -794,14 +794,15 @@
       "discounts": "تخفیف کالا و خدمات",
       "news": "خبر",
       "newsletters": "خبرنامه",
-      "myProducts": "محصولات من"
+      "myProducts": "محصولات من",
+      "reviews": "{count} نظر"
     },
     "viewAll": "مشاهده همه",
     "emptyServices": "هیچ سرویسی ارائه نشده است",
     "emptyOther": "اطلاعات دیگری ثبت نشده است",
     "otherInfo": {
       "resume": "رزومه",
-      "portfolio": "نمونه کار",
+      "portfolio": "پورتفولیو",
       "certificates": "گواهینامه ها",
       "download": "دانلود",
       "preview": "پیش نمایش",

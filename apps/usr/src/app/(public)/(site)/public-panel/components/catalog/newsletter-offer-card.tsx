@@ -3,6 +3,7 @@ import Image from 'next/image';
 
 import type { NewsletterItem } from '@public-panel/types/ui';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { formatFaNumber } from '@/lib/format-fa';
 import { cn } from '@/lib/utils';
 
 import { CatalogOfferCardShell } from '@public-panel/components/catalog/offer-card-shell';
@@ -60,7 +61,7 @@ export function NewsletterOfferCard({
         <div className="mt-auto flex items-center justify-start gap-1 pt-2 text-xs text-app-filter-ink">
           <Star className="size-3.5 fill-warning text-warning" aria-hidden />
           <span>
-            {item.rating} ({item.reviewCount} نظر)
+            {formatFaNumber(item.rating, Number.isInteger(item.rating) ? 0 : 1)} ({formatFaNumber(item.reviewCount)} نظر)
           </span>
         </div>
       </div>

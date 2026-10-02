@@ -109,6 +109,10 @@ export type PortfolioItem = {
   description: string;
   imageSrc: string;
   href?: string;
+  /** File card (Figma): name, size, last update. */
+  fileName?: string;
+  sizeLabel?: string;
+  updatedAt?: string;
 };
 
 export type CertificateItem = {

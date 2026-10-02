@@ -10,7 +10,7 @@ import { EmptyState } from '@/components/panel';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
-import { TitleUnderline } from '@public-panel/components/shared/title-underline';
+import { SectionHeading } from '@/components/ui/section-heading';
 
 type OtherInfoPanelProps = {
   content: OtherInfoContent;
@@ -18,13 +18,11 @@ type OtherInfoPanelProps = {
 
 const CARD_ELEVATION = 'shadow-app-elevation-1';
 
-/** «سایر اطلاعات» — resume, portfolio, certificates (library node 2453:5976). */
+/** «سایر اطلاعات» — résumé + portfolio file cards (Figma individual-provider export). */
 export function OtherInfoPanel({ content }: OtherInfoPanelProps) {
   const t = useTranslations('publicPanel');
-  const hasContent =
-    Boolean(content.resume) ||
-    content.portfolio.length > 0 ||
-    content.certificates.length > 0;
+  // Certificates are not in the Figma tab or the Expectation report (no API field) — not shown.
+  const hasContent = Boolean(content.resume) || content.portfolio.length > 0;
 
   if (!hasContent) {
     return (
@@ -40,158 +38,142 @@ export function OtherInfoPanel({ content }: OtherInfoPanelProps) {
     <div dir="rtl" className="flex w-full flex-col gap-8 py-4">
       {content.resume ? (
         <OtherInfoSection title={t('otherInfo.resume')}>
-          <div
-            className={cn(
-              'relative flex min-h-[184px] w-full flex-col gap-6 rounded-2xl border border-border bg-app-stat-card p-5',
-              CARD_ELEVATION,
-              'dark:border-warning-700 dark:bg-warning-800'
-            )}
-          >
-            <div className="flex items-start gap-4">
-              <Image
-                src="/images/public-panel/resume-pdf-thumb.png"
-                alt=""
-                width={104}
-                height={144}
-                className="h-[144px] w-[104px] shrink-0 rounded-lg object-contain"
-              />
-
-              <div className="flex min-w-0 flex-1 flex-col items-start gap-1 pt-2 text-start">
-                <p className="w-full truncate text-base font-semibold leading-6 tracking-[0.0094em] text-app-filter-muted dark:text-app-filter-ink">
-                  {content.resume.fileName}
-                </p>
-                <p className="w-full text-xs font-medium leading-5 tracking-[0.0083em] text-neutral-600 dark:text-app-filter-muted">
-                  {content.resume.sizeLabel}
-                  <span aria-hidden> {'  •  '} </span>
-                  {t('otherInfo.updatedAt', { date: content.resume.updatedAt })}
-                </p>
-              </div>
-            </div>
-
-            <div
-              dir="ltr"
-              className="flex items-center justify-start gap-5 min-[720px]:absolute min-[720px]:bottom-7 min-[720px]:left-5"
-            >
-              <Button
-                asChild
-                className="h-12 gap-2 rounded-full bg-primary px-4 text-sm font-medium text-primary-foreground hover:bg-primary-hover dark:bg-primary-100 dark:text-primary-900 dark:hover:bg-primary-100/90"
-              >
-                <a href={content.resume.href} download>
-                  <Image
-                    src="/images/public-panel/resume-download.svg"
-                    alt=""
-                    width={20}
-                    height={20}
-                    className="size-5 dark:invert"
-                  />
-                  {t('otherInfo.download')}
-                </a>
-              </Button>
-              {content.resume.previewHref ? (
-                <Button
-                  asChild
-                  variant="ghost"
-                  className="h-12 rounded-full px-4 text-sm font-medium text-primary hover:bg-primary/10 hover:text-primary dark:text-primary-100 dark:hover:bg-primary-100/10 dark:hover:text-primary-100"
-                >
-                  <Link href={content.resume.previewHref}>
-                    {t('otherInfo.preview')}
-                  </Link>
-                </Button>
-              ) : null}
-            </div>
-          </div>
+          <OtherInfoFileCard
+            fileName={content.resume.fileName}
+            sizeLabel={content.resume.sizeLabel}
+            updatedAt={content.resume.updatedAt}
+            href={content.resume.href}
+            previewHref={content.resume.previewHref}
+          />
         </OtherInfoSection>
       ) : null}
 
       {content.portfolio.length > 0 ? (
         <OtherInfoSection title={t('otherInfo.portfolio')}>
-          <ul
-            dir="rtl"
-            className="grid grid-cols-1 gap-4 min-[640px]:grid-cols-2 min-[960px]:grid-cols-3 min-[960px]:gap-6"
-          >
+          <ul className="flex w-full flex-col gap-4">
             {content.portfolio.map((item) => (
-              <li key={item.id} className="min-w-0">
-                <article className="flex h-full flex-col overflow-hidden rounded-xl border border-border bg-app-card dark:border-border dark:bg-surface-dark">
-                  <div className="relative h-[188px] w-full shrink-0 overflow-hidden bg-app-search-category">
-                    <Image
-                      src={item.imageSrc}
-                      alt={item.title}
-                      fill
-                      className="object-cover"
-                      sizes="(max-width: 640px) 100vw, (max-width: 960px) 50vw, 420px"
-                    />
-                  </div>
-                  <div className="flex flex-col items-start gap-0 bg-app-card p-4 text-start dark:bg-surface-dark">
-                    <h4 className="w-full text-base font-normal leading-6 tracking-[0.0094em] text-app-filter-ink">
-                      {item.title}
-                    </h4>
-                    <p className="w-full text-sm font-normal leading-5 tracking-[0.0071em] text-neutral-600 dark:text-app-filter-muted">
-                      {item.description}
-                    </p>
-                  </div>
-                </article>
-              </li>
-            ))}
-          </ul>
-        </OtherInfoSection>
-      ) : null}
-
-      {content.certificates.length > 0 ? (
-        <OtherInfoSection title={t('otherInfo.certificates')}>
-          <ul
-            dir="rtl"
-            className={cn(
-              'flex w-full flex-col overflow-hidden rounded-2xl border border-border bg-app-stat-card',
-              CARD_ELEVATION,
-              'dark:border-warning-700 dark:bg-warning-800'
-            )}
-          >
-            {content.certificates.map((item, index) => (
-              <li
-                key={item.id}
-                className={cn(
-                  'flex min-h-[68px] items-center gap-3 px-6 py-4',
-                  index < content.certificates.length - 1 &&
-                    'border-b border-border dark:border-warning-700'
-                )}
-              >
-                <Image
-                  src="/images/public-panel/cert-trophy.svg"
-                  alt=""
-                  width={22}
-                  height={22}
-                  className="size-[22px] shrink-0 dark:brightness-125"
+              <li key={item.id}>
+                <OtherInfoFileCard
+                  fileName={item.fileName || item.title}
+                  sizeLabel={item.sizeLabel}
+                  updatedAt={item.updatedAt}
+                  href={item.href || item.imageSrc}
+                  previewHref={item.href}
+                  thumbnailSrc={isImageFile(item.imageSrc) ? item.imageSrc : undefined}
+                  thumbnailAlt={item.title}
                 />
-                <div className="flex min-w-0 flex-1 flex-col items-start gap-0 text-start">
-                  <p className="w-full text-sm font-semibold leading-5 tracking-[0.0071em] text-app-filter-muted dark:text-app-filter-ink">
-                    {item.title}
-                  </p>
-                  <p className="w-full text-xs font-medium leading-5 tracking-[0.0083em] text-neutral-600 dark:text-app-filter-muted">
-                    {item.issuer}
-                    <span aria-hidden> {'  •  '} </span>
-                    {item.issuedAt}
-                  </p>
-                </div>
-                {item.href ? (
-                  <Link
-                    href={item.href}
-                    aria-label={t('otherInfo.viewCertificate')}
-                    className="inline-flex size-9 shrink-0 items-center justify-center rounded-full hover:bg-black/5 dark:hover:bg-white/10"
-                  >
-                    <Image
-                      src="/images/public-panel/cert-eye.svg"
-                      alt=""
-                      width={20}
-                      height={20}
-                      className="size-5 dark:opacity-80 dark:invert"
-                    />
-                  </Link>
-                ) : null}
               </li>
             ))}
           </ul>
         </OtherInfoSection>
       ) : null}
+    </div>
+  );
+}
+
+function isImageFile(path: string | undefined): path is string {
+  return Boolean(path && /\.(png|jpe?g|webp|gif|avif)(\?|$)/i.test(path));
+}
+
+/**
+ * Résumé / portfolio file card (Figma «سایر اطلاعات»): thumbnail, file name,
+ * size · updated date, «دانلود» + «پیش نمایش». Image portfolio files show as the thumbnail.
+ */
+function OtherInfoFileCard({
+  fileName,
+  sizeLabel,
+  updatedAt,
+  href,
+  previewHref,
+  thumbnailSrc,
+  thumbnailAlt = '',
+}: {
+  fileName: string;
+  sizeLabel?: string;
+  updatedAt?: string;
+  href: string;
+  previewHref?: string;
+  thumbnailSrc?: string;
+  thumbnailAlt?: string;
+}) {
+  const t = useTranslations('publicPanel');
+  const meta = [
+    sizeLabel,
+    updatedAt ? t('otherInfo.updatedAt', { date: updatedAt }) : '',
+  ].filter(Boolean);
+
+  return (
+    <div
+      className={cn(
+        'relative flex min-h-[184px] w-full flex-col gap-6 rounded-2xl border border-border bg-app-stat-card p-5',
+        CARD_ELEVATION,
+        'dark:border-warning-700 dark:bg-warning-800'
+      )}
+    >
+      <div className="flex items-start gap-4">
+        {thumbnailSrc ? (
+          <div className="relative h-[144px] w-[104px] shrink-0 overflow-hidden rounded-lg bg-app-search-category">
+            <Image
+              src={thumbnailSrc}
+              alt={thumbnailAlt}
+              fill
+              sizes="104px"
+              className="object-cover"
+            />
+          </div>
+        ) : (
+          <Image
+            src="/images/public-panel/resume-pdf-thumb.png"
+            alt=""
+            width={104}
+            height={144}
+            className="h-[144px] w-[104px] shrink-0 rounded-lg object-contain"
+          />
+        )}
+
+        <div className="flex min-w-0 flex-1 flex-col items-start gap-1 pt-2 text-start">
+          <p className="w-full truncate text-base font-semibold leading-6 tracking-[0.0094em] text-app-filter-muted dark:text-app-filter-ink">
+            {fileName}
+          </p>
+          {meta.length > 0 ? (
+            <p className="w-full text-xs font-medium leading-5 tracking-[0.0083em] text-neutral-600 dark:text-app-filter-muted">
+              {meta.join('  •  ')}
+            </p>
+          ) : null}
+        </div>
+      </div>
+
+      <div
+        dir="ltr"
+        className="flex items-center justify-start gap-5 min-[720px]:absolute min-[720px]:bottom-7 min-[720px]:left-5"
+      >
+        <Button
+          asChild
+          className="h-12 gap-2 rounded-full bg-primary px-4 text-sm font-medium text-primary-foreground hover:bg-primary-hover dark:bg-primary-100 dark:text-primary-900 dark:hover:bg-primary-100/90"
+        >
+          <a href={href} download>
+            <Image
+              src="/images/public-panel/resume-download.svg"
+              alt=""
+              width={20}
+              height={20}
+              className="size-5 dark:invert"
+            />
+            {t('otherInfo.download')}
+          </a>
+        </Button>
+        {previewHref ? (
+          <Button
+            asChild
+            variant="ghost"
+            className="h-12 rounded-full px-4 text-sm font-medium text-primary hover:bg-primary/10 hover:text-primary dark:text-primary-100 dark:hover:bg-primary-100/10 dark:hover:text-primary-100"
+          >
+            <Link href={previewHref} target="_blank" rel="noopener noreferrer">
+              {t('otherInfo.preview')}
+            </Link>
+          </Button>
+        ) : null}
+      </div>
     </div>
   );
 }
@@ -205,14 +187,14 @@ function OtherInfoSection({
 }) {
   return (
     <section className="flex w-full flex-col items-stretch gap-8">
-      <div className="flex w-full justify-start">
-        <div className="flex w-fit flex-col items-stretch gap-2 px-4">
-          <h3 className="px-2 text-start text-[28px] font-bold leading-10 text-primary-700 dark:text-primary-100">
-            {title}
-          </h3>
-          <TitleUnderline />
-        </div>
-      </div>
+      <SectionHeading
+        title={title}
+        tone="secondary"
+        size="title"
+        as="h3"
+        align="start"
+        className="self-start"
+      />
       {children}
     </section>
   );

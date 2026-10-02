@@ -1,8 +1,11 @@
-import { Star } from 'lucide-react';
+import { Clock, Star } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 
 import type { DiscountOffer } from '@public-panel/types/ui';
 import { Badge } from '@/components/ui/badge';
+import { PriceDisplay } from '@/components/ui/price-display';
+import { formatFaNumber } from '@/lib/format-fa';
 import { cn } from '@/lib/utils';
 
 import { CatalogOfferCardShell } from '@public-panel/components/catalog/offer-card-shell';
@@ -12,87 +15,57 @@ type DiscountOfferCardProps = {
   className?: string;
 };
 
-/** Discount catalog card. */
+/**
+ * «محصولات من» discount card (Public Panel export): image + time chip,
+ * business · product name, divider, discount pill, original / final price.
+ */
 export function DiscountOfferCard({ offer, className }: DiscountOfferCardProps) {
-  const isPercentBadge =
-    (offer.discountBadge.includes('٪') || offer.discountBadge.includes('%')) &&
-    !offer.discountBadge.includes('تومان');
-
+  const t = useTranslations('publicPanel.catalog');
   return (
     <CatalogOfferCardShell
-      className={cn(
-        'relative hover:border-transparent hover:shadow-[0_12px_28px_rgba(0,0,0,0.18)]',
-        className
-      )}
+      className={cn('hover:shadow-app-elevation-2', className)}
     >
-      {/* Full-card image under content on hover */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 z-0 opacity-0 transition-opacity duration-200 group-hover:opacity-100"
-      >
-        <Image
-          src={offer.imageSrc}
-          alt=""
-          fill
-          unoptimized
-          sizes="(max-width: 720px) 100vw, 25vw"
-          className="object-cover"
-        />
-        <div className="absolute inset-0 bg-black/45" />
-      </div>
-
-      <div className="relative z-10 h-[148px] w-full shrink-0 overflow-hidden bg-neutral-200 transition-colors duration-200 group-hover:bg-transparent">
+      <div className="relative h-[200px] w-full shrink-0 overflow-hidden bg-surface-container-highest">
         <Image
           src={offer.imageSrc}
           alt={offer.title}
           fill
           unoptimized
           sizes="(max-width: 720px) 100vw, 25vw"
-          className="object-cover transition-opacity duration-200 group-hover:opacity-0"
+          className="object-cover"
         />
-        <Badge className="absolute end-2.5 top-2.5 z-10 h-auto rounded-md border-0 bg-primary-50 px-2 py-1 text-[11px] font-medium text-primary-600 dark:bg-primary/20 dark:text-primary-100">
+        <Badge variant="time" className="absolute start-2.5 top-2.5 z-10">
+          <Clock aria-hidden />
           {offer.postedAgo}
         </Badge>
       </div>
 
-      <div className="relative z-10 flex flex-1 flex-col gap-3 bg-app-card p-3 transition-colors duration-200 group-hover:bg-transparent dark:bg-app-stat-card dark:group-hover:bg-transparent">
-        <div className="flex flex-col gap-1 text-start">
-          <h3 className="text-sm font-bold leading-5 text-app-filter-ink transition-colors duration-200 group-hover:text-white">
-            {offer.title}
-          </h3>
-          <p className="text-xs leading-4 text-app-filter-muted transition-colors duration-200 group-hover:text-white/85">
-            {offer.businessName}
-          </p>
-        </div>
+      <div className="flex flex-1 flex-col gap-2 p-4 text-start">
+        <p className="truncate text-label-small text-on-surface-variant">
+          {offer.businessName}
+        </p>
+        <h3 className="truncate text-title-small font-bold text-on-surface">
+          {offer.title}
+        </h3>
+        {/* Rating shows on phone / tablet cards only (responsive export; desktop card has none). */}
+        <p className="flex items-center gap-1 text-label-medium text-on-surface-variant min-[960px]:hidden">
+          <Star className="size-3.5 fill-rating text-rating" aria-hidden />
+          <span className="font-bold">{formatFaNumber(offer.rating, 1)}</span>
+          <span>({t('reviews', { count: formatFaNumber(offer.reviewCount) })})</span>
+        </p>
 
-        <div className="mt-auto flex items-end justify-between gap-2">
-          <div className="flex items-center gap-1 text-xs text-app-filter-ink transition-colors duration-200 group-hover:text-white">
-            <Star
-              className="size-3.5 fill-warning text-warning"
-              aria-hidden
-            />
-            <span>
-              {offer.rating} ({offer.reviewCount} نظر)
-            </span>
-          </div>
+        <div className="h-px w-full bg-outline-variant" aria-hidden />
 
-          <div className="flex flex-col items-start gap-1">
-            <Badge
-              variant="warning"
-              className={cn(
-                'h-auto rounded px-1.5 py-0.5 text-[11px] font-bold leading-4',
-                isPercentBadge && 'bg-warning-700'
-              )}
-            >
-              {offer.discountBadge}
-            </Badge>
-            <span className="text-[11px] leading-4 text-app-filter-muted line-through transition-colors duration-200 group-hover:text-white/75">
-              {offer.originalPrice}
-            </span>
-            <span className="text-sm font-bold leading-5 text-primary transition-colors duration-200 group-hover:text-white">
-              {offer.finalPrice}
-            </span>
-          </div>
+        <div className="mt-auto flex flex-col items-start gap-2">
+          <Badge variant="warning" className="h-7 px-3 text-label-medium">
+            {offer.discountBadge}
+          </Badge>
+          {/* Row: original at the start (right), final at the end (left). */}
+          <PriceDisplay
+            layout="row"
+            originalPrice={offer.originalPrice}
+            finalPrice={offer.finalPrice}
+          />
         </div>
       </div>
     </CatalogOfferCardShell>

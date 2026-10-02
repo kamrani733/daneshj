@@ -143,6 +143,10 @@ function mapPortfolio(
       description,
       imageSrc: filePath,
       href: onlineLink || filePath || undefined,
+      fileName: fileNameFromPath(filePath || onlineLink),
+      sizeLabel: readString(row, 'file_size') || readString(row, 'size') || '',
+      updatedAt:
+        readString(row, 'updated_at') || readString(row, 'modified_at') || '',
     });
   });
   return items;
