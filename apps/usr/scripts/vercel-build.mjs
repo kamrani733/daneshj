@@ -14,6 +14,7 @@ const VERCEL_BUILD_DEFAULTS = {
   INTERACTIVE_OPS_API_URL: 'http://dev.stella.webpanel.systems:5001',
   NEXT_PUBLIC_ACTOR_API_URL: '/api',
   ACTOR_API_URL: 'http://dev.stella.webpanel.systems:3008',
+  NEXT_PUBLIC_DEMO_MODE_ENABLED: 'true',
 };
 
 function applyVercelBuildDefaults() {

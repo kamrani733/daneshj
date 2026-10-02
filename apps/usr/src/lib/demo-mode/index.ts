@@ -1,7 +1,9 @@
 export {
   DEMO_MODE_COOKIE,
   DEMO_MODE_COOKIE_VALUE,
+  DEMO_MODE_OFF_VALUE,
   isDemoModeGateEnabled,
+  resolveDemoModeActive,
 } from '@/lib/demo-mode/config';
 export {
   DEFAULT_DEMO_PERSONA,

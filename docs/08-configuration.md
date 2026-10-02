@@ -21,7 +21,7 @@ last_updated: "2026-10-02"
 | `ACTOR_API_URL` | For Actor rewrites | No | Upstream Actor MS |
 | `NOTIFICATION_API_URL` | For `/api/notification` rewrites | No | Upstream Notification MS |
 | `INTERACTIVE_OPS_API_URL` | Recommended in prod | No | Upstream Interactive Ops (default host in config if unset) |
-| `NEXT_PUBLIC_DEMO_MODE_ENABLED` | No | Yes | When `true`, enables the public-panel presentation demo toggle and lazy-loaded fixtures (dev/preview only; leave unset in production) |
+| `NEXT_PUBLIC_DEMO_MODE_ENABLED` | No | Yes | When `true`, enables the public-panel presentation demo toggle and fixtures. Default on for Vercel preview (`daneshj-usr`). Opt out with cookie `demo_mode=0` |
 | `TEMP_ADMIN_ACCESS_TOKEN` | Dev/admin only | No | Temporary admin impersonation |
 | `NODE_ENV` | Automatic | No | Cookie `secure` on session |
 
@@ -69,7 +69,7 @@ the supported way to pin a monorepo app. Repo files cover both dashboard setups:
 | `apps/usr/scripts/vercel-build.mjs` | Runs `next build` |
 
 On Vercel (`VERCEL=1`), missing build env vars fall back to the same dev Stella values as
-`apps/usr/.env.example` (unless overridden in the project Environment Variables). Local
-`nx build usr` / `next build` still requires `NEXT_PUBLIC_API_URL` or `AUTH_API_URL`. Production
-deployments should set real MS URLs in the Vercel dashboard. Domains and full env matrix per
-environment: TBD.
+`apps/usr/.env.example`, including `NEXT_PUBLIC_DEMO_MODE_ENABLED=true` so `/public-panel`
+loads presentation fixtures (unless overridden in the project Environment Variables). Local
+`nx build usr` / `next build` still requires `NEXT_PUBLIC_API_URL` or `AUTH_API_URL`. A later
+production domain should unset the demo gate. Domains and full env matrix per environment: TBD.

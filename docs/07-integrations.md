@@ -2,7 +2,7 @@
 title: "Integrations"
 description: "Backend microservices, endpoint inventory, readiness and mock status"
 category: "architecture"
-last_updated: "2026-09-26"
+last_updated: "2026-10-02"
 ---
 
 # Integrations
@@ -53,8 +53,8 @@ Optional **presentation demo mode** for `/public-panel` only (Session 2.5). Othe
 
 | Piece | Location | Behaviour |
 |---|---|---|
-| Env gate | `NEXT_PUBLIC_DEMO_MODE_ENABLED=true` | Toggle + fixtures only when set. Production builds leave it unset (security item 0: no mocks in production). |
-| Cookie | `demo_mode=1` | Shared by server (RSC layout) and client (React Query, toggle). |
+| Env gate | `NEXT_PUBLIC_DEMO_MODE_ENABLED=true` | Toggle + fixtures only when set. Vercel preview sets it; a later production domain should leave it unset. |
+| Cookie | `demo_mode=1` on, `demo_mode=0` off | Shared by server (RSC layout) and client (React Query, toggle). Missing cookie + gate on → fixtures. |
 | Persona cookie | `demo_persona=<id>` | Presentation viewer + panel shape. Default `visitor-individual-provider`. IDs: `owner-individual-provider`, `visitor-individual-provider`, `visitor-non-provider`, `guest`. |
 | Resolver | `apps/usr/src/lib/demo-mode/` | `resolvePublicPanelApiRuntime` picks real `api/` vs lazy `mock/` twins. |
 | Fixtures | `public-panel/mock/fixtures.ts`, `interactive-ops-demo.ts` | Profile per persona; Interactive Ops counters in memory. |

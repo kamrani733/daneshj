@@ -69,7 +69,8 @@ Admin = session whose login type is not a user (`page.tsx`, same rule as `SiteSh
 
 ## Demo mode
 
-Gate `NEXT_PUBLIC_DEMO_MODE_ENABLED=true` + cookie `demo_mode=1`; persona cookie `demo_persona`. Eight personas:
+Gate `NEXT_PUBLIC_DEMO_MODE_ENABLED=true` (set on Vercel preview). Cookie `demo_mode=1` on /
+`demo_mode=0` off; missing cookie keeps fixtures on. Persona cookie `demo_persona`. Eight personas:
 `{owner|visitor|guest|admin}-{individual-provider|non-provider}` (legacy `guest` maps to
 `guest-individual-provider`). Guest personas show the owner with an empty «درباره من» (guest export). On phones
 the persona select and toggle live in the demo banner.
