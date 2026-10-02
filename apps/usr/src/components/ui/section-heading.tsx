@@ -4,8 +4,11 @@ type SectionHeadingProps = {
   title: string;
   tone?: 'primary' | 'secondary';
   align?: 'start' | 'center' | 'end';
-  /** `headline` = section title (28/36); `title` = sub-section title. */
-  size?: 'headline' | 'title';
+  /**
+   * `headline` = section title (28/36); `title` = sub-section title;
+   * `responsive` = title on phones, headline from 834 (home sections).
+   */
+  size?: 'headline' | 'title' | 'responsive';
   as?: 'h1' | 'h2' | 'h3' | 'h4';
   className?: string;
 };
@@ -38,13 +41,19 @@ export function SectionHeading({
             ? tone === 'primary'
               ? 'h-8 w-3'
               : 'h-7 w-2'
-            : 'h-6 w-1.5'
+            : size === 'title'
+              ? 'h-6 w-1.5'
+              : 'h-6 w-1.5 min-[834px]:h-7 min-[834px]:w-2'
         )}
       />
       <Tag
         className={cn(
           'font-bold text-on-primary-container',
-          size === 'headline' ? 'text-headline-medium' : 'text-title-large'
+          size === 'headline'
+            ? 'text-headline-medium'
+            : size === 'title'
+              ? 'text-title-large'
+              : 'text-title-large min-[834px]:text-headline-medium'
         )}
       >
         {title}
