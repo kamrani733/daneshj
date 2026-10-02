@@ -2,7 +2,7 @@
 title: "Design System"
 description: "Tokens, status colors, typography, components and the consolidation plan — read before any UI work"
 category: "architecture"
-last_updated: "2026-09-25"
+last_updated: "2026-10-02"
 ---
 
 # Design System
@@ -90,12 +90,10 @@ The removed names `brand-secondary`, `on-brand-secondary`, `warning-container`, 
 | File | Hardcoded values | Should use |
 |---|---|---|
 | `time-picker.tsx` | `#008D63`, `#EAE7E1`, `#707973`, `#C1E9FB`, `#244C5B`, `#D3F4E1`, `#005138` | `--color-primary`, `--color-muted`, `--color-border-strong`, `--color-info-subtle`, `--color-info`, `--color-primary-subtle`, `--color-accent-foreground` |
-| `academic-record-card.tsx` | `#404943`, `#008D63`, `#8DD5B2`, `#D3F4E1`, `#ffdbcf`, `#72351f` | `--color-content-muted`, `--color-primary`, `--color-primary-200`, `--color-primary-subtle`, `--color-warning-50`, `--color-warning-700` |
+| `academic-record-card.tsx` | `#404943`, `#008D63`, `#8DD5B2`, `#D3F4E1` (declared chip now `info-50` / `info-700`) | `--color-content-muted`, `--color-primary`, `--color-primary-200`, `--color-primary-subtle`, `--color-warning-50`, `--color-warning-700` |
 | `stats-dialogs.tsx` | `#25D366`, `#2AABEE`, `#1877F2`, Instagram gradient, Google brand colors | Social brand colors — keep as-is or create `--color-social-*` tokens |
 | `social-links-row.tsx` | `#2AABEE`, `#25D366`, Instagram gradient | Social brand colors — keep as-is or create tokens |
 | `auth-shell.tsx` | `#fafaf7`, `#171d19`, `#72351F`, `#003825`, `#073543` | `--color-auth-panel`, `--color-surface-dark`, `--color-warning-700`, `--color-primary-700`, `--color-info-800` |
-| `search-result-card.tsx` | `#FFC107`, `#707973` | Create `--color-rating-star` token; use `--color-neutral-600` |
-| `content-card.tsx` | `#FAFAF5`, `rgba(0,0,0,0.35)` | `--color-neutral-white`, add overlay token |
 | `login-form.tsx` | `#0b57d0` | Use `--color-info` or create `--color-link` |
 | `session-management-form.tsx` | `#E3E0DA` | Create `--color-table-header` or use existing neutral |
 | `badge.tsx` | `#005138` | Use `--color-accent-foreground` |
@@ -226,13 +224,18 @@ audit; the "SRS usage" column shows why each is needed.
 | `ArchiveToggle` / archived tab | Archive views | all | — | ❌ |
 | `ReportLayout`, `StatCard`, `ChartCard` | Reports, statistics, charts | all | `notifications/stats/`, `charts/` (recharts) | ⚠️ per-feature |
 | `ServiceHome` blocks | Service landing: hero, featured list | SRV, all | `home/components/` | ⚠️ home-specific |
-| `ProductCard`, `NewsCard`, `NewsletterCard`, `EventCard` | Content cards | Dsc, Nws, Nwl, Cln | `home/components/content-card.tsx`, `public-panel/catalog/*-card.tsx` | ⚠️ |
+| `HoverMediaCard` | Shared card shell + hover (media fills the card, dark body, white text) | all card lists | `components/cards/hover-media-card.tsx` | ✅ |
+| `DiscountCard`, `NewsCard`, `NewsletterCard`, `BusinessCard` | Content cards (home, search results, public panel) | Dsc, Nws, Nwl, SRV | `components/cards/` | ✅ |
+| `EventCard` | Calendar event card | Cln | — | ❌ |
 | `VoucherView` / `ReceiptView` | Discount voucher and receipt display | Dsc | — | ❌ |
 | `ConversationList`, `MessageBubble`, `Composer` | Messaging | Msg | `public-panel/components/comments/` (prototype) | ⚠️ UI-only |
 | `NotificationItem` | Notification rendering | platform | `notifications/components/inbox/notification-row.tsx` | ✅ |
 | `ShareLink` | Copy / share referral link | Rfl | — | ❌ |
 | `PaymentMethodPicker` | Free / wallet / gateway | Cln, Dsc | — | ❌ |
 | `ProfileHeroCard` | Profile header card | panels | `components/panel/profile-hero-card.tsx` | ✅ |
+| `ScrollCarousel` | RTL horizontal carousel, arrows at both ends, disabled at edges | home categories / businesses | `components/ui/scroll-carousel.tsx` | ✅ |
+| `SectionHeading` | Bar + title; bar first (start / right in RTL); `size` headline · title · responsive | all sections | `components/ui/section-heading.tsx` | ✅ |
+| `SortMenu` | Sort trigger (`button` / `select`) + overlay menu; icon-only on phones | comment lists | `components/ui/sort-menu.tsx` | ✅ |
 | `SiteHeader` | Global navigation | site | `components/site/site-header.tsx` | ✅ (large: 676 lines) |
 | `SiteShell` | Layout wrapper | site | `components/site/site-shell.tsx` | ✅ |
 | `AuthShell` | Auth layout wrapper | auth | `components/auth/auth-shell.tsx` | ✅ |

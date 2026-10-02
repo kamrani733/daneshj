@@ -2,7 +2,7 @@
 title: "Known Issues & Gaps"
 description: "Blockers, open questions, SRS problems, technical debt"
 category: "meta"
-last_updated: "2026-09-25"
+last_updated: "2026-10-02"
 ---
 
 # Known Issues & Gaps
@@ -68,6 +68,16 @@ See [srs/README.md](./srs/README.md) → Known issues, Declared but not detailed
 | Home search entirely mock | `home/data/search-mock.ts` | Medium | Integrate SRV search API |
 | Large unmaintainable files (>300 lines) | Multiple — see audit §11 | Medium | Split by tab/section |
 | CI runs `e2e` with no Playwright project | `.github/workflows/ci.yml` | Medium | Add e2e app or drop target |
+| Followers dialog «حذف» calls unfollow | `public-panel/hooks/use-profile-stats-bar.ts` | Medium | Needs an Interactive Ops "remove follower" endpoint |
+| Panel comments are client-only (post, reply, delete, restore, feature, report) | `public-panel/components/comments/` | Medium | Wire when the panel-comment API exists (profile SRS TBD, not Msg) |
+| Dislike count: Expectation doc says admin-only, some Figma frames show it to visitors | `public-panel/capabilities.ts` (`showDislikes`) | Low | Follows the doc; confirm with design |
+| Feature star shown on visitor frames, but role table says owner-only | `public-panel/capabilities.ts` (`commentFeature`) | Low | Follows the doc; confirm with design |
+| Stats-bar action counts differ between Figma frames (with / without numbers) | `public-panel/components/profile/stats-bar.tsx` | Low | Counts kept (like, share); confirm |
+| No electronic card in Actor MS | `private-panel/api/profile-mappers.ts` | Medium | Public panel hides the e-card CTA until a link exists |
+| Certificates removed from «سایر اطلاعات» | `public-panel/components/catalog/other-info-panel.tsx` | Low | Not in Figma, Expectation report or Actor API; type kept |
+| Hero card background pattern not implemented | `components/panel/profile-hero-card.tsx` | Low | Asset not in repo; plan forbids downloading it from Figma |
+| Home category search bar not in the home Figma | `home/components/home-search-shell.tsx` | Low | Kept because search results depend on it; confirm |
+| Figma MCP Starter-plan call limit | design workflow | Medium | Exports (SVG) used as fallback; upgrade plan or keep exports in `docs/design-specs/` notes |
 | Tailwind version mismatch in package.json | `apps/usr/package.json` vs root | Low | Align declarations |
 | `any` in TS | only `apps/*/index.d.ts` (image types) | Low | — |
 

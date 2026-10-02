@@ -48,6 +48,8 @@ Rules behind this structure: [00-HOW-TO-USE-THIS-DOCS-KIT.md](./00-HOW-TO-USE-TH
 | File | What it covers |
 |------|----------------|
 | [features/_example.md](./features/_example.md) | Convention for a per-feature doc (SRS-mapped) |
+| [features/public-panel.md](./features/public-panel.md) | Public panel: role-based views, demo personas, responsive |
+| [features/home.md](./features/home.md) | Home page sections, shared cards, mock data |
 
 Add one row per feature as it's built.
 
