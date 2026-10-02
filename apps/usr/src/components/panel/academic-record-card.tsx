@@ -75,7 +75,8 @@ export function AcademicRecordCard({
             'h-[30px] gap-2 rounded-full px-3 text-xs font-medium leading-4',
             verified
               ? 'border border-[#8DD5B2] bg-[#D3F4E1] text-[#008D63] dark:border-primary-100/40 dark:bg-primary/20 dark:text-primary-100'
-              : 'border-0 bg-[#ffdbcf] text-[#72351f]'
+              : // «اظهاری» = light blue chip (public-panel export).
+                'border-0 bg-info-50 text-info-700 dark:bg-info-800 dark:text-info-50'
           )}
         >
           {verified ? (
