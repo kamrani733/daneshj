@@ -17,7 +17,8 @@ export const EMPTY_PUBLIC_PANEL: PublicPanelProfile = {
   location: '',
   bio: '',
   avatarSrc: '',
-  electronicCardHref: '#',
+  /** Actor MS has no electronic card yet — empty hides «مشاهده کارت الکترونیکی». */
+  electronicCardHref: '',
   socialLinks: [],
   serviceSocialLinks: [],
   stats: {

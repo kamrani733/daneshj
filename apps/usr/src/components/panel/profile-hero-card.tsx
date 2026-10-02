@@ -25,6 +25,8 @@ export function ProfileHeroCard({ profile }: ProfileHeroCardProps) {
   const showProvider = Boolean(profile.providerBadgeKey);
   const showAbout = Boolean(profile.bio.trim());
   const showLocation = Boolean(profile.location.trim());
+  /** Empty href = no card link (public panel); private panel always passes a href. */
+  const showElectronicCard = Boolean(profile.electronicCardHref?.trim());
   const bioLong = profile.bio.length > 180;
   const bioText =
     !expanded && bioLong ? `${profile.bio.slice(0, 180)}…` : profile.bio;
@@ -60,21 +62,22 @@ export function ProfileHeroCard({ profile }: ProfileHeroCardProps) {
           className={cn(
             'flex w-full flex-col items-center gap-5',
             showAbout &&
-              'min-[834px]:flex-row min-[834px]:items-center min-[834px]:justify-between min-[834px]:gap-7',
+              'min-[1024px]:flex-row min-[1024px]:items-center min-[1024px]:justify-between min-[1024px]:gap-7',
           )}
         >
           <div
             className={cn(
               'flex w-full flex-col items-center gap-4',
-              showAbout &&
-                'min-[834px]:w-auto min-[834px]:shrink-0 min-[834px]:flex-row min-[834px]:gap-10',
+              // Tablet stacks (responsive export); laptop+ puts avatar beside identity.
+              'min-[1024px]:flex-row min-[1024px]:justify-center min-[1024px]:gap-10',
+              showAbout && 'min-[1024px]:w-auto min-[1024px]:shrink-0',
             )}
           >
             <Avatar
               className={cn(
                 'size-[120px] ring-[3px] ring-warning-50',
                 'min-[834px]:size-[160px] min-[834px]:ring-4',
-                showAbout && 'min-[1100px]:size-[200px]',
+                'min-[1100px]:size-[200px]',
               )}
             >
               <AvatarImage src={profile.avatarSrc} alt={profile.displayName} />
@@ -83,7 +86,12 @@ export function ProfileHeroCard({ profile }: ProfileHeroCardProps) {
               </AvatarFallback>
             </Avatar>
 
-            <div className="flex w-full min-w-0 flex-col items-center gap-3 text-center">
+            <div
+              className={cn(
+                'flex w-full min-w-0 flex-col items-center gap-3 text-center',
+                !showAbout && 'min-[1024px]:w-auto',
+              )}
+            >
               <div className="flex flex-col items-center gap-2 min-[834px]:gap-3">
                 <h2 className="text-xl font-bold leading-8 tracking-[0.0094em] text-content dark:text-primary-100 min-[834px]:text-[28px] min-[834px]:leading-10">
                   {profile.displayName}
@@ -107,27 +115,22 @@ export function ProfileHeroCard({ profile }: ProfileHeroCardProps) {
                 </p>
               ) : null}
 
-              <Button
-                asChild
-                variant="outline"
-                className={cn(
-                  'h-11 w-full max-w-[240px] rounded-full border-border bg-app-scene px-4',
-                  'text-sm font-medium text-app-filter-muted shadow-none',
-                  'hover:bg-app-scene dark:border-app-filter-border dark:bg-transparent dark:text-content',
-                  'min-[834px]:h-12 min-[834px]:w-auto min-[834px]:min-w-[169px]',
-                )}
-              >
-                <Link
-                  href={
-                    typeof profile.electronicCardHref === 'string' &&
-                    profile.electronicCardHref.length > 0
-                      ? profile.electronicCardHref
-                      : '#'
-                  }
+              {showElectronicCard ? (
+                <Button
+                  asChild
+                  variant="outline"
+                  className={cn(
+                    'h-11 w-full max-w-[240px] rounded-full border-border bg-app-scene px-4',
+                    'text-sm font-medium text-app-filter-muted shadow-none',
+                    'hover:bg-app-scene dark:border-app-filter-border dark:bg-transparent dark:text-content',
+                    'min-[834px]:h-12 min-[834px]:w-auto min-[834px]:min-w-[169px]',
+                  )}
                 >
-                  {t('viewElectronicCard')}
-                </Link>
-              </Button>
+                  <Link href={profile.electronicCardHref}>
+                    {t('viewElectronicCard')}
+                  </Link>
+                </Button>
+              ) : null}
             </div>
           </div>
 
@@ -137,7 +140,7 @@ export function ProfileHeroCard({ profile }: ProfileHeroCardProps) {
               titleBgClassName="bg-app-card"
               className={cn(
                 'min-h-[120px] w-full border-primary-200/70 bg-app-card p-4 dark:border-primary/40 dark:bg-app-search-category',
-                'min-[834px]:min-h-[148px] min-[834px]:max-w-[590px] min-[834px]:flex-1 min-[834px]:p-6',
+                'min-[834px]:min-h-[148px] min-[834px]:p-6 min-[1024px]:max-w-[590px] min-[1024px]:flex-1',
               )}
               footer={
                 bioLong ? (
@@ -162,7 +165,10 @@ export function ProfileHeroCard({ profile }: ProfileHeroCardProps) {
           links={profile.socialLinks}
           variant="outline"
           size="md"
-          className="justify-start gap-4 min-[834px]:gap-6"
+          className={cn(
+            'flex-nowrap gap-2.5 min-[720px]:gap-4 min-[834px]:gap-6',
+            showAbout ? 'justify-center min-[1024px]:justify-start' : 'justify-center',
+          )}
           dir="ltr"
         />
       </div>

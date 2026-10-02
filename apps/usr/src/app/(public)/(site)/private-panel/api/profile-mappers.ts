@@ -439,6 +439,9 @@ export function mapPublicPanelProfile(
     actorType: 1,
     location: locationParts.join('، ') || identity.location,
     providerBadgeKey: isProvider ? 'individualProvider' : identity.providerBadgeKey,
+    // Visitor page hides the card CTA when there is no real link (private panel keeps '#').
+    electronicCardHref:
+      identity.electronicCardHref === '#' ? '' : identity.electronicCardHref,
     socialLinks,
     serviceSocialLinks: socialLinks,
     academicRecords: mapPublicAcademicRecords(publicData),
