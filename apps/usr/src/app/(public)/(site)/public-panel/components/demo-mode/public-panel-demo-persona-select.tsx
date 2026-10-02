@@ -40,11 +40,17 @@ export function PublicPanelDemoPersonaSelect({
   return (
     <label
       className={cn(
-        'inline-flex max-w-[min(100vw-8rem,220px)] items-center gap-2 rounded-full bg-app-search-category px-3 text-app-filter-ink',
-        size === 'sm' ? 'h-10 text-xs' : 'h-11 text-sm'
+        'inline-flex items-center gap-2 rounded-full bg-app-search-category px-3 text-app-filter-ink',
+        // Mobile header: select only, narrow, so logo + menu still fit.
+        size === 'sm' ? 'h-10 max-w-[104px] text-xs' : 'h-11 max-w-[260px] text-sm'
       )}
     >
-      <span className="shrink-0 font-medium text-app-filter-muted">
+      <span
+        className={cn(
+          'shrink-0 font-medium text-app-filter-muted',
+          size === 'sm' && 'sr-only'
+        )}
+      >
         {t('personaLabel')}
       </span>
       <select

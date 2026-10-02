@@ -9,33 +9,38 @@ type PanelInfoBannerProps = {
   className?: string;
 };
 
-/** Mid-page info banner. */
+/**
+ * Mid-page info banner. ≥640: text over the art (desktop export).
+ * Phones: art on top, text below (responsive export).
+ */
 export function PanelInfoBanner({ className }: PanelInfoBannerProps) {
   const t = useTranslations('publicPanel.infoBanner');
 
   return (
     <section
       className={cn(
-        'relative w-full overflow-hidden rounded-2xl',
-        'h-[180px] shadow-[0px_2px_6px_2px_rgba(0,0,0,0.15),0px_1px_2px_0px_rgba(0,0,0,0.3)]',
-        'min-[834px]:h-[240px]',
+        'relative flex w-full flex-col overflow-hidden rounded-2xl bg-surface-container-low',
+        'shadow-[0px_2px_6px_2px_rgba(0,0,0,0.15),0px_1px_2px_0px_rgba(0,0,0,0.3)]',
+        'min-[640px]:block min-[640px]:h-[180px] min-[834px]:h-[240px]',
         className
       )}
     >
-      <Image
-        src="/images/public-panel/info-banner-art.png"
-        alt=""
-        fill
-        sizes="(max-width: 1322px) 100vw, 1322px"
-        className="object-cover object-left"
-        aria-hidden
-      />
+      <div className="relative order-1 h-[160px] w-full min-[640px]:absolute min-[640px]:inset-0 min-[640px]:h-full">
+        <Image
+          src="/images/public-panel/info-banner-art.png"
+          alt=""
+          fill
+          sizes="(max-width: 1322px) 100vw, 1322px"
+          className="object-cover object-left"
+          aria-hidden
+        />
+      </div>
 
       <div
         className={cn(
-          'relative z-10 flex h-full flex-col items-start justify-center gap-2',
+          'relative z-10 order-2 flex flex-col items-start justify-center gap-2',
           'px-5 py-4 text-start',
-          'min-[640px]:max-w-[55%] min-[640px]:px-10',
+          'min-[640px]:h-full min-[640px]:max-w-[55%] min-[640px]:px-10',
           'min-[834px]:max-w-[512px] min-[834px]:pe-0 min-[834px]:ps-8',
           'min-[834px]:me-auto min-[834px]:ms-[117px]'
         )}

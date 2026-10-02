@@ -84,7 +84,7 @@ export function SiteHeader({
       {/* Mobile + tablet — avatar/notif | logo (center) | search + menu; desktop from lg */}
       <div
         dir="ltr"
-        className="flex h-12 items-center justify-between px-4 py-1 lg:hidden"
+        className="flex h-12 items-center justify-between gap-1 px-3 py-1 min-[400px]:px-4 lg:hidden"
       >
         <HeaderIconGroup
           isAuthenticated={isAuthenticated}
@@ -214,7 +214,7 @@ function HeaderIconGroup({
   className,
 }: HeaderIconGroupProps) {
   return (
-    <div className={cn('flex shrink-0 items-center gap-2', className)}>
+    <div className={cn('flex shrink-0 items-center gap-1.5 min-[400px]:gap-2', className)}>
       <ThemeToggle />
       <AuthEntryButton
         isAuthenticated={isAuthenticated}
@@ -304,7 +304,7 @@ function HeaderSearchMenuGroup({
   className,
 }: HeaderSearchMenuGroupProps) {
   return (
-    <div className={cn('flex shrink-0 items-center gap-2.5', className)}>
+    <div className={cn('flex shrink-0 items-center gap-1.5 min-[400px]:gap-2.5', className)}>
       <Button
         type="button"
         variant="toolbar"
