@@ -15,6 +15,8 @@ export type HeroSlideConfig = {
   imageSrc: string;
   /** Image rectangle in artboard coords (may overflow). */
   image: HeroRect;
+  /** Dark gradient behind the copy for photo slides (white text legibility). */
+  scrim?: 'left' | 'full';
   /** Copy column in artboard coords. */
   text: {
     x: number;
@@ -43,7 +45,8 @@ export type HeroSlideConfig = {
 export const HERO_SLIDES: HeroSlideConfig[] = [
   {
     id: '1',
-    imageSrc: '/images/placeholders/card-1.png',
+    // Students artwork with the copy on the right (home Figma hero).
+    imageSrc: '/images/placeholders/card-2.png',
     image: { x: -79, y: -416, w: 1312, h: 1312 },
     text: { x: 876, y: 130, w: 372, gap: 48, align: 'end' },
     type: {
@@ -59,8 +62,10 @@ export const HERO_SLIDES: HeroSlideConfig[] = [
   },
   {
     id: '2',
-    imageSrc: '/images/placeholders/card-2.png',
-    image: { x: 1, y: -416, w: 1312, h: 1312 },
+    // Unsplash License — Brooke Cagle. 16:9 photo spans the artboard (1312×738).
+    imageSrc: '/images/home/photos/hero-students-1.jpg',
+    image: { x: 0, y: -129, w: 1312, h: 738 },
+    scrim: 'left',
     text: { x: 81, y: 130, w: 400, gap: 48, align: 'start' },
     type: {
       brand: 'min-[834px]:text-[28px] min-[834px]:leading-10 min-[834px]:tracking-normal',
@@ -75,8 +80,10 @@ export const HERO_SLIDES: HeroSlideConfig[] = [
   },
   {
     id: '3',
-    imageSrc: '/images/placeholders/card-3.png',
-    image: { x: -148, y: -1128, w: 1608, h: 1608 },
+    // Unsplash License — Priscilla Du Preez.
+    imageSrc: '/images/home/photos/hero-students-2.jpg',
+    image: { x: 0, y: -129, w: 1312, h: 738 },
+    scrim: 'full',
     text: { x: 398, y: 261, w: 516, gap: 40, align: 'center' },
     type: {
       brand: 'min-[834px]:text-[22px] min-[834px]:leading-7 min-[834px]:tracking-normal',

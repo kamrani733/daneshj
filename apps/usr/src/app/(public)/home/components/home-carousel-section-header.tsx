@@ -1,40 +1,22 @@
-import { cn } from '@/lib/utils';
-
 import { SectionTitle } from '@home/components/section-title';
 import { ViewAllLink } from '@home/components/view-all-link';
 
 type HomeCarouselSectionHeaderProps = {
   title: string;
   viewAllLabel: string;
-  /** Desktop title width override (discounts 239px · businesses 257px). */
-  desktopTitleClassName?: string;
+  viewAllHref?: string;
 };
 
-/** Shared title + view-all chrome for discount / business carousels. */
+/** Section bar title at the start (right) and «مشاهده همه» at the end (left), one row. */
 export function HomeCarouselSectionHeader({
   title,
   viewAllLabel,
-  desktopTitleClassName,
+  viewAllHref,
 }: HomeCarouselSectionHeaderProps) {
   return (
-    <>
-      <SectionTitle
-        title={title}
-        variant="narrow"
-        className={cn(
-          'hidden w-[239px] shrink-0 self-start min-[834px]:inline-flex',
-          desktopTitleClassName
-        )}
-      />
-
-      <div className="flex items-center justify-between min-[834px]:hidden">
-        <ViewAllLink label={viewAllLabel} className="px-2" />
-        <SectionTitle
-          title={title}
-          variant="narrow"
-          className="!min-h-[49px] !w-auto !max-w-[139px] [&_h2]:pt-0 [&_h2]:text-base [&_h2]:leading-5 [&_img]:bottom-0 [&_img]:h-[38px] [&_img]:w-[123px]"
-        />
-      </div>
-    </>
+    <div className="flex w-full items-center justify-between gap-4">
+      <SectionTitle title={title} />
+      <ViewAllLink label={viewAllLabel} href={viewAllHref} className="px-2 text-sm min-[834px]:text-base" />
+    </div>
   );
 }

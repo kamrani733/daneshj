@@ -260,19 +260,7 @@ export function HomePromoBanner() {
 
   return (
     <section className="flex w-full flex-col gap-6 min-[834px]:gap-8 min-[1512px]:gap-12">
-      <SectionTitle
-        title={t('promo.sectionTitle')}
-        variant="wide"
-        className={cn(
-          '!min-h-[41px] !w-auto !max-w-[210px] self-start',
-          'min-[834px]:!min-h-[56px] min-[834px]:!max-w-[280px]',
-          'min-[1512px]:w-[384px] min-[1512px]:!max-w-none',
-          '[&_h2]:pt-0 [&_h2]:text-sm [&_h2]:font-bold [&_h2]:leading-5',
-          'min-[834px]:[&_h2]:text-lg min-[834px]:[&_h2]:leading-7',
-          '[&_img]:bottom-0 [&_img]:h-[38px] [&_img]:w-[196px]',
-          'min-[834px]:[&_img]:h-[48px] min-[834px]:[&_img]:w-[240px]'
-        )}
-      />
+      <SectionTitle title={t('promo.sectionTitle')} />
 
       <div
         className="relative hidden w-full min-[834px]:block min-[834px]:aspect-[1312/342]"

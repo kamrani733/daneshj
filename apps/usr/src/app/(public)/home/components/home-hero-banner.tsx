@@ -131,6 +131,24 @@ export function HomeHeroBanner() {
         ))}
       </div>
 
+      {/* Photo slides: scrim behind the white copy */}
+      {HERO_SLIDES.map((slide, index) =>
+        slide.scrim ? (
+          <div
+            key={`scrim-${slide.id}`}
+            aria-hidden
+            className={cn(
+              'pointer-events-none absolute inset-0 transition-opacity duration-500',
+              'max-[833px]:bg-black/45',
+              slide.scrim === 'left'
+                ? 'min-[834px]:bg-linear-to-r min-[834px]:from-black/70 min-[834px]:via-black/35 min-[834px]:to-transparent'
+                : 'min-[834px]:bg-black/45',
+              index === activeIndex ? 'opacity-100' : 'opacity-0'
+            )}
+          />
+        ) : null
+      )}
+
       {/* Mobile copy */}
       <div
         key={`mobile-${active.id}`}
