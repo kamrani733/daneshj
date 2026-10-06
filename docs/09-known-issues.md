@@ -2,7 +2,7 @@
 title: "Known Issues & Gaps"
 description: "Blockers, open questions, SRS problems, technical debt"
 category: "meta"
-last_updated: "2026-10-02"
+last_updated: "2026-10-06"
 ---
 
 # Known Issues & Gaps
@@ -71,12 +71,12 @@ See [srs/README.md](./srs/README.md) → Known issues, Declared but not detailed
 | Followers dialog «حذف» calls unfollow | `public-panel/hooks/use-profile-stats-bar.ts` | Medium | Needs an Interactive Ops "remove follower" endpoint |
 | Panel comments are client-only (post, reply, delete, restore, feature, report) | `public-panel/components/comments/` | Medium | Wire when the panel-comment API exists (profile SRS TBD, not Msg) |
 | Dislike count: Expectation doc says admin-only, some Figma frames show it to visitors | `public-panel/capabilities.ts` (`showDislikes`) | Low | Follows the doc; confirm with design |
-| Feature star shown on visitor frames, but role table says owner-only | `public-panel/capabilities.ts` (`commentFeature`) | Low | Follows the doc; confirm with design |
+| Feature / transfer / reply icons on comment cards | `public-panel/components/comments/card.tsx` | Low | Figma draws all five icons; clicks still follow the role table (owner features, visitor transfers) |
 | Stats-bar action counts differ between Figma frames (with / without numbers) | `public-panel/components/profile/stats-bar.tsx` | Low | Counts kept (like, share); confirm |
 | No electronic card in Actor MS | `private-panel/api/profile-mappers.ts` | Medium | Public panel hides the e-card CTA until a link exists |
 | Certificates removed from «سایر اطلاعات» | `public-panel/components/catalog/other-info-panel.tsx` | Low | Not in Figma, Expectation report or Actor API; type kept |
 | Hero card background pattern not implemented | `components/panel/profile-hero-card.tsx` | Low | Asset not in repo; plan forbids downloading it from Figma |
-| Home category search bar not in the home Figma | `home/components/home-search-shell.tsx` | Low | Kept because search results depend on it; confirm |
+| Home search results have no entry point (home search + category bar removed per new design) | `home/components/home-search-results.tsx`, `HomeSearchCategoryBar` in `components/site/site-header.tsx` | Low | Wire to the header search or delete; owner to decide |
 | Figma MCP Starter-plan call limit | design workflow | Medium | Exports (SVG) used as fallback; upgrade plan or keep exports in `docs/design-specs/` notes |
 | Tailwind version mismatch in package.json | `apps/usr/package.json` vs root | Low | Align declarations |
 | `any` in TS | only `apps/*/index.d.ts` (image types) | Low | — |

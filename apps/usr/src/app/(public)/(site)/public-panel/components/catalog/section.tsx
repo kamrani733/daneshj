@@ -1,11 +1,12 @@
 'use client';
 
+import { ChevronLeft } from 'lucide-react';
+import Link from 'next/link';
 import type { ReactNode } from 'react';
-
-import { cn } from '@/lib/utils';
 
 import { SectionHeading } from '@/components/ui/section-heading';
 import { formatFaNumber } from '@/lib/format-fa';
+import { cn } from '@/lib/utils';
 
 type CatalogSectionProps = {
   title: string;
@@ -13,6 +14,8 @@ type CatalogSectionProps = {
   children: ReactNode;
   className?: string;
   gridClassName?: string;
+  viewAllLabel?: string;
+  viewAllHref?: string;
 };
 
 /** Catalog block with title, count, and view-all link. */
@@ -22,6 +25,8 @@ export function CatalogSection({
   children,
   className,
   gridClassName,
+  viewAllLabel,
+  viewAllHref = '#',
 }: CatalogSectionProps) {
   return (
     <section
@@ -40,7 +45,15 @@ export function CatalogSection({
         {children}
       </div>
 
-      {/* «مشاهده همه» hidden until destination routes exist (plan §5.4). */}
+      {viewAllLabel ? (
+        <Link
+          href={viewAllHref}
+          className="inline-flex items-center gap-1 self-end text-base font-bold leading-6 tracking-[0.0094em] text-secondary transition-opacity hover:opacity-80"
+        >
+          {viewAllLabel}
+          <ChevronLeft className="size-5" aria-hidden />
+        </Link>
+      ) : null}
     </section>
   );
 }

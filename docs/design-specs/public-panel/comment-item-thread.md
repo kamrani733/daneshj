@@ -1,6 +1,6 @@
 ---
 title: "Public panel — comment item & thread"
-last_updated: "2026-09-25"
+last_updated: "2026-10-06"
 ---
 
 ## Comment item (`400:141432` Pinned comment)
@@ -11,7 +11,7 @@ last_updated: "2026-09-25"
 - Header: menu (start), meta (end): featured badge, time, date, @username, display name `text-title-small font-bold`.
 - Body: `text-title-small text-on-surface`.
 - Divider: `border-t border-outline-variant`.
-- Actions row: gap 12px, interactive chips — presentational `actions` slot.
+- Actions row (both pinned and quoted): gap 12px, icons from the end — like + count, dislike + count, transfer + count, reply, outline star. Role rules disable clicks; they do not hide icons.
 
 ## Comment thread (`400:141436` Group comments)
 

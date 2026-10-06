@@ -72,10 +72,11 @@ export function PublicPanelTabs({ catalog, otherInfo }: PublicPanelTabsProps) {
               <CatalogSection
                 title={t('catalog.discounts')}
                 count={catalog.totals.discounts}
+                viewAllLabel={t('viewAll')}
                 gridClassName="grid-cols-1 min-[560px]:grid-cols-2 min-[960px]:grid-cols-4"
               >
                 {catalog.discounts.map((offer) => (
-                  <DiscountCard key={offer.id} {...offer} />
+                  <DiscountCard key={offer.id} {...offer} ratingVisibility="never" />
                 ))}
               </CatalogSection>
             ) : null}
@@ -84,6 +85,7 @@ export function PublicPanelTabs({ catalog, otherInfo }: PublicPanelTabsProps) {
               <CatalogSection
                 title={t('catalog.news')}
                 count={catalog.totals.news}
+                viewAllLabel={t('viewAll')}
                 gridClassName="grid-cols-1 min-[720px]:grid-cols-2 min-[1100px]:grid-cols-3"
               >
                 {catalog.news.map((item) => (
@@ -96,6 +98,7 @@ export function PublicPanelTabs({ catalog, otherInfo }: PublicPanelTabsProps) {
               <CatalogSection
                 title={t('catalog.newsletters')}
                 count={catalog.totals.newsletters}
+                viewAllLabel={t('viewAll')}
                 gridClassName="grid-cols-1 min-[560px]:grid-cols-2 min-[960px]:grid-cols-4"
               >
                 {catalog.newsletters.map((item) => (

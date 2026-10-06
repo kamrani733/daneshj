@@ -1,8 +1,10 @@
-import { Star } from 'lucide-react';
+import { Eye } from 'lucide-react';
 import Image from 'next/image';
 
 import { HOVER_MEDIA_TEXT, HoverMediaCard } from '@/components/cards/hover-media-card';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
+import { RatingStars } from '@/components/ui/rating-stars';
 import { formatFaNumber } from '@/lib/format-fa';
 import { cn } from '@/lib/utils';
 
@@ -15,6 +17,8 @@ export type NewsletterCardData = {
   publishedAt: string;
   rating: number;
   reviewCount: number;
+  viewCount?: number;
+  periodLabel?: string;
 };
 
 type NewsletterCardProps = NewsletterCardData & { href?: string; className?: string };
@@ -29,6 +33,8 @@ export function NewsletterCard({
   publishedAt,
   rating,
   reviewCount,
+  viewCount,
+  periodLabel,
   href,
   className,
 }: NewsletterCardProps) {
@@ -36,7 +42,22 @@ export function NewsletterCard({
     <HoverMediaCard
       href={href}
       className={className}
-      mediaHeightClassName="h-[160px]"
+      mediaHeightClassName="h-[188px]"
+      header={
+        <div className="flex items-center gap-2 px-4 pt-4 pb-3">
+          <Avatar className="size-8">
+            <AvatarFallback className="bg-surface-container-high text-label-small font-bold text-on-surface">
+              {publisherInitial}
+            </AvatarFallback>
+          </Avatar>
+          <div className="min-w-0 flex-1">
+            <p className="truncate text-label-medium font-medium text-on-surface">
+              {publisherName}
+            </p>
+            <p className="text-label-small text-on-surface-variant">{publishedAt}</p>
+          </div>
+        </div>
+      }
       media={
         <Image
           src={imageSrc}
@@ -46,36 +67,32 @@ export function NewsletterCard({
           className="object-cover"
         />
       }
-      bodyClassName="gap-2 p-3"
+      mediaOverlay={
+        viewCount != null ? (
+          <Badge variant="viewcount" className="absolute end-2.5 top-2.5 z-10">
+            <Eye aria-hidden />
+            {formatFaNumber(viewCount)}
+          </Badge>
+        ) : null
+      }
+      bodyClassName="gap-2 p-4"
     >
-      <div className="flex items-center gap-2">
-        <Avatar className="size-8">
-          <AvatarFallback className="bg-primary text-label-small font-bold text-on-primary">
-            {publisherInitial}
-          </AvatarFallback>
-        </Avatar>
-        <div className="min-w-0 flex-1">
-          <p className={cn('truncate text-label-medium font-medium text-on-surface', HOVER_MEDIA_TEXT)}>
-            {publisherName}
-          </p>
-          <p className={cn('text-label-small text-on-surface-variant', HOVER_MEDIA_TEXT)}>
-            {publishedAt}
-          </p>
-        </div>
-      </div>
       <h3 className={cn('text-title-small font-bold text-on-surface', HOVER_MEDIA_TEXT)}>
         {title}
       </h3>
-      <p className={cn('text-label-medium text-on-surface-variant', HOVER_MEDIA_TEXT)}>
-        {description}
-      </p>
-      <p className={cn('mt-auto flex items-center gap-1 pt-1 text-label-medium text-on-surface', HOVER_MEDIA_TEXT)}>
-        <Star className="size-3.5 fill-rating text-rating" aria-hidden />
-        <span className="font-bold">
-          {formatFaNumber(rating, Number.isInteger(rating) ? 0 : 1)}
-        </span>
-        <span>({formatFaNumber(reviewCount)} نظر)</span>
-      </p>
+      {description ? (
+        <p className={cn('text-label-medium text-on-surface-variant', HOVER_MEDIA_TEXT)}>
+          {description}
+        </p>
+      ) : null}
+      <div className="mt-auto flex items-center justify-between gap-2 pt-1">
+        <RatingStars rating={rating} reviewCount={reviewCount} className={HOVER_MEDIA_TEXT} />
+        {periodLabel ? (
+          <span className={cn('text-label-medium text-on-surface-variant', HOVER_MEDIA_TEXT)}>
+            {periodLabel}
+          </span>
+        ) : null}
+      </div>
     </HoverMediaCard>
   );
 }

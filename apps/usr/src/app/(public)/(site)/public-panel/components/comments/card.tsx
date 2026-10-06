@@ -7,7 +7,6 @@ import {
   Repeat2,
   Reply,
   Star,
-  StarOff,
   ThumbsDown,
 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
@@ -33,8 +32,8 @@ import {
 import type { PanelComment } from '@public-panel/types/ui';
 import { AppDialog } from '@/components/ui/app-dialog';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { FeaturedBadge } from '@/components/ui/featured-badge';
 import {
   Popover,
   PopoverContent,
@@ -43,10 +42,40 @@ import {
 import { formatFaNumber } from '@/lib/format-fa';
 import { cn } from '@/lib/utils';
 
+import { QuotedCommentBlock } from '@public-panel/components/comments/quoted-comment-block';
 import { CommentTransferFlow } from '@public-panel/components/comments/transfer-flow';
 import { useGuardedAction } from '@public-panel/components/shared/guest-access-dialog';
 
 const REPLY_MAX_LENGTH = 1500;
+
+/** Figma always draws the icon; role rules only disable the action. */
+function displayAccess(access: ActionAccess): ActionAccess {
+  return access === 'hidden' ? 'readonly' : access;
+}
+
+/** Figma comment card — `400:141432` Pinned comment effect. */
+const commentCardShadow = 'shadow-[var(--shadow-comment)]';
+
+function commentCardSurfaceClass({
+  featured,
+  nested,
+  deleted,
+}: {
+  featured: boolean;
+  nested: boolean;
+  deleted: boolean;
+}) {
+  return cn(
+    'relative rounded-xl p-4',
+    commentCardShadow,
+    deleted && 'opacity-60',
+    featured
+      ? 'border-s-[3px] border-featured bg-featured-container'
+      : nested
+        ? 'bg-app-search-fill dark:bg-app-search-category'
+        : 'bg-app-stat-card'
+  );
+}
 
 type CommentCardProps = {
   comment: PanelComment;
@@ -214,11 +243,21 @@ export function CommentCard({
       featured={featured}
       disabled={likeMutation.isPending}
       reactionsAccess={comment.deleted ? 'readonly' : capabilities.commentReactions}
-      replyAccess={comment.deleted ? 'hidden' : capabilities.commentReply}
+      replyAccess={comment.deleted ? 'hidden' : displayAccess(capabilities.commentReply)}
       transferAccess={
-        isTransferred || comment.deleted ? 'hidden' : capabilities.commentTransfer
+        comment.deleted
+          ? 'hidden'
+          : isTransferred
+            ? 'readonly'
+            : displayAccess(capabilities.commentTransfer)
       }
-      showFeature={capabilities.commentFeature && !isTransferred && !comment.deleted}
+      featureAccess={
+        comment.deleted
+          ? 'hidden'
+          : capabilities.commentFeature && !isTransferred
+            ? 'enabled'
+            : 'readonly'
+      }
       onLike={() =>
         guard(capabilities.commentReactions, () => void handleReaction('like'))
       }
@@ -242,195 +281,113 @@ export function CommentCard({
     />
   );
 
-  if (isTransferred && !nested) {
-    return (
-      <article
-        className={cn(
-          'relative flex flex-col items-stretch gap-3 rounded-xl bg-app-stat-card p-4 shadow-[0_2px_4px_0_rgba(0,0,0,0.05)]',
-          className
-        )}
-      >
-        {showMenu ? (
-          <div className="absolute end-3 top-3">
-            <CommentMenu
-              open={menuOpen}
-              onOpenChange={setMenuOpen}
-              moreLabel={t('more')}
-              items={[
-                canDelete && !comment.deleted
-                  ? { label: tFlow('menuDelete'), onSelect: () => setDeleteOpen(true) }
-                  : null,
-                canEditTransferNote
-                  ? { label: tFlow('menuEditNote'), onSelect: () => setEditOpen(true) }
-                  : null,
-                canRestore
-                  ? { label: tFlow('menuRestore'), onSelect: () => onRestore?.(comment.id) }
-                  : null,
-                isActionVisible(reportAccess)
-                  ? {
-                      label: tFlow('menuReport'),
-                      onSelect: () => guard(reportAccess, () => undefined),
-                    }
-                  : null,
-              ]}
-            />
-          </div>
-        ) : null}
-
-        <AppDialog
-          open={deleteOpen}
-          onOpenChange={setDeleteOpen}
-          variant="confirm"
-          title={tFlow('revertTitle')}
-          actionsStyle="text"
-          primaryAction={{
-            label: tFlow('yes'),
-            onClick: () => {
-              onDelete?.(comment.id);
-              setDeleteOpen(false);
-              setDeleteSuccessOpen(true);
-            },
-          }}
-          secondaryAction={{
-            label: tFlow('no'),
-            onClick: () => setDeleteOpen(false),
-          }}
-        />
-
-        <AppDialog
-          open={deleteSuccessOpen}
-          onOpenChange={setDeleteSuccessOpen}
-          variant="confirm"
-          title={tFlow('deleteSuccess')}
-          actionsStyle="text"
-          primaryAction={{
-            label: tFlow('close'),
-            onClick: () => setDeleteSuccessOpen(false),
-          }}
-        />
-
-        <CommentTransferFlow
-          comment={comment}
-          transferredCount={transferredCount}
-          open={editOpen}
-          initialNote={comment.quoteNote ?? ''}
-          mode="edit"
-          onOpenChange={setEditOpen}
-          onConfirmTransfer={(note) => {
-            onEditNote?.(comment.id, note);
-          }}
-        />
-
-        <header className="flex items-center gap-3 pe-6">
-          <Avatar className="size-12 shrink-0 ring-2 ring-primary dark:ring-primary-100">
-            {comment.authorAvatar ? (
-              <AvatarImage src={comment.authorAvatar} alt={comment.authorName} />
-            ) : null}
-            <AvatarFallback className="bg-app-stat-card text-base font-bold text-app-filter-ink dark:bg-app-search-category">
-              {comment.authorName.slice(0, 2)}
-            </AvatarFallback>
-          </Avatar>
-
-          <div className="flex min-w-0 flex-col items-start gap-0.5">
-            <div className="flex flex-wrap items-center gap-2">
-              <h4 className="text-sm font-bold text-app-filter-ink">
-                {comment.authorName}
-              </h4>
-              <span className="text-xs text-neutral-600 dark:text-app-filter-muted">
-                @{comment.authorHandle}
-              </span>
-            </div>
-            <div className="flex flex-wrap items-center gap-2 text-xs text-neutral-600 dark:text-app-filter-muted">
-              {comment.timeLabel ? <span>{comment.timeLabel}</span> : null}
-              <span>{comment.createdAt}</span>
-              <span aria-hidden>•</span>
-              {comment.statusLabel ? <span>{comment.statusLabel}</span> : null}
-            </div>
-          </div>
-        </header>
-
-        {comment.quoteNote ? (
-          <p className="w-full text-start text-sm leading-normal text-app-filter-ink">
-            &quot;{comment.quoteNote}&quot;
-          </p>
-        ) : null}
-
-        <div className="w-full rounded-xl border border-primary bg-primary/10 p-4 dark:border-primary-100">
-          <div className="flex flex-col items-stretch gap-3">
-            <div className="flex items-center gap-2.5">
-              <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-neutral-600 text-[12.8px] font-bold text-white">
-                {(comment.originalAuthorName ?? comment.authorName).slice(0, 2)}
-              </div>
-              <span className="text-sm font-bold text-app-filter-ink">
-                {comment.originalAuthorName ?? comment.authorName} @
-                {comment.originalAuthorHandle ?? comment.authorHandle}
-              </span>
-            </div>
-            <p className="w-full text-start text-sm leading-[1.5] text-app-filter-ink">
-              {comment.body}
-            </p>
-          </div>
-        </div>
-
-        {interaction}
-        {replyComposer}
-      </article>
-    );
-  }
+  const transferredRoot = isTransferred && !nested;
+  const menuItems: CommentMenuItem[] = transferredRoot
+    ? [
+        canDelete && !comment.deleted
+          ? { label: tFlow('menuDelete'), onSelect: () => setDeleteOpen(true) }
+          : null,
+        canEditTransferNote
+          ? { label: tFlow('menuEditNote'), onSelect: () => setEditOpen(true) }
+          : null,
+        canRestore
+          ? { label: tFlow('menuRestore'), onSelect: () => onRestore?.(comment.id) }
+          : null,
+        isActionVisible(reportAccess)
+          ? {
+              label: tFlow('menuReport'),
+              onSelect: () => guard(reportAccess, () => undefined),
+            }
+          : null,
+      ]
+    : [
+        canDelete && !comment.deleted
+          ? {
+              label: tFlow('menuDeleteRegistered'),
+              onSelect: () => setDeleteOpen(true),
+            }
+          : null,
+        canRestore
+          ? { label: tFlow('menuRestore'), onSelect: () => onRestore?.(comment.id) }
+          : null,
+        isActionVisible(reportAccess)
+          ? {
+              label: tFlow('menuReport'),
+              onSelect: () => guard(reportAccess, () => undefined),
+            }
+          : null,
+      ];
 
   return (
     <article
       className={cn(
-        'relative rounded-xl p-4 shadow-[0_2px_4px_0_rgba(0,0,0,0.05)]',
-        comment.deleted && 'opacity-60',
-        featured
-          ? 'border-s-[3px] border-s-warning bg-warning-10 dark:bg-surface-dark'
-          : nested
-            ? 'bg-app-search-fill dark:bg-app-search-category'
-            : 'bg-app-stat-card',
+        commentCardSurfaceClass({
+          featured: featured && !transferredRoot,
+          nested,
+          deleted: Boolean(comment.deleted),
+        }),
         className
       )}
     >
       <div className="flex items-start gap-3">
-        <Avatar className="size-12 shrink-0 bg-border">
+        <Avatar
+          className={cn(
+            'size-12 shrink-0',
+            transferredRoot
+              ? 'ring-2 ring-primary dark:ring-primary-100'
+              : 'bg-border'
+          )}
+        >
           {comment.authorAvatar ? (
             <AvatarImage src={comment.authorAvatar} alt={comment.authorName} />
           ) : null}
-          <AvatarFallback className="bg-border text-base font-bold text-white">
+          <AvatarFallback
+            className={cn(
+              'text-base font-bold',
+              transferredRoot
+                ? 'bg-app-stat-card text-app-filter-ink dark:bg-app-search-category'
+                : 'bg-border text-white'
+            )}
+          >
             {comment.authorName.slice(0, 2)}
           </AvatarFallback>
         </Avatar>
 
         <div className="flex min-w-0 flex-1 flex-col gap-3">
           <header className="flex w-full items-center justify-between gap-2">
-            <div className="flex flex-wrap items-center gap-2">
-              <h4 className="text-sm font-bold text-app-filter-ink">
-                {comment.authorName}
-              </h4>
+            <div className="flex min-w-0 flex-wrap items-center gap-2">
+              <h4 className="text-sm font-bold text-app-filter-ink">{comment.authorName}</h4>
               <span className="text-xs font-medium text-neutral-600 dark:text-app-filter-muted">
                 @{comment.authorHandle}
               </span>
               <span className="text-xs font-medium text-neutral-600 dark:text-app-filter-muted">
                 {comment.createdAt}
               </span>
-              <span className="text-neutral-600 dark:text-app-filter-muted" aria-hidden>
-                •
-              </span>
               {comment.timeLabel ? (
-                <span className="text-xs font-medium text-neutral-600 dark:text-app-filter-muted">
-                  {comment.timeLabel}
-                </span>
+                <>
+                  <span className="text-neutral-600 dark:text-app-filter-muted" aria-hidden>
+                    •
+                  </span>
+                  <span className="text-xs font-medium text-neutral-600 dark:text-app-filter-muted">
+                    {comment.timeLabel}
+                  </span>
+                </>
+              ) : null}
+              {comment.statusLabel ? (
+                <>
+                  <span className="text-neutral-600 dark:text-app-filter-muted" aria-hidden>
+                    •
+                  </span>
+                  <span className="text-xs font-medium text-neutral-600 dark:text-app-filter-muted">
+                    {comment.statusLabel}
+                  </span>
+                </>
               ) : null}
               {comment.deleted ? (
-                <span className="text-xs font-bold text-error">
-                  {t('badgeDeleted')}
-                </span>
+                <span className="text-xs font-bold text-error">{t('badgeDeleted')}</span>
               ) : null}
-              {featured ? (
-                <Badge className="h-auto basis-full justify-start gap-1 border-0 bg-transparent px-0 text-xs font-bold text-warning min-[720px]:basis-auto">
-                  <Star className="size-3.5 text-warning" strokeWidth={2} />
-                  {t('badgeFeatured')}
-                </Badge>
+              {featured && !transferredRoot ? (
+                <FeaturedBadge label={t('badgeFeatured')} />
               ) : null}
             </div>
             {showMenu ? (
@@ -438,33 +395,25 @@ export function CommentCard({
                 open={menuOpen}
                 onOpenChange={setMenuOpen}
                 moreLabel={t('more')}
-                items={[
-                  canDelete && !comment.deleted
-                    ? {
-                        label: tFlow('menuDeleteRegistered'),
-                        onSelect: () => setDeleteOpen(true),
-                      }
-                    : null,
-                  canRestore
-                    ? {
-                        label: tFlow('menuRestore'),
-                        onSelect: () => onRestore?.(comment.id),
-                      }
-                    : null,
-                  isActionVisible(reportAccess)
-                    ? {
-                        label: tFlow('menuReport'),
-                        onSelect: () => guard(reportAccess, () => undefined),
-                      }
-                    : null,
-                ]}
+                items={menuItems}
               />
             ) : null}
           </header>
 
-          <p className="w-full text-start text-sm font-medium leading-5 text-app-filter-ink">
-            {comment.body}
-          </p>
+          {transferredRoot ? (
+            <>
+              {comment.quoteNote ? (
+                <p className="w-full text-start text-sm font-medium leading-5 text-app-filter-ink">
+                  &quot;{comment.quoteNote}&quot;
+                </p>
+              ) : null}
+              <QuotedCommentBlock comment={comment} />
+            </>
+          ) : (
+            <p className="w-full text-start text-sm font-medium leading-5 text-app-filter-ink">
+              {comment.body}
+            </p>
+          )}
 
           <div className="h-px w-full bg-app-search-category dark:bg-border" aria-hidden />
 
@@ -519,7 +468,7 @@ export function CommentCard({
         open={deleteOpen}
         onOpenChange={setDeleteOpen}
         variant="confirm"
-        title={tFlow('deleteTitle')}
+        title={transferredRoot ? tFlow('revertTitle') : tFlow('deleteTitle')}
         actionsStyle="text"
         primaryAction={{
           label: tFlow('yes'),
@@ -556,6 +505,20 @@ export function CommentCard({
           onTransfer?.(comment.id, note);
         }}
       />
+
+      {transferredRoot ? (
+        <CommentTransferFlow
+          comment={comment}
+          transferredCount={transferredCount}
+          open={editOpen}
+          initialNote={comment.quoteNote ?? ''}
+          mode="edit"
+          onOpenChange={setEditOpen}
+          onConfirmTransfer={(note) => {
+            onEditNote?.(comment.id, note);
+          }}
+        />
+      ) : null}
     </article>
   );
 }
@@ -570,7 +533,7 @@ function InteractionRow({
   reactionsAccess,
   replyAccess,
   transferAccess,
-  showFeature,
+  featureAccess,
   onLike,
   onDislike,
   onTransfer,
@@ -587,7 +550,7 @@ function InteractionRow({
   reactionsAccess: ActionAccess;
   replyAccess: ActionAccess;
   transferAccess: ActionAccess;
-  showFeature: boolean;
+  featureAccess: ActionAccess;
   onLike: () => void;
   onDislike: () => void;
   onTransfer: () => void;
@@ -610,17 +573,14 @@ function InteractionRow({
     showReactions ||
     isActionVisible(replyAccess) ||
     isActionVisible(transferAccess) ||
-    showFeature;
+    isActionVisible(featureAccess);
 
   if (!hasActions) return null;
 
-  // RTL order per Figma: like · dislike · transfer · reply · feature.
+  // Figma InteractionRow (RTL): like · dislike · transfer · reply · star.
   return (
     <div className="flex w-full justify-end">
-      <div
-        dir="rtl"
-        className="flex flex-wrap items-center gap-1 text-neutral-600 dark:text-app-filter-muted"
-      >
+      <div className="flex flex-wrap items-center gap-3 text-neutral-600 dark:text-app-filter-muted">
         {showReactions ? (
           <>
             <ActionButton
@@ -659,19 +619,12 @@ function InteractionRow({
             icon={<Reply className="size-5" strokeWidth={1.5} />}
           />
         ) : null}
-        {showFeature ? (
+        {isActionVisible(featureAccess) ? (
           <ActionButton
             label={featured ? labels.unfeature : labels.feature}
-            active={featured}
-            activeClassName="text-warning"
+            disabled={featureAccess === 'readonly'}
             onClick={onToggleFeature}
-            icon={
-              featured ? (
-                <Star className="size-5 text-warning" strokeWidth={1.5} />
-              ) : (
-                <StarOff className="size-5" strokeWidth={1.5} />
-              )
-            }
+            icon={<Star className="size-5" strokeWidth={1.5} />}
           />
         ) : null}
       </div>

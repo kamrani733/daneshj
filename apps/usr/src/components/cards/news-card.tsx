@@ -3,6 +3,7 @@ import Image from 'next/image';
 
 import { HOVER_MEDIA_TEXT, HoverMediaCard } from '@/components/cards/hover-media-card';
 import { Badge } from '@/components/ui/badge';
+import { RatingStars } from '@/components/ui/rating-stars';
 import { formatFaNumber } from '@/lib/format-fa';
 import { cn } from '@/lib/utils';
 
@@ -10,14 +11,16 @@ export type NewsCardData = {
   title: string;
   imageSrc: string;
   viewCount: number;
-  /** «دانشگاهی» · «بین المللی» · «کشوری». */
-  scopeLabel: string;
   publisherType: string;
   publishedAt: string;
-  mainCategory: string;
-  subCategory: string;
   summary: string;
-  eventRange: string;
+  rating?: number;
+  reviewCount?: number;
+  /** Kept for catalog data; not shown on the Figma card. */
+  scopeLabel?: string;
+  mainCategory?: string;
+  subCategory?: string;
+  eventRange?: string;
 };
 
 type NewsCardProps = NewsCardData & { href?: string; className?: string };
@@ -27,13 +30,11 @@ export function NewsCard({
   title,
   imageSrc,
   viewCount,
-  scopeLabel,
   publisherType,
   publishedAt,
-  mainCategory,
-  subCategory,
   summary,
-  eventRange,
+  rating,
+  reviewCount,
   href,
   className,
 }: NewsCardProps) {
@@ -41,7 +42,7 @@ export function NewsCard({
     <HoverMediaCard
       href={href}
       className={className}
-      mediaHeightClassName="h-[160px]"
+      mediaHeightClassName="h-[188px]"
       media={
         <Image
           src={imageSrc}
@@ -52,45 +53,36 @@ export function NewsCard({
         />
       }
       mediaOverlay={
-        <>
-          <Badge variant="viewcount" className="absolute start-2.5 top-2.5 z-10">
-            <Eye aria-hidden />
-            {formatFaNumber(viewCount)}
-          </Badge>
-          <Badge className="absolute bottom-2.5 end-2.5 z-10 h-auto rounded-md border-0 bg-info-50 px-2 py-1 text-label-small font-medium text-info-700 dark:bg-info-800 dark:text-info-50">
-            {scopeLabel}
-          </Badge>
-        </>
+        <Badge variant="viewcount" className="absolute end-2.5 top-2.5 z-10">
+          <Eye aria-hidden />
+          {formatFaNumber(viewCount)}
+        </Badge>
       }
-      bodyClassName="gap-2.5 p-3"
+      bodyClassName="gap-2 p-4"
     >
       <h3 className={cn('text-title-small font-bold text-on-surface', HOVER_MEDIA_TEXT)}>
         {title}
       </h3>
-      <div
+      <p className={cn('text-label-medium text-on-surface-variant', HOVER_MEDIA_TEXT)}>
+        {publisherType}
+      </p>
+      <div className="flex items-center justify-between gap-2">
+        {rating != null ? (
+          <RatingStars rating={rating} reviewCount={reviewCount} className={HOVER_MEDIA_TEXT} />
+        ) : (
+          <span />
+        )}
+        <span className={cn('text-label-medium text-on-surface-variant', HOVER_MEDIA_TEXT)}>
+          {publishedAt}
+        </span>
+      </div>
+      <p
         className={cn(
-          'flex flex-wrap items-center gap-x-3 gap-y-1 text-label-medium text-on-surface-variant',
+          'line-clamp-2 text-label-medium text-on-surface-variant',
           HOVER_MEDIA_TEXT
         )}
       >
-        <span>{publisherType}</span>
-        <span>{publishedAt}</span>
-      </div>
-      <div className="flex flex-wrap gap-1.5">
-        {[mainCategory, subCategory].map((label) => (
-          <Badge
-            key={label}
-            className="h-auto rounded-full border-0 bg-primary/10 px-2.5 py-1 text-label-small font-medium text-primary group-hover:bg-white/20 group-hover:text-white"
-          >
-            {label}
-          </Badge>
-        ))}
-      </div>
-      <p className={cn('line-clamp-3 text-label-medium text-on-surface-variant', HOVER_MEDIA_TEXT)}>
         {summary}
-      </p>
-      <p className={cn('mt-auto pt-1 text-label-medium text-on-surface-variant', HOVER_MEDIA_TEXT)}>
-        {eventRange}
       </p>
     </HoverMediaCard>
   );

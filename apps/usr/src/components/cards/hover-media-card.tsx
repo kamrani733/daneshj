@@ -18,6 +18,8 @@ type HoverMediaCardProps = {
   /** Media height in the resting state, e.g. `h-[200px]`. */
   mediaHeightClassName: string;
   children: ReactNode;
+  /** Publisher row drawn above the image (newsletter). */
+  header?: ReactNode;
   href?: string;
   className?: string;
   bodyClassName?: string;
@@ -34,13 +36,13 @@ export function HoverMediaCard({
   mediaOverlay,
   mediaHeightClassName,
   children,
+  header,
   href,
   className,
   bodyClassName,
 }: HoverMediaCardProps) {
   const card = (
     <article
-      dir="rtl"
       className={cn(
         'group relative flex h-full flex-col overflow-hidden rounded-xl border border-outline-variant/40',
         'bg-surface-container-lowest shadow-app-elevation-1 text-start',
@@ -48,28 +50,32 @@ export function HoverMediaCard({
         className
       )}
     >
-      {/* In-flow spacer keeps the card height while the media layer grows. */}
-      <div className={cn('w-full shrink-0', mediaHeightClassName)} aria-hidden />
+      {header ? <div className="relative z-20 shrink-0">{header}</div> : null}
 
-      <div
-        className={cn(
-          'absolute inset-x-0 top-0 z-0 overflow-hidden',
-          'motion-safe:transition-[height] motion-safe:duration-500 motion-safe:ease-out group-hover:h-full',
-          mediaHeightClassName
-        )}
-      >
-        {media}
-        {mediaOverlay}
-      </div>
+      <div className="relative flex min-h-0 flex-1 flex-col">
+        {/* In-flow spacer keeps the card height while the media layer grows. */}
+        <div className={cn('w-full shrink-0', mediaHeightClassName)} aria-hidden />
 
-      <div
-        className={cn(
-          'relative z-10 flex flex-1 flex-col bg-surface-container-lowest',
-          'motion-safe:transition-colors motion-safe:duration-500 motion-safe:ease-out group-hover:bg-black/35',
-          bodyClassName
-        )}
-      >
-        {children}
+        <div
+          className={cn(
+            'absolute inset-x-0 top-0 z-0 overflow-hidden',
+            'motion-safe:transition-[height] motion-safe:duration-500 motion-safe:ease-out group-hover:h-full',
+            mediaHeightClassName
+          )}
+        >
+          {media}
+          {mediaOverlay}
+        </div>
+
+        <div
+          className={cn(
+            'relative z-10 flex flex-1 flex-col bg-surface-container-lowest',
+            'motion-safe:transition-colors motion-safe:duration-500 motion-safe:ease-out group-hover:bg-black/35',
+            bodyClassName
+          )}
+        >
+          {children}
+        </div>
       </div>
     </article>
   );

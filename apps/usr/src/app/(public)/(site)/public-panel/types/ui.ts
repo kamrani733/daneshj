@@ -33,13 +33,15 @@ export type NewsItem = {
   title: string;
   imageSrc: string;
   viewCount: number;
-  scopeLabel: string;
   publisherType: string;
   publishedAt: string;
-  mainCategory: string;
-  subCategory: string;
   summary: string;
-  eventRange: string;
+  rating: number;
+  reviewCount: number;
+  scopeLabel?: string;
+  mainCategory?: string;
+  subCategory?: string;
+  eventRange?: string;
 };
 
 export type NewsletterItem = {
@@ -52,6 +54,8 @@ export type NewsletterItem = {
   publishedAt: string;
   rating: number;
   reviewCount: number;
+  viewCount: number;
+  periodLabel: string;
 };
 
 export type ServiceCatalog = {

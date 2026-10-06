@@ -5,7 +5,8 @@ import { useEffect, useState } from 'react';
 
 import type { PanelComment } from '@public-panel/types/ui';
 import { AppDialog } from '@/components/ui/app-dialog';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { QuotedCommentBlock } from '@public-panel/components/comments/quoted-comment-block';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { formatFaNumber } from '@/lib/format-fa';
 import { cn } from '@/lib/utils';
@@ -119,7 +120,7 @@ export function CommentTransferFlow({
             ) : null}
           </label>
 
-          <QuotedComment comment={comment} />
+          <QuotedCommentBlock comment={comment} />
         </div>
 
         <div className="mt-5 flex items-center justify-between gap-3">
@@ -220,31 +221,5 @@ export function CommentTransferFlow({
         primaryAction={{ label: t('close'), onClick: closeAll }}
       />
     </>
-  );
-}
-
-function QuotedComment({ comment }: { comment: PanelComment }) {
-  const name = comment.originalAuthorName ?? comment.authorName;
-  const handle = comment.originalAuthorHandle ?? comment.authorHandle;
-
-  return (
-    <div className="rounded-xl border border-primary bg-primary/10 p-4 dark:border-primary-100">
-      <div className="flex items-center gap-2.5">
-        <Avatar className="size-10 shrink-0">
-          {comment.authorAvatar && !comment.originalAuthorName ? (
-            <AvatarImage src={comment.authorAvatar} alt={name} />
-          ) : null}
-          <AvatarFallback className="bg-neutral-600 text-xs font-bold text-white">
-            {name.slice(0, 2)}
-          </AvatarFallback>
-        </Avatar>
-        <span className="text-sm font-bold text-app-filter-ink">
-          {name} @{handle}
-        </span>
-      </div>
-      <p className="mt-3 text-start text-sm leading-[1.5] text-app-filter-ink">
-        {comment.body}
-      </p>
-    </div>
   );
 }
