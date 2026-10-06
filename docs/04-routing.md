@@ -2,7 +2,7 @@
 title: "Routing"
 description: "Route table, guards, caching and URL conventions"
 category: "architecture"
-last_updated: "2026-09-25"
+last_updated: "2026-10-07"
 ---
 
 # Routing
@@ -16,6 +16,7 @@ today; pages are dynamic SSR/RSC with client data via React Query where noted.
 |-------|-----------|----------------|------------|--------------|--------------|---------|
 | `/` | `(public)/(site)/page.tsx` → home | Root → `(public)` → `(site)` → `SiteShell` | Guest OK | — | Home / search (mock); SRV-like UI | Dynamic SSR + client mock search |
 | `/cooperation` | `(site)/cooperation/page.tsx` | SiteShell | Guest OK | — | Static i18n; no SRS path | Dynamic SSR |
+| `/search` | `(site)/search/page.tsx` → `(public)/search/search-page.tsx` | SiteShell | Guest OK | — | Global search (no SRS path; Figma «نتایج جستجو»). Params `?q=&service=&cat=&scat=&ptype=&utype=&expand=` | Dynamic SSR shell + client results (React Query, mock `api/`) |
 | `/login`, `/login/otp`, `/login/password`, `/login/totp`, `/login/sessions` | `(auth)/login/...` | Auth layout | Guest (sessions flow varies) | Auth layout redirects if session | Auth (`USR-Aut` in comments) | Dynamic |
 | `/forgot-password`, `/forgot-password/otp`, `/forgot-password/reset` | `(auth)/forgot-password/...` | Auth layout | Guest | Middleware + auth layout | Auth | Dynamic |
 | `/public-panel` | `(site)/public-panel/page.tsx` | SiteShell | Guest OK (API uses token if present) | — | Visitor profile (`Usr-Prf-6`); catalog UI for Nws/Dsc/Nwl | Dynamic + React Query |

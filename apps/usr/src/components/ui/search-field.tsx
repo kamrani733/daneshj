@@ -1,6 +1,6 @@
 'use client';
 
-import { Search } from 'lucide-react';
+import { Search, X } from 'lucide-react';
 import * as React from 'react';
 
 import { cn } from '@/lib/utils';
@@ -56,6 +56,10 @@ export type SearchFieldProps = Omit<
   size?: keyof typeof SIZE_STYLES;
   variant?: keyof typeof VARIANT_STYLES;
   containerClassName?: string;
+  /** Shows a clear (×) button at the end while the field has a value. */
+  onClear?: () => void;
+  /** Accessible label of the clear button (required with `onClear`). */
+  clearLabel?: string;
 };
 
 /**
@@ -71,6 +75,8 @@ export const SearchField = React.forwardRef<HTMLInputElement, SearchFieldProps>(
       className,
       containerClassName,
       dir = 'rtl',
+      onClear,
+      clearLabel,
       ...props
     },
     ref
@@ -78,6 +84,8 @@ export const SearchField = React.forwardRef<HTMLInputElement, SearchFieldProps>(
     const styles = SIZE_STYLES[size];
     const variantStyles = VARIANT_STYLES[variant];
     const resolvedSize = variant === 'panelComments' ? SIZE_STYLES.lg : styles;
+    const showClear =
+      Boolean(onClear) && props.value !== undefined && String(props.value).length > 0;
 
     return (
       <label
@@ -109,10 +117,25 @@ export const SearchField = React.forwardRef<HTMLInputElement, SearchFieldProps>(
             variantStyles.input,
             resolvedSize.input,
             resolvedSize.pad,
+            showClear && 'pe-12',
             className
           )}
           {...props}
         />
+        {showClear ? (
+          <button
+            type="button"
+            aria-label={clearLabel}
+            onClick={onClear}
+            className={cn(
+              'absolute end-3 top-1/2 inline-flex size-8 -translate-y-1/2 items-center justify-center rounded-full transition-colors',
+              'hover:bg-on-surface/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30',
+              variantStyles.icon
+            )}
+          >
+            <X className="size-5" strokeWidth={1.75} aria-hidden />
+          </button>
+        ) : null}
       </label>
     );
   }

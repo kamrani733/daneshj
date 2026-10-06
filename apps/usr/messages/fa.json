@@ -66,7 +66,24 @@
     "threadAuthorName": "پریسا نادری",
     "threadUsername": "@parisa_n",
     "threadBodySample": "آیا برای پروژه عملی هم جلسه جداگانه برگزار می‌شود؟",
-    "threadAvatarFallback": "پ"
+    "threadAvatarFallback": "پ",
+    "groupSearch": "جستجو، انتخاب و کارت نتیجه",
+    "searchClearSample": "فیلد جستجو با دکمه پاک کردن",
+    "searchClearLabel": "پاک کردن",
+    "selectLabel": "عنوان سرویس",
+    "selectClear": "حذف انتخاب",
+    "selectEmpty": "موردی پیدا نشد",
+    "selectOptionA": "تخفیف کالا و خدمات",
+    "selectOptionB": "وام دانشجویی",
+    "selectOptionC": "کارت های هدیه",
+    "checkboxChecked": "انتخاب‌شده",
+    "checkboxIndeterminate": "بخشی انتخاب‌شده",
+    "checkboxUnchecked": "انتخاب‌نشده",
+    "cardTitle": "عنوان محصول",
+    "cardSubtitle": "عنوان سرویس",
+    "cardUserName": "نام و نام خانوادگی کاربر",
+    "cardUsername": "نام کاربری",
+    "noResultSample": "هیچ نتیجه ای یافت نشد"
   },
   "datePicker": {
     "confirm": "تایید",
@@ -243,6 +260,57 @@
       "faq": " پرسش‌های متداول",
       "guide": " راهنما",
       "contact": "تماس با ما "
+    }
+  },
+  "search": {
+    "title": "نتایج جستجو",
+    "queryLabel": "موضوع جستجو",
+    "clearQuery": "پاک کردن جستجو",
+    "resultCount": "{count} نتیجه یافت شد",
+    "loading": "در حال جستجو",
+    "error": "دریافت نتایج جستجو انجام نشد",
+    "retry": "تلاش مجدد",
+    "noResult": "هیچ نتیجه ای یافت نشد",
+    "trending": {
+      "title": "پرجستجوترین‌های هفته:",
+      "item": "{query} ({count} جستجو)"
+    },
+    "sections": {
+      "products": "محصولات",
+      "services": "سرویس‌ها",
+      "providers": "سرویس دهنده‌ها",
+      "users": "کاربران"
+    },
+    "sectionCount": "{title} ({count})",
+    "sectionEmpty": "{title} (نتیجه ای یافت نشد)",
+    "filters": "فیلتر ها",
+    "showAll": "مشاهده همه",
+    "showLess": "مشاهده کمتر",
+    "filter": {
+      "apply": "اعمال فیلتر",
+      "clear": "پاک کردن",
+      "toggleSubcategories": "زیردسته‌های {label}"
+    },
+    "filterGroups": {
+      "serviceCategories": "دسته بندی های اصلی و فرعی",
+      "providerType": "سرویس دهنده",
+      "userType": "کاربران"
+    },
+    "providerTypes": {
+      "individual": "حقیقی (انفرادی)",
+      "legal": "حقوقی"
+    },
+    "userTypes": {
+      "regular": "کاربر عادی",
+      "student": "دانشجو",
+      "graduate": "فارغ‌التحصیل"
+    },
+    "productFilter": {
+      "serviceLabel": "عنوان سرویس",
+      "clearService": "حذف سرویس انتخاب‌شده",
+      "noServiceMatch": "سرویسی پیدا نشد",
+      "hintPickService": "پس از انتخاب سرویس، فیلترهای بیشتر نمایش داده می‌شود.",
+      "hintServiceChange": "با تغییر سرویس، فیلترهای دسته‌بندی به روزرسانی می‌شوند"
     }
   },
   "cooperation": {

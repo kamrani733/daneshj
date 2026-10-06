@@ -4,6 +4,7 @@ import { useTranslations } from 'next-intl';
 
 import { UiKitComponents } from '@/components/dev/ui-kit-components';
 import { UiKitMigrated } from '@/components/dev/ui-kit-migrated';
+import { UiKitSearch } from '@/components/dev/ui-kit-search';
 import { COLOR_ROLES, SHAPES, TYPE_SAMPLES } from '@/components/dev/ui-kit-tokens';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { cn } from '@/lib/utils';
@@ -72,6 +73,7 @@ export function UiKitView() {
 
       <UiKitMigrated />
       <UiKitComponents />
+      <UiKitSearch />
     </main>
   );
 }

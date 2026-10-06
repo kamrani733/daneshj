@@ -2,7 +2,7 @@
 title: "Known Issues & Gaps"
 description: "Blockers, open questions, SRS problems, technical debt"
 category: "meta"
-last_updated: "2026-10-06"
+last_updated: "2026-10-07"
 ---
 
 # Known Issues & Gaps
@@ -66,6 +66,11 @@ See [srs/README.md](./srs/README.md) → Known issues, Declared but not detailed
 | Public-panel «دیدگاه‌های منتقل‌شده» product rule | `public-panel/components/comments/` | Medium | Keep client-side transfer; profile comment SRS not in `docs/srs` (not Msg) |
 | Comments without API | `public-panel/components/comments/` | Medium | Stay behind `api/` + `mock/`; **not** Msg |
 | Home search entirely mock | `home/data/search-mock.ts` | Medium | Integrate SRV search API |
+| Global search (`/search`) entirely mock; no search endpoint in any OpenAPI spec | `app/(public)/search/mock/` | Medium | Backend to provide one search endpoint (products, services, providers, users + product filter by service/categories); only `search/api/` changes |
+| `/search` built from screenshots only — Figma MCP limit reached (filter frames `422:59585` … `422:60438` listed in `ai/figma-map.md` but never read) | `docs/design-specs/search/search-results.md` | Medium | Verify spacing/colours against the Figma frames when MCP calls are available |
+| `/search` frames disagree: desktop «محصولات» hides the filter actions until a service is picked (tablet/mobile show them); mobile frames show no «مشاهده همه» although groups have more results | `search/components/` | Low | Implemented: actions always shown; «مشاهده همه» kept on phones (otherwise results past the 4-card preview are unreachable) — confirm with design |
+| Duplicate illustration: `public/images/home/Empty state1.svg` was copied to `public/images/states/no-result.svg` (kebab-case, shared folder); the original could not be deleted from here | `apps/usr/public/images/home/` | Low | Delete `home/Empty state1.svg` |
+| `cn()` (tailwind-merge) drops custom font-size classes (`text-label-large`, `text-title-small`, …) when a text colour is in the same call — it reads them as colours | `lib/utils.ts` — e.g. `CountChip`, `Badge` | Medium | `extendTailwindMerge` with the M3 type scale (changes how existing components render — confirm first). New `/search` code keeps sizes outside `cn()` |
 | Large unmaintainable files (>300 lines) | Multiple — see audit §11 | Medium | Split by tab/section |
 | CI runs `e2e` with no Playwright project | `.github/workflows/ci.yml` | Medium | Add e2e app or drop target |
 | Followers dialog «حذف» calls unfollow | `public-panel/hooks/use-profile-stats-bar.ts` | Medium | Needs an Interactive Ops "remove follower" endpoint |
@@ -76,7 +81,7 @@ See [srs/README.md](./srs/README.md) → Known issues, Declared but not detailed
 | No electronic card in Actor MS | `private-panel/api/profile-mappers.ts` | Medium | Public panel hides the e-card CTA until a link exists |
 | Certificates removed from «سایر اطلاعات» | `public-panel/components/catalog/other-info-panel.tsx` | Low | Not in Figma, Expectation report or Actor API; type kept |
 | Hero card background pattern not implemented | `components/panel/profile-hero-card.tsx` | Low | Asset not in repo; plan forbids downloading it from Figma |
-| Home search results have no entry point (home search + category bar removed per new design) | `home/components/home-search-results.tsx`, `HomeSearchCategoryBar` in `components/site/site-header.tsx` | Low | Wire to the header search or delete; owner to decide |
+| Old home search results unused: the header search now opens `/search` (2026-10-07) | `home/components/home-search-results.tsx`, `HomeSearchCategoryBar` in `components/site/site-header.tsx` | Low | Delete with `home/data/search-mock.ts`; owner to decide |
 | Figma MCP Starter-plan call limit | design workflow | Medium | Exports (SVG) used as fallback; upgrade plan or keep exports in `docs/design-specs/` notes |
 | Tailwind version mismatch in package.json | `apps/usr/package.json` vs root | Low | Align declarations |
 | `any` in TS | only `apps/*/index.d.ts` (image types) | Low | — |

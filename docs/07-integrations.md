@@ -2,7 +2,7 @@
 title: "Integrations"
 description: "Backend microservices, endpoint inventory, readiness and mock status"
 category: "architecture"
-last_updated: "2026-10-02"
+last_updated: "2026-10-07"
 ---
 
 # Integrations
@@ -36,6 +36,7 @@ Summary from audit §4 — full path list in `docs/ai/00-project-audit.md` §4.
 | Notification | `GET/POST /notification/actor-settings/*` | settings | REAL + **HARDCODED** metadata merge |
 | Interactive ops | `POST/GET /interactive-ops/{follow,like,score,share}/*` | `public-panel/api/interactive-ops.ts` | REAL |
 | Home | — | `home/data/search-mock.ts` | **MOCKED** (no API) |
+| Global search | — (no endpoint in any spec) | `(public)/search/api/` → `search/mock/` | **MOCKED** |
 | Public panel comments | — | `comments/section.tsx` | **HARDCODED** / client-only mutations |
 
 ## Mocks in use
@@ -45,6 +46,7 @@ Summary from audit §4 — full path list in `docs/ai/00-project-audit.md` §4.
 | `settings-mock.ts` | Notification category tree + `categoryId` mapping (`category/list` Admin-only in spec) | Backend exposes category list (and aligned IDs) to actor tokens |
 | `(auth)/api/mock.ts` + `isAuthApiMocked()` | Auth MS in dev when `NEXT_PUBLIC_API_URL` is unset (try request, then mock). Also immediate mock for send-otp-for-login, session-limit continue, and no-op logout/delete | Production build (`NODE_ENV` inlined): `isAuthApiMocked()` is false and `withMockFallback` rethrows |
 | `home/data/search-mock.ts` | SRV provider/product search | SRV search API integrated |
+| `(public)/search/mock/search-mock.ts` | Global search (products, services, providers, users) + service / category filter options | Search endpoint integrated (only `search/api/` changes) |
 | `public-panel/data/public-panel-mock.ts` | Rich fixture source for demo mode + loading placeholders | Demo mode uses `public-panel/mock/*` when gate + cookie active |
 
 ## Demo mode (public panel presentations)

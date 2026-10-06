@@ -13,6 +13,7 @@ import {
   X,
 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 
 import { AUTH_ROUTES } from '@auth/lib/auth-routes';
@@ -37,6 +38,12 @@ import {
 import { NotificationsPanel } from '@/components/site/notifications-panel';
 import { UserProfileMenu } from '@/components/site/user-profile-menu';
 import { PublicPanelDemoToolbar } from '@public-panel/components/demo-mode/public-panel-demo-toolbar';
+import {
+  SEARCH_QUERY_MAX_LENGTH,
+  SEARCH_ROUTE,
+  buildSearchHref,
+  normalizeSearchQuery,
+} from '@search/utils/search-params';
 
 /** Figma menu order (LTR, logo last on the right edge) */
 type NavLink =
@@ -127,12 +134,7 @@ export function SiteHeader({
             />
           </div>
 
-          <SearchField
-            label={t('searchPlaceholder')}
-            size="xl"
-            placeholder={t('searchPlaceholder')}
-            containerClassName="max-w-[420px] min-w-0"
-          />
+          <HeaderSearchForm label={t('searchPlaceholder')} />
         </div>
 
         <nav className="flex shrink-0 items-center gap-0.5 min-[1280px]:gap-1" aria-label={t('mainNav')}>
@@ -306,13 +308,14 @@ function HeaderSearchMenuGroup({
   return (
     <div className={cn('flex shrink-0 items-center gap-1.5 min-[400px]:gap-2.5', className)}>
       <Button
-        type="button"
+        asChild
         variant="toolbar"
         size="icon"
-        aria-label={searchLabel}
         className="size-10 shrink-0 rounded-full bg-app-search-category text-content hover:bg-app-search-category hover:opacity-90"
       >
-        <Search className="size-[23px]" strokeWidth={1.75} aria-hidden />
+        <Link href={SEARCH_ROUTE} aria-label={searchLabel}>
+          <Search className="size-[23px]" strokeWidth={1.75} aria-hidden />
+        </Link>
       </Button>
       <Button
         type="button"
@@ -326,6 +329,35 @@ function HeaderSearchMenuGroup({
         <Menu className="size-6" strokeWidth={2} aria-hidden />
       </Button>
     </div>
+  );
+}
+
+/** Desktop header search — submit opens `/search?q=…` (Figma search results page). */
+function HeaderSearchForm({ label }: { label: string }) {
+  const router = useRouter();
+  const [query, setQuery] = useState('');
+
+  return (
+    <form
+      role="search"
+      className="min-w-0 max-w-[420px] flex-1"
+      onSubmit={(event) => {
+        event.preventDefault();
+        const normalized = normalizeSearchQuery(query);
+        if (!normalized) return;
+        router.push(buildSearchHref(normalized));
+      }}
+    >
+      <SearchField
+        label={label}
+        size="xl"
+        placeholder={label}
+        maxLength={SEARCH_QUERY_MAX_LENGTH}
+        value={query}
+        onChange={(event) => setQuery(event.target.value)}
+        enterKeyHint="search"
+      />
+    </form>
   );
 }
 

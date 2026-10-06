@@ -2,7 +2,7 @@
 title: "Project Progress"
 description: "Canonical completion tracker for Daneshjoam frontend"
 category: "meta"
-last_updated: "2026-10-02"
+last_updated: "2026-10-07"
 ---
 
 # Current Progress
@@ -30,6 +30,7 @@ SRS services: **0** of **557** paths DONE, **17** PARTIAL, **15** UI-ONLY, **525
 | Design system consolidation | In progress | [10-design-system.md](./10-design-system.md); shared cards, `ScrollCarousel`, `SectionHeading` sizes, `SortMenu` popover done |
 | Public panel | UI done (mock catalog / comments) | Role-based views, 8 demo personas, responsive — [features/public-panel.md](./features/public-panel.md) |
 | Home page | UI done (mock) | Shared cards, carousels, new photos — [features/home.md](./features/home.md) |
+| Global search (`/search`) | UI done (mock) | Header search opens «نتایج جستجو»; filters on all four groups (category items per the Figma component frames); empty state; URL state — [features/search.md](./features/search.md) |
 | Private panel | Not started (redesign) | Figma exports received; work paused by owner |
 | Platform shell | Partial | `/dashboard` missing; actor query gating; auth dev shortcuts |
 | Shared pattern libs | Not started | approval, soft delete, archive, categories, reasons, reports, uploader |

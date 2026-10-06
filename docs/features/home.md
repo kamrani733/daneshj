@@ -2,7 +2,7 @@
 title: "Feature: Home page (صفحه اصلی)"
 description: "Landing page: hero slider, intro, special services, categories, discounts, businesses, search"
 category: "feature"
-last_updated: "2026-10-02"
+last_updated: "2026-10-07"
 ---
 
 # Feature: Home page (صفحه اصلی)
@@ -44,4 +44,5 @@ the data files).
 ## Known gaps
 
 - Search is mock (`search-mock.ts`); no SRV search API yet.
+- The header search box now opens `/search` ([search.md](./search.md)); `home-search-results.tsx` has no entry point.
 - The category search bar is kept although the home Figma does not show it (search results depend on it).

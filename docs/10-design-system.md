@@ -2,7 +2,7 @@
 title: "Design System"
 description: "Tokens, status colors, typography, components and the consolidation plan — read before any UI work"
 category: "architecture"
-last_updated: "2026-10-02"
+last_updated: "2026-10-07"
 ---
 
 # Design System
@@ -78,7 +78,7 @@ primitives and map semantic tokens onto them, so Figma and code can still be com
 | `like` | Comment like (not stats bar) | `#f66060` | `#f66060` | `--color-like` | `text-like` |
 | `primary-fixed-dim` | M3 fixed dim | `#8dd5b2` | — | `--color-primary-fixed-dim` | `bg-primary-fixed-dim` |
 | `state-primary-10`, `state-primary-container-32` | M3 state layers | `#008d631a`, `#a9f2cd52` | — | `--color-state-*` | `bg-state-primary-10` |
-| `featured` / `featured-container` | Featured comment | `#f59e0b` / `#fff5eb` | `#f59e0b` / `#211d18` | `--color-featured*` | `text-featured`, `bg-featured-container` |
+| `featured` / `featured-container` | Featured comment; container also the «پرجستجوترین‌های هفته» box (same Figma fill) | `#f59e0b` / `#fff5eb` | `#f59e0b` / `#211d18` | `--color-featured*` | `text-featured`, `bg-featured-container` |
 | `surface-container-lowest` | Cards (M3) | `#ffffff` | `#0a0f0c` | `--color-surface-container-lowest` | `bg-surface-container-lowest` |
 
 Pages use `bg-background`; cards use the role their Figma frame uses, else `bg-surface-container-lowest`.
@@ -168,9 +168,11 @@ audit; the "SRS usage" column shows why each is needed.
 | `OutlinedField` | Labeled input with floating label | forms | `components/ui/outlined-field.tsx` | ⚠️ |
 | `FloatingInput` | Another floating label input | forms | `components/ui/floating-input.tsx` | ⚠️ near-dup of OutlinedField |
 | `UnderlineField` | Third field variant | forms | `components/ui/underline-field.tsx` | ⚠️ near-dup of OutlinedField |
-| `SearchField` | Pill search input | search (≤ 50 chars) | `components/ui/search-field.tsx` | ✅ |
-| `Select`, `Combobox` | Choice fields | filters, category picker | — | ❌ |
-| `Checkbox`, `Radio`, `Switch` | Toggles | filters, settings | — | ❌ |
+| `SearchField` | Pill search input; optional clear (×) via `onClear` + `clearLabel` | search (≤ 50 chars) | `components/ui/search-field.tsx` | ✅ |
+| `SearchSelect` | Outlined single-select with type-to-filter (ARIA combobox); floating label once picked, clear (×) | filters (service picker) | `components/ui/search-select.tsx` | ✅ |
+| `Select`, `Combobox` | Choice fields | filters, category picker | `SearchSelect` covers searchable single-select | ⚠️ |
+| `Checkbox` | M3 checkbox (checked / indeterminate) on Radix | filters, settings | `components/ui/checkbox.tsx` | ✅ |
+| `Radio`, `Switch` | Toggles | filters, settings | — | ❌ |
 | `DatePicker` | Jalali date picker | events, reports | `components/ui/jalali-date-picker.tsx` | ✅ |
 | `DateRangePicker` | Jalali date range | reports | — | ❌ |
 | `FileUploader` | Format/size/dimension checks, preview | images, PDF, xlsx | `components/ui/upload-button.tsx` + feature `documents-panel.tsx` | ⚠️ |
@@ -201,7 +203,7 @@ audit; the "SRS usage" column shows why each is needed.
 | Component | Purpose | Path | Status |
 |---|---|---|---|
 | `EmptyState` | No data (SRS text when given) | `components/panel/empty-state.tsx` | ✅ |
-| `NoResultState` | Search/filter returned nothing | — | ❌ |
+| `NoResultState` | Search/filter returned nothing: 320 px illustration (`public/images/states/no-result.svg`) + muted message | `components/ui/no-result-state.tsx` | ✅ |
 | `ErrorState` | Load failure with retry | `components/ui/error-state.tsx` | ✅ |
 | `NoPermissionState` | 403 / capability missing | — | ❌ |
 | `GuestPromptState` | Guest tried an interactive action | `components/ui/guest-prompt-state.tsx` | ✅ |
@@ -226,6 +228,7 @@ audit; the "SRS usage" column shows why each is needed.
 | `ServiceHome` blocks | Service landing: hero, featured list | SRV, all | `home/components/` | ⚠️ home-specific |
 | `HoverMediaCard` | Shared card shell + hover (media fills the card, dark body, white text) | all card lists | `components/cards/hover-media-card.tsx` | ✅ |
 | `DiscountCard`, `NewsCard`, `NewsletterCard`, `BusinessCard` | Content cards (home, search results, public panel) | Dsc, Nws, Nwl, SRV | `components/cards/` | ✅ |
+| `CompactMediaCard` | Horizontal result card: 80×80 media + title / subtitle; tone `accent` for user cards | `/search` | `components/cards/compact-media-card.tsx` | ✅ |
 | `EventCard` | Calendar event card | Cln | — | ❌ |
 | `VoucherView` / `ReceiptView` | Discount voucher and receipt display | Dsc | — | ❌ |
 | `ConversationList`, `MessageBubble`, `Composer` | Messaging | Msg | `public-panel/components/comments/` (prototype) | ⚠️ UI-only |

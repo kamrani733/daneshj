@@ -20,6 +20,7 @@
       "@/*": ["./src/*"],
       "@auth/*": ["./src/app/(public)/(auth)/*"],
       "@home/*": ["./src/app/(public)/home/*"],
+      "@search/*": ["./src/app/(public)/search/*"],
       "@messages/*": ["./messages/*"],
       "@notifications/*": ["./src/app/(public)/(site)/notifications/*"],
       "@public-panel/*": ["./src/app/(public)/(site)/public-panel/*"],

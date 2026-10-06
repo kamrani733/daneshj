@@ -188,7 +188,7 @@ export const SERVICES_MENU_ITEMS: HomeMenuItem[] = [
       { id: 'loan', label: 'وام دانشجویی' },
       { id: 'reward', label: 'پاداش (کسب امتیاز و تبدیل به پول یا افزودن به کیف پول)' },
       { id: 'cashback', label: 'بازگشت پول از خرید' },
-      { id: 'discount', label: 'تخفبف کالا و خدمات' },
+      { id: 'discount', label: 'تخفیف کالا و خدمات' },
       { id: 'gift-card', label: 'کارت های هدیه' },
       { id: 'referral', label: 'سیستم معرفی به دوستان' },
       { id: 'direct-buy', label: ' خرید مستقیم' },

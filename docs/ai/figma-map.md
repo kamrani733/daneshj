@@ -2,7 +2,7 @@
 title: "Figma map — public panel file"
 description: "What each frame in the Figma file is, with node IDs, read via the Figma MCP"
 category: "architecture"
-last_updated: "2026-09-25"
+last_updated: "2026-10-07"
 ---
 
 # Figma map — public panel
@@ -90,3 +90,9 @@ Mobile frame `400:152066` (393 wide):
 | Newsletters | `400:152174` |
 | Comments | `400:152182` |
 | CTA (mobile) + footer | `400:152131`, `400:152130` |
+
+## Search results («نتایج جستجو») — filter frames
+
+Shared by the owner on 2026-10-07 (desktop + tablet + mobile in each). Which node is which group was not
+read (MCP limit): `422:60094`, `422:59793`, `422:59585`, `422:60438`, `422:60284` — محصولات, سرویس‌ها,
+سرویس دهنده‌ها, کاربران. Spec: [design-specs/search/search-results.md](../design-specs/search/search-results.md).
