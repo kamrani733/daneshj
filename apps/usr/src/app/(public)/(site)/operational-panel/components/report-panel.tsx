@@ -18,13 +18,15 @@ import { ReportFilterPanel } from '@operational-panel/components/report-filter-p
 import { ReportRows } from '@operational-panel/components/report-rows';
 import { useReportQuery } from '@operational-panel/hooks/use-report-query';
 import { useReportUrlState } from '@operational-panel/hooks/use-report-url-state';
-import type { OperationalReportId } from '@operational-panel/types';
+import type { OperationalReportId, ReportRow } from '@operational-panel/types';
 import { getReportDefinition } from '@operational-panel/utils/report-definitions';
 import {
   REPORT_SEARCH_MAX_LENGTH,
   hasActiveFilters,
   normalizeReportQuery,
 } from '@operational-panel/utils/report-params';
+
+const NO_ROWS: ReportRow[] = [];
 
 /** One collapsible operational-panel report: toolbar, five states, table or cards. Data is fetched only while open. */
 export function OperationalReportPanel({ reportId }: { reportId: OperationalReportId }) {
@@ -61,7 +63,10 @@ export function OperationalReportPanel({ reportId }: { reportId: OperationalRepo
     () => JSON.stringify({ q: request.q, sort: request.sort, filters: request.filters }),
     [request.q, request.sort, request.filters]
   );
-  const { mobileItems } = useMobilePagedItems({ page: request.page, pageItems, resetKey });
+  // The table keeps the previous page on screen while the next loads; the card list must not store it
+  // under the new page number (it would show those rows twice).
+  const settledItems = reportQuery.isPlaceholderData ? NO_ROWS : pageItems;
+  const { mobileItems } = useMobilePagedItems({ page: request.page, pageItems: settledItems, resetKey });
   const filtered = request.q !== '' || hasActiveFilters(request);
 
   const sortLabel = (value: string): string => {

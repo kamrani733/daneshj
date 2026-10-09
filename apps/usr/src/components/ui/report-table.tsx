@@ -3,13 +3,13 @@ import type { ReactNode } from 'react';
 export type ReportTableColumn = {
   key: string;
   header: string;
-  /** Minimum column width: `sm` 7rem · `md` 9rem (default) · `lg` 13rem for long text. */
+  /** Minimum column width: `sm` 6rem · `md` 7rem (default) · `lg` 13rem for long text. */
   size?: 'sm' | 'md' | 'lg';
 };
 
 const SIZE_CLASS = {
-  sm: 'min-w-28',
-  md: 'min-w-36',
+  sm: 'min-w-24',
+  md: 'min-w-28',
   lg: 'min-w-52',
 } as const;
 

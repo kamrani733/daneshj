@@ -23,7 +23,7 @@ export function formatReportCell(
       const parts = formatIsoDateTime(String(value));
       if (!parts) return '—';
       return (
-        <span className="inline-flex flex-wrap justify-center gap-x-1.5 whitespace-nowrap">
+        <span className="inline-flex justify-center gap-x-1.5 whitespace-nowrap">
           <span>{parts.time}</span>
           <span>{parts.date}</span>
         </span>
