@@ -3,6 +3,7 @@
 import { Check, ChevronDown, ListFilter } from 'lucide-react';
 import { useState } from 'react';
 
+import { SortIcon } from '@/components/icons/material-icons';
 import {
   Popover,
   PopoverContent,
@@ -25,8 +26,10 @@ type SortMenuProps<T extends string> = {
    * `button`: lines icon + `label` (transferred list in Figma).
    * `select`: bordered pill with the current choice + chevron (registered list).
    * Phones always show the icon only (responsive export).
+   * `toolbar`: Material sort icon + `label` once the nearest `@container` is ≥ 720 px
+   * (report toolbars); icon only below, no border.
    */
-  trigger?: 'button' | 'select';
+  trigger?: 'button' | 'select' | 'toolbar';
   /** Text for the `select` trigger; defaults to the selected option's label. */
   selectedLabel?: string;
   className?: string;
@@ -55,14 +58,22 @@ export function SortMenu<T extends string>({
           className={cn(
             'inline-flex h-12 shrink-0 items-center justify-center gap-2 rounded-full text-label-large font-medium text-on-surface-variant',
             'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30',
-            'max-[719px]:size-12 max-[719px]:border max-[719px]:border-outline-variant',
-            trigger === 'select'
-              ? 'min-[720px]:min-w-[176px] min-[720px]:justify-between min-[720px]:border min-[720px]:border-outline-variant min-[720px]:px-4'
-              : 'min-[720px]:px-2 hover:bg-black/[0.04] dark:hover:bg-white/10',
+            trigger === 'toolbar'
+              ? 'min-w-12 px-3 hover:bg-on-surface/5'
+              : 'max-[719px]:size-12 max-[719px]:border max-[719px]:border-outline-variant',
+            trigger === 'select' &&
+              'min-[720px]:min-w-[176px] min-[720px]:justify-between min-[720px]:border min-[720px]:border-outline-variant min-[720px]:px-4',
+            trigger === 'button' && 'min-[720px]:px-2 hover:bg-black/[0.04] dark:hover:bg-white/10',
+            open && trigger === 'toolbar' && 'bg-on-surface/10',
             className
           )}
         >
-          {trigger === 'select' ? (
+          {trigger === 'toolbar' ? (
+            <>
+              <SortIcon size={24} />
+              <span className="hidden text-title-medium @min-[720px]:inline">{label}</span>
+            </>
+          ) : trigger === 'select' ? (
             <>
               <ListFilter className="size-5 min-[720px]:hidden" aria-hidden />
               <span className="hidden min-[720px]:inline">{current}</span>

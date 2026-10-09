@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { ChevronDown } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import {
@@ -10,42 +9,51 @@ import {
 } from '@notifications/api';
 import { resolveApiCategoryIds } from '@notifications/data/notifications-filter-data';
 import { useMobilePagedItems } from '@notifications/hooks';
-import { Button } from '@/components/ui/button';
-import { Spinner } from '@/components/ui/spinner';
-import { cn } from '@/lib/utils';
-
-import { AccentMark } from '@/components/site/accent-mark';
-import { NotificationsPagination } from '@notifications/components/layout/pagination';
-import { ReportsCardList } from '@notifications/components/reports/card-list';
 import {
   EMPTY_REPORTS_FILTERS,
-  ReportsToolbar,
+  ReportsFilterPanel,
   type ReportsFilterValues,
-} from '@notifications/components/reports/toolbar';
-import { ReportsTable } from '@notifications/components/reports/table';
+} from '@notifications/components/reports/filter-panel';
+import { NotificationsReportRows } from '@notifications/components/reports/rows';
+import { useDebouncedValue } from '@/hooks/use-debounced-value';
+import { Button } from '@/components/ui/button';
+import { ReportSection } from '@/components/ui/report-section';
+import { ReportToolbar } from '@/components/ui/report-toolbar';
+import { Spinner } from '@/components/ui/spinner';
+
+/** Figma sort menu — one preferred direction per field (API Usr-Ntf-6N5 ordering). */
+const ORDERING_OPTIONS: Array<{ value: ReportOrdering; labelKey: string }> = [
+  { value: '-sent_at', labelKey: 'sentNewest' },
+  { value: 'main_category', labelKey: 'mainCategory' },
+  { value: 'sub_category', labelKey: 'subCategory' },
+  { value: '-priority', labelKey: 'priorityHighest' },
+  { value: 'status', labelKey: 'status' },
+];
+
+/** SRS input convention: search fields accept at most 50 characters. */
+const SEARCH_MAX_LENGTH = 50;
 
 type NotificationsReportsPanelProps = {
   accessToken?: string | null;
 };
 
-export function NotificationsReportsPanel({
-  accessToken,
-}: NotificationsReportsPanelProps) {
+/** «گزارش اعلان‌های دریافتی و وضعیت آنها» — notifications reports page and operational panel. SRS: Usr-Ntf-6N5 */
+export function NotificationsReportsPanel({ accessToken }: NotificationsReportsPanelProps) {
   const t = useTranslations('notifications.reports');
   const [open, setOpen] = useState(true);
+  const [filtersOpen, setFiltersOpen] = useState(false);
   const [query, setQuery] = useState('');
   const [ordering, setOrdering] = useState<ReportOrdering>('-sent_at');
-  const [filters, setFilters] = useState<ReportsFilterValues>(
-    EMPTY_REPORTS_FILTERS
-  );
+  const [filters, setFilters] = useState<ReportsFilterValues>(EMPTY_REPORTS_FILTERS);
   const [page, setPage] = useState(1);
 
+  const search = useDebouncedValue(query.trim());
   const categoryIds = resolveApiCategoryIds(filters.categoryIds);
 
   const reportQuery = useDetailedStatusReportQuery({
     accessToken,
     page,
-    search: query.trim() || undefined,
+    search: search || undefined,
     ordering,
     priority: filters.priority,
     status: filters.status,
@@ -56,127 +64,84 @@ export function NotificationsReportsPanel({
     subCategoryId: categoryIds.subCategoryId,
   });
 
-  const pageItems = useMemo(
-    () => reportQuery.data?.items ?? [],
-    [reportQuery.data?.items]
-  );
+  const pageItems = useMemo(() => reportQuery.data?.items ?? [], [reportQuery.data?.items]);
   const totalPages = Math.max(reportQuery.data?.totalPages ?? 1, 1);
-  const isLoading =
-    reportQuery.isPending ||
-    (reportQuery.isFetching && pageItems.length === 0);
-  const canLoadMore = page < totalPages;
+  const isLoading = reportQuery.isPending || (reportQuery.isFetching && pageItems.length === 0);
 
   const resetKey = useMemo(
-    () =>
-      JSON.stringify({
-        query,
-        ordering,
-        filters,
-      }),
-    [query, ordering, filters]
+    () => JSON.stringify({ search, ordering, filters }),
+    [search, ordering, filters]
   );
-  const { mobileItems } = useMobilePagedItems({
-    page,
-    pageItems,
-    resetKey,
-  });
+  const { mobileItems } = useMobilePagedItems({ page, pageItems, resetKey });
 
   useEffect(() => {
     setPage(1);
   }, [resetKey]);
 
   return (
-    <section className="overflow-hidden rounded-xl bg-app-search-fill ring-1 ring-border/40">
-      <header className="flex items-center justify-between gap-3 px-4 py-3.5 min-[720px]:px-5">
-        <div className="flex items-center gap-2">
-          <AccentMark />
-          <h2 className="text-sm font-bold leading-6 text-primary-700 dark:text-primary-100 min-[720px]:text-base">
-            {t('panelTitle')}
-          </h2>
-        </div>
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon"
-          aria-expanded={open}
-          aria-label={open ? t('collapse') : t('expand')}
-          onClick={() => setOpen((value) => !value)}
-          className="size-8 shrink-0 text-primary-700 hover:bg-transparent hover:text-primary-700 dark:text-primary-100 dark:hover:text-primary-100"
-        >
-          <ChevronDown
-            className={cn(
-              'size-5 transition-transform',
-              !open && '-rotate-90'
-            )}
-            strokeWidth={1.75}
-            aria-hidden
-          />
-        </Button>
-      </header>
-
-      {open ? (
-        <div className="flex flex-col gap-4 px-3 pb-4 min-[720px]:gap-5 min-[720px]:px-5 min-[720px]:pb-5">
-          <div className="rounded-xl bg-white p-3 ring-1 ring-border/30 dark:bg-app-search-category min-[720px]:p-4">
-            <ReportsToolbar
-              query={query}
-              onQueryChange={setQuery}
-              ordering={ordering}
-              onOrderingChange={setOrdering}
+    <ReportSection title={t('panelTitle')} open={open} onOpenChange={setOpen}>
+      <ReportToolbar
+        search={{ value: query, onChange: setQuery, label: t('search'), maxLength: SEARCH_MAX_LENGTH }}
+        sort={{
+          label: t('sort'),
+          value: ordering,
+          options: ORDERING_OPTIONS.map((option) => ({
+            value: option.value,
+            label: t(`orderingMenu.${option.labelKey}`),
+          })),
+          onChange: setOrdering,
+        }}
+        filter={{
+          label: t('filters'),
+          open: filtersOpen,
+          onOpenChange: setFiltersOpen,
+          panel: (
+            <ReportsFilterPanel
               filters={filters}
-              onApplyFilters={setFilters}
-              onClearFilters={() => setFilters(EMPTY_REPORTS_FILTERS)}
+              onApply={(next) => {
+                setFilters(next);
+                setFiltersOpen(false);
+              }}
+              onClear={() => setFilters(EMPTY_REPORTS_FILTERS)}
             />
-          </div>
+          ),
+        }}
+      />
 
-          {isLoading ? (
-            <div
-              role="status"
-              aria-live="polite"
-              className="flex min-h-[240px] flex-col items-center justify-center gap-3 py-10 text-neutral-600"
-            >
-              <Spinner
-                className="size-9 text-primary"
-                aria-label={t('loading')}
-              />
-              <span className="text-sm font-medium leading-5">
-                {t('loading')}
-              </span>
-            </div>
-          ) : pageItems.length === 0 && mobileItems.length === 0 ? (
-            <p className="py-10 text-center text-sm text-neutral-600">
-              {t('empty')}
-            </p>
-          ) : (
-            <>
-              <div className="hidden flex-col gap-3 lg:flex">
-                <div className="overflow-x-auto">
-                  <ReportsTable items={pageItems} />
-                </div>
-                <NotificationsPagination
-                  page={page}
-                  totalPages={totalPages}
-                  onPageChange={setPage}
-                />
-              </div>
-
-              <div className="flex flex-col gap-3 lg:hidden">
-                <ReportsCardList items={mobileItems} />
-                {canLoadMore ? (
-                  <Button
-                    type="button"
-                    variant="link"
-                    loading={reportQuery.isFetching}
-                    onClick={() => setPage((current) => current + 1)}
-                    className="h-auto self-start px-0 text-sm font-medium leading-5"
-                  >
-                    {t('loadMore')}
-                  </Button>
-                ) : null}
-              </div>
-            </>
-          )}
+      {isLoading ? (
+        <div
+          role="status"
+          aria-live="polite"
+          className="flex min-h-60 flex-col items-center justify-center gap-3 py-10 text-on-surface-variant"
+        >
+          <Spinner className="size-9 text-primary" aria-label={t('loading')} />
+          <span className="text-label-large">{t('loading')}</span>
         </div>
-      ) : null}
-    </section>
+      ) : pageItems.length === 0 && mobileItems.length === 0 ? (
+        <p className="py-10 text-center text-body-medium text-on-surface-variant">{t('empty')}</p>
+      ) : (
+        <NotificationsReportRows
+          title={t('panelTitle')}
+          pageItems={pageItems}
+          mobileItems={mobileItems}
+          page={page}
+          totalPages={totalPages}
+          onPageChange={setPage}
+          loadMore={
+            page < totalPages ? (
+              <Button
+                type="button"
+                variant="link"
+                loading={reportQuery.isFetching}
+                onClick={() => setPage((current) => current + 1)}
+                className="h-auto self-end px-0"
+              >
+                <span className="text-label-large">{t('loadMore')}</span>
+              </Button>
+            ) : null
+          }
+        />
+      )}
+    </ReportSection>
   );
 }

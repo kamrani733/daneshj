@@ -213,3 +213,24 @@ export function formatAcademicDate(value: string | null | undefined): string {
   }
   return trimmed;
 }
+
+export type JalaliDateTimeParts = { date: string; time: string };
+
+/** Date → `{ date: '۱۴۰۴/۱۲/۰۶', time: '۱:۱۵ ب.ظ' }` in the viewer's local time (report and notification cells). */
+export function formatJalaliDateTime(date: Date): JalaliDateTimeParts {
+  const hours = date.getHours();
+  const period = hours >= 12 ? 'ب.ظ' : 'ق.ظ';
+  const hour12 = hours % 12 || 12;
+  return {
+    date: formatJalaliDisplay(dateToJalali(date)),
+    time: `${toFaDigits(hour12)}:${toFaDigits(pad2(date.getMinutes()))} ${period}`,
+  };
+}
+
+/** ISO instant → date/time parts, or `null` when the value is empty or unparsable. */
+export function formatIsoDateTime(value: string | null | undefined): JalaliDateTimeParts | null {
+  const trimmed = value?.trim() ?? '';
+  if (!trimmed) return null;
+  const parsed = new Date(trimmed);
+  return Number.isNaN(parsed.getTime()) ? null : formatJalaliDateTime(parsed);
+}

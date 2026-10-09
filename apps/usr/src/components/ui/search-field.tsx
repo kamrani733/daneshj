@@ -45,6 +45,13 @@ const VARIANT_STYLES = {
       'rounded-full border border-outline-variant bg-surface-container-low text-body-large text-on-surface placeholder:text-on-surface-variant focus-visible:border-outline-variant focus-visible:ring-2 focus-visible:ring-primary/20',
     icon: 'text-on-surface-variant',
   },
+  /** M3 pill on surface-container-low — report toolbars (operational panel, notifications reports). */
+  surface: {
+    wrap: '',
+    input:
+      'rounded-full border border-outline-variant bg-surface-container-low text-on-surface placeholder:text-on-surface-variant focus-visible:border-outline-variant focus-visible:ring-2 focus-visible:ring-primary/20',
+    icon: 'text-on-surface-variant',
+  },
 } as const;
 
 export type SearchFieldProps = Omit<

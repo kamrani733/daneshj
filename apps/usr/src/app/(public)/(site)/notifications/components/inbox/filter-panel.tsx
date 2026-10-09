@@ -13,12 +13,12 @@ import type {
 } from '@notifications/types/filters';
 import { Button } from '@/components/ui/button';
 
+import { CategoryTree } from '@notifications/components/shared/filter-primitives';
 import {
-  CategoryTree,
   DateRangeInputs,
   FilterCheckbox,
   FilterField,
-} from '@notifications/components/shared/filter-primitives';
+} from '@/components/ui/filter-fields';
 
 type NotificationsFilterPanelProps = {
   filters: NotificationsFilterValues;

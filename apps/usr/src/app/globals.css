@@ -728,3 +728,12 @@
 .md-circular-progress__path {
   animation: md-circular-dash 1.4s ease-in-out infinite;
 }
+
+/* Hides the native scrollbar where a custom indicator replaces it (`HorizontalScroller`). */
+@utility scrollbar-none {
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}

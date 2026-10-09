@@ -2,6 +2,8 @@ import {
   addJalaliMonths,
   buildJalaliMonthGrid,
   formatAcademicDate,
+  formatIsoDateTime,
+  formatJalaliDateTime,
   formatJalaliDisplay,
   isJalaliLeap,
   jalaliMonthLength,
@@ -129,5 +131,29 @@ describe('calendar grid', () => {
     expect(grid.find((cell) => cell.inCurrentMonth && cell.jalali.day === 1)?.iso).toBe(
       '2024-03-20'
     );
+  });
+});
+
+describe('formatJalaliDateTime and formatIsoDateTime', () => {
+  it('splits a local date into Jalali date and 12-hour time', () => {
+    expect(formatJalaliDateTime(new Date(2026, 2, 5, 13, 15))).toEqual({
+      date: '۱۴۰۴/۱۲/۱۴',
+      time: '۱:۱۵ ب.ظ',
+    });
+    expect(formatJalaliDateTime(new Date(2026, 2, 5, 0, 5))).toEqual({
+      date: '۱۴۰۴/۱۲/۱۴',
+      time: '۱۲:۰۵ ق.ظ',
+    });
+    expect(formatJalaliDateTime(new Date(2026, 2, 5, 12, 0)).time).toBe('۱۲:۰۰ ب.ظ');
+  });
+
+  it('parses ISO instants and rejects empty or invalid values', () => {
+    expect(formatIsoDateTime(new Date(2026, 2, 5, 9, 10).toISOString())).toEqual({
+      date: '۱۴۰۴/۱۲/۱۴',
+      time: '۹:۱۰ ق.ظ',
+    });
+    expect(formatIsoDateTime('')).toBeNull();
+    expect(formatIsoDateTime(undefined)).toBeNull();
+    expect(formatIsoDateTime('not-a-date')).toBeNull();
   });
 });

@@ -11,12 +11,12 @@ import type {
 } from '@notifications/api';
 import { Button } from '@/components/ui/button';
 
+import { CategoryTree } from '@notifications/components/shared/filter-primitives';
 import {
-  CategoryTree,
   DateRangeInputs,
   FilterCheckbox,
   FilterField,
-} from '@notifications/components/shared/filter-primitives';
+} from '@/components/ui/filter-fields';
 
 export type ReportsFilterValues = {
   sentStart: string;

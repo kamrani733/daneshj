@@ -1,10 +1,11 @@
 'use client';
 
 import type { ReactNode } from 'react';
+import { useTranslations } from 'next-intl';
 
-import { cn } from '@/lib/utils';
+import { PanelNav, PanelPageShell } from '@/components/panel';
 
-import { NotificationsNav } from '@notifications/components/layout/nav';
+import { NOTIFICATIONS_NAV_ITEMS } from '@notifications/components/layout/nav-items';
 import { NotificationsPageHeading } from '@notifications/components/layout/page-heading';
 
 type NotificationsPageShellProps = {
@@ -21,19 +22,21 @@ export function NotificationsPageShell({
   breadcrumbCurrentKey,
   contentClassName,
 }: NotificationsPageShellProps) {
-  return (
-    <div className="mx-auto flex w-full max-w-[1364px] flex-col gap-6 px-4 py-4 min-[1200px]:px-0">
-      <NotificationsPageHeading
-        titleKey={titleKey}
-        breadcrumbCurrentKey={breadcrumbCurrentKey}
-      />
+  const t = useTranslations('notifications.sidebar');
+  const items = NOTIFICATIONS_NAV_ITEMS.map((item) => ({ ...item, label: t(item.key) }));
 
-      <div className="flex w-full flex-col gap-4 min-[720px]:flex-row min-[720px]:items-start min-[720px]:gap-6 min-[1200px]:gap-[70px]">
-        <NotificationsNav />
-        <section className={cn('min-w-0 flex-1', contentClassName)}>
-          {children}
-        </section>
-      </div>
-    </div>
+  return (
+    <PanelPageShell
+      heading={
+        <NotificationsPageHeading
+          titleKey={titleKey}
+          breadcrumbCurrentKey={breadcrumbCurrentKey}
+        />
+      }
+      nav={<PanelNav items={items} label={t('navLabel')} menuLabel={t('menuTrigger')} />}
+      contentClassName={contentClassName}
+    >
+      {children}
+    </PanelPageShell>
   );
 }

@@ -4,6 +4,9 @@ export { EducationAddressCard } from '@/components/panel/education-address-card'
 export { EmptyState } from '@/components/panel/empty-state';
 export { PanelBreadcrumb } from '@/components/panel/panel-breadcrumb';
 export { PanelLoadingOverlay } from '@/components/panel/panel-loading-overlay';
+export { PanelNav } from '@/components/panel/panel-nav';
+export type { PanelNavItem, PanelNavProps } from '@/components/panel/panel-nav';
+export { PanelPageShell } from '@/components/panel/panel-page-shell';
 export { ProfileHeroCard } from '@/components/panel/profile-hero-card';
 export { SocialLinksRow } from '@/components/panel/social-links-row';
 export type {

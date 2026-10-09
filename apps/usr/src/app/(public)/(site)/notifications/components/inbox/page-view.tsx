@@ -18,13 +18,13 @@ import {
 } from '@notifications/data/notifications-filter-data';
 import { useMobilePagedItems } from '@notifications/hooks';
 import { Button } from '@/components/ui/button';
+import { Pagination } from '@/components/ui/pagination';
 import { Spinner } from '@/components/ui/spinner';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
 
 import { NotificationsCardList } from '@notifications/components/inbox/card-list';
 import { NotificationsPageShell } from '@notifications/components/layout/page-shell';
-import { NotificationsPagination } from '@notifications/components/layout/pagination';
 import { NotificationsTable } from '@notifications/components/inbox/table';
 import { NotificationsToolbar } from '@notifications/components/inbox/toolbar';
 
@@ -178,7 +178,7 @@ export function NotificationsPageView({
                     items={pageItems}
                     onItemSelect={handleRowSelect}
                   />
-                  <NotificationsPagination
+                  <Pagination
                     page={page}
                     totalPages={totalPages}
                     onPageChange={setPage}

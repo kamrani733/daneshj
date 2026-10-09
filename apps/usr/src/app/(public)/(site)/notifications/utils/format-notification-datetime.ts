@@ -1,55 +1,11 @@
-const FA_DIGITS = '۰۱۲۳۴۵۶۷۸۹';
-
-function toFaDigits(value: string) {
-  return value.replace(/\d/g, (digit) => FA_DIGITS[Number(digit)] ?? digit);
-}
-
-function mapDayPeriod(value: string): string {
-  const normalized = value.replace(/\s+/g, '').toLowerCase();
-  if (
-    normalized.includes('بعد') ||
-    normalized.includes('pm') ||
-    normalized === 'ب.ظ' ||
-    normalized === 'بظ'
-  ) {
-    return 'ب.ظ';
-  }
-  if (
-    normalized.includes('قبل') ||
-    normalized.includes('am') ||
-    normalized === 'ق.ظ' ||
-    normalized === 'قظ'
-  ) {
-    return 'ق.ظ';
-  }
-  return value;
-}
+import { formatJalaliDateTime, toFaDigits } from '@/lib/jalali';
 
 /** Format a JS Date for notification cards — Figma: ۱۴۰۴/۱۲/۰۶ · ۱:۱۵ ب.ظ */
 export function formatNotificationDateTime(date: Date): {
   date: string;
   time: string;
 } {
-  const dateLabel = new Intl.DateTimeFormat('fa-IR-u-ca-persian', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-  }).format(date);
-
-  const parts = new Intl.DateTimeFormat('fa-IR', {
-    hour: 'numeric',
-    minute: '2-digit',
-    hour12: true,
-  }).formatToParts(date);
-
-  const hour = parts.find((part) => part.type === 'hour')?.value ?? '';
-  const minute = parts.find((part) => part.type === 'minute')?.value ?? '';
-  const dayPeriod = parts.find((part) => part.type === 'dayPeriod')?.value ?? '';
-  const timeLabel = dayPeriod
-    ? `${hour}:${minute} ${mapDayPeriod(dayPeriod)}`
-    : `${hour}:${minute}`;
-
-  return { date: dateLabel, time: timeLabel };
+  return formatJalaliDateTime(date);
 }
 
 function formatAsciiClock(timePart: string): string {

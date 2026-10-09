@@ -6,7 +6,13 @@
     "logout": "خروج",
     "dashboard": "داشبورد",
     "themeLight": "حالت روشن",
-    "themeDark": "حالت تاریک"
+    "themeDark": "حالت تاریک",
+    "pagination": {
+      "label": "صفحه‌بندی",
+      "prev": "صفحه قبل",
+      "next": "صفحه بعد",
+      "page": "صفحه {page}"
+    }
   },
   "uiKit": {
     "title": "کیت رابط کاربری",
@@ -718,12 +724,6 @@
       "read": "خوانده شده",
       "other": "سایر",
       "totalRequests": "مجموع: {count} درخواست"
-    },
-    "pagination": {
-      "label": "صفحه‌بندی",
-      "prev": "صفحه قبل",
-      "next": "صفحه بعد",
-      "page": "صفحه {page}"
     },
     "upgrade": {
       "cta": "ارتقا عضویت"
