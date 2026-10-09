@@ -15,6 +15,7 @@ import { createPortal } from 'react-dom';
 
 import { clearSession } from '@auth/lib/auth-actions';
 import { AUTH_ROUTES } from '@auth/lib/auth-routes';
+import { OPERATIONAL_PANEL_PATH } from '@operational-panel/utils/paths';
 import { PRIVATE_PANEL_PATH } from '@private-panel/data/private-panel-ui';
 import { PUBLIC_PANEL_PATH } from '@public-panel/data/public-panel-ui';
 import { Button } from '@/components/ui/button';
@@ -35,7 +36,7 @@ export type UserProfileMenuProps = {
 const MENU_ITEMS = [
   { key: 'privatePanel' as const, href: PRIVATE_PANEL_PATH },
   { key: 'publicPanel' as const, href: PUBLIC_PANEL_PATH },
-  { key: 'operationalPanel' as const, href: AUTH_ROUTES.dashboard },
+  { key: 'operationalPanel' as const, href: OPERATIONAL_PANEL_PATH },
   { key: 'membershipOps' as const, href: AUTH_ROUTES.dashboard },
   { key: 'sessions' as const, href: AUTH_ROUTES.dashboard },
   { key: 'security' as const, href: AUTH_ROUTES.dashboard },

@@ -12,6 +12,10 @@
       "prev": "صفحه قبل",
       "next": "صفحه بعد",
       "page": "صفحه {page}"
+    },
+    "reportTable": {
+      "scrollStart": "پیمایش به ستون‌های ابتدایی",
+      "scrollEnd": "پیمایش به ستون‌های بعدی"
     }
   },
   "uiKit": {
@@ -1362,6 +1366,264 @@
           "فیلد هایی هم هستند که قبلا در پنل نمایش داده نشده اند و کاربر میتواند با زدن آنها آنها را فعال و به پنل عمومی خود اضافه کند در نگاه اول این فیلد ها انتخاب نشده و خاکستری هستند .",
           "یه فیلد خاص هم وجود دارد که کاربر اجازه نمایش آنها در پنل عمومی خود را ندارد و این فیلد ها عبارتند از : شماره موبایل ،‌شماره ملی و شماره دانشجویی چک باکس این فیلد های غیر فعال و در کپپش آن به کار بر توضیح داده شده که «به دلیل حفط حریم خصوصی شما این فیلد ها در پنل عمومی شما نمایش داده نمی‌شوند» .بعد از همه انتخاب ها کاربر تغییرات را ذخیره می‌کند در غیر این صورت پیام انصراف به او نمایش داده می‌شود ."
         ]
+      }
+    }
+  },
+  "operationalPanel": {
+    "title": "پنل عملیاتی",
+    "breadcrumb": {
+      "label": "مسیر صفحه",
+      "home": "خانه",
+      "account": "حساب کاربری"
+    },
+    "nav": {
+      "label": "منوی پنل عملیاتی",
+      "menu": "منوی پنل عملیاتی",
+      "usedServices": "سرویس‌های استفاده شده",
+      "manageServices": "مدیریت سرویس‌ها",
+      "wallet": "کیف پول",
+      "reports": "گزارشات",
+      "stats": "آمار",
+      "charts": "نمودار",
+      "interactions": "مشاهده تعاملات"
+    },
+    "toolbar": {
+      "search": "جستجو",
+      "sort": "مرتب‌سازی",
+      "filters": "فیلترها"
+    },
+    "sort": {
+      "newest": "جدیدترین",
+      "oldest": "قدیمی‌ترین"
+    },
+    "filters": {
+      "from": "شروع بازه",
+      "to": "پایان بازه",
+      "datePlaceholder": "متن جایگزین",
+      "dateHint": "روز/ماه/سال",
+      "apply": "اعمال فیلتر",
+      "clear": "پاک کردن"
+    },
+    "states": {
+      "loading": "در حال بارگذاری گزارش…",
+      "empty": "گزارشی برای نمایش وجود ندارد",
+      "noResult": "هیچ نتیجه‌ای یافت نشد",
+      "error": "دریافت گزارش انجام نشد",
+      "retry": "تلاش مجدد",
+      "loadMore": "مشاهده بیشتر"
+    },
+    "units": {
+      "hours": "{count} ساعت"
+    },
+    "enums": {
+      "publicPanelFieldAction": {
+        "add": "افزودن فیلد به پنل عمومی",
+        "requestRemoval": "درخواست حذف فیلد از پنل عمومی",
+        "approveRemoval": "تایید حذف فیلد از پنل عمومی",
+        "rejectRemoval": "رد حذف فیلد از پنل عمومی"
+      },
+      "reviewState": {
+        "pending": "در انتظار تایید/رد",
+        "approved": "تایید",
+        "rejected": "رد"
+      },
+      "panelAction": {
+        "create": "ایجاد پنل",
+        "delete": "حذف پنل"
+      },
+      "loginOperation": {
+        "login": "ورود",
+        "logout": "خروج"
+      },
+      "blockStatus": {
+        "active": "فعال",
+        "blocked": "مسدود"
+      },
+      "periodUnit": {
+        "minute": "دقیقه",
+        "hour": "ساعت"
+      }
+    },
+    "reports": {
+      "publicPanelFields": {
+        "title": "گزارش مدیریت نمایش اطلاعات در پنل عمومی",
+        "columns": {
+          "actorUsername": "نام کاربری عملگر اقدام کننده",
+          "reviewedAt": "زمان تایید/رد",
+          "action": "نوع اقدام",
+          "field": "فیلد اطلاعاتی",
+          "status": "وضعیت",
+          "requestedAt": "زمان درخواست"
+        }
+      },
+      "accountOps": {
+        "title": "گزارش سابقه عملیات حساب کاربری",
+        "columns": {
+          "actorUsername": "نام کاربری عملگر اقدام کننده",
+          "actedAt": "تاریخ و زمان اقدام/درخواست",
+          "action": "نوع اقدام",
+          "field": "فیلد اطلاعاتی",
+          "previousValue": "مقدار قبلی فیلد",
+          "newValue": "مقدار جدید فیلد",
+          "status": "وضعیت"
+        }
+      },
+      "publicPanelLifecycle": {
+        "title": "گزارش ایجاد/حذف پنل عمومی",
+        "columns": {
+          "adminUsername": "نام کاربری راهبر اقدام کننده",
+          "requestedAt": "تاریخ و زمان درخواست",
+          "action": "نوع اقدام",
+          "actedAt": "زمان اقدام",
+          "responseHours": "فاصله زمانی درخواست تا اقدام"
+        }
+      },
+      "publicPanelRequests": {
+        "title": "گزارش درخواست ایجاد/حذف پنل عمومی",
+        "columns": {
+          "ticketId": "شناسه تیکت",
+          "status": "وضعیت",
+          "action": "نوع اقدام",
+          "requestedAt": "زمان درخواست"
+        }
+      },
+      "loginLogout": {
+        "title": "گزارش ورود و خروج",
+        "columns": {
+          "occurredAt": "تاریخ و زمان",
+          "operation": "عملیات",
+          "operationType": "نوع عملیات",
+          "ip": "IP",
+          "os": "سیستم عامل",
+          "browser": "نوع مرورگر"
+        }
+      },
+      "securitySettings": {
+        "title": "گزارش سابقه ویرایش تنظیمات امنیتی",
+        "columns": {
+          "actedAt": "تاریخ و زمان اقدام",
+          "field": "فیلد ویرایش شده",
+          "previousValue": "مقدار قبلی",
+          "newValue": "مقدار جدید"
+        }
+      },
+      "bruteForceUnblock": {
+        "title": "گزارش سابقه رفع مسدودی عملگر به دلیل حملات بی‌رحمانه",
+        "columns": {
+          "blockType": "نوع مسدودی",
+          "blockReason": "دلیل مسدودی",
+          "blockReasonDescription": "توضیح دلیل مسدودی",
+          "blockStart": "زمان شروع مسدودی",
+          "blockEnd": "زمان پایان مسدودی",
+          "blockedIp": "آی پی مسدود شده",
+          "earlyUnblockAt": "زمان رفع مسدودی پیش از موعد",
+          "earlyUnblockReason": "دلیل رفع مسدودی پیش از موعد"
+        }
+      },
+      "manualBlock": {
+        "title": "گزارش سابقه مسدودی/رفع مسدودی عملگر به صورت دستی",
+        "columns": {
+          "adminUsername": "نام کاربری راهبر مسدود/رفع مسدود کننده",
+          "blockStatus": "وضعیت مسدودی",
+          "blockType": "نوع مسدودی",
+          "periodUnit": "نوع دوره مسدودی",
+          "duration": "مدت مسدودی",
+          "blockReason": "دلیل مسدودی",
+          "blockReasonDescription": "توضیح دلیل مسدودی",
+          "blockStart": "زمان شروع مسدودی",
+          "blockEnd": "زمان پایان مسدودی",
+          "blockedIp": "IP مسدود شده",
+          "earlyUnblockAt": "زمان رفع مسدودی پیش از موعد",
+          "earlyUnblockReason": "دلیل رفع مسدودی پیش از موعد",
+          "earlyUnblockDescription": "توضیح دلیل رفع مسدودی پیش از موعد"
+        }
+      },
+      "restrictions": {
+        "title": "گزارش سابقه محدودی/رفع محدودی عملگر",
+        "columns": {
+          "adminId": "شناسه راهبر محدود کننده",
+          "subOperationId": "شناسه عملیات فرعی",
+          "targetType": "نوع هدف",
+          "restrictionType": "نوع محدودی هدف",
+          "targetActorTypes": "نوع عملگر(ان) هدف Target1",
+          "targetActorIds": "شناسه عملگر(ان) هدف Target2",
+          "targetProductIds": "شناسه محصول(ها) Target5",
+          "targetServiceIds": "شناسه سرویس(ها) Target3",
+          "defaultAccess": "سطح دسترسی پیش فرض",
+          "overriddenAccess": "سطح دسترسی بازنویسی شده",
+          "reason": "دلیل محدودی",
+          "reasonDescription": "توضیح دلیل محدودی",
+          "createdAt": "زمان ایجاد محدودی",
+          "startAt": "زمان شروع محدودی",
+          "endAt": "زمان پایان محدودی",
+          "liftedByAdminId": "شناسه راهبر رفع کننده محدودی",
+          "earlyLiftAt": "زمان رفع محدودی پیش از موعد",
+          "liftReason": "دلیل رفع محدودی",
+          "liftReasonDescription": "توضیح دلیل رفع محدودی"
+        }
+      },
+      "actorDeleteRestore": {
+        "title": "گزارش سابقه حذف/بازگردانی عملگر",
+        "columns": {
+          "adminUsername": "نام کاربری راهبر اقدام کننده",
+          "actorType": "نوع عملگر",
+          "actedAt": "تاریخ و زمان اقدام",
+          "reason": "دلیل حذف/بازگردانی"
+        }
+      },
+      "wallet": {
+        "title": "گزارش عملیات کیف پول کاربر",
+        "columns": {
+          "transactionAt": "زمان تراکنش",
+          "amount": "میزان تراکنش (تومان)",
+          "source": "منبع تراکنش",
+          "adminUsername": "نام کاربری راهبر اقدام کننده",
+          "description": "شرح تراکنش",
+          "transactionType": "نوع تراکنش",
+          "operationType": "نوع عملیات"
+        }
+      },
+      "comments": {
+        "title": "گزارش سابقه عملیات انجام‌شده روی دیدگاه‌ها",
+        "columns": {
+          "actorUsername": "نام کاربری اقدام کننده عملیات",
+          "sentAt": "تاریخ و زمان ارسال",
+          "commentId": "شناسه دیدگاه / پاسخ",
+          "operation": "نوع عملیات",
+          "previousText": "متن قبلی دیدگاه",
+          "text": "متن دیدگاه",
+          "transferReason": "دلیل انتقال"
+        }
+      },
+      "interactions": {
+        "title": "گزارش سابقه عملیات تعاملی",
+        "columns": {
+          "targetType": "نوع هدف تعامل",
+          "target": "هدف تعامل",
+          "interactionType": "نوع تعامل",
+          "amount": "مقدار تعامل",
+          "sentAt": "زمان ارسال",
+          "shareReason": "دلیل اشتراک گذاری",
+          "shareChannel": "محیط اشتراک گذاری"
+        }
+      },
+      "referralLinks": {
+        "title": "گزارش سابقه لینک‌های ساخته شده",
+        "columns": {
+          "title": "عنوان لینک",
+          "createdAt": "تاریخ و زمان ایجاد لینک",
+          "registeredUsername": "نام کاربری ثبت نام شده از طریق لینک",
+          "registeredAt": "زمان ثبت نام",
+          "upgradedUsername": "نام کاربری ارتقا سطح عضویت داده شده",
+          "upgradedAt": "زمان ارتقا سطح",
+          "invitedUserType": "نوع کاربر (دعوت شده)",
+          "invitedUniversity": "دانشگاه (دعوت شده)",
+          "invitedGender": "جنسیت (دعوت شده)",
+          "invitedProvince": "استان محل زندگی (دعوت شده)",
+          "invitedCity": "شهر/شهرستان محل زندگی (دعوت شده)",
+          "invitedDegree": "مقطع تحصیلی (دعوت شده)",
+          "invitedMajor": "رشته تحصیلی (دعوت شده)"
+        }
       }
     }
   }

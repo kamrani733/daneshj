@@ -25,6 +25,7 @@
       "@notifications/*": ["./src/app/(public)/(site)/notifications/*"],
       "@public-panel/*": ["./src/app/(public)/(site)/public-panel/*"],
       "@private-panel/*": ["./src/app/(public)/(site)/private-panel/*"],
+      "@operational-panel/*": ["./src/app/(public)/(site)/operational-panel/*"],
       "@daneshjoam/api-client": ["../../libs/api-client/src/index.ts"],
       "@daneshjoam/auth": ["../../libs/auth/src/index.ts"],
       "@daneshjoam/shared-types": ["../../libs/shared-types/src/index.ts"],

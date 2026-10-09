@@ -16,7 +16,7 @@ import {
   resolveApiCategoryIds,
   resolveIsReadFilter,
 } from '@notifications/data/notifications-filter-data';
-import { useMobilePagedItems } from '@notifications/hooks';
+import { useMobilePagedItems } from '@/hooks/use-mobile-paged-items';
 import { Button } from '@/components/ui/button';
 import { Pagination } from '@/components/ui/pagination';
 import { Spinner } from '@/components/ui/spinner';

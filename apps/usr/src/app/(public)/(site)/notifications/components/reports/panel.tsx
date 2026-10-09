@@ -8,7 +8,7 @@ import {
   type ReportOrdering,
 } from '@notifications/api';
 import { resolveApiCategoryIds } from '@notifications/data/notifications-filter-data';
-import { useMobilePagedItems } from '@notifications/hooks';
+import { useMobilePagedItems } from '@/hooks/use-mobile-paged-items';
 import {
   EMPTY_REPORTS_FILTERS,
   ReportsFilterPanel,

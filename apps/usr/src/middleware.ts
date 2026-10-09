@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 const SESSION_COOKIE = 'session';
 
-const protectedPaths = ['/dashboard', '/private-panel'];
+const protectedPaths = ['/dashboard', '/private-panel', '/operational-panel'];
 
 /** Actor MS retrieve-for-visitor 500s when Accept-Language is a real locale. */
 const actorProxyPrefixes = [
