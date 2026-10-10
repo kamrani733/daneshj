@@ -721,7 +721,7 @@ Status legend: **DONE** = SRS operation implemented end-to-end with real backend
 | Rfl1 | Usr-Rfl-1N5 | عملیات ایجاد لینک دعوت از دوستان | MISSING | — | جستجو در فهرست لینک‌های دعوت. Invite link list/share/copy not built. SRS typo: feature code `Rfl1` → `Rfl-1` (README). |
 | Rfl1 | Usr-Rfl-1N6 | عملیات ایجاد لینک دعوت از دوستان | MISSING | — | فیلترگذاری فهرست لینک‌های دعوت. Invite link list/share/copy not built. SRS typo: feature code `Rfl1` → `Rfl-1` (README). |
 | Rfl1 | Usr-Rfl-1N7 | عملیات ایجاد لینک دعوت از دوستان | MISSING | — | مرتب‌سازی فهرست لینک‌های دعوت. Invite link list/share/copy not built. SRS typo: feature code `Rfl1` → `Rfl-1` (README). |
-| Rfl-2 | Usr-Rfl-2N1 | مشاهده گزارش، نمودار، آمارهای سرویس | MISSING | — | مشاهده گزارش سابقه لینک های ساخته شده.  |
+| Rfl-2 | Usr-Rfl-2N1 | مشاهده گزارش، نمودار، آمارهای سرویس | UI-ONLY | `operational-panel` (`referralLinks`, mock) | مشاهده گزارش سابقه لینک های ساخته شده.  |
 | Rfl-2 | Adm-Rfl-2N2 | مشاهده گزارش، نمودار، آمارهای سرویس | MISSING | — | مشاهده گزارش کاربران دعوت‌کننده و دعوت‌شونده.  |
 | Rfl-2 | Usr-Rfl-2N3 | مشاهده گزارش، نمودار، آمارهای سرویس | MISSING | — | مشاهده آمارها توسط کاربر.  |
 | Rfl-2 | Adm-Rfl-2N4 | مشاهده گزارش، نمودار، آمارهای سرویس | MISSING | — | مشاهده آمارها توسط راهبر.  |

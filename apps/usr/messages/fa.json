@@ -16,6 +16,18 @@
     "reportTable": {
       "scrollStart": "پیمایش به ستون‌های ابتدایی",
       "scrollEnd": "پیمایش به ستون‌های بعدی"
+    },
+    "chartPeriods": {
+      "label": "بازه زمانی",
+      "day": "روز",
+      "week": "هفته",
+      "month": "ماه",
+      "season": "فصل",
+      "year": "سال"
+    },
+    "stats": {
+      "trend": "{percent}٪ نسبت به دوره‌ی قبل",
+      "ofTotal": "{value} از {total}"
     }
   },
   "uiKit": {
@@ -93,7 +105,29 @@
     "cardSubtitle": "عنوان سرویس",
     "cardUserName": "نام و نام خانوادگی کاربر",
     "cardUsername": "نام کاربری",
-    "noResultSample": "هیچ نتیجه ای یافت نشد"
+    "noResultSample": "هیچ نتیجه ای یافت نشد",
+    "groupPanels": "پنل‌ها: منو، گزارش، آمار و نمودار",
+    "navLabel": "منوی نمونه",
+    "navWallet": "کیف پول (غیرفعال)",
+    "navReports": "گزارشات",
+    "statCountLabel": "کل درخواست‌های ویرایش حساب کاربری",
+    "statRatioLabel": "رصد اعلانات خوانده نشده",
+    "statFraction": "۱٬۸۹۴ از ۲٬۵۵۷",
+    "statTrend": "۱۸٪ نسبت به دوره‌ی قبل",
+    "reportTitle": "گزارش نمونه با ستون‌های زیاد",
+    "filtersLabel": "فیلترها",
+    "filtersPanel": "محتوای پنل فیلتر",
+    "scrollStart": "پیمایش به ستون‌های ابتدایی",
+    "scrollEnd": "پیمایش به ستون‌های بعدی",
+    "columnHeader": "ستون {n}",
+    "cellValue": "ردیف {row} — {column}",
+    "chartBarTitle": "نمودار ستونی گروهی",
+    "chartSeriesA": "سری سبز",
+    "chartSeriesB": "سری نارنجی",
+    "chartDonutTitle": "نمودار دایره‌ای",
+    "chartDonutHighlight": "ردشده",
+    "chartDonutRest": "سایر",
+    "chartFooter": "مجموع: ۲٬۵۵۷ درخواست"
   },
   "datePicker": {
     "confirm": "تایید",
@@ -627,8 +661,6 @@
     "stats": {
       "title": "آمار",
       "breadcrumbCurrent": "آمار",
-      "trendUp": "↑ {percent}٪ نسبت به دوره‌ی قبل",
-      "ofTotal": "{value} از {total}",
       "authRequired": "برای مشاهده آمار وارد حساب کاربری شوید",
       "loadError": "بارگذاری آمار ناموفق بود.",
       "retry": "تلاش مجدد"
@@ -703,14 +735,6 @@
       "fixedTitle": "نمودارهای ثابت",
       "collapse": "جمع کردن بخش نمودار",
       "expand": "باز کردن بخش نمودار",
-      "periodLabel": "بازه زمانی",
-      "periods": {
-        "day": "روز",
-        "week": "هفته",
-        "month": "ماه",
-        "season": "فصل",
-        "year": "سال"
-      },
       "reactionTime": "میانگین زمان واکنش کاربر (دقیقه)",
       "conversionRate": "نرخ تبدیل خوانده‌نشده به خوانده‌شده (٪)",
       "readVsUnread": "توزیع اعلان‌های خوانده‌شده و خوانده‌نشده",
@@ -1378,7 +1402,7 @@
     },
     "nav": {
       "label": "منوی پنل عملیاتی",
-      "menu": "منوی پنل عملیاتی",
+      "menuWithSection": "منوی پنل عملیاتی - {section}",
       "usedServices": "سرویس‌های استفاده شده",
       "manageServices": "مدیریت سرویس‌ها",
       "wallet": "کیف پول",
@@ -1402,7 +1426,8 @@
       "datePlaceholder": "متن جایگزین",
       "dateHint": "روز/ماه/سال",
       "apply": "اعمال فیلتر",
-      "clear": "پاک کردن"
+      "clear": "پاک کردن",
+      "period": "بازه زمانی"
     },
     "states": {
       "loading": "در حال بارگذاری گزارش…",
@@ -1623,6 +1648,216 @@
           "invitedCity": "شهر/شهرستان محل زندگی (دعوت شده)",
           "invitedDegree": "مقطع تحصیلی (دعوت شده)",
           "invitedMajor": "رشته تحصیلی (دعوت شده)"
+        }
+      }
+    },
+    "stats": {
+      "loading": "در حال بارگذاری آمار…",
+      "error": "دریافت آمار انجام نشد",
+      "retry": "تلاش مجدد",
+      "units": {
+        "minutes": "دقیقه"
+      },
+      "sections": {
+        "account": "حساب کاربری",
+        "interactions": "عملیات تعاملی",
+        "comments": "دیدگاه‌ها",
+        "notifications": "اعلانات",
+        "support": "پشتیبانی",
+        "referral": "سرویس دعوت از دوستان"
+      },
+      "cards": {
+        "editRequests": "کل درخواست‌های ویرایش حساب کاربری",
+        "approvedRequests": "درخواست‌های تأییدشده",
+        "rejectedRequests": "درخواست‌های ردشده",
+        "adminResponseTime": "متوسط زمان پاسخ‌دهی راهبر به درخواست‌های ویرایش حساب کاربری",
+        "privateFieldsCompleted": "فیلدهای تکمیل‌شده در پنل خصوصی",
+        "publicFieldsMoved": "فیلدهای منتقل‌شده به پنل عمومی",
+        "rejectedRatio": "نسبت درخواست ویرایش ردشده به کل",
+        "approvedRatio": "نسبت درخواست ویرایش تاییدشده به کل",
+        "interactionTargets": "تعداد اهداف تعامل",
+        "lowLikeTargets": "تعداد اهداف با لایک‌های بسیار پایین‌تر از میانگین",
+        "topInteractionType": "بیشترین نوع تعامل انجام‌شده",
+        "averageScore": "میانگین امتیازهای داده‌شده",
+        "highLikeTargets": "تعداد اهداف با لایک‌های بسیار بالاتر از میانگین",
+        "likePerView": "نسبت لایک به بازدید",
+        "lowScoreTargets": "نسبت اهداف با امتیاز پایین به کل اهداف",
+        "fullScoreTargets": "نسبت اهداف با امتیاز کامل به کل اهداف (۵ ستاره)",
+        "interactionsVsPrevious": "نسبت تعداد تعاملات نسبت به روز / هفته / ماه قبل",
+        "likedVsDisliked": "نسبت اهداف دریافت‌کننده لایک به اهداف دریافت‌کننده دیسلایک",
+        "followVsUnfollow": "نسبت دنبال کردن اهداف به لغو دنبال کردن اهداف",
+        "commentsSubmitted": "تعداد دیدگاه‌های ثبت‌شده",
+        "commentsReplied": "تعداد دیدگاه‌های پاسخ داده‌شده",
+        "commentsLiked": "تعداد دیدگاه‌های پسندیده‌شده",
+        "commentsDisliked": "تعداد دیدگاه‌های نپسندیده‌شده",
+        "commentsInappropriate": "تعداد دیدگاه‌های دارای کلمات نامناسب",
+        "commentsReported": "تعداد دیدگاه‌های گزارش‌شده",
+        "ticketsAverage": "میانگین تعداد تیکت‌های ثبت‌شده",
+        "ticketResolutionTime": "میانگین زمان از ثبت تا حل شدن تیکت",
+        "operatorResponseTime": "میانگین زمان پاسخ عملگر",
+        "adminReplyTime": "میانگین زمان دریافت پاسخ از راهبر",
+        "linksCreated": "تعداد لینک‌های ایجادشده",
+        "linksShared": "تعداد لینک‌های اشتراک‌گذاری‌شده",
+        "linkClicks": "تعداد کلیک‌های کاربران بر روی لینک‌های دعوت ایجادشده",
+        "registrations": "تعداد ثبت‌نام‌شده‌ها",
+        "upgradedRegistrations": "تعداد ثبت‌نام‌شده‌های ارتقای سطح عضویت داده‌شده",
+        "rewardsCreated": "میزان پاداش ایجادشده برای کاربر دعوت‌کنندگان و دعوت‌شدگان حاصل از استفاده از این سرویس",
+        "maxRewards": "حداکثر پاداش ممکن برای دعوت‌کنندگان و دعوت‌شدگان تا کنون حاصل از استفاده از این سرویس",
+        "upgradedRatio": "نسبت کاربران ارتقای سطح داده‌شده به کاربران ثبت‌نام‌شده"
+      }
+    },
+    "charts": {
+      "loading": "در حال بارگذاری نمودار…",
+      "error": "دریافت نمودار انجام نشد",
+      "retry": "تلاش مجدد",
+      "noResult": "نموداری با این عنوان یافت نشد",
+      "total": "مجموع: {count} {unit}",
+      "totals": {
+        "requests": "درخواست",
+        "targets": "هدف",
+        "users": "کاربر",
+        "notifications": "اعلان"
+      },
+      "units": {
+        "hours": "ساعت"
+      },
+      "series": {
+        "inviter": "پاداش دعوت‌کننده",
+        "invitee": "پاداش دعوت‌شونده"
+      },
+      "sections": {
+        "account": "نمودارهای بخش حساب کاربری",
+        "interactions": "نمودارهای بخش تعاملی",
+        "comments": "نمودارهای بخش دیدگاه‌ها",
+        "notifications": "نمودارهای بخش اعلانات",
+        "support": "نمودارهای بخش پشتیبانی",
+        "referral": "نمودارهای سرویس دعوت از دوستان",
+        "comparison": "نمودارهای قابل تنظیم"
+      },
+      "titles": {
+        "completedFields": "فیلدهای تکمیل‌شده",
+        "movedFields": "فیلدهای منتقل‌شده به پنل عمومی",
+        "approvedRequests": "درخواست‌های تأییدشده",
+        "editRequests": "کل درخواست‌های ویرایش",
+        "responseTime": "متوسط زمان پاسخ‌دهی",
+        "rejectedRequests": "درخواست‌های ویرایش ردشده",
+        "rejectedRatio": "نسبت ردشده به کل",
+        "approvedRatio": "نسبت تأییدشده به کل",
+        "interactionTargets": "تعداد اهداف تعامل",
+        "lowLikeTargets": "تعداد اهداف با لایک بسیار پایین‌تر از میانگین",
+        "highLikeTargets": "تعداد اهداف با لایک بسیار بالاتر از میانگین",
+        "topInteractionType": "بیشترین نوع تعامل ایجادشده",
+        "lowScoreRatio": "نسبت اهداف با امتیاز پایین به کل اهداف",
+        "fullScoreRatio": "نسبت اهداف با امتیاز کامل به کل اهداف",
+        "likedVsDisliked": "نسبت اهداف دریافت‌کننده لایک به اهداف دریافت‌کننده دیسلایک",
+        "followVsUnfollow": "نسبت دنبال کردن اهداف به لغو دنبال کردن اهداف",
+        "likePerView": "نسبت لایک به بازدید",
+        "interactionsVsPrevious": "نسبت تعداد تعاملات نسبت به روز / هفته / ماه قبل",
+        "commentsSubmitted": "تعداد دیدگاه‌های ثبت‌شده",
+        "commentsReplied": "تعداد دیدگاه‌های پاسخ داده‌شده",
+        "commentsLiked": "تعداد دیدگاه‌های پسندیده‌شده",
+        "commentsDisliked": "تعداد دیدگاه‌های نپسندیده‌شده",
+        "commentsReported": "تعداد دیدگاه‌های گزارش‌شده",
+        "commentsInappropriate": "تعداد دیدگاه‌های دارای کلمات نامناسب",
+        "ticketsAverage": "میانگین تعداد تیکت‌های ثبت‌شده",
+        "ticketResolutionTime": "میانگین زمان از ثبت تا حل شدن تیکت",
+        "operatorResponseTime": "میانگین زمان پاسخ عملگر",
+        "adminReplyTime": "میانگین زمان دریافت پاسخ از راهبر",
+        "linksCreated": "تعداد لینک‌های ایجادشده",
+        "linksShared": "تعداد لینک‌های اشتراک‌گذاری‌شده",
+        "linkClicks": "تعداد کلیک‌های کاربران بر روی لینک‌های دعوت ایجادشده",
+        "registrations": "تعداد ثبت‌نام‌شده‌ها",
+        "upgradedRegistrations": "تعداد ثبت‌نام‌شده‌های ارتقای سطح عضویت داده‌شده",
+        "rewardsCreated": "میزان پاداش ایجادشده برای کاربر دعوت‌کنندگان و دعوت‌شدگان حاصل از استفاده از این سرویس",
+        "maxRewards": "حداکثر پاداش ممکن برای دعوت‌کنندگان و دعوت‌شدگان تا کنون حاصل از استفاده از این سرویس",
+        "upgradedRatio": "نسبت کاربران ارتقای سطح داده‌شده به کاربران ثبت‌نام‌شده",
+        "manualReceived": "تعداد اعلانات دستی دریافتی",
+        "systemReceived": "تعداد اعلانات سیستمی دریافتی",
+        "unreadRatio": "درصد اعلانات خوانده نشده",
+        "linkClickRatio": "نسبت تعداد کلیک روی لینک ارجاعی اعلان‌ها نسبت به کل اعلان‌های حاوی لینک ارجاعی"
+      },
+      "legends": {
+        "rejected": {
+          "highlight": "ردشده",
+          "rest": "سایر"
+        },
+        "approved": {
+          "highlight": "تأییدشده",
+          "rest": "سایر"
+        },
+        "lowScore": {
+          "highlight": "امتیاز پایین",
+          "rest": "سایر"
+        },
+        "fullScore": {
+          "highlight": "امتیاز کامل",
+          "rest": "سایر"
+        },
+        "liked": {
+          "highlight": "لایک",
+          "rest": "دیسلایک"
+        },
+        "follow": {
+          "highlight": "دنبال کردن",
+          "rest": "لغو دنبال کردن"
+        },
+        "like": {
+          "highlight": "لایک",
+          "rest": "بازدید بدون لایک"
+        },
+        "current": {
+          "highlight": "دوره جاری",
+          "rest": "دوره قبل"
+        },
+        "upgraded": {
+          "highlight": "ارتقای سطح داده‌شده",
+          "rest": "سایر ثبت‌نام‌شده‌ها"
+        }
+      },
+      "comparison": {
+        "statLabel": "شاخص آماری",
+        "statHint": "شاخصی که مایل هستید مقایسه بر اساس آن انجام شود را انتخاب کنید",
+        "groups": {
+          "a": "گروه A",
+          "b": "گروه B"
+        },
+        "filters": "فیلترها",
+        "noFilters": "هنوز فیلتری انتخاب نشده",
+        "removeFilter": "حذف فیلتر {filter}",
+        "panelTitle": "تنظیم فیلترها — {group}",
+        "fields": {
+          "gender": "جنسیت",
+          "userType": "نوع کاربر",
+          "liveCountry": "کشور محل زندگی",
+          "liveProvince": "استان محل زندگی",
+          "liveCity": "شهر محل زندگی",
+          "eduCountry": "کشور محل تحصیل",
+          "eduProvince": "استان محل تحصیل",
+          "eduCity": "شهر محل تحصیل",
+          "university": "دانشگاه",
+          "studyStatus": "وضعیت دانشجویی",
+          "degree": "مقطع تحصیلی",
+          "academicGroup": "حوزه/گروه تحصیلی",
+          "major": "رشته تحصیلی"
+        },
+        "clearField": "پاک کردن {field}",
+        "noOptions": "گزینه‌ای یافت نشد",
+        "apply": "اعمال فیلتر",
+        "clear": "پاک کردن",
+        "viewLabel": "نوع نمایش",
+        "views": {
+          "combined": "نمای ترکیبی",
+          "adapted": "نمای تطبیقی"
+        },
+        "combinedTitle": "مقایسه‌ی ترکیبی",
+        "legend": "{group} — {filter}",
+        "emptyTitle": "برای شروع، یک آمار انتخاب کنید",
+        "emptyBadge": "نمودار پس از تکمیل هر دو گروه نمایش داده می‌شود",
+        "emptyHint": "برای مشاهده‌ی مقایسه، ابتدا آمار مورد نظر را انتخاب کنید، سپس فیلترهای گروه A و گروه B را تنظیم نمایید.",
+        "steps": {
+          "stat": "انتخاب آمار",
+          "groupA": "تنظیم گروه A",
+          "groupB": "تنظیم گروه B"
         }
       }
     }

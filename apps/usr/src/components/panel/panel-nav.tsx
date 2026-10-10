@@ -26,6 +26,8 @@ export type PanelNavProps = {
   menuLabel: string;
   /** Tablet sidebar (720–999 px) drops icons and dividers (operational panel export). */
   compactOnTablet?: boolean;
+  /** Phone trigger: centred label without the chevron (operational panel export). */
+  centeredMenuTrigger?: boolean;
 };
 
 function isActive(item: PanelNavItem, pathname: string) {
@@ -35,7 +37,13 @@ function isActive(item: PanelNavItem, pathname: string) {
 }
 
 /** Panel navigation: phone menu sheet + sidebar from 720 px (notifications, operational panel). */
-export function PanelNav({ items, label, menuLabel, compactOnTablet = false }: PanelNavProps) {
+export function PanelNav({
+  items,
+  label,
+  menuLabel,
+  compactOnTablet = false,
+  centeredMenuTrigger = false,
+}: PanelNavProps) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -46,10 +54,18 @@ export function PanelNav({ items, label, menuLabel, compactOnTablet = false }: P
           aria-haspopup="dialog"
           aria-expanded={open}
           onClick={() => setOpen(true)}
-          className="flex h-12 w-full items-center justify-between gap-3 rounded-medium border border-outline-variant bg-surface-container-lowest px-4 text-label-large font-medium text-on-surface-variant shadow-app-elevation-1 transition-colors hover:bg-surface-container-low"
+          className={cn(
+            'flex w-full items-center gap-3 rounded-medium border border-outline-variant px-4 font-medium text-on-surface-variant transition-colors',
+            centeredMenuTrigger
+              ? 'h-14 justify-center bg-surface-container-low hover:bg-surface-container'
+              : 'h-12 justify-between bg-surface-container-lowest shadow-app-elevation-1 hover:bg-surface-container-low'
+          )}
         >
-          <span>{menuLabel}</span>
-          <ChevronDown className="size-5 shrink-0" strokeWidth={1.5} aria-hidden />
+          {/* Type token outside `cn()`: tailwind-merge reads custom sizes as colours. */}
+          <span className={centeredMenuTrigger ? 'text-body-large' : 'text-label-large'}>{menuLabel}</span>
+          {centeredMenuTrigger ? null : (
+            <ChevronDown className="size-5 shrink-0" strokeWidth={1.5} aria-hidden />
+          )}
         </button>
 
         <AppDialog
@@ -69,9 +85,10 @@ export function PanelNav({ items, label, menuLabel, compactOnTablet = false }: P
         </AppDialog>
       </div>
 
+      {/* Sticky under the sticky site header (48 px, 88 px from lg) while the content scrolls. */}
       <aside
         className={cn(
-          'hidden shrink-0 rounded-small bg-background p-3 shadow-app-elevation-1 min-[720px]:block',
+          'hidden shrink-0 rounded-small bg-background p-3 shadow-app-elevation-1 min-[720px]:sticky min-[720px]:top-16 min-[720px]:block lg:top-28',
           compactOnTablet ? 'min-[720px]:w-56' : 'min-[720px]:w-65',
           'min-[1000px]:w-75 min-[1200px]:w-90'
         )}

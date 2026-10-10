@@ -2,7 +2,7 @@
 title: "Known Issues & Gaps"
 description: "Blockers, open questions, SRS problems, technical debt"
 category: "meta"
-last_updated: "2026-10-07"
+last_updated: "2026-10-10"
 ---
 
 # Known Issues & Gaps
@@ -13,7 +13,7 @@ last_updated: "2026-10-07"
 |---|---|---|
 | 2 | Are `apps/adm` and `apps/bus` planned frontends or scaffolding to delete? | Admin/provider panel location, Nx tags |
 | 4 | Backend readiness for Msg, Dsc, Nws, Nwl, Cln, Rwd? | Mock vs real per service |
-| 5 | Should `/dashboard` exist, or links point to `private-panel` / admin app? | Navigation |
+| 5 | Should `/dashboard` exist, or links point to `private-panel` / admin app? «پنل عملیاتی» now opens `/operational-panel`; «عملیات سطح عضویت», «مدیریت سشن ها», «تنظیمات امنیتی» still point to `/dashboard` | Navigation |
 | 6 | Is `NEXT_PUBLIC_ACTOR_API_URL` required in production or do `/api` rewrites suffice? | Config, security |
 | 7 | Production domains and env matrix on Vercel? | Deployment |
 | 8 | CI `e2e`: expected to pass? No Playwright project exists. | CI |
@@ -85,6 +85,23 @@ See [srs/README.md](./srs/README.md) → Known issues, Declared but not detailed
 | Figma MCP Starter-plan call limit | design workflow | Medium | Exports (SVG) used as fallback; upgrade plan or keep exports in `docs/design-specs/` notes |
 | Tailwind version mismatch in package.json | `apps/usr/package.json` vs root | Low | Align declarations |
 | `any` in TS | only `apps/*/index.d.ts` (image types) | Low | — |
+
+### Operational panel (2026-10-10)
+
+| Issue | Location | Severity | Next step |
+|-------|----------|----------|-----------|
+| Every operational report, stat and chart is mocked (owner decision) — 5 Auth MS owner reports exist | `operational-panel/api/` | Medium | Wire per report; only `api/` changes |
+| Filters / sort of reports are provisional: date range on the main date column, checkboxes on closed-set columns, newest/oldest (export has no filter design; SRS only for `Usr-Rfl-2N1`) | `utils/report-definitions.ts` | Medium | Confirm per report with product |
+| Stats and charts «فیلترها» panels offer a date range only (export draws no fields); charts search narrows by title | `components/date-range-filter-bar.tsx` | Low | Confirm fields |
+| Wide desktop tables are clipped in the export; columns = desktop columns + the tablet card fields. Interaction report: desktop and tablet disagree (نوع تعامل / نوع عملیات) — union used | `utils/report-definitions.ts` | Low | Confirm with design |
+| Referral-links report shows invitee details (gender, province, university, …) beyond `Usr-Rfl-2N1` (title, created time, invited username) — looks like `Adm-Rfl-2N2` fields; privacy check needed | `referralLinks` | Medium | Product / privacy decision |
+| Export draws the notifications report with wallet columns; the existing notifications report is embedded instead (owner decision) | `reports-view.tsx` | Low | — |
+| Page size 24 (rule) vs 12 rows in the export | `REPORT_PAGE_SIZE` | Low | — |
+| Sidebar shadow: export uses a custom shadow; `shadow-app-elevation-1` used (no token) | `components/panel/panel-nav.tsx` | Low | Add a token if the exact shadow is wanted |
+| Notifications charts on the operational page use the actor charts report fields named `reactionTimeSeries` / `conversionRateSeries` (they hold manual / system received counts) | `notifications/types/api.ts` | Low | Rename in the notifications API mapping |
+| Comparison tool: statistic list = all mocked bar charts; university / major options mocked; option lists for the other fields reuse `@private-panel/data/*` (second consumer — move to a shared module when the private panel is reopened) | `hooks/use-comparison-field-options.ts` | Low | Backend option endpoints |
+| No `NoPermissionState` component yet — a 403 from a future report endpoint would show the generic error state | `report-panel.tsx` | Medium | Build `NoPermissionState` (design system ❌) |
+| React Query pauses retries while the tab is hidden, so error states (here and on `/search`) appear only after the tab is visible | app-wide | Low | Expected library behaviour |
 
 ### Component consolidation needed
 

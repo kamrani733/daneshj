@@ -1,19 +1,16 @@
 'use client';
 
-import { useMemo } from 'react';
 import { useTranslations } from 'next-intl';
 
 import {
   getNotificationApiErrorMessage,
   useStatisticsReportQuery,
 } from '@notifications/api';
-import { withStatIcons } from '@notifications/data/stats';
-import { Button } from '@/components/ui/button';
+import { ErrorState } from '@/components/ui/error-state';
 import { Spinner } from '@/components/ui/spinner';
 
 import { NotificationsPageShell } from '@notifications/components/layout/page-shell';
-import { StatCountCard } from '@notifications/components/stats/count-card';
-import { StatRatioCard } from '@notifications/components/stats/ratio-card';
+import { NotificationsStatCards } from '@notifications/components/stats/cards';
 
 type NotificationsStatsViewProps = {
   accessToken?: string | null;
@@ -38,46 +35,23 @@ export function NotificationsStatsView({
     ? getNotificationApiErrorMessage(statsQuery.error, t('loadError'))
     : null;
 
-  const { countStats, ratioStats } = useMemo(
-    () =>
-      withStatIcons(data?.countStats ?? [], data?.ratioStats ?? []),
-    [data]
-  );
-
   return (
     <NotificationsPageShell
       titleKey="stats.title"
       breadcrumbCurrentKey="stats.breadcrumbCurrent"
     >
       {!canQuery ? (
-        <div className="flex min-h-[160px] items-center justify-center rounded-xl bg-app-stat-card px-4 text-center text-sm text-app-filter-muted">
+        <p className="flex min-h-40 items-center justify-center rounded-medium bg-surface-container-lowest px-4 text-center text-body-medium text-on-surface-variant">
           {t('authRequired')}
-        </div>
+        </p>
       ) : isLoading ? (
-        <div className="flex min-h-[220px] items-center justify-center rounded-xl bg-app-stat-card">
+        <div className="flex min-h-56 items-center justify-center rounded-medium bg-surface-container-lowest">
           <Spinner className="size-8 text-primary" />
         </div>
       ) : errorMessage ? (
-        <div className="flex min-h-[160px] flex-col items-center justify-center gap-3 rounded-xl bg-app-stat-card px-4 text-center">
-          <p className="text-sm text-app-filter-muted">{errorMessage}</p>
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={() => void statsQuery.refetch()}
-          >
-            {t('retry')}
-          </Button>
-        </div>
+        <ErrorState message={errorMessage} retryLabel={t('retry')} onRetry={() => void statsQuery.refetch()} />
       ) : (
-        <div className="grid grid-cols-2 gap-3 min-[720px]:gap-5">
-          {countStats.map((stat) => (
-            <StatCountCard key={stat.id} stat={stat} />
-          ))}
-          {ratioStats.map((stat) => (
-            <StatRatioCard key={stat.id} stat={stat} />
-          ))}
-        </div>
+        <NotificationsStatCards data={data} />
       )}
     </NotificationsPageShell>
   );

@@ -1,28 +1,36 @@
-import { Bell, ClipboardList, type LucideIcon } from 'lucide-react';
+import type { ComponentType } from 'react';
 
+import {
+  LinkIcon,
+  MarkEmailUnreadIcon,
+  NotificationsIcon,
+} from '@/components/icons/material-icons';
 import type {
   StatisticsCountStat,
   StatisticsRatioStat,
 } from '@notifications/api';
 
+type StatIcon = ComponentType<{ className?: string }>;
+
 export type CountStatConfig = StatisticsCountStat & {
-  icon: LucideIcon;
+  icon: StatIcon;
   trendPercent?: number;
 };
 
 export type RatioStatConfig = StatisticsRatioStat & {
-  icon: LucideIcon;
+  icon: StatIcon;
   trendPercent?: number;
 };
 
-const COUNT_ICONS: Record<StatisticsCountStat['id'], LucideIcon> = {
-  manual: Bell,
-  system: Bell,
+/** Figma icons (operational panel «اعلانات» stats). */
+const COUNT_ICONS: Record<StatisticsCountStat['id'], StatIcon> = {
+  manual: NotificationsIcon,
+  system: NotificationsIcon,
 };
 
-const RATIO_ICONS: Record<StatisticsRatioStat['id'], LucideIcon> = {
-  unread: Bell,
-  linkClick: ClipboardList,
+const RATIO_ICONS: Record<StatisticsRatioStat['id'], StatIcon> = {
+  unread: MarkEmailUnreadIcon,
+  linkClick: LinkIcon,
 };
 
 /** Attach Figma icons to API-mapped KPI rows. */

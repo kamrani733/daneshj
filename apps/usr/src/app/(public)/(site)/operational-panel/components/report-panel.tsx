@@ -28,6 +28,9 @@ import {
 
 const NO_ROWS: ReportRow[] = [];
 
+/** Phone / tablet: cards revealed per «مشاهده بیشتر» (tablet export shows 4). */
+const CARD_STEP = 4;
+
 /** One collapsible operational-panel report: toolbar, five states, table or cards. Data is fetched only while open. */
 export function OperationalReportPanel({ reportId }: { reportId: OperationalReportId }) {
   const t = useTranslations('operationalPanel');
@@ -67,6 +70,14 @@ export function OperationalReportPanel({ reportId }: { reportId: OperationalRepo
   // under the new page number (it would show those rows twice).
   const settledItems = reportQuery.isPlaceholderData ? NO_ROWS : pageItems;
   const { mobileItems } = useMobilePagedItems({ page: request.page, pageItems: settledItems, resetKey });
+  const [visibleCards, setVisibleCards] = useState(CARD_STEP);
+  useEffect(() => setVisibleCards(CARD_STEP), [resetKey]);
+  const hasMoreCards = visibleCards < mobileItems.length || request.page < totalPages;
+  const showMoreCards = () => {
+    // Reveal loaded rows first; fetch the next page only when they run out.
+    if (visibleCards + CARD_STEP > mobileItems.length && request.page < totalPages) setPage(request.page + 1);
+    setVisibleCards((current) => current + CARD_STEP);
+  };
   const filtered = request.q !== '' || hasActiveFilters(request);
 
   const sortLabel = (value: string): string => {
@@ -104,17 +115,17 @@ export function OperationalReportPanel({ reportId }: { reportId: OperationalRepo
         definition={definition}
         title={title}
         pageItems={pageItems}
-        mobileItems={mobileItems}
+        mobileItems={mobileItems.slice(0, visibleCards)}
         page={request.page}
         totalPages={totalPages}
         onPageChange={setPage}
         loadMore={
-          request.page < totalPages ? (
+          hasMoreCards ? (
             <Button
               type="button"
               variant="link"
               loading={reportQuery.isFetching}
-              onClick={() => setPage(request.page + 1)}
+              onClick={showMoreCards}
               className="h-auto self-end px-0"
             >
               <span className="text-label-large">{t('states.loadMore')}</span>

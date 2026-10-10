@@ -2,7 +2,7 @@
 title: "Project Progress"
 description: "Canonical completion tracker for Daneshjoam frontend"
 category: "meta"
-last_updated: "2026-10-07"
+last_updated: "2026-10-10"
 ---
 
 # Current Progress
@@ -10,7 +10,7 @@ last_updated: "2026-10-07"
 > **Source of truth** for status. Per-path SRS coverage lives in the SRS coverage table
 > (`ai/00-project-audit.md` §8, to be moved to `srs-coverage.md`).
 
-## Executive summary (2026-10-02)
+## Executive summary (2026-10-10)
 
 Platform shell built from Figma: **auth** (OTP/password/sessions), **actor profiles** (private + public panels),
 **notifications** (inbox, stats, charts, reports, settings), **home** (mock search), **cooperation** page,
@@ -18,7 +18,11 @@ Platform shell built from Figma: **auth** (OTP/password/sessions), **actor profi
 admin on individual-provider and non-provider panels, desktop + tablet + mobile
 ([features/public-panel.md](./features/public-panel.md)). **Home** rewritten with shared cards
 ([features/home.md](./features/home.md)). Shared card family with one hover in `components/cards/`.
-SRS services: **0** of **557** paths DONE, **17** PARTIAL, **15** UI-ONLY, **525** MISSING.
+**Operational panel** (`/operational-panel/*`): sticky panel nav, «گزارشات» (15 reports), «آمار», «نمودار» with the
+comparison tool — mock data except the reused notifications report / stats / charts
+([features/operational-panel.md](./features/operational-panel.md)). Notifications pages now use the same shared
+panel, report, stat and chart components.
+SRS services: **0** of **557** paths DONE, **17** PARTIAL, **16** UI-ONLY, **524** MISSING.
 
 ## Overall status
 
@@ -27,22 +31,23 @@ SRS services: **0** of **557** paths DONE, **17** PARTIAL, **15** UI-ONLY, **525
 | SRS in repo (`docs/srs/`) | Done | Per-service Markdown + path index |
 | Docs kit | Done | Kit placeholders filled; design TBDs in `09-known-issues.md` |
 | Cursor rules / AGENTS.md | Done | `.cursor/rules/` — reconcile with code ongoing |
-| Design system consolidation | In progress | [10-design-system.md](./10-design-system.md); shared cards, `ScrollCarousel`, `SectionHeading` sizes, `SortMenu` popover done |
+| Design system consolidation | In progress | [10-design-system.md](./10-design-system.md); shared cards, `ScrollCarousel`, `SectionHeading` sizes, `SortMenu` popover, panel shell / nav, report blocks, stat cards, charts done |
 | Public panel | UI done (mock catalog / comments) | Role-based views, 8 demo personas, responsive — [features/public-panel.md](./features/public-panel.md) |
 | Home page | UI done (mock) | Shared cards, carousels, new photos — [features/home.md](./features/home.md) |
 | Global search (`/search`) | UI done (mock) | Header search opens «نتایج جستجو»; filters on all four groups (category items per the Figma component frames); empty state; URL state — [features/search.md](./features/search.md) |
+| Operational panel | UI done (mock) | Reports, stats, charts + comparison; desktop / tablet / mobile — [features/operational-panel.md](./features/operational-panel.md) |
 | Private panel | Not started (redesign) | Figma exports received; work paused by owner |
 | Platform shell | Partial | `/dashboard` missing; actor query gating; auth dev shortcuts |
 | Shared pattern libs | Not started | approval, soft delete, archive, categories, reasons, reports, uploader |
 | SRV general pages | Partial | 0 DONE, 9 PARTIAL, 26 MISSING (mock home search) |
 | Rwd | Not started | 26 MISSING |
 | Dsc | Not started | 0 DONE, 4 PARTIAL, 3 UI-ONLY, 129 MISSING |
-| Rfl | Not started | 0 DONE, 4 PARTIAL, 19 MISSING |
+| Rfl | Not started | 0 DONE, 4 PARTIAL, 1 UI-ONLY (`Usr-Rfl-2N1`, operational panel mock), 18 MISSING |
 | Msg | Not started | 0 DONE, 4 UI-ONLY (comments UI), 28 MISSING |
 | Nws | Not started | 0 DONE, 4 UI-ONLY, 99 MISSING |
 | Nwl | Not started | 0 DONE, 4 UI-ONLY, 117 MISSING |
 | Cln | Not started | 81 MISSING |
-| Tests | Partial | Jest: capabilities + comment sorting specs (45 tests pass); CI `e2e` without Playwright project |
+| Tests | Partial | Jest: 110 tests pass (incl. operational panel params / mocks, Jalali date-time); CI `e2e` without Playwright project |
 | Deployment | Partial | Vercel; env matrix TBD |
 
 ## Phases

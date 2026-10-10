@@ -1,3 +1,4 @@
+import type { ChartTone } from '@/components/charts/types';
 import { toRequestQuery } from '@daneshjoam/api-client';
 
 import type {
@@ -349,13 +350,12 @@ export function mapStatisticsReport(
   };
 }
 
-const CHART_PRIMARY = 'var(--color-chart-series-b)';
-const CHART_TEAL = 'var(--color-chart-series-a)';
-const CHART_OTHER = 'var(--color-chart-other)';
+const CHART_PRIMARY: ChartTone = 'seriesB';
+const CHART_TEAL: ChartTone = 'seriesA';
 
 function toPrimaryOtherDonut(
   items: Array<{ label: string; value: number; percent?: number }>,
-  primaryColor: string,
+  tone: ChartTone,
   mode: 'percent' | 'count'
 ): ChartsDonutView {
   const sorted = [...items].sort((a, b) => b.value - a.value);
@@ -375,8 +375,7 @@ function toPrimaryOtherDonut(
       ],
       centerPercent: 0,
       centerLabel: '—',
-      primaryColor,
-      otherColor: CHART_OTHER,
+      tone,
       legend: [],
       totalCount: 0,
     };
@@ -395,12 +394,11 @@ function toPrimaryOtherDonut(
     ],
     centerPercent: primaryPercent,
     centerLabel: primary.label,
-    primaryColor,
-    otherColor: CHART_OTHER,
+    tone,
     legend: [
       {
         label: primary.label,
-        color: primaryColor,
+        tone,
         display:
           mode === 'percent'
             ? { kind: 'percent', value: primaryPercent }
@@ -408,7 +406,7 @@ function toPrimaryOtherDonut(
       },
       {
         label: rest.length > 0 ? 'سایر' : '—',
-        color: CHART_OTHER,
+        tone: null,
         display:
           mode === 'percent'
             ? { kind: 'percent', value: otherPercent }
@@ -453,12 +451,11 @@ export function mapChartsReport(
     ],
     centerPercent: Math.round(readPoint?.percentage ?? 0),
     centerLabel: readPoint?.status_label ?? 'خوانده شده',
-    primaryColor: CHART_TEAL,
-    otherColor: CHART_OTHER,
+    tone: CHART_TEAL,
     legend: [
       {
         label: readPoint?.status_label ?? 'خوانده شده',
-        color: CHART_TEAL,
+        tone: CHART_TEAL,
         display: {
           kind: 'percent',
           value: Math.round((readPoint?.percentage ?? 0) * 10) / 10,
@@ -466,7 +463,7 @@ export function mapChartsReport(
       },
       {
         label: unreadPoint?.status_label ?? 'خوانده نشده',
-        color: CHART_OTHER,
+        tone: null,
         display: {
           kind: 'percent',
           value: Math.round((unreadPoint?.percentage ?? 0) * 10) / 10,
@@ -519,7 +516,7 @@ function mapTimeBarChartToSeries(
 
 function mapPieChartToDonut(
   chart: PieChartDto | undefined,
-  primaryColor: string
+  tone: ChartTone
 ): ChartsDonutView {
   const series = chart?.series ?? [];
   const sorted = [...series].sort((a, b) => b.percentage - a.percentage);
@@ -538,8 +535,7 @@ function mapPieChartToDonut(
       ],
       centerPercent: 0,
       centerLabel: '—',
-      primaryColor,
-      otherColor: CHART_OTHER,
+      tone,
       legend: [],
       totalCount: 0,
     };
@@ -561,17 +557,16 @@ function mapPieChartToDonut(
     ],
     centerPercent: primaryPercent,
     centerLabel: primary.label,
-    primaryColor,
-    otherColor: CHART_OTHER,
+    tone,
     legend: [
       {
         label: primary.label,
-        color: primaryColor,
+        tone,
         display: { kind: 'percent', value: primaryPercent },
       },
       {
         label: other?.label ?? '—',
-        color: CHART_OTHER,
+        tone: null,
         display: { kind: 'percent', value: otherPercent },
       },
     ],

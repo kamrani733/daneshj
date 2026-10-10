@@ -8,7 +8,8 @@ import { SortMenu, type SortMenuOption } from '@/components/ui/sort-menu';
 import { cn } from '@/lib/utils';
 
 type ReportToolbarProps<Sort extends string> = {
-  search: {
+  /** Omitted on filter-only bars (operational panel «آمار»). */
+  search?: {
     value: string;
     onChange: (value: string) => void;
     /** Accessible label and placeholder, e.g. «جستجو». */
@@ -39,7 +40,7 @@ export function ReportToolbar<Sort extends string>({ search, sort, filter }: Rep
 
   return (
     <div className="@container flex w-full flex-col rounded-medium border border-outline-variant bg-surface">
-      <div className="flex flex-col-reverse gap-2 px-3 py-2 @min-[480px]:flex-row @min-[480px]:items-center @min-[480px]:justify-between @min-[480px]:px-4">
+      <div className="flex min-h-18 flex-col-reverse justify-center gap-2 px-3 py-2 @min-[480px]:flex-row @min-[480px]:items-center @min-[480px]:justify-between @min-[480px]:px-4">
         <div className="flex shrink-0 items-center gap-1 @min-[720px]:gap-2">
           {sort ? (
             <SortMenu
@@ -69,16 +70,18 @@ export function ReportToolbar<Sort extends string>({ search, sort, filter }: Rep
           ) : null}
         </div>
 
-        <SearchField
-          label={search.label}
-          placeholder={search.label}
-          variant="surface"
-          size="xl"
-          value={search.value}
-          maxLength={search.maxLength}
-          onChange={(event) => search.onChange(event.target.value)}
-          containerClassName="@min-[480px]:max-w-105"
-        />
+        {search ? (
+          <SearchField
+            label={search.label}
+            placeholder={search.label}
+            variant="surface"
+            size="xl"
+            value={search.value}
+            maxLength={search.maxLength}
+            onChange={(event) => search.onChange(event.target.value)}
+            containerClassName="@min-[480px]:max-w-105"
+          />
+        ) : null}
       </div>
 
       {filter?.open ? (

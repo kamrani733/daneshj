@@ -1,3 +1,5 @@
+import type { ChartTone } from '@/components/charts/types';
+
 /** Wire + app types for Notification Microservice (actor notifications). */
 
 export interface ApiResponse<T> {
@@ -420,7 +422,8 @@ export type ChartsDonutSlice = {
 
 export type ChartsDonutLegendItem = {
   label: string;
-  color: string;
+  /** `null` = the remainder slice. */
+  tone: ChartTone | null;
   display:
     | { kind: 'percent'; value: number }
     | { kind: 'count'; value: number };
@@ -430,8 +433,7 @@ export type ChartsDonutView = {
   slices: ChartsDonutSlice[];
   centerPercent: number;
   centerLabel: string;
-  primaryColor: string;
-  otherColor: string;
+  tone: ChartTone;
   legend: ChartsDonutLegendItem[];
   totalCount: number;
 };

@@ -2,7 +2,7 @@
 title: "SRS Feature Coverage"
 description: "Mapping of SRS paths to frontend implementation status"
 category: "audit"
-last_updated: "2026-09-25"
+last_updated: "2026-10-10"
 ---
 
 # SRS Feature Coverage
@@ -25,12 +25,12 @@ Extracted from [audit §8](./ai/00-project-audit.md#8-srs-feature-map).
 | **SRV** (general service pages) | 0 | 9 | 0 | 26 | 35 |
 | **Rwd** (rewards) | 0 | 0 | 0 | 26 | 26 |
 | **Dsc** (discount on goods & services) | 0 | 4 | 3 | 129 | 136 |
-| **Rfl** (invite friends) | 0 | 4 | 0 | 19 | 23 |
+| **Rfl** (invite friends) | 0 | 4 | 1 | 18 | 23 |
 | **Msg** (messaging) | 0 | 0 | 4 | 28 | 32 |
 | **Nws** (news) | 0 | 0 | 4 | 99 | 103 |
 | **Nwl** (newsletter) | 0 | 0 | 4 | 117 | 121 |
 | **Cln** (calendar events) | 0 | 0 | 0 | 81 | 81 |
-| **TOTAL** | **0** | **17** | **15** | **525** | **557** |
+| **TOTAL** | **0** | **17** | **16** | **524** | **557** |
 
 ## Implemented Outside SRS Index
 

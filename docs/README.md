@@ -2,7 +2,7 @@
 title: "Documentation Index"
 description: "Master index for Daneshjoam frontend documentation"
 category: "meta"
-last_updated: "2026-09-25"
+last_updated: "2026-10-10"
 ---
 
 # Documentation Index
@@ -50,6 +50,7 @@ Rules behind this structure: [00-HOW-TO-USE-THIS-DOCS-KIT.md](./00-HOW-TO-USE-TH
 | [features/_example.md](./features/_example.md) | Convention for a per-feature doc (SRS-mapped) |
 | [features/public-panel.md](./features/public-panel.md) | Public panel: role-based views, demo personas, responsive |
 | [features/home.md](./features/home.md) | Home page sections, shared cards, mock data |
+| [features/operational-panel.md](./features/operational-panel.md) | Operational panel: sticky nav, reports, stats, charts, comparison tool (mock) |
 
 Add one row per feature as it's built.
 

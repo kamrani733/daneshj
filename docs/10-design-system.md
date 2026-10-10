@@ -2,7 +2,7 @@
 title: "Design System"
 description: "Tokens, status colors, typography, components and the consolidation plan — read before any UI work"
 category: "architecture"
-last_updated: "2026-10-07"
+last_updated: "2026-10-10"
 ---
 
 # Design System
@@ -149,7 +149,7 @@ Do not add `dark:` color overrides except where a role does not exist yet.
 ## Icons
 
 - **Primary icon library:** `lucide-react` (throughout `apps/usr`).
-- **Custom icons:** `apps/usr/src/components/icons/material-icons.tsx` — inline SVG components wrapping Material Design icon paths (`FilterAltIcon`, `SortIcon`, `CheckIcon`, `ChipCheckIcon`).
+- **Custom icons:** `apps/usr/src/components/icons/material-icons.tsx` — inline SVG components wrapping Material Design icon paths (`FilterAltIcon`, `SortIcon`, `CheckIcon`, `ChipCheckIcon`; operational panel sidebar and stat-card glyphs such as `AssignmentIcon`, `WalletIcon`, `EditIcon`, `NotificationsIcon` — paths taken from the Operational Panel export, normalised to 24×24).
 - Directional icons (arrow, chevron, back/forward, send) mirror in RTL; others never mirror.
 - Icon-only buttons: use `Button` with `size="icon"` and provide `aria-label`. No dedicated `IconButton` component exists.
 
@@ -168,7 +168,10 @@ audit; the "SRS usage" column shows why each is needed.
 | `OutlinedField` | Labeled input with floating label | forms | `components/ui/outlined-field.tsx` | ⚠️ |
 | `FloatingInput` | Another floating label input | forms | `components/ui/floating-input.tsx` | ⚠️ near-dup of OutlinedField |
 | `UnderlineField` | Third field variant | forms | `components/ui/underline-field.tsx` | ⚠️ near-dup of OutlinedField |
-| `SearchField` | Pill search input; optional clear (×) via `onClear` + `clearLabel` | search (≤ 50 chars) | `components/ui/search-field.tsx` | ✅ |
+| `SearchField` | Pill search input; optional clear (×) via `onClear` + `clearLabel`; variant `surface` (M3 pill on `surface-container-low`, report toolbars) | search (≤ 50 chars) | `components/ui/search-field.tsx` | ✅ |
+| `FilterField`, `DateRangeInputs`, `FilterCheckbox` | Filter panel blocks: accordion row, Jalali date range, checkbox | report / notification filters | `components/ui/filter-fields.tsx` | ✅ |
+| `Pagination` | `1 2 3 … N` pager, LTR numbers, 48 px targets (labels from `common.pagination`) | panel lists | `components/ui/pagination.tsx` | ✅ |
+| `HorizontalScroller` | RTL horizontal scroll with the Figma indicator (triangle buttons + primary thumb, draggable); native scrollbar hidden | wide report tables | `components/ui/horizontal-scroller.tsx` | ✅ |
 | `SearchSelect` | Outlined single-select with type-to-filter (ARIA combobox); floating label once picked, clear (×) | filters (service picker) | `components/ui/search-select.tsx` | ✅ |
 | `Select`, `Combobox` | Choice fields | filters, category picker | `SearchSelect` covers searchable single-select | ⚠️ |
 | `Checkbox` | M3 checkbox (checked / indeterminate) on Radix | filters, settings | `components/ui/checkbox.tsx` | ✅ |
@@ -214,8 +217,10 @@ audit; the "SRS usage" column shows why each is needed.
 
 | Component | Purpose | Services | Path | Status |
 |---|---|---|---|---|
-| `ListShell` | Toolbar + table/cards + pagination/infinite | all | feature `page-shell.tsx` files | ⚠️ per-feature |
-| `DataTable` / `CardList` | Rows with responsive collapse | all panels | `notifications/components/inbox/table.tsx`, `card-list.tsx` | ⚠️ per-feature |
+| `ReportSection` | Collapsible report card: orange bar + title + chevron next to it; body while open | operational panel, notifications reports / charts | `components/ui/report-section.tsx` | ✅ |
+| `ReportToolbar` | Sort (`SortMenu` `toolbar`) + filters at the start, search at the end; labels from a 720 px container; filter panel slot; search optional | report / stats / charts bars | `components/ui/report-toolbar.tsx` | ✅ |
+| `ListShell` | Toolbar + table/cards + pagination/infinite | all | `ReportSection` + `ReportToolbar` + `ReportTable` / `ReportCardList` + `Pagination` | ✅ (composed) |
+| `ReportTable` / `ReportCardList` | Rows as rounded cards under a tinted header (RTL-native, column min widths) / labelled field cards below `lg` | all panels | `components/ui/report-table.tsx`, `report-card-list.tsx` (notifications inbox still per-feature) | ✅ |
 | `RowActionsMenu` | Actions from status × capability | all panels | — | ❌ |
 | `ReasonPickerModal` | Reject / cancel / suspend / unpublish with reason | Dsc, Nws, Nwl, Cln | — | ❌ |
 | `ApprovalDiffView` | Field-level approve/reject with replacement value | Dsc (Nws, Nwl) | — | ❌ |
@@ -224,7 +229,8 @@ audit; the "SRS usage" column shows why each is needed.
 | `CategoryPicker` | Main → sub select | create/edit forms | notifications filter has category picker | ⚠️ |
 | `SoftDeleteBanner` / restore action | Deleted-but-restorable display | all | — | ❌ |
 | `ArchiveToggle` / archived tab | Archive views | all | — | ❌ |
-| `ReportLayout`, `StatCard`, `ChartCard` | Reports, statistics, charts | all | `notifications/stats/`, `charts/` (recharts) | ⚠️ per-feature |
+| `StatCountCard`, `StatRatioCard`, `StatTrend` | KPI cards: icon tile (`state-primary-10`), value / unit / caption, «x از y» + percent + progress, orange trend | operational stats, notifications stats | `components/ui/stat-card.tsx` | ✅ |
+| `ChartCard`, `ChartPeriodToggle`, `BarChart`, `DonutChart` | Chart card, «روز…سال» chips, single / grouped bars (value labels, faded running period), two-slice donut + legend; tones `primary` / `secondary` / `seriesA` / `seriesB` (Recharts) | operational charts, notifications charts | `components/charts/` | ✅ |
 | `ServiceHome` blocks | Service landing: hero, featured list | SRV, all | `home/components/` | ⚠️ home-specific |
 | `HoverMediaCard` | Shared card shell + hover (media fills the card, dark body, white text) | all card lists | `components/cards/hover-media-card.tsx` | ✅ |
 | `DiscountCard`, `NewsCard`, `NewsletterCard`, `BusinessCard` | Content cards (home, search results, public panel) | Dsc, Nws, Nwl, SRV | `components/cards/` | ✅ |
@@ -236,9 +242,10 @@ audit; the "SRS usage" column shows why each is needed.
 | `ShareLink` | Copy / share referral link | Rfl | — | ❌ |
 | `PaymentMethodPicker` | Free / wallet / gateway | Cln, Dsc | — | ❌ |
 | `ProfileHeroCard` | Profile header card | panels | `components/panel/profile-hero-card.tsx` | ✅ |
+| `PanelPageShell`, `PanelNav` | Panel page chrome (heading + sidebar + content) and nav: sticky sidebar from 720 px, phone bottom-sheet menu; disabled items without `href`; `compactOnTablet`, `centeredMenuTrigger` | notifications, operational panel | `components/panel/panel-page-shell.tsx`, `panel-nav.tsx` | ✅ |
 | `ScrollCarousel` | RTL horizontal carousel, arrows at both ends, disabled at edges | home categories / businesses | `components/ui/scroll-carousel.tsx` | ✅ |
 | `SectionHeading` | Bar + title; bar first (start / right in RTL); `size` headline · title · responsive | all sections | `components/ui/section-heading.tsx` | ✅ |
-| `SortMenu` | Sort trigger (`button` / `select`) + overlay menu; icon-only on phones | comment lists | `components/ui/sort-menu.tsx` | ✅ |
+| `SortMenu` | Sort trigger (`button` / `select` / `toolbar`) + overlay menu; icon-only on phones (`toolbar`: below a 720 px container) | comment lists, report toolbars | `components/ui/sort-menu.tsx` | ✅ |
 | `SiteHeader` | Global navigation | site | `components/site/site-header.tsx` | ✅ (large: 676 lines) |
 | `SiteShell` | Layout wrapper | site | `components/site/site-shell.tsx` | ✅ |
 | `AuthShell` | Auth layout wrapper | auth | `components/auth/auth-shell.tsx` | ✅ |

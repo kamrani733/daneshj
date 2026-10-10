@@ -1,12 +1,12 @@
 ---
-title: "Implementation Plan: Operational panel — reports"
-description: "Build /operational-panel/reports from the Operational Panel export, sharing the panel shell and report blocks with notifications"
+title: "Implementation Plan: Operational panel — reports, stats, charts"
+description: "Build /operational-panel/{reports,stats,charts} from the Operational Panel exports, sharing the panel shell, report, stat and chart blocks with notifications"
 category: "plan"
-last_updated: "2026-10-09"
+last_updated: "2026-10-10"
 owner: "Frontend"
 ---
 
-# Implementation Plan: Operational panel — reports
+# Implementation Plan: Operational panel — reports, stats, charts
 
 ## Goal
 
@@ -14,6 +14,15 @@ owner: "Frontend"
 heading, the operational-panel sidebar and 15 collapsible report sections. The page reuses the notifications page
 pattern (same shell, sidebar, report block, toolbar, pagination); those pieces move to shared components and the
 notifications pages switch to them.
+
+## Scope update (2026-10-10)
+
+The owner sent the stats (desktop `Actor-2/Frame 1984079021`, mobile `Frame 1984079027`), charts (tablet
+`Frame 1984079025-2`, desktop `Actor-2/Property 1=Wide*`), comparison (`Property 1=Empty|Half full|Combine|Adapted`)
+and mobile menu (`Operational Panel-2`) frames and asked for the page per those exports, with the sidebar
+**sticky** while scrolling. Added: `/operational-panel/stats`, `/operational-panel/charts` (+ comparison tool);
+«آمار» / «نمودار» enabled in the sidebar. Same data rule: mocked, except «اعلانات» which reuses the Notification MS
+statistics / charts reports (they match the export's cards and charts).
 
 ## Owner decisions (2026-10-09)
 
@@ -52,13 +61,16 @@ platform areas without an SRS in the repo (Aut, Prf, Ntf, wallet, comments, inte
 
 ## Acceptance criteria
 
-- [ ] Heading (breadcrumb خانه › حساب کاربری › پنل عملیاتی, title, user's name), sidebar and 15 sections match the export
-- [ ] Each mocked report: search (≤ 50 chars, debounced), sort, filters, server-style pagination (24/page), URL state
-- [ ] Loading, empty, no-result and error (retry) states in every report
-- [ ] Wide tables scroll horizontally with the green scroll indicator; layout works on phone/tablet/desktop and dark mode
-- [ ] Notifications pages look and behave as before, on the shared components
-- [ ] Profile menu «پنل عملیاتی» opens the new route (was `/dashboard`)
-- [ ] `nx affected -t lint test build` passes
+- [x] Heading (breadcrumb خانه › حساب کاربری › پنل عملیاتی, title, user's name), sticky sidebar and 15 sections match the export
+- [x] Each mocked report: search (≤ 50 chars, debounced), sort, filters, server-style pagination (24/page), URL state
+- [x] Loading, empty, no-result and error (retry) states in every report
+- [x] Wide tables scroll horizontally with the green scroll indicator; layout works on phone/tablet/desktop
+- [x] Stats: six sections of count / ratio cards; charts: six chart sections + comparison tool (empty / half / combined / adapted)
+- [x] Notifications pages on the shared components (shell, nav, report, stat, chart blocks)
+- [x] Profile menu «پنل عملیاتی» opens the new route (was `/dashboard`)
+- [x] `nx affected -t lint test build` passes (lint: 0 errors; 110 tests; build ok)
+- [x] Dark mode visual pass (reports, stats, charts)
+- [ ] Manual check by the owner on a real session (notifications sections use the real API)
 
 ## Non-goals
 

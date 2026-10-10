@@ -2,7 +2,7 @@
 title: "Project Context"
 description: "Source of truth for AI assistants — stack, structure, conventions, status"
 category: "meta"
-last_updated: "2026-10-02"
+last_updated: "2026-10-10"
 ---
 
 # Project Context
@@ -12,8 +12,8 @@ last_updated: "2026-10-02"
 > messaging, rewards, referrals, and (later) jobs/internships — for students, service providers and admins.
 > See [01-overview.md](./01-overview.md).
 > **Integration status:** Frontend largely built from Figma (platform shell: auth, actor profiles, notifications,
-> panels). SRS services are mostly not implemented yet: of 557 SRS paths, 0 DONE, 17 PARTIAL, 15 UI-ONLY,
-> 525 MISSING (see SRS coverage in `ai/00-project-audit.md` §8).
+> panels). SRS services are mostly not implemented yet: of 557 SRS paths, 0 DONE, 17 PARTIAL, 16 UI-ONLY,
+> 524 MISSING (see SRS coverage in `ai/00-project-audit.md` §8).
 
 ## Detected tech stack
 

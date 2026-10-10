@@ -2,7 +2,7 @@
 title: "Integrations"
 description: "Backend microservices, endpoint inventory, readiness and mock status"
 category: "architecture"
-last_updated: "2026-10-07"
+last_updated: "2026-10-10"
 ---
 
 # Integrations
@@ -38,6 +38,8 @@ Summary from audit §4 — full path list in `docs/ai/00-project-audit.md` §4.
 | Home | — | `home/data/search-mock.ts` | **MOCKED** (no API) |
 | Global search | — (no endpoint in any spec) | `(public)/search/api/` → `search/mock/` | **MOCKED** |
 | Public panel comments | — | `comments/section.tsx` | **HARDCODED** / client-only mutations |
+| Operational panel reports / stats / charts | — (5 Auth MS owner reports exist: `report_log/report_login_logout_to_owner_actor`, `report_edit_security_setting_to_owner_actor`, `report_delete_account_to_owner_actor`, `auth/block_actor_history_to_actor`, `auth/unban_actor_history_to_actor`; not wired by owner decision) | `operational-panel/api/` → `operational-panel/mock/` | **MOCKED** |
+| Operational panel notifications sections | Notification MS `detailed_status_report`, statistics and charts reports (same hooks as `/notifications/*`) | `@notifications/api` | REAL |
 
 ## Mocks in use
 
@@ -46,6 +48,9 @@ Summary from audit §4 — full path list in `docs/ai/00-project-audit.md` §4.
 | `settings-mock.ts` | Notification category tree + `categoryId` mapping (`category/list` Admin-only in spec) | Backend exposes category list (and aligned IDs) to actor tokens |
 | `(auth)/api/mock.ts` + `isAuthApiMocked()` | Auth MS in dev when `NEXT_PUBLIC_API_URL` is unset (try request, then mock). Also immediate mock for send-otp-for-login, session-limit continue, and no-op logout/delete | Production build (`NODE_ENV` inlined): `isAuthApiMocked()` is false and `withMockFallback` rethrows |
 | `home/data/search-mock.ts` | SRV provider/product search | SRV search API integrated |
+| `operational-panel/mock/{fixtures,reports-mock}.ts` | 14 operational reports (60 rows each; search, date range, enum filters, sort, 24/page) | Each report's endpoint integrated (only `operational-panel/api/` changes) |
+| `operational-panel/mock/stats-mock.ts` | «آمار» cards except «اعلانات» | Stats endpoints |
+| `operational-panel/mock/charts-mock.ts` | «نمودار» series, comparison series, university / major option lists | Charts / comparison endpoints |
 | `(public)/search/mock/search-mock.ts` | Global search (products, services, providers, users) + service / category filter options | Search endpoint integrated (only `search/api/` changes) |
 | `public-panel/data/public-panel-mock.ts` | Rich fixture source for demo mode + loading placeholders | Demo mode uses `public-panel/mock/*` when gate + cookie active |
 

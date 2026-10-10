@@ -2,7 +2,7 @@
 title: "Architecture"
 description: "Monorepo layout, request flow, trust boundaries, caching, import direction"
 category: "architecture"
-last_updated: "2026-09-25"
+last_updated: "2026-10-10"
 ---
 
 # Architecture
@@ -47,9 +47,11 @@ Feature colocation (not the target `sections/` + `mock/` layout yet):
 ```text
 apps/usr/src/app/(public)/(site)/{notifications,private-panel,public-panel}/
   api/, components/, hooks/, types/, data/   # some mocks in data/ (e.g. settings-mock.ts)
+apps/usr/src/app/(public)/(site)/operational-panel/   # rule layout: api/, components/, hooks/, types/,
+                                              # utils/, mock/ (alias @operational-panel/*)
 apps/usr/src/app/(public)/(auth)/             # auth api/, components/, lib/
 apps/usr/src/app/(public)/home/               # home UI + search-mock.ts
-apps/usr/src/components/                      # ui/, site/, panel/, auth/
+apps/usr/src/components/                      # ui/, site/, panel/, auth/, charts/ (Recharts wrappers)
 apps/usr/src/shared/api/                      # per-MS HTTP client instances
 libs/{api-client,auth,shared-types,shared-ui}/
 ```
