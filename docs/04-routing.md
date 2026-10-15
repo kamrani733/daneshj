@@ -2,7 +2,7 @@
 title: "Routing"
 description: "Route table, guards, caching and URL conventions"
 category: "architecture"
-last_updated: "2026-10-10"
+last_updated: "2026-10-15"
 ---
 
 # Routing
@@ -30,6 +30,10 @@ today; pages are dynamic SSR/RSC with client data via React Query where noted.
 | `/operational-panel/reports` | `(site)/operational-panel/reports/page.tsx` | SiteShell + `OperationalShell` | Signed-in | Middleware: session required | 15 reports; `Usr-Rfl-2N1`; notifications report (`Usr-Ntf-6N5`). Params per report: `?<reportId>.q=&<reportId>.sort=&<reportId>.page=&<reportId>.from=&<reportId>.to=&<reportId>.f.<column>=` | Dynamic SSR shell + client (React Query, mock `api/`) |
 | `/operational-panel/stats` | `(site)/operational-panel/stats/page.tsx` | Same | Signed-in | Middleware: session required | KPI cards; notifications stats (`Usr-Ntf-6N12`). `?stats.from=&stats.to=&notifications.from=&notifications.to=` | Dynamic SSR shell + client (mock `api/` + Notification MS) |
 | `/operational-panel/charts` | `(site)/operational-panel/charts/page.tsx` | Same | Signed-in | Middleware: session required | Charts + comparison tool; notifications charts (`Usr-Ntf-6N11`). `?charts.from=&charts.to=` | Dynamic SSR shell + client (mock `api/` + Notification MS) |
+| `/operational-panel/used-services` | `(site)/operational-panel/used-services/page.tsx` | SiteShell + `OperationalShell` | Signed-in | Middleware: session required | «سرویس‌های استفاده شده» table (no SRS). `?usedServices.q=&.sort=&.page=&.from=&.to=` | Dynamic SSR shell + client (mock `api/`) |
+| `/operational-panel/manage-services` | `(site)/operational-panel/manage-services/page.tsx` | Same | Signed-in | Middleware: session required | «مدیریت سرویس‌ها» service cards (no SRS) | Dynamic SSR shell + client (mock `api/`) |
+| `/operational-panel/wallet` | `(site)/operational-panel/wallet/page.tsx` | Same | Signed-in | Middleware: session required | «کیف پول»: intro, balance card, «سابقه تراکنش ها» (no SRS). `?walletTransactions.*` | Dynamic SSR shell + client (mock `api/`) |
+| `/operational-panel/interactions` | `(site)/operational-panel/interactions/page.tsx` | Same | Signed-in | Middleware: session required | «مشاهده تعاملات» tabs (no SRS). `?tab=to` + `?interactionsByActor.*` / `?interactionsToActor.*` | Dynamic SSR shell + client (mock `api/`) |
 | `/dashboard` | **Missing** `page.tsx` | — | Nav expects signed-in user | Middleware lists as protected | Broken — see known issues | — |
 | `/register` | Redirect → `/login` | — | — | `next.config.js` | — | — |
 | `/dev/ui-kit` | `dev/ui-kit/page.tsx` | Root only (no SiteShell) | Dev | `notFound()` in production | Design system | Dynamic |

@@ -2,7 +2,7 @@
 title: "Known Issues & Gaps"
 description: "Blockers, open questions, SRS problems, technical debt"
 category: "meta"
-last_updated: "2026-10-10"
+last_updated: "2026-10-15"
 ---
 
 # Known Issues & Gaps
@@ -101,6 +101,13 @@ See [srs/README.md](./srs/README.md) → Known issues, Declared but not detailed
 | Notifications charts on the operational page use the actor charts report fields named `reactionTimeSeries` / `conversionRateSeries` (they hold manual / system received counts) | `notifications/types/api.ts` | Low | Rename in the notifications API mapping |
 | Comparison tool: statistic list = all mocked bar charts; university / major options mocked; option lists for the other fields reuse `@private-panel/data/*` (second consumer — move to a shared module when the private panel is reopened) | `hooks/use-comparison-field-options.ts` | Low | Backend option endpoints |
 | No `NoPermissionState` component yet — a 403 from a future report endpoint would show the generic error state | `report-panel.tsx` | Medium | Build `NoPermissionState` (design system ❌) |
+| Hydration warning on every operational page with a report: `useId` values (`aria-controls` of `ReportSection` / `ReportToolbar`) differ between server and client — seen on the existing «گزارشات» page as well | `components/ui/report-section.tsx`, `report-toolbar.tsx` | Medium | Find the tree difference above the panels (dev console «A tree hydrated but some attributes…») |
+| Filter fields of used services / wallet / interactions: Figma draws dropdowns (service type, financial interaction, date fields, transaction type, interaction type / value / owner) whose option texts are vector outlines; the generic filter (date range on the main date column + enum checkboxes) is used | `utils/report-definitions.ts` | Medium | Read frames `890:92798`, `890:92768`, `890:85646` (+ items `890:100503`, `890:100540`, `890:86875`, `890:86722`, `890:86773`, `890:86838`) when Figma calls are available |
+| Link targets: service / product / «برو به پنل عملیاتی سرویس» / interaction actor and the service cards have no destination yet (service panels do not exist) — shown as plain primary text, cards without hover | `report-cell.tsx`, `managed-service-card.tsx` | Medium | Backend sends internal paths (`<column>Href`, `panelHref`) |
+| Used services: the SVG export («نوع سرویس», «نام محصول») and the Figma web overview («نام سرویس», «محصول استفاده شده») disagree — overview used | `reports.usedServices.columns` | Low | Confirm with design |
+| Wallet card: the export puts amount above label for balance / total spent but label above value for the update date — one order (label, value) used | `wallet-summary-card.tsx` | Low | Confirm with design |
+| Interactions «به عملگر» tab: only the «از عملگر» frame was read; same fields used | `INTERACTION_COLUMNS` | Low | Confirm |
+| Manage services tablet / mobile frames not read; grid falls to 2 / 1 columns | `manage-services-view.tsx` | Low | Check frames `890:97390`, `890:97004` |
 | React Query pauses retries while the tab is hidden, so error states (here and on `/search`) appear only after the tab is visible | app-wide | Low | Expected library behaviour |
 
 ### Component consolidation needed

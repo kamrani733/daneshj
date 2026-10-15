@@ -2,7 +2,7 @@
 title: "Feature: Operational panel (پنل عملیاتی) — reports, stats, charts"
 description: "/operational-panel/* — sticky panel nav plus the «گزارشات», «آمار» and «نمودار» tabs, built from the Operational Panel exports"
 category: "feature"
-last_updated: "2026-10-10"
+last_updated: "2026-10-15"
 ---
 
 # Feature: Operational panel (پنل عملیاتی)
@@ -14,8 +14,36 @@ The signed-in user's operational panel. Same shell as the notifications pages: b
 (phones: «منوی پنل عملیاتی - <tab>» opens a bottom sheet). The profile menu's «پنل عملیاتی» opens it
 (was the broken `/dashboard`).
 
-Sidebar: سرویس‌های استفاده شده · مدیریت سرویس‌ها · کیف پول · **گزارشات** · **آمار** · **نمودار** · مشاهده تعاملات.
-Items without a design are shown disabled.
+Sidebar: **سرویس‌های استفاده شده** · **مدیریت سرویس‌ها** · **کیف پول** · **گزارشات** · **آمار** · **نمودار** ·
+**مشاهده تعاملات** — every item has a page (2026-10-15).
+
+Design sources: SVG exports «Operational Panel» / «Operational Panel۳» / «Notifications» and the Figma file
+`eGTqXhUsbNADBwGTxOS0nm` (page «Figma Basics»). The canonical frames are the rows «نمای کلی پنل عملیاتی - نسخه وب /
+تبلت / موبایل» (web: used services `890:64903`, manage services `890:65383`, wallet `890:65092`, interactions
+`890:65464`; card component `890:85718`).
+
+### «سرویس‌های استفاده شده» — `/operational-panel/used-services`
+
+One report without a section header (`OperationalReportPanel variant="plain"`): sort, filters, search; columns
+نام سرویس · محصول استفاده شده · تاریخ استفاده · تعامل مالی («ندارد» when empty) · عملیات («برو به پنل عملیاتی
+سرویس»). Service, product and action are links when the row carries `<column>Href` (internal paths only).
+
+### «مدیریت سرویس‌ها» — `/operational-panel/manage-services`
+
+Eight service cards, three per row (Figma «Main Services»: image, name, «x محصول فعال» / «y محصول غیر فعال» chips,
+«برو به پنل عملیاتی سرویس»). Hover / pressed states apply once a card has a panel link; images in
+`public/images/operational-panel/services/`.
+
+### «کیف پول» — `/operational-panel/wallet`
+
+Intro banner (illustration + copy with the inline logo; phones stack the image above), balance card (موجودی, کل
+مبلغ استفاده شده, تاریخ به روز رسانی; export pattern tinted with `primary` through a CSS mask), then the collapsible
+«سابقه تراکنش ها» report (filters + search, no sort control; amounts signed and coloured).
+
+### «مشاهده تعاملات» — `/operational-panel/interactions`
+
+Desktop intro sentence, then tabs «تعاملات از عملگر» / «تعاملات به عملگر» (`?tab=to`), each one collapsible report:
+تاریخ ثبت تعامل · عامل تعامل · نوع عامل تعامل · نوع تعامل · مقدار تعامل.
 
 ### «گزارشات» — `/operational-panel/reports`
 
@@ -70,7 +98,8 @@ comments, interactive ops, support).
 |---|---|
 | `(site)/operational-panel/{page,reports/page,stats/page,charts/page}.tsx` | Routes (thin; `/operational-panel` → reports) |
 | `components/operational-shell.tsx`, `nav-items.ts` | Shell + sidebar items (Material icons from the export) |
-| `components/report-*.tsx`, `utils/report-definitions.ts`, `utils/report-params.ts` | Reports: config-driven columns, URL state |
+| `components/report-*.tsx`, `utils/report-definitions.ts`, `utils/report-params.ts` | Reports: config-driven columns, URL state (also used services, wallet transactions, interactions) |
+| `components/{used-services,manage-services,wallet,interactions}-view.tsx`, `managed-service-card.tsx`, `wallet-*.tsx` | The four pages added 2026-10-15 |
 | `components/stats-view.tsx`, `utils/stat-definitions.ts` | Stats sections and cards |
 | `components/chart-*.tsx`, `components/comparison/*`, `utils/chart-definitions.ts` | Charts and comparison tool |
 | `api/index.ts`, `api/query-keys.ts`, `hooks/*` | Data entry point (mock phase → `mock/`), React Query hooks |
@@ -82,7 +111,8 @@ Shared components created for this feature (also used by notifications): `compon
 
 ## Data
 
-All operational data is **mocked** (owner decision 2026-10-09) except the notifications report, stats and charts,
+All operational data is **mocked** (owner decision 2026-10-09; the four 2026-10-15 pages too — no wallet, service or
+interaction-history endpoint in `docs/api/`) except the notifications report, stats and charts,
 which reuse the Notification MS. Endpoints to switch to later (only `api/` changes): Auth MS
 `report_log/report_login_logout_to_owner_actor`, `report_edit_security_setting_to_owner_actor`,
 `report_delete_account_to_owner_actor`, `auth/block_actor_history_to_actor`, `auth/unban_actor_history_to_actor`.

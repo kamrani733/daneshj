@@ -2,7 +2,7 @@
 title: "Project Progress"
 description: "Canonical completion tracker for Daneshjoam frontend"
 category: "meta"
-last_updated: "2026-10-10"
+last_updated: "2026-10-15"
 ---
 
 # Current Progress
@@ -18,7 +18,8 @@ Platform shell built from Figma: **auth** (OTP/password/sessions), **actor profi
 admin on individual-provider and non-provider panels, desktop + tablet + mobile
 ([features/public-panel.md](./features/public-panel.md)). **Home** rewritten with shared cards
 ([features/home.md](./features/home.md)). Shared card family with one hover in `components/cards/`.
-**Operational panel** (`/operational-panel/*`): sticky panel nav, «گزارشات» (15 reports), «آمار», «نمودار» with the
+**Operational panel** (`/operational-panel/*`): sticky panel nav, «سرویس‌های استفاده شده», «مدیریت سرویس‌ها», «کیف پول»,
+«مشاهده تعاملات» (2026-10-15), «گزارشات» (15 reports), «آمار», «نمودار» with the
 comparison tool — mock data except the reused notifications report / stats / charts
 ([features/operational-panel.md](./features/operational-panel.md)). Notifications pages now use the same shared
 panel, report, stat and chart components.
@@ -35,7 +36,7 @@ SRS services: **0** of **557** paths DONE, **17** PARTIAL, **16** UI-ONLY, **524
 | Public panel | UI done (mock catalog / comments) | Role-based views, 8 demo personas, responsive — [features/public-panel.md](./features/public-panel.md) |
 | Home page | UI done (mock) | Shared cards, carousels, new photos — [features/home.md](./features/home.md) |
 | Global search (`/search`) | UI done (mock) | Header search opens «نتایج جستجو»; filters on all four groups (category items per the Figma component frames); empty state; URL state — [features/search.md](./features/search.md) |
-| Operational panel | UI done (mock) | Reports, stats, charts + comparison; desktop / tablet / mobile — [features/operational-panel.md](./features/operational-panel.md) |
+| Operational panel | UI done (mock) | All seven sidebar pages: used services, manage services, wallet, reports, stats, charts + comparison, interactions — [features/operational-panel.md](./features/operational-panel.md) |
 | Private panel | Not started (redesign) | Figma exports received; work paused by owner |
 | Platform shell | Partial | `/dashboard` missing; actor query gating; auth dev shortcuts |
 | Shared pattern libs | Not started | approval, soft delete, archive, categories, reasons, reports, uploader |
