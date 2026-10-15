@@ -18,7 +18,8 @@ const SERVICE_IMAGES: Record<ManagedServiceKey, string> = {
   newsletter: '/images/operational-panel/services/newsletter.webp',
 };
 
-const CHIP = 'inline-flex h-8 items-center rounded-full border px-3 font-medium';
+/** Figma «Tag-services»: active = tonal, padding 6 · inactive = outlined, 12 / 20 (wraps on narrow cards, as drawn). */
+const CHIP = 'inline-flex h-8 items-center rounded-full border font-medium';
 
 /**
  * Figma «Main Services» card (Default / Hovered / Pressed): image, service name, active / inactive product
@@ -43,13 +44,13 @@ export function ManagedServiceCard({ service }: { service: ManagedService }) {
       <div className="flex flex-1 flex-col gap-6 p-4">
         <h3 className="text-body-large text-on-surface">{name}</h3>
         <ul className="flex flex-wrap gap-x-3 gap-y-2" aria-label={t('productsLabel')}>
-          <li className={cn(CHIP, 'border-primary-container bg-primary-container text-primary')}>
+          <li className={cn(CHIP, 'border-primary-container bg-primary-container px-1.5 text-primary')}>
             {/* Size outside `cn()`: tailwind-merge reads M3 sizes as colours (09-known-issues). */}
             <span className="text-label-large">
               {t('activeProducts', { count: formatFaNumber(service.activeProducts) })}
             </span>
           </li>
-          <li className={cn(CHIP, 'border-outline-variant bg-inverse-on-surface text-outline')}>
+          <li className={cn(CHIP, 'border-outline-variant bg-inverse-on-surface ps-3 pe-5 text-outline')}>
             <span className="text-label-large">
               {t('inactiveProducts', { count: formatFaNumber(service.inactiveProducts) })}
             </span>
