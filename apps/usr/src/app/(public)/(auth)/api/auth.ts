@@ -85,6 +85,7 @@ function isAuthTransportFailure(error: unknown): boolean {
 function mapServerAuthTransportError(error: unknown): unknown {
   if (typeof window !== 'undefined') return error;
   if (isApiError(error) && error.status === 0) {
+    console.error('auth transport failure', error.message);
     return authNetworkApiError();
   }
   if (isAuthTransportFailure(error)) {

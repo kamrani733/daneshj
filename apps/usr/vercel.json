@@ -4,6 +4,7 @@
   "buildCommand": "pnpm run vercel-build",
   "ignoreCommand": "node scripts/vercel-ignore.mjs",
   "framework": "nextjs",
+  "regions": ["fra1"],
   "build": {
     "env": {
       "NEXT_PUBLIC_API_URL": "http://dev.stella.webpanel.systems:3009",

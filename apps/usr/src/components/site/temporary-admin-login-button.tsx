@@ -4,6 +4,7 @@ import { ShieldCheck } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useState, useTransition } from 'react';
 
+import { isRedactedServerError } from '@auth/api/errors';
 import { loginAsTemporaryAdmin } from '@auth/lib/temporary-admin-login';
 import { PRIVATE_PANEL_PATH } from '@private-panel/data/private-panel-ui';
 import { Button } from '@/components/ui/button';
@@ -37,7 +38,12 @@ export function TemporaryAdminLoginButton({
         router.push(redirectPath);
         router.refresh();
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'ورود راهبر انجام نشد.');
+        const message = err instanceof Error ? err.message : '';
+        setError(
+          !message || isRedactedServerError(err)
+            ? 'ورود راهبر انجام نشد.'
+            : message
+        );
       }
     });
   }

@@ -68,7 +68,7 @@ the supported way to pin a monorepo app. Repo files cover both dashboard setups:
 | `apps/usr/scripts/vercel-ignore.mjs` | Skips a deploy when `usr` and its workspace graph are unchanged since the last successful deployment (`VERCEL_GIT_PREVIOUS_SHA`) |
 | `apps/usr/scripts/vercel-build.mjs` | Runs `next build` |
 
-On Vercel (`VERCEL=1`), missing build env vars fall back to the same dev Stella values as
+Server functions run in `fra1` (Frankfurt), next to the Leaseweb Auth host. On Vercel (`VERCEL=1`), missing build env vars fall back to the same dev Stella values as
 `apps/usr/.env.example`, including `NEXT_PUBLIC_DEMO_MODE_ENABLED=true` so `/public-panel`
 loads presentation fixtures (unless overridden in the project Environment Variables). Local
 `nx build usr` / `next build` still requires `NEXT_PUBLIC_API_URL` or `AUTH_API_URL`. A later

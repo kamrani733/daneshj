@@ -47,8 +47,21 @@ function translateKnownAuthError(message: string): string {
   return KNOWN_AUTH_ERROR_MESSAGES[normalized] ?? message;
 }
 
+const REDACTED_SERVER_ERROR_PREFIX =
+  'An error occurred in the Server Components render.';
+
+/** Next.js replaces thrown server-action messages with this text in production. */
+export function isRedactedServerError(error: unknown): boolean {
+  return (
+    error instanceof Error &&
+    error.message.startsWith(REDACTED_SERVER_ERROR_PREFIX)
+  );
+}
+
 /** Prefer backend `message` / `errors` over generic client fallbacks. */
 export function getAuthApiErrorMessage(error: unknown, fallback: string): string {
+  if (isRedactedServerError(error)) return fallback;
+
   if (isApiError(error)) {
     if (isApiResponseBody(error.data)) {
       const message = formatApiResponseError(error.data.message, error.data.errors);
