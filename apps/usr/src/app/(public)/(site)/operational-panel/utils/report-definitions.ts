@@ -242,6 +242,7 @@ export const REPORT_DEFINITIONS: Record<OperationalReportId, ReportDefinition> =
       { key: 'operations', kind: 'action', labelKey: 'usedServices.goToServicePanel' },
     ],
     dateColumn: 'usedAt',
+    dateFilterLabel: true,
     sortOptions: byDate('usedAt'),
     searchColumns: ['serviceName', 'usedProduct'],
   },

@@ -1677,7 +1677,8 @@
           "usedAt": "تاریخ استفاده",
           "financialInteraction": "تعامل مالی",
           "operations": "عملیات"
-        }
+        },
+        "dateFilter": "بازه تاریخ استفاده"
       },
       "walletTransactions": {
         "title": "سابقه تراکنش ها",

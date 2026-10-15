@@ -90,6 +90,8 @@ export type ReportDefinition = {
   /** Main date column: default sort (newest first) and the date-range filter. */
   dateColumn: string;
   sortOptions: ReportSortValue[];
+  /** Date-range filter labelled `reports.<id>.dateFilter` (the design names it unlike the column). */
+  dateFilterLabel?: boolean;
   /** Columns the search box matches; defaults to every text-like column. */
   searchColumns?: string[];
   /** SRS path codes this report implements (only Rfl is in `docs/srs/`). */

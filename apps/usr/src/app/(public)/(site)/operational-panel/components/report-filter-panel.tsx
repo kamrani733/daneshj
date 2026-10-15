@@ -55,7 +55,11 @@ export function ReportFilterPanel({ definition, filters, onApply, onClear }: Rep
         <FilterField
           id="date"
           idPrefix={idPrefix}
-          label={t(`reports.${definition.id}.columns.${definition.dateColumn}`)}
+          label={
+            definition.dateFilterLabel
+              ? t(`reports.${definition.id}.dateFilter`)
+              : t(`reports.${definition.id}.columns.${definition.dateColumn}`)
+          }
           open={openFields.has('date')}
           onToggle={() => toggleField('date')}
         >
