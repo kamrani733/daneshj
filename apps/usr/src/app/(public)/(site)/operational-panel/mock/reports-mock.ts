@@ -66,6 +66,9 @@ export function queryMockReport(definition: ReportDefinition, request: ReportReq
     (row) =>
       (!request.q || matchesQuery(row, columns, request.q)) &&
       inDateRange(row[definition.dateColumn], from, to) &&
+      Object.entries(request.filters.dates ?? {}).every(([column, bounds]) =>
+        inDateRange(row[column], bounds.from, bounds.to),
+      ) &&
       Object.entries(request.filters.ranges ?? {}).every(([column, range]) => inNumberRange(row[column], range)) &&
       Object.entries(values).every(
         ([column, selected]) => selected.length === 0 || selected.includes(String(row[column])),

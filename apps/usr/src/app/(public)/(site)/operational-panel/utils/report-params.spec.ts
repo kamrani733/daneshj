@@ -84,7 +84,7 @@ describe('writeReportParams', () => {
 
 describe('filters', () => {
   it('uses enum columns as checkbox filters', () => {
-    expect(enumFilterColumns(login).map((column) => column.key)).toEqual(['operation']);
+    expect(enumFilterColumns(login).map((column) => column.key)).toEqual(['operation', 'os', 'browser']);
     expect(enumFilterColumns(referral)).toEqual([]);
   });
 
@@ -123,3 +123,28 @@ describe('amount range filter (wallet report)', () => {
     expect(parseReportParams(login, params).filters.ranges).toBeUndefined();
   });
 });
+
+describe('per-column date ranges (manual block report)', () => {
+  const manual = getReportDefinition('manualBlock');
+
+  it('round-trips each column through the URL and drops the single main range', () => {
+    const request = {
+      ...emptyReportRequest(manual),
+      filters: {
+        from: '2026-01-01',
+        to: '',
+        values: {},
+        dates: { blockEnd: { from: '2026-03-01', to: '2026-02-01' }, earlyUnblockAt: { from: '', to: '2026-03-04' } },
+      },
+    };
+    const params = writeReportParams(manual, request, new URLSearchParams());
+    const parsed = parseReportParams(manual, params);
+    expect(parsed.filters.from).toBe('');
+    expect(parsed.filters.dates).toEqual({
+      blockEnd: { from: '2026-02-01', to: '2026-03-01' },
+      earlyUnblockAt: { from: '', to: '2026-03-04' },
+    });
+    expect(hasActiveFilters(parsed)).toBe(true);
+  });
+});
+

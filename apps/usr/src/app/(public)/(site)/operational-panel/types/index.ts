@@ -41,6 +41,9 @@ export const REPORT_ENUMS = {
   loginOperation: ['login', 'logout'],
   blockStatus: ['active', 'blocked'],
   periodUnit: ['minute', 'hour'],
+  // Filter frames «Browser Item», «operation system Item» (login / logout report).
+  browser: ['chrome', 'firefox', 'safari', 'edge', 'opera', 'other'],
+  operatingSystem: ['windows', 'macos', 'linux', 'ios', 'android', 'ipados'],
   transactionType: ['deposit', 'withdrawal'],
   interactorType: ['user', 'provider', 'admin'],
   interactionType: ['like', 'dislike', 'follow', 'unfollow', 'share'],
@@ -108,6 +111,11 @@ export type ReportDefinition = {
   sortOptions: ReportSortValue[];
   /** Date-range filter labelled `reports.<id>.dateFilter` (the design names it unlike the column). */
   dateFilterLabel?: boolean;
+  /**
+   * Date columns with their own range, labelled `reports.<id>.dateFilters.<key>` (Figma: «بازه زمانی شروع مسدودی»,
+   * «بازه زمانی پایان مسدودی», …). Replaces the single range on `dateColumn` when set.
+   */
+  dateFilterColumns?: string[];
   /** Numeric columns filtered by a «شروع بازه / پایان بازه» pair, labelled `reports.<id>.rangeFilter.<key>`. */
   rangeColumns?: string[];
   /** Columns the search box matches; defaults to every text-like column. */
@@ -128,7 +136,11 @@ export type ReportFilters = {
   values: Record<string, string[]>;
   /** Range column → inclusive bounds; `null` = open. */
   ranges?: Record<string, NumberRange>;
+  /** `dateFilterColumns` → ISO `YYYY-MM-DD` bounds (inclusive); empty = open. */
+  dates?: Record<string, DateBounds>;
 };
+
+export type DateBounds = { from: string; to: string };
 
 export type NumberRange = { min: number | null; max: number | null };
 

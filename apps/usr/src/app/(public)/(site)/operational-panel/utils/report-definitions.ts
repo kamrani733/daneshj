@@ -40,6 +40,8 @@ export const REPORT_DEFINITIONS: Record<OperationalReportId, ReportDefinition> =
       datetime('requestedAt'),
     ],
     dateColumn: 'requestedAt',
+    // Figma filter: «بازه زمانی تایید/رد», «نوع اقدام».
+    dateFilterColumns: ['reviewedAt'],
     sortOptions: byDate('requestedAt'),
   },
   accountOps: {
@@ -54,6 +56,8 @@ export const REPORT_DEFINITIONS: Record<OperationalReportId, ReportDefinition> =
       text('status'),
     ],
     dateColumn: 'actedAt',
+    // Figma filter: «بازه زمانی اقدام», «نوع اقدام».
+    dateFilterLabel: true,
     sortOptions: byDate('actedAt'),
   },
   publicPanelLifecycle: {
@@ -66,6 +70,8 @@ export const REPORT_DEFINITIONS: Record<OperationalReportId, ReportDefinition> =
       { key: 'responseHours', kind: 'hours' },
     ],
     dateColumn: 'requestedAt',
+    // Figma filter: «بازه زمانی اقدام», «بازه زمانی درخواست» (+ «نوع اقدام», «فاصله زمانی درخواست تا اقدام»: not built).
+    dateFilterColumns: ['actedAt', 'requestedAt'],
     sortOptions: byDate('requestedAt'),
   },
   publicPanelRequests: {
@@ -86,16 +92,20 @@ export const REPORT_DEFINITIONS: Record<OperationalReportId, ReportDefinition> =
       { key: 'operation', kind: 'enum', enumId: 'loginOperation' },
       text('operationType'),
       ltr('ip'),
-      text('os'),
-      ltr('browser'),
+      enumColumn('os', 'operatingSystem'),
+      enumColumn('browser', 'browser'),
     ],
     dateColumn: 'occurredAt',
+    // Figma filter: «بازه زمانی ورود و خروج», «عملیات», «سیستم عامل», «مرورگر» (+ «نوع ورود» / «نوع خروج»: placeholders).
+    dateFilterLabel: true,
     sortOptions: byDate('occurredAt'),
   },
   securitySettings: {
     id: 'securitySettings',
     columns: [datetime('actedAt'), text('field'), text('previousValue'), text('newValue')],
     dateColumn: 'actedAt',
+    // Figma filter: «بازه زمانی اقدام» (+ «فیلد ویرایش شده»: placeholders).
+    dateFilterLabel: true,
     sortOptions: byDate('actedAt'),
   },
   bruteForceUnblock: {
@@ -111,6 +121,8 @@ export const REPORT_DEFINITIONS: Record<OperationalReportId, ReportDefinition> =
       text('earlyUnblockReason'),
     ],
     dateColumn: 'blockStart',
+    // Figma filter: three date ranges (+ block type, reasons: placeholders).
+    dateFilterColumns: ['blockStart', 'blockEnd', 'earlyUnblockAt'],
     sortOptions: byDate('blockStart'),
   },
   manualBlock: {
@@ -131,6 +143,8 @@ export const REPORT_DEFINITIONS: Record<OperationalReportId, ReportDefinition> =
       longText('earlyUnblockDescription'),
     ],
     dateColumn: 'blockStart',
+    // Figma filter: «وضعیت مسدودی», three date ranges (+ type, period type, reasons: placeholders or unlike the table).
+    dateFilterColumns: ['blockStart', 'blockEnd', 'earlyUnblockAt'],
     sortOptions: byDate('blockStart'),
   },
   restrictions: {
@@ -157,6 +171,8 @@ export const REPORT_DEFINITIONS: Record<OperationalReportId, ReportDefinition> =
       longText('liftReasonDescription'),
     ],
     dateColumn: 'createdAt',
+    // Figma filter: four date ranges (+ target / access types and ID fields: placeholders or ID ranges, not built).
+    dateFilterColumns: ['createdAt', 'startAt', 'endAt', 'earlyLiftAt'],
     sortOptions: byDate('createdAt'),
   },
   // Filter: «بازه زمانی اقدام» (+ «نوع عملگر», options still placeholders) · sort menu: admin, actor type, newest.

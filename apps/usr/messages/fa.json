@@ -1519,6 +1519,22 @@
         "x": "X",
         "bale": "پیام رسان بله",
         "rubika": "روبیکا"
+      },
+      "browser": {
+        "chrome": "Chrome",
+        "firefox": "FireFox",
+        "safari": "Safari",
+        "edge": "Edge",
+        "opera": "Opera",
+        "other": "سایر"
+      },
+      "operatingSystem": {
+        "windows": "ویندوز",
+        "macos": "MacIOS",
+        "linux": "لینوکس",
+        "ios": "IOS",
+        "android": "اندروید",
+        "ipados": "IPadIOS"
       }
     },
     "reports": {
@@ -1531,6 +1547,9 @@
           "field": "فیلد اطلاعاتی",
           "status": "وضعیت",
           "requestedAt": "زمان درخواست"
+        },
+        "dateFilters": {
+          "reviewedAt": "بازه زمانی تایید/رد"
         }
       },
       "accountOps": {
@@ -1543,7 +1562,8 @@
           "previousValue": "مقدار قبلی فیلد",
           "newValue": "مقدار جدید فیلد",
           "status": "وضعیت"
-        }
+        },
+        "dateFilter": "بازه زمانی اقدام"
       },
       "publicPanelLifecycle": {
         "title": "گزارش ایجاد/حذف پنل عمومی",
@@ -1553,6 +1573,10 @@
           "action": "نوع اقدام",
           "actedAt": "زمان اقدام",
           "responseHours": "فاصله زمانی درخواست تا اقدام"
+        },
+        "dateFilters": {
+          "actedAt": "بازه زمانی اقدام",
+          "requestedAt": "بازه زمانی درخواست"
         }
       },
       "publicPanelRequests": {
@@ -1573,7 +1597,8 @@
           "ip": "IP",
           "os": "سیستم عامل",
           "browser": "نوع مرورگر"
-        }
+        },
+        "dateFilter": "بازه زمانی ورود و خروج"
       },
       "securitySettings": {
         "title": "گزارش سابقه ویرایش تنظیمات امنیتی",
@@ -1582,7 +1607,8 @@
           "field": "فیلد ویرایش شده",
           "previousValue": "مقدار قبلی",
           "newValue": "مقدار جدید"
-        }
+        },
+        "dateFilter": "بازه زمانی اقدام"
       },
       "bruteForceUnblock": {
         "title": "گزارش سابقه رفع مسدودی عملگر به دلیل حملات بی‌رحمانه",
@@ -1595,6 +1621,11 @@
           "blockedIp": "آی پی مسدود شده",
           "earlyUnblockAt": "زمان رفع مسدودی پیش از موعد",
           "earlyUnblockReason": "دلیل رفع مسدودی پیش از موعد"
+        },
+        "dateFilters": {
+          "blockStart": "بازه زمانی شروع مسدودی",
+          "blockEnd": "بازه زمانی پایان مسدودی",
+          "earlyUnblockAt": "بازه زمانی رفع مسدودی پیش از موعد"
         }
       },
       "manualBlock": {
@@ -1613,6 +1644,11 @@
           "earlyUnblockAt": "زمان رفع مسدودی پیش از موعد",
           "earlyUnblockReason": "دلیل رفع مسدودی پیش از موعد",
           "earlyUnblockDescription": "توضیح دلیل رفع مسدودی پیش از موعد"
+        },
+        "dateFilters": {
+          "blockStart": "بازه زمانی شروع مسدودی",
+          "blockEnd": "بازه زمانی پایان مسدودی",
+          "earlyUnblockAt": "بازه زمانی رفع مسدودی پیش از موعد"
         }
       },
       "restrictions": {
@@ -1637,6 +1673,12 @@
           "earlyLiftAt": "زمان رفع محدودی پیش از موعد",
           "liftReason": "دلیل رفع محدودی",
           "liftReasonDescription": "توضیح دلیل رفع محدودی"
+        },
+        "dateFilters": {
+          "createdAt": "بازه زمانی ایجاد محدودی",
+          "startAt": "بازه زمانی شروع محدودی",
+          "endAt": "بازه زمانی پایان محدودی",
+          "earlyLiftAt": "بازه زمانی رفع محدودی پیش از موعد"
         }
       },
       "actorDeleteRestore": {

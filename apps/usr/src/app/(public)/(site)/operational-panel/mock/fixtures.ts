@@ -22,7 +22,7 @@ const PROFILE_FIELDS = ['نام خانوادگی شناسنامه ای', 'نام
 const PREVIOUS_VALUES = ['رضایی', 'ندارد', 'علی', 'ندارد', 'ندارد', 'شیراز', 'ندارد', 'ندارد', 'username', 'ندارد', 'username', '09121211212'];
 const NEW_VALUES = ['رضایی درودی', 'رضایی درودی همدانی', 'علیرضا', '1361/04/02', 'تهران', 'تهران', 'بوعلی سینا', 'مهندسی', 'username12', 'username12', 'username12', '09353535321'];
 const LIFECYCLE_STEPS = ['در حال بررسی', 'ارسال شده', 'ثبت نشده', 'در انتظار تایید', 'در حال پردازش', 'تأیید شده', 'در انتظار ایجاد', 'در انتظار ارسال', 'خطا در پردازش', 'در انتظار بازخورد', 'تکمیل شده', 'منتظر بارگذاری'];
-const OS = ['ویندوز', 'اندروید', 'ویندوز', 'ویندوز', 'اندروید'];
+const OS = ['windows', 'android', 'windows', 'macos', 'ios', 'linux', 'ipados'];
 const PROVIDER_KINDS = ['سرویس دهنده یک', 'سرویس دهنده دو', 'سرویس دهنده سه', 'سرویس دهنده بهداشتی', 'سرویس دهنده حمل و نقل', 'سرویس دهنده ورزشی', 'سرویس دهنده فناوری', 'سرویس دهنده انفرادی'];
 const SHARE_CHANNELS = ['instagram', 'telegram', 'whatsapp', 'x', 'bale', 'rubika'];
 const PROVINCES = [['فارس', 'شیراز', 'دانشگاه علوم پزشکی شیراز'], ['تهران', 'تهران', 'دانشگاه تهران'], ['اصفهان', 'اصفهان', 'دانشگاه صنعتی اصفهان']] as const;
@@ -98,7 +98,7 @@ const BUILDERS: Record<OperationalReportId, RowBuilder> = {
     operationType: `نوع ${ordinal(i % 3)}`,
     ip: ip(i),
     os: pick(OS, i),
-    browser: pick(['Chrome', 'Firefox', 'Safari'], i),
+    browser: pick(['chrome', 'firefox', 'safari', 'chrome', 'edge', 'opera', 'other'], i),
   }),
   securitySettings: (i) => ({
     actedAt: iso(i, 17),

@@ -107,4 +107,15 @@ describe('operational panel report mocks', () => {
       ),
     ).toBe(true);
   });
+
+  it('restrictions report filters by the end-date range', () => {
+    const definition = getReportDefinition('restrictions');
+    const day = String(getMockRows('restrictions')[3].endAt).slice(0, 10);
+    const page = queryMockReport(definition, {
+      ...emptyReportRequest(definition),
+      filters: { from: '', to: '', values: {}, dates: { endAt: { from: day, to: day } } },
+    });
+    expect(page.count).toBeGreaterThan(0);
+    expect(page.items.every((row) => String(row.endAt).startsWith(day))).toBe(true);
+  });
 });

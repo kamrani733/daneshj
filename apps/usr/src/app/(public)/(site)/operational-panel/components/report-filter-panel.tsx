@@ -20,7 +20,7 @@ type ReportFilterPanelProps = {
 type RangeDraft = Record<string, { min: string; max: string }>;
 
 /**
- * Date range on the main date column, «شروع بازه / پایان بازه» pairs for `rangeColumns` and one checkbox group
+ * Date range on the main date column (or one per `dateFilterColumns`), «شروع بازه / پایان بازه» pairs for `rangeColumns` and one checkbox group
  * per closed-set column (Figma report filter frames). Applied on «اعمال فیلتر».
  */
 export function ReportFilterPanel({ definition, filters, onApply, onClear }: ReportFilterPanelProps) {
@@ -28,6 +28,7 @@ export function ReportFilterPanel({ definition, filters, onApply, onClear }: Rep
   const tFilter = useTranslations('operationalPanel.filters');
   const [draft, setDraft] = useState(filters);
   const rangeColumns = definition.rangeColumns ?? [];
+  const dateFilterColumns = definition.dateFilterColumns;
   const [rangeDraft, setRangeDraft] = useState<RangeDraft>(() =>
     Object.fromEntries(
       rangeColumns.map((column) => {
@@ -38,8 +39,20 @@ export function ReportFilterPanel({ definition, filters, onApply, onClear }: Rep
   );
   const enumColumns = enumFilterColumns(definition);
   const [openFields, setOpenFields] = useState<Set<string>>(
-    () => new Set(['date', ...rangeColumns, ...enumColumns.map((column) => column.key)])
+    () =>
+      new Set([
+        'date',
+        ...(dateFilterColumns ?? []).map((column) => `date-${column}`),
+        ...rangeColumns,
+        ...enumColumns.map((column) => column.key),
+      ])
   );
+
+  const setDateBound = (column: string, bound: 'from' | 'to', value: string) =>
+    setDraft((current) => {
+      const bounds = current.dates?.[column] ?? { from: '', to: '' };
+      return { ...current, dates: { ...current.dates, [column]: { ...bounds, [bound]: value } } };
+    });
 
   const setRangeBound = (column: string, bound: 'min' | 'max', value: string) =>
     setRangeDraft((current) => ({ ...current, [column]: { ...(current[column] ?? { min: '', max: '' }), [bound]: value } }));
@@ -75,28 +88,52 @@ export function ReportFilterPanel({ definition, filters, onApply, onClear }: Rep
   return (
     <div className="flex flex-col">
       <div className="grid grid-cols-1 min-[834px]:grid-cols-2">
-        <FilterField
-          id="date"
-          idPrefix={idPrefix}
-          label={
-            definition.dateFilterLabel
-              ? t(`reports.${definition.id}.dateFilter`)
-              : t(`reports.${definition.id}.columns.${definition.dateColumn}`)
-          }
-          open={openFields.has('date')}
-          onToggle={() => toggleField('date')}
-        >
-          <DateRangeInputs
-            startLabel={tFilter('from')}
-            endLabel={tFilter('to')}
-            placeholder={tFilter('datePlaceholder')}
-            hint={tFilter('dateHint')}
-            startValue={draft.from}
-            endValue={draft.to}
-            onStartChange={(from) => setDraft((current) => ({ ...current, from }))}
-            onEndChange={(to) => setDraft((current) => ({ ...current, to }))}
-          />
-        </FilterField>
+        {dateFilterColumns ? (
+          dateFilterColumns.map((column) => (
+            <FilterField
+              key={column}
+              id={`date-${column}`}
+              idPrefix={idPrefix}
+              label={t(`reports.${definition.id}.dateFilters.${column}`)}
+              open={openFields.has(`date-${column}`)}
+              onToggle={() => toggleField(`date-${column}`)}
+            >
+              <DateRangeInputs
+                startLabel={tFilter('from')}
+                endLabel={tFilter('to')}
+                placeholder={tFilter('datePlaceholder')}
+                hint={tFilter('dateHint')}
+                startValue={draft.dates?.[column]?.from ?? ''}
+                endValue={draft.dates?.[column]?.to ?? ''}
+                onStartChange={(from) => setDateBound(column, 'from', from)}
+                onEndChange={(to) => setDateBound(column, 'to', to)}
+              />
+            </FilterField>
+          ))
+        ) : (
+          <FilterField
+            id="date"
+            idPrefix={idPrefix}
+            label={
+              definition.dateFilterLabel
+                ? t(`reports.${definition.id}.dateFilter`)
+                : t(`reports.${definition.id}.columns.${definition.dateColumn}`)
+            }
+            open={openFields.has('date')}
+            onToggle={() => toggleField('date')}
+          >
+            <DateRangeInputs
+              startLabel={tFilter('from')}
+              endLabel={tFilter('to')}
+              placeholder={tFilter('datePlaceholder')}
+              hint={tFilter('dateHint')}
+              startValue={draft.from}
+              endValue={draft.to}
+              onStartChange={(from) => setDraft((current) => ({ ...current, from }))}
+              onEndChange={(to) => setDraft((current) => ({ ...current, to }))}
+            />
+          </FilterField>
+        )}
 
         {rangeColumns.map((column) => (
           <FilterField

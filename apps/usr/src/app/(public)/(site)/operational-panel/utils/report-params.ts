@@ -2,6 +2,7 @@ import { normalizeFaText, toLatinDigits } from '@/lib/normalize-fa';
 
 import {
   REPORT_ENUMS,
+  type DateBounds,
   type NumberRange,
   type ReportColumnDefinition,
   type ReportDefinition,
@@ -59,7 +60,8 @@ export function hasActiveFilters(request: ReportRequest): boolean {
     request.filters.from !== '' ||
     request.filters.to !== '' ||
     Object.values(request.filters.values).some((values) => values.length > 0) ||
-    Object.values(request.filters.ranges ?? {}).some((range) => range.min !== null || range.max !== null)
+    Object.values(request.filters.ranges ?? {}).some((range) => range.min !== null || range.max !== null) ||
+    Object.values(request.filters.dates ?? {}).some((bounds) => bounds.from !== '' || bounds.to !== '')
   );
 }
 
@@ -96,11 +98,27 @@ export function parseReportParams(definition: ReportDefinition, params: ParamsRe
     if (min !== null || max !== null) ranges[column] = { min, max };
   }
 
+  const dates: Record<string, DateBounds> = {};
+  for (const column of definition.dateFilterColumns ?? []) {
+    let start = readIsoDate(params.get(param(definition, `d.${column}.from`)));
+    let end = readIsoDate(params.get(param(definition, `d.${column}.to`)));
+    if (start && end && start > end) [start, end] = [end, start];
+    if (start || end) dates[column] = { from: start, to: end };
+  }
+  // Reports with `dateFilterColumns` have no single main range.
+  if (definition.dateFilterColumns) [from, to] = ['', ''];
+
   return {
     q: normalizeReportQuery(params.get(param(definition, 'q')) ?? ''),
     sort: sort && definition.sortOptions.includes(sort) ? sort : fallback.sort,
     page: Number.isInteger(page) && page >= 1 && page <= MAX_PAGE ? page : 1,
-    filters: { from, to, values, ...(Object.keys(ranges).length > 0 ? { ranges } : {}) },
+    filters: {
+      from,
+      to,
+      values,
+      ...(Object.keys(ranges).length > 0 ? { ranges } : {}),
+      ...(Object.keys(dates).length > 0 ? { dates } : {}),
+    },
   };
 }
 
@@ -127,6 +145,11 @@ export function writeReportParams(
   if (ISO_DATE.test(request.filters.to)) next.set(param(definition, 'to'), request.filters.to);
   for (const [column, values] of Object.entries(request.filters.values)) {
     if (values.length > 0) next.set(param(definition, `f.${column}`), values.join(','));
+  }
+  for (const column of definition.dateFilterColumns ?? []) {
+    const bounds = request.filters.dates?.[column];
+    if (bounds && ISO_DATE.test(bounds.from)) next.set(param(definition, `d.${column}.from`), bounds.from);
+    if (bounds && ISO_DATE.test(bounds.to)) next.set(param(definition, `d.${column}.to`), bounds.to);
   }
   for (const column of definition.rangeColumns ?? []) {
     const range = request.filters.ranges?.[column];
