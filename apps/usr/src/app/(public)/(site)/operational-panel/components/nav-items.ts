@@ -11,8 +11,12 @@ import type { PanelNavItem } from '@/components/panel';
 
 import {
   OPERATIONAL_PANEL_CHARTS_PATH,
+  OPERATIONAL_PANEL_INTERACTIONS_PATH,
+  OPERATIONAL_PANEL_MANAGE_SERVICES_PATH,
   OPERATIONAL_PANEL_REPORTS_PATH,
   OPERATIONAL_PANEL_STATS_PATH,
+  OPERATIONAL_PANEL_USED_SERVICES_PATH,
+  OPERATIONAL_PANEL_WALLET_PATH,
 } from '@operational-panel/utils/paths';
 
 export type OperationalNavKey =
@@ -24,16 +28,13 @@ export type OperationalNavKey =
   | 'charts'
   | 'interactions';
 
-/**
- * Sidebar of the Operational Panel export. Items without a design yet stay visible but disabled
- * (no `href`). Labels: `operationalPanel.nav.<key>`.
- */
+/** Sidebar of the Operational Panel export. An item without `href` renders disabled. Labels: `operationalPanel.nav.<key>`. */
 export const OPERATIONAL_PANEL_NAV_ITEMS: Array<Omit<PanelNavItem, 'label'> & { key: OperationalNavKey }> = [
-  { key: 'usedServices', icon: FormatListBulletedIcon },
-  { key: 'manageServices', icon: ArchiveIcon },
-  { key: 'wallet', icon: WalletIcon },
+  { key: 'usedServices', icon: FormatListBulletedIcon, href: OPERATIONAL_PANEL_USED_SERVICES_PATH },
+  { key: 'manageServices', icon: ArchiveIcon, href: OPERATIONAL_PANEL_MANAGE_SERVICES_PATH },
+  { key: 'wallet', icon: WalletIcon, href: OPERATIONAL_PANEL_WALLET_PATH },
   { key: 'reports', icon: AssignmentIcon, href: OPERATIONAL_PANEL_REPORTS_PATH },
   { key: 'stats', icon: AssessmentIcon, href: OPERATIONAL_PANEL_STATS_PATH },
   { key: 'charts', icon: BarChartIcon, href: OPERATIONAL_PANEL_CHARTS_PATH },
-  { key: 'interactions', icon: RecommendIcon },
+  { key: 'interactions', icon: RecommendIcon, href: OPERATIONAL_PANEL_INTERACTIONS_PATH },
 ];

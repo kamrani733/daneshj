@@ -45,7 +45,7 @@ export function ReportRows({
 
   const cell = (row: ReportRow, key: string) => {
     const column = definition.columns.find((item) => item.key === key);
-    return column ? formatReportCell(row[key] ?? null, column, t) : '—';
+    return column ? formatReportCell(row, column, t) : '—';
   };
 
   return (

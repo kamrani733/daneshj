@@ -21,7 +21,17 @@ export const OPERATIONAL_REPORT_IDS = [
   'referralLinks',
 ] as const;
 
-export type OperationalReportId = (typeof OPERATIONAL_REPORT_IDS)[number];
+/** Reports that live on their own sidebar pages (used services, wallet, interactions), not in «گزارشات». */
+export const OPERATIONAL_PAGE_REPORT_IDS = [
+  'usedServices',
+  'walletTransactions',
+  'interactionsByActor',
+  'interactionsToActor',
+] as const;
+
+export type OperationalReportId =
+  | (typeof OPERATIONAL_REPORT_IDS)[number]
+  | (typeof OPERATIONAL_PAGE_REPORT_IDS)[number];
 
 /** Closed value sets shown in the export; labels live in `operationalPanel.enums`. */
 export const REPORT_ENUMS = {
@@ -31,28 +41,44 @@ export const REPORT_ENUMS = {
   loginOperation: ['login', 'logout'],
   blockStatus: ['active', 'blocked'],
   periodUnit: ['minute', 'hour'],
+  transactionType: ['deposit', 'withdrawal'],
+  interactorType: ['user', 'provider', 'admin'],
+  interactionType: ['like', 'dislike', 'share', 'follow'],
+  interactionValue: ['active', 'inactive'],
 } as const;
 
 export type ReportEnumId = keyof typeof REPORT_ENUMS;
 
 /**
  * How a cell renders: `ltr` = usernames, IPs, ids (isolated LTR) · `datetime` = ISO instant → Jalali ·
- * `money` = toman amount (unit in the header) · `hours` = «۱۸ ساعت» · `longText` = clamped to 2 lines.
+ * `date` = ISO instant → Jalali day only · `money` = toman amount (unit in the header) ·
+ * `signedMoney` = «+۵۰۰٬۰۰۰» green / «-۹۰٬۵۰۰» red · `hours` = «۱۸ ساعت» · `longText` = clamped to 2 lines ·
+ * `link` = text linked to `row[<key>Href]` · `action` = fixed label (`operationalPanel.<labelKey>`) linked the same way.
  */
 export type ReportColumnKind =
   | 'text'
   | 'longText'
   | 'ltr'
   | 'datetime'
+  | 'date'
   | 'number'
   | 'money'
+  | 'signedMoney'
   | 'hours'
-  | 'enum';
+  | 'enum'
+  | 'link'
+  | 'action';
 
 export type ReportColumnDefinition = {
   key: string;
   kind: ReportColumnKind;
   enumId?: ReportEnumId;
+  /** `link`: isolate the text as LTR (usernames). */
+  ltr?: boolean;
+  /** `action`: label key in `operationalPanel`. */
+  labelKey?: string;
+  /** Shown instead of «—» when the value is empty, key in `operationalPanel` (e.g. «ندارد»). */
+  emptyKey?: string;
 };
 
 /** Sort values: `<column>` ascending, `-<column>` descending. */

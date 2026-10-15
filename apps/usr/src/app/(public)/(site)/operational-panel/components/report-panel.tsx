@@ -31,8 +31,16 @@ const NO_ROWS: ReportRow[] = [];
 /** Phone / tablet: cards revealed per «مشاهده بیشتر» (tablet export shows 4). */
 const CARD_STEP = 4;
 
-/** One collapsible operational-panel report: toolbar, five states, table or cards. Data is fetched only while open. */
-export function OperationalReportPanel({ reportId }: { reportId: OperationalReportId }) {
+type OperationalReportPanelProps = {
+  reportId: OperationalReportId;
+  /** `section` = collapsible «گزارش …» card · `plain` = toolbar + rows only (the «سرویس‌های استفاده شده» page). */
+  variant?: 'section' | 'plain';
+  /** The wallet export draws no sort control. */
+  showSort?: boolean;
+};
+
+/** One operational-panel report: toolbar, five states, table or cards. Data is fetched only while open. */
+export function OperationalReportPanel({ reportId, variant = 'section', showSort = true }: OperationalReportPanelProps) {
   const t = useTranslations('operationalPanel');
   const definition = getReportDefinition(reportId);
   const title = t(`reports.${reportId}.title`);
@@ -136,16 +144,20 @@ export function OperationalReportPanel({ reportId }: { reportId: OperationalRepo
     );
   }
 
-  return (
-    <ReportSection title={title} open={open} onOpenChange={setOpen}>
+  const content = (
+    <>
       <ReportToolbar
         search={{ value: draft, onChange: setDraft, label: t('toolbar.search'), maxLength: REPORT_SEARCH_MAX_LENGTH }}
-        sort={{
-          label: t('toolbar.sort'),
-          value: request.sort,
-          options: definition.sortOptions.map((value) => ({ value, label: sortLabel(value) })),
-          onChange: setSort,
-        }}
+        sort={
+          showSort
+            ? {
+                label: t('toolbar.sort'),
+                value: request.sort,
+                options: definition.sortOptions.map((value) => ({ value, label: sortLabel(value) })),
+                onChange: setSort,
+              }
+            : undefined
+        }
         filter={{
           label: t('toolbar.filters'),
           open: filtersOpen,
@@ -164,6 +176,20 @@ export function OperationalReportPanel({ reportId }: { reportId: OperationalRepo
         }}
       />
       {body}
+    </>
+  );
+
+  if (variant === 'plain') {
+    return (
+      <section aria-label={title} className="flex flex-col gap-2">
+        {content}
+      </section>
+    );
+  }
+
+  return (
+    <ReportSection title={title} open={open} onOpenChange={setOpen}>
+      {content}
     </ReportSection>
   );
 }

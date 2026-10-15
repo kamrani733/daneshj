@@ -2,15 +2,27 @@ import type {
   OperationalReportId,
   ReportColumnDefinition,
   ReportDefinition,
+  ReportEnumId,
 } from '@operational-panel/types';
 
 const text = (key: string): ReportColumnDefinition => ({ key, kind: 'text' });
 const longText = (key: string): ReportColumnDefinition => ({ key, kind: 'longText' });
 const ltr = (key: string): ReportColumnDefinition => ({ key, kind: 'ltr' });
 const datetime = (key: string): ReportColumnDefinition => ({ key, kind: 'datetime' });
+const date = (key: string): ReportColumnDefinition => ({ key, kind: 'date' });
+const link = (key: string, ltr = false): ReportColumnDefinition => ({ key, kind: 'link', ltr });
+const enumColumn = (key: string, enumId: ReportEnumId): ReportColumnDefinition => ({ key, kind: 'enum', enumId });
 
 /** Newest / oldest by the main date column — the only sort the export implies (provisional). */
 const byDate = (column: string) => [`-${column}`, column];
+
+const INTERACTION_COLUMNS: ReportColumnDefinition[] = [
+  datetime('interactedAt'),
+  link('interactor', true),
+  enumColumn('interactorType', 'interactorType'),
+  enumColumn('interactionType', 'interactionType'),
+  enumColumn('interactionValue', 'interactionValue'),
+];
 
 /**
  * Column order = desktop table (start → end), followed by the fields that only the tablet cards show
@@ -218,6 +230,48 @@ export const REPORT_DEFINITIONS: Record<OperationalReportId, ReportDefinition> =
     sortOptions: ['-createdAt', 'createdAt', 'title', 'registeredUsername'],
     searchColumns: ['title', 'registeredUsername'],
     srs: ['Usr-Rfl-2N1'],
+  },
+  // «سرویس‌های استفاده شده» page (Figma web overview 890:64903): one table, no section header.
+  usedServices: {
+    id: 'usedServices',
+    columns: [
+      link('serviceName'),
+      link('usedProduct'),
+      date('usedAt'),
+      { key: 'financialInteraction', kind: 'money', emptyKey: 'values.none' },
+      { key: 'operations', kind: 'action', labelKey: 'usedServices.goToServicePanel' },
+    ],
+    dateColumn: 'usedAt',
+    sortOptions: byDate('usedAt'),
+    searchColumns: ['serviceName', 'usedProduct'],
+  },
+  // «کیف پول» page › «سابقه تراکنش ها» (export «Operational Panel۳»): filters + search, no sort control.
+  walletTransactions: {
+    id: 'walletTransactions',
+    columns: [
+      datetime('transactionAt'),
+      enumColumn('transactionType', 'transactionType'),
+      { key: 'amount', kind: 'signedMoney' },
+      longText('description'),
+    ],
+    dateColumn: 'transactionAt',
+    sortOptions: byDate('transactionAt'),
+    searchColumns: ['description'],
+  },
+  // «مشاهده تعاملات» tabs (export «Notifications», tablet frame): same fields in both directions.
+  interactionsByActor: {
+    id: 'interactionsByActor',
+    columns: INTERACTION_COLUMNS,
+    dateColumn: 'interactedAt',
+    sortOptions: byDate('interactedAt'),
+    searchColumns: ['interactor'],
+  },
+  interactionsToActor: {
+    id: 'interactionsToActor',
+    columns: INTERACTION_COLUMNS,
+    dateColumn: 'interactedAt',
+    sortOptions: byDate('interactedAt'),
+    searchColumns: ['interactor'],
   },
 };
 

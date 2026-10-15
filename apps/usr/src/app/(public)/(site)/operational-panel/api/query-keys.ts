@@ -15,4 +15,6 @@ export const operationalPanelKeys = {
     [...operationalPanelKeys.all, 'chart', chartId, period, range] as const,
   comparison: (request: ComparisonRequest) => [...operationalPanelKeys.all, 'comparison', request] as const,
   comparisonOptions: () => [...operationalPanelKeys.all, 'comparison-options'] as const,
+  managedServices: () => [...operationalPanelKeys.all, 'managed-services'] as const,
+  walletSummary: () => [...operationalPanelKeys.all, 'wallet-summary'] as const,
 };

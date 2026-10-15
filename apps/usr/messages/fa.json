@@ -1467,6 +1467,25 @@
       "periodUnit": {
         "minute": "دقیقه",
         "hour": "ساعت"
+      },
+      "transactionType": {
+        "deposit": "واریز",
+        "withdrawal": "برداشت"
+      },
+      "interactorType": {
+        "user": "کاربر",
+        "provider": "سرویس‌دهنده",
+        "admin": "راهبر"
+      },
+      "interactionType": {
+        "like": "پسندیدن",
+        "dislike": "نپسندیدن",
+        "share": "اشتراک‌گذاری",
+        "follow": "دنبال کردن"
+      },
+      "interactionValue": {
+        "active": "فعال",
+        "inactive": "غیرفعال"
       }
     },
     "reports": {
@@ -1648,6 +1667,45 @@
           "invitedCity": "شهر/شهرستان محل زندگی (دعوت شده)",
           "invitedDegree": "مقطع تحصیلی (دعوت شده)",
           "invitedMajor": "رشته تحصیلی (دعوت شده)"
+        }
+      },
+      "usedServices": {
+        "title": "سرویس‌های استفاده شده",
+        "columns": {
+          "serviceName": "نام سرویس",
+          "usedProduct": "محصول استفاده شده",
+          "usedAt": "تاریخ استفاده",
+          "financialInteraction": "تعامل مالی",
+          "operations": "عملیات"
+        }
+      },
+      "walletTransactions": {
+        "title": "سابقه تراکنش ها",
+        "columns": {
+          "transactionAt": "تاریخ و زمان تراکنش",
+          "transactionType": "نوع تراکنش",
+          "amount": "میزان تراکنش (تومان)",
+          "description": "شرح تراکنش"
+        }
+      },
+      "interactionsByActor": {
+        "title": "سابقه تعاملات از عملگر",
+        "columns": {
+          "interactedAt": "تاریخ ثبت تعامل",
+          "interactor": "عامل تعامل",
+          "interactorType": "نوع عامل تعامل",
+          "interactionType": "نوع تعامل",
+          "interactionValue": "مقدار تعامل"
+        }
+      },
+      "interactionsToActor": {
+        "title": "سابقه تعاملات به عملگر",
+        "columns": {
+          "interactedAt": "تاریخ ثبت تعامل",
+          "interactor": "عامل تعامل",
+          "interactorType": "نوع عامل تعامل",
+          "interactionType": "نوع تعامل",
+          "interactionValue": "مقدار تعامل"
         }
       }
     },
@@ -1860,6 +1918,59 @@
           "groupB": "تنظیم گروه B"
         }
       }
+    },
+    "values": {
+      "none": "ندارد"
+    },
+    "usedServices": {
+      "goToServicePanel": "برو به پنل عملیاتی سرویس"
+    },
+    "wallet": {
+      "intro": {
+        "label": "معرفی کیف پول",
+        "logoAlt": "دانشجوام",
+        "first": "با استفاده از کیف پول <logo></logo> می‌توانید به‌سادگی پرداخت‌های خود را مدیریت کنید، تراکنش‌های انجام‌شده را مشاهده کنید و هزینه خدمات مختلف سامانه را بدون نیاز به ورود اطلاعات پرداخت تکراری انجام دهید.",
+        "second": "این سرویس یک روش سریع، امن و قابل پیگیری برای انجام عملیات مالی در سامانه است و امکان استفاده از تخفیف‌ها و اعتبارهای ویژه را نیز برای شما فراهم می‌کند."
+      },
+      "summary": {
+        "title": "کیف پول",
+        "balance": "موجودی",
+        "totalSpent": "کل مبلغ استفاده شده",
+        "updatedAt": "تاریخ به روز رسانی",
+        "unit": "تومان",
+        "loading": "در حال بارگذاری کیف پول…",
+        "error": "دریافت اطلاعات کیف پول انجام نشد",
+        "retry": "تلاش مجدد"
+      }
+    },
+    "interactions": {
+      "tabsLabel": "نوع تعاملات",
+      "tabs": {
+        "by": "تعاملات از عملگر",
+        "to": "تعاملات به عملگر"
+      },
+      "intro": "در این صفحه می‌توانید تمامی تعاملات لحظه‌ای خود با دیگران و همین طور دیگران با شما را به همراه تاریخ ثبت آن ها مشاهده کنید."
+    },
+    "manageServices": {
+      "services": {
+        "discount": "سرویس تخفیف کالا و خدمات",
+        "referral": "سرویس دعوت از دوستان",
+        "patogh": "سرویس پاتوق",
+        "universityPrograms": "سرویس معرفی برنامه های دانشگاهی",
+        "rewards": "سرویس پاداش",
+        "news": "سرویس خبر",
+        "calendarEvents": "سرویس رویداد های تقویمی",
+        "newsletter": "سرویس خبرنامه"
+      },
+      "productsLabel": "وضعیت محصولات",
+      "activeProducts": "{count} محصول فعال",
+      "inactiveProducts": "{count} محصول غیر فعال",
+      "goToPanel": "برو به پنل عملیاتی سرویس",
+      "goToPanelOf": "برو به پنل عملیاتی {service}",
+      "loading": "در حال بارگذاری سرویس‌ها…",
+      "error": "دریافت سرویس‌ها انجام نشد",
+      "retry": "تلاش مجدد",
+      "empty": "سرویسی برای نمایش وجود ندارد"
     }
   }
 }

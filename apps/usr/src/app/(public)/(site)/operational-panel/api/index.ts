@@ -1,6 +1,6 @@
 /**
- * Operational panel reports, stats and charts — data entry point. Mock phase: validates the request and delegates to
- * `@operational-panel/mock`. When an endpoint exists for a report, only this module changes.
+ * Operational panel reports, stats, charts, wallet summary and managed services — data entry point. Mock phase:
+ * validates the request and delegates to `@operational-panel/mock`. When an endpoint exists, only this module changes.
  */
 import type { ChartPeriod } from '@/components/charts';
 
@@ -10,7 +10,9 @@ import {
   mockGetComparisonOptions,
 } from '@operational-panel/mock/charts-mock';
 import { mockGetReport } from '@operational-panel/mock/reports-mock';
+import { mockGetManagedServices } from '@operational-panel/mock/services-mock';
 import { mockGetStats } from '@operational-panel/mock/stats-mock';
+import { mockGetWalletSummary } from '@operational-panel/mock/wallet-mock';
 import type { OperationalReportId, ReportPage, ReportRequest } from '@operational-panel/types';
 import {
   COMPARISON_FIELDS,
@@ -19,10 +21,13 @@ import {
   type ComparisonResult,
   type OperationalChartData,
 } from '@operational-panel/types/charts';
+import type { ManagedService } from '@operational-panel/types/services';
 import type { OperationalStats, StatsFilters } from '@operational-panel/types/stats';
+import type { WalletSummary } from '@operational-panel/types/wallet';
 import { COMPARABLE_CHART_IDS, findChartDefinition } from '@operational-panel/utils/chart-definitions';
 import { parseDateRange, writeDateRange, type DateRange } from '@operational-panel/utils/date-range-params';
 import { getReportDefinition } from '@operational-panel/utils/report-definitions';
+import { safeInternalHref } from '@operational-panel/utils/safe-href';
 import {
   parseReportParams,
   writeReportParams,
@@ -78,4 +83,18 @@ export function getComparison(request: ComparisonRequest): Promise<ComparisonRes
 /** University and major option lists for the comparison filters. */
 export function getComparisonOptions(): Promise<ComparisonOptions> {
   return mockGetComparisonOptions();
+}
+
+/** «کیف پول» balance card. */
+export function getWalletSummary(): Promise<WalletSummary> {
+  return mockGetWalletSummary();
+}
+
+/** «مدیریت سرویس‌ها» cards. Internal links only — anything else is dropped. */
+export async function getManagedServices(): Promise<ManagedService[]> {
+  const services = await mockGetManagedServices();
+  return services.map((service) => ({
+    ...service,
+    panelHref: safeInternalHref(service.panelHref),
+  }));
 }

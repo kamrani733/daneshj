@@ -16,7 +16,7 @@ export const MOCK_REPORT_ERROR_QUERY = 'خطای آزمایشی';
 
 const LATENCY_MS = 350;
 
-const TEXT_KINDS = new Set(['text', 'longText', 'ltr']);
+const TEXT_KINDS = new Set(['text', 'longText', 'ltr', 'link']);
 
 function searchColumns(definition: ReportDefinition): string[] {
   return (

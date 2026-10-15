@@ -32,6 +32,30 @@ const MAJORS = ['داروسازی', 'مهندسی کامپیوتر', 'حقوق']
 const ip = (index: number) => `198.12.123.${15 + (index % 11)}`;
 const id = (base: number, index: number) => String(base + index);
 
+/** «سابقه تراکنش ها» rows of the wallet export: description, type, signed toman amount. */
+const WALLET_TRANSACTIONS = [
+  ['پرداخت اقساط وام', 'withdrawal', -1200000],
+  ['پرداخت قبض برق', 'withdrawal', -90500],
+  ['جوایز مسابقه ماهانه', 'deposit', 500000],
+  ['حقوق ماهانه اسفند', 'deposit', 2400000],
+  ['خرید بلیط هواپیما', 'withdrawal', -2300000],
+  ['بازگشت وجه خرید', 'deposit', 78000],
+  ['پرداخت فاکتور آب', 'withdrawal', -45200],
+  ['درآمد جانبی پروژه', 'deposit', 850000],
+  ['شرح یک', 'deposit', 263600],
+  ['برداشت وجه نقد از ATM', 'withdrawal', -300000],
+  ['خرید اینترنتی کتاب', 'withdrawal', -120000],
+  ['خرید لوازم التحریر', 'withdrawal', -65700],
+] as const;
+
+const interactionRow = (i: number, stepHours: number) => ({
+  interactedAt: iso(i, stepHours),
+  interactor: `username${(i % 12) + 1}`,
+  interactorType: pick(['user', 'user', 'provider', 'admin'], i),
+  interactionType: pick(['like', 'dislike', 'share', 'like', 'follow'], i),
+  interactionValue: pick(['active', 'active', 'inactive'], i),
+});
+
 type RowBuilder = (index: number) => Omit<ReportRow, 'id'>;
 
 const BUILDERS: Record<OperationalReportId, RowBuilder> = {
@@ -179,6 +203,18 @@ const BUILDERS: Record<OperationalReportId, RowBuilder> = {
       invitedMajor: pick(MAJORS, i),
     };
   },
+  usedServices: (i) => ({
+    serviceName: `متن عنوان سرویس ${ordinal(i % 4)}`,
+    usedProduct: `نام محصول ${ordinal(i)}`,
+    usedAt: iso(i, 26),
+    financialInteraction: pick([null, null, null, 120000, null, 45000], i),
+  }),
+  walletTransactions: (i) => {
+    const [description, transactionType, amount] = pick(WALLET_TRANSACTIONS, i);
+    return { transactionAt: iso(i, 17, i % 3), transactionType, amount, description };
+  },
+  interactionsByActor: (i) => interactionRow(i, 9),
+  interactionsToActor: (i) => interactionRow(i + 5, 11),
 };
 
 const cache = new Map<OperationalReportId, ReportRow[]>();
