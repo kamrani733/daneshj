@@ -2,7 +2,7 @@
 title: "Configuration"
 description: "Environment variables, local setup, commands, production configuration"
 category: "architecture"
-last_updated: "2026-10-02"
+last_updated: "2026-10-15"
 ---
 
 # Configuration
@@ -65,7 +65,7 @@ the supported way to pin a monorepo app. Repo files cover both dashboard setups:
 | Root `vercel.json` | Root Directory is the repository root (`.`) — install/build only `@daneshjoam/usr` |
 | `apps/usr/vercel.json` | Root Directory is `apps/usr` |
 | `.vercelignore` | Excludes `apps/adm` and `apps/bus` from the upload |
-| `apps/usr/scripts/vercel-ignore.mjs` | Skips a deploy when `usr` and its workspace graph did not change |
+| `apps/usr/scripts/vercel-ignore.mjs` | Skips a deploy when `usr` and its workspace graph are unchanged since the last successful deployment (`VERCEL_GIT_PREVIOUS_SHA`) |
 | `apps/usr/scripts/vercel-build.mjs` | Runs `next build` |
 
 On Vercel (`VERCEL=1`), missing build env vars fall back to the same dev Stella values as

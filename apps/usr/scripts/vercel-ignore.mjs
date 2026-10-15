@@ -25,7 +25,20 @@ function repoRoot() {
 
 try {
   const cwd = repoRoot();
-  execFileSync('git', ['diff', '--quiet', 'HEAD^', 'HEAD', '--', ...WATCHED_PATHS], {
+  const previous = process.env.VERCEL_GIT_PREVIOUS_SHA?.trim();
+  // A missing or unfetched base means we cannot prove the app is unchanged.
+  if (!previous) process.exit(1);
+
+  try {
+    execFileSync('git', ['cat-file', '-e', `${previous}^{commit}`], {
+      cwd,
+      stdio: 'ignore',
+    });
+  } catch {
+    process.exit(1);
+  }
+
+  execFileSync('git', ['diff', '--quiet', previous, 'HEAD', '--', ...WATCHED_PATHS], {
     cwd,
     stdio: 'ignore',
   });
