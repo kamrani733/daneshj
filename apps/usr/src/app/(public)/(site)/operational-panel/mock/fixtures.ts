@@ -24,7 +24,7 @@ const NEW_VALUES = ['رضایی درودی', 'رضایی درودی همدانی
 const LIFECYCLE_STEPS = ['در حال بررسی', 'ارسال شده', 'ثبت نشده', 'در انتظار تایید', 'در حال پردازش', 'تأیید شده', 'در انتظار ایجاد', 'در انتظار ارسال', 'خطا در پردازش', 'در انتظار بازخورد', 'تکمیل شده', 'منتظر بارگذاری'];
 const OS = ['ویندوز', 'اندروید', 'ویندوز', 'ویندوز', 'اندروید'];
 const PROVIDER_KINDS = ['سرویس دهنده یک', 'سرویس دهنده دو', 'سرویس دهنده سه', 'سرویس دهنده بهداشتی', 'سرویس دهنده حمل و نقل', 'سرویس دهنده ورزشی', 'سرویس دهنده فناوری', 'سرویس دهنده انفرادی'];
-const SHARE_CHANNELS = ['اینستاگرام', 'تلگرام', 'واتساپ', 'لینکداین'];
+const SHARE_CHANNELS = ['instagram', 'telegram', 'whatsapp', 'x', 'bale', 'rubika'];
 const PROVINCES = [['فارس', 'شیراز', 'دانشگاه علوم پزشکی شیراز'], ['تهران', 'تهران', 'دانشگاه تهران'], ['اصفهان', 'اصفهان', 'دانشگاه صنعتی اصفهان']] as const;
 const DEGREES = ['دکتری', 'کارشناسی', 'کارشناسی ارشد'];
 const MAJORS = ['داروسازی', 'مهندسی کامپیوتر', 'حقوق'];
@@ -165,21 +165,21 @@ const BUILDERS: Record<OperationalReportId, RowBuilder> = {
     adminUsername: `Adminusername${(i % 4) + 1}`,
     description: 'شرح تراکنش در این بخش آورده میشود',
     transactionType: `نوع ${ordinal(i % 2)}`,
-    operationType: `نوع عملیات ${ordinal(i % 3)}`,
+    operationType: pick(['increaseBalance', 'decreaseBalance', 'increaseBalance', 'createWallet'], i),
   }),
   comments: (i) => ({
     actorUsername: `Username${(i % 5) + 1}`,
     sentAt: iso(i, 4),
     commentId: id(1324446, i),
-    operation: pick(['پاسخ', 'ویرایش', 'انتقال'], i),
+    operation: pick(['reply', 'edit', 'moveToPublicPanel', 'create', 'delete', 'feature', 'report', 'restore'], i),
     previousText: 'متن قدیم دیدگاه در این بخش آورده میشود',
     text: 'متن دیدگاه در این بخش آورده میشود',
     transferReason: `دلیل انتقال ${ordinal(i % 3)}`,
   }),
   interactions: (i) => ({
-    targetType: `نوع هدف ${ordinal((i % 3) + 2)}`,
+    targetType: pick(['comment', 'publicPanel'], i),
     target: pick(['دیدگاه ها', 'محصولات', 'خبرها'], i),
-    interactionType: pick(['نپسندیدن', 'پسندیدن', 'اشتراک گذاری'], i),
+    interactionType: pick(['dislike', 'like', 'share', 'follow', 'unfollow'], i),
     amount: `مقدار ${ordinal(i % 2)}`,
     sentAt: iso(i, 10),
     shareReason: 'اطلاع رسانی مهم',

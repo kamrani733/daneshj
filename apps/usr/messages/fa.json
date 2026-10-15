@@ -1418,7 +1418,9 @@
     },
     "sort": {
       "newest": "جدیدترین",
-      "oldest": "قدیمی‌ترین"
+      "oldest": "قدیمی‌ترین",
+      "newestBy": "{column} (جدیدترین)",
+      "oldestBy": "{column} (قدیمی‌ترین)"
     },
     "filters": {
       "from": "شروع بازه",
@@ -1427,7 +1429,8 @@
       "dateHint": "روز/ماه/سال",
       "apply": "اعمال فیلتر",
       "clear": "پاک کردن",
-      "period": "بازه زمانی"
+      "period": "بازه زمانی",
+      "amountPlaceholder": "متن جایگزین"
     },
     "states": {
       "loading": "در حال بارگذاری گزارش…",
@@ -1480,12 +1483,42 @@
       "interactionType": {
         "like": "پسندیدن",
         "dislike": "نپسندیدن",
-        "share": "اشتراک‌گذاری",
-        "follow": "دنبال کردن"
+        "follow": "دنبال کردن",
+        "unfollow": "لغو دنبال کردن",
+        "share": "اشتراک گذاری"
       },
       "interactionValue": {
         "active": "فعال",
         "inactive": "غیرفعال"
+      },
+      "walletOperation": {
+        "createWallet": "ایجاد کیف پول",
+        "increaseBalance": "افزایش موجودی",
+        "decreaseBalance": "کاهش موجودی"
+      },
+      "commentOperation": {
+        "create": "ثبت دیدگاه",
+        "edit": "ویرایش دیدگاه",
+        "delete": "حذف دیدگاه",
+        "restore": "بازگردانی دیدگاه",
+        "reply": "درج پاسخ",
+        "moveToPublicPanel": "انتقال به پنل عمومی",
+        "removeFromPublicPanel": "حذف از پنل عمومی",
+        "feature": "برگزیده کردن",
+        "unfeature": "لغو برگزیده کردن",
+        "report": "گزارش کردن"
+      },
+      "interactionTarget": {
+        "comment": "دیدگاه",
+        "publicPanel": "پنل عمومی"
+      },
+      "shareChannel": {
+        "whatsapp": "واتس اپ",
+        "telegram": "تلگرام",
+        "instagram": "اینستاگرام",
+        "x": "X",
+        "bale": "پیام رسان بله",
+        "rubika": "روبیکا"
       }
     },
     "reports": {
@@ -1613,7 +1646,8 @@
           "actorType": "نوع عملگر",
           "actedAt": "تاریخ و زمان اقدام",
           "reason": "دلیل حذف/بازگردانی"
-        }
+        },
+        "dateFilter": "بازه زمانی اقدام"
       },
       "wallet": {
         "title": "گزارش عملیات کیف پول کاربر",
@@ -1625,6 +1659,10 @@
           "description": "شرح تراکنش",
           "transactionType": "نوع تراکنش",
           "operationType": "نوع عملیات"
+        },
+        "dateFilter": "بازه زمانی تراکنش",
+        "rangeFilter": {
+          "amount": "بازه میزان تراکنش"
         }
       },
       "comments": {
@@ -1637,7 +1675,8 @@
           "previousText": "متن قبلی دیدگاه",
           "text": "متن دیدگاه",
           "transferReason": "دلیل انتقال"
-        }
+        },
+        "dateFilter": "بازه زمانی اقدام"
       },
       "interactions": {
         "title": "گزارش سابقه عملیات تعاملی",
@@ -1649,7 +1688,8 @@
           "sentAt": "زمان ارسال",
           "shareReason": "دلیل اشتراک گذاری",
           "shareChannel": "محیط اشتراک گذاری"
-        }
+        },
+        "dateFilter": "بازه زمانی تعامل"
       },
       "referralLinks": {
         "title": "گزارش سابقه لینک‌های ساخته شده",

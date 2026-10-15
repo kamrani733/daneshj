@@ -4,10 +4,11 @@ import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
 import { Button } from '@/components/ui/button';
-import { DateRangeInputs, FilterCheckbox, FilterField } from '@/components/ui/filter-fields';
+import { DateRangeInputs, FilterCheckbox, FilterField, NumberRangeInputs } from '@/components/ui/filter-fields';
+import { toFaDigits } from '@/lib/jalali';
 
 import { REPORT_ENUMS, type ReportDefinition, type ReportFilters } from '@operational-panel/types';
-import { enumFilterColumns } from '@operational-panel/utils/report-params';
+import { EMPTY_REPORT_FILTERS, enumFilterColumns, parseRangeBound } from '@operational-panel/utils/report-params';
 
 type ReportFilterPanelProps = {
   definition: ReportDefinition;
@@ -16,20 +17,42 @@ type ReportFilterPanelProps = {
   onClear: () => void;
 };
 
-const EMPTY_FILTERS: ReportFilters = { from: '', to: '', values: {} };
+type RangeDraft = Record<string, { min: string; max: string }>;
 
 /**
- * Provisional filters (no filter design or SRS except `Usr-Rfl-2N1`): date range on the main date column
- * plus one checkbox group per closed-set column. Applied on «اعمال فیلتر».
+ * Date range on the main date column, «شروع بازه / پایان بازه» pairs for `rangeColumns` and one checkbox group
+ * per closed-set column (Figma report filter frames). Applied on «اعمال فیلتر».
  */
 export function ReportFilterPanel({ definition, filters, onApply, onClear }: ReportFilterPanelProps) {
   const t = useTranslations('operationalPanel');
   const tFilter = useTranslations('operationalPanel.filters');
   const [draft, setDraft] = useState(filters);
+  const rangeColumns = definition.rangeColumns ?? [];
+  const [rangeDraft, setRangeDraft] = useState<RangeDraft>(() =>
+    Object.fromEntries(
+      rangeColumns.map((column) => {
+        const range = filters.ranges?.[column];
+        return [column, { min: range?.min != null ? toFaDigits(range.min) : '', max: range?.max != null ? toFaDigits(range.max) : '' }];
+      })
+    )
+  );
   const enumColumns = enumFilterColumns(definition);
   const [openFields, setOpenFields] = useState<Set<string>>(
-    () => new Set(['date', ...enumColumns.map((column) => column.key)])
+    () => new Set(['date', ...rangeColumns, ...enumColumns.map((column) => column.key)])
   );
+
+  const setRangeBound = (column: string, bound: 'min' | 'max', value: string) =>
+    setRangeDraft((current) => ({ ...current, [column]: { ...(current[column] ?? { min: '', max: '' }), [bound]: value } }));
+
+  const apply = () => {
+    const ranges = Object.fromEntries(
+      rangeColumns.map((column) => [
+        column,
+        { min: parseRangeBound(rangeDraft[column]?.min ?? ''), max: parseRangeBound(rangeDraft[column]?.max ?? '') },
+      ])
+    );
+    onApply({ ...draft, ranges });
+  };
   const idPrefix = `${definition.id}-filter`;
 
   const toggleField = (id: string) =>
@@ -75,6 +98,27 @@ export function ReportFilterPanel({ definition, filters, onApply, onClear }: Rep
           />
         </FilterField>
 
+        {rangeColumns.map((column) => (
+          <FilterField
+            key={column}
+            id={column}
+            idPrefix={idPrefix}
+            label={t(`reports.${definition.id}.rangeFilter.${column}`)}
+            open={openFields.has(column)}
+            onToggle={() => toggleField(column)}
+          >
+            <NumberRangeInputs
+              startLabel={tFilter('from')}
+              endLabel={tFilter('to')}
+              placeholder={tFilter('amountPlaceholder')}
+              startValue={rangeDraft[column]?.min ?? ''}
+              endValue={rangeDraft[column]?.max ?? ''}
+              onStartChange={(value) => setRangeBound(column, 'min', value)}
+              onEndChange={(value) => setRangeBound(column, 'max', value)}
+            />
+          </FilterField>
+        ))}
+
         {enumColumns.map((column) => (
           <FilterField
             key={column.key}
@@ -103,14 +147,15 @@ export function ReportFilterPanel({ definition, filters, onApply, onClear }: Rep
           type="button"
           variant="link"
           onClick={() => {
-            setDraft(EMPTY_FILTERS);
+            setDraft(EMPTY_REPORT_FILTERS);
+            setRangeDraft({});
             onClear();
           }}
           className="h-auto px-0"
         >
           <span className="text-label-large">{tFilter('clear')}</span>
         </Button>
-        <Button type="button" size="pillSm" onClick={() => onApply(draft)}>
+        <Button type="button" size="pillSm" onClick={apply}>
           {tFilter('apply')}
         </Button>
       </div>

@@ -43,7 +43,23 @@ export const REPORT_ENUMS = {
   periodUnit: ['minute', 'hour'],
   transactionType: ['deposit', 'withdrawal'],
   interactorType: ['user', 'provider', 'admin'],
-  interactionType: ['like', 'dislike', 'share', 'follow'],
+  interactionType: ['like', 'dislike', 'follow', 'unfollow', 'share'],
+  // Filter frames «Financial report filter», «Comment report filter», «Interaction report filter».
+  walletOperation: ['createWallet', 'increaseBalance', 'decreaseBalance'],
+  commentOperation: [
+    'create',
+    'edit',
+    'delete',
+    'restore',
+    'reply',
+    'moveToPublicPanel',
+    'removeFromPublicPanel',
+    'feature',
+    'unfeature',
+    'report',
+  ],
+  interactionTarget: ['comment', 'publicPanel'],
+  shareChannel: ['whatsapp', 'telegram', 'instagram', 'x', 'bale', 'rubika'],
   interactionValue: ['active', 'inactive'],
 } as const;
 
@@ -92,6 +108,8 @@ export type ReportDefinition = {
   sortOptions: ReportSortValue[];
   /** Date-range filter labelled `reports.<id>.dateFilter` (the design names it unlike the column). */
   dateFilterLabel?: boolean;
+  /** Numeric columns filtered by a «شروع بازه / پایان بازه» pair, labelled `reports.<id>.rangeFilter.<key>`. */
+  rangeColumns?: string[];
   /** Columns the search box matches; defaults to every text-like column. */
   searchColumns?: string[];
   /** SRS path codes this report implements (only Rfl is in `docs/srs/`). */
@@ -108,7 +126,11 @@ export type ReportFilters = {
   to: string;
   /** Enum column → selected values. */
   values: Record<string, string[]>;
+  /** Range column → inclusive bounds; `null` = open. */
+  ranges?: Record<string, NumberRange>;
 };
+
+export type NumberRange = { min: number | null; max: number | null };
 
 export type ReportRequest = {
   q: string;

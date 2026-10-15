@@ -8,7 +8,7 @@ import { JalaliDatePicker } from '@/components/ui/jalali-date-picker';
 import { cn } from '@/lib/utils';
 
 /*
- * Filter panel building blocks — accordion field row, Jalali date range, checkbox
+ * Filter panel building blocks — accordion field row, Jalali date range, number range, checkbox
  * (notifications inbox / reports, operational panel reports).
  */
 
@@ -142,6 +142,67 @@ function FilterDateField({
         {hint}
       </span>
     </div>
+  );
+}
+
+type NumberRangeInputsProps = {
+  startLabel: string;
+  endLabel: string;
+  placeholder: string;
+  startValue: string;
+  endValue: string;
+  onStartChange: (value: string) => void;
+  onEndChange: (value: string) => void;
+};
+
+/** «شروع بازه / پایان بازه» number pair (e.g. transaction amount) — same outlined look as the date range. */
+export function NumberRangeInputs({
+  startLabel,
+  endLabel,
+  placeholder,
+  startValue,
+  endValue,
+  onStartChange,
+  onEndChange,
+}: NumberRangeInputsProps) {
+  return (
+    <div className="flex flex-col gap-4 px-2 pt-2 pb-2 min-[640px]:flex-row min-[640px]:items-start">
+      <FilterNumberField label={startLabel} placeholder={placeholder} value={startValue} onChange={onStartChange} />
+      <FilterNumberField label={endLabel} placeholder={placeholder} value={endValue} onChange={onEndChange} />
+    </div>
+  );
+}
+
+function FilterNumberField({
+  label,
+  placeholder,
+  value,
+  onChange,
+}: {
+  label: string;
+  placeholder: string;
+  value: string;
+  onChange: (value: string) => void;
+}) {
+  return (
+    <label className="relative flex w-full min-w-0 flex-1 flex-col">
+      <span className="absolute -top-2 end-3 z-10 rounded-sm bg-white px-1.5 text-xs leading-4 text-app-filter-ink dark:bg-app-card dark:text-app-filter-ink">
+        {label}
+      </span>
+      <input
+        type="text"
+        inputMode="numeric"
+        dir="rtl"
+        value={value}
+        placeholder={placeholder}
+        onChange={(event) => onChange(event.target.value)}
+        className={cn(
+          'h-14 w-full rounded border border-app-filter bg-white px-3 text-sm leading-5 text-app-filter-ink',
+          'placeholder:text-app-filter-muted outline-none focus-visible:ring-2 focus-visible:ring-primary/30',
+          'dark:bg-app-search-fill'
+        )}
+      />
+    </label>
   );
 }
 

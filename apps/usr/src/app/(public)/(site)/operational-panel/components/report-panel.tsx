@@ -21,6 +21,7 @@ import { useReportUrlState } from '@operational-panel/hooks/use-report-url-state
 import type { OperationalReportId, ReportRow } from '@operational-panel/types';
 import { getReportDefinition } from '@operational-panel/utils/report-definitions';
 import {
+  EMPTY_REPORT_FILTERS,
   REPORT_SEARCH_MAX_LENGTH,
   hasActiveFilters,
   normalizeReportQuery,
@@ -91,8 +92,10 @@ export function OperationalReportPanel({ reportId, variant = 'section', showSort
   const sortLabel = (value: string): string => {
     const descending = value.startsWith('-');
     const column = descending ? value.slice(1) : value;
-    if (column === definition.dateColumn) return t(descending ? 'sort.newest' : 'sort.oldest');
-    return t(`reports.${reportId}.columns.${column}`);
+    const label = t(`reports.${reportId}.columns.${column}`);
+    // Figma sort menus: «زمان تراکنش (جدیدترین)».
+    if (column === definition.dateColumn) return t(descending ? 'sort.newestBy' : 'sort.oldestBy', { column: label });
+    return label;
   };
 
   let body: ReactNode;
@@ -170,7 +173,7 @@ export function OperationalReportPanel({ reportId, variant = 'section', showSort
                 setFilters(filters);
                 setFiltersOpen(false);
               }}
-              onClear={() => setFilters({ from: '', to: '', values: {} })}
+              onClear={() => setFilters(EMPTY_REPORT_FILTERS)}
             />
           ),
         }}

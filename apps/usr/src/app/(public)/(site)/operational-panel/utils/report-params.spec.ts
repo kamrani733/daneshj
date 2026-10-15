@@ -4,6 +4,7 @@ import {
   enumFilterColumns,
   hasActiveFilters,
   normalizeReportQuery,
+  parseRangeBound,
   parseReportParams,
   writeReportParams,
 } from '@operational-panel/utils/report-params';
@@ -92,5 +93,33 @@ describe('filters', () => {
     expect(
       hasActiveFilters({ ...emptyReportRequest(login), filters: { from: '2026-01-01', to: '', values: {} } }),
     ).toBe(true);
+  });
+});
+
+describe('amount range filter (wallet report)', () => {
+  const wallet = getReportDefinition('wallet');
+
+  it('reads Persian digits and separators, rejects junk', () => {
+    expect(parseRangeBound('۱۲۰٬۰۰۰')).toBe(120000);
+    expect(parseRangeBound('45,000')).toBe(45000);
+    expect(parseRangeBound('-5')).toBeNull();
+    expect(parseRangeBound('abc')).toBeNull();
+    expect(parseRangeBound('')).toBeNull();
+  });
+
+  it('round-trips through the URL and swaps reversed bounds', () => {
+    const request = {
+      ...emptyReportRequest(wallet),
+      filters: { from: '', to: '', values: {}, ranges: { amount: { min: 250000, max: 45000 } } },
+    };
+    const params = writeReportParams(wallet, request, new URLSearchParams());
+    expect(params.get('wallet.r.amount.min')).toBe('250000');
+    expect(parseReportParams(wallet, params).filters.ranges).toEqual({ amount: { min: 45000, max: 250000 } });
+    expect(hasActiveFilters(parseReportParams(wallet, params))).toBe(true);
+  });
+
+  it('ignores range params on reports without range columns', () => {
+    const params = new URLSearchParams('loginLogout.r.amount.min=5');
+    expect(parseReportParams(login, params).filters.ranges).toBeUndefined();
   });
 });

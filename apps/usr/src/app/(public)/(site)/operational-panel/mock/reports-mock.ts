@@ -3,6 +3,7 @@ import { normalizeFaText } from '@/lib/normalize-fa';
 
 import { getMockRows } from '@operational-panel/mock/fixtures';
 import type {
+  NumberRange,
   ReportCellValue,
   ReportDefinition,
   ReportPage,
@@ -41,6 +42,13 @@ function inDateRange(value: ReportCellValue, from: string, to: string): boolean 
   return (!from || day >= from) && (!to || day <= to);
 }
 
+/** Compares the absolute amount (signed wallet amounts) with inclusive bounds. */
+function inNumberRange(value: ReportCellValue, range: NumberRange): boolean {
+  if (typeof value !== 'number') return range.min === null && range.max === null;
+  const amount = Math.abs(value);
+  return (range.min === null || amount >= range.min) && (range.max === null || amount <= range.max);
+}
+
 function compare(a: ReportCellValue, b: ReportCellValue): number {
   if (a === b) return 0;
   if (a === null) return 1;
@@ -58,6 +66,7 @@ export function queryMockReport(definition: ReportDefinition, request: ReportReq
     (row) =>
       (!request.q || matchesQuery(row, columns, request.q)) &&
       inDateRange(row[definition.dateColumn], from, to) &&
+      Object.entries(request.filters.ranges ?? {}).every(([column, range]) => inNumberRange(row[column], range)) &&
       Object.entries(values).every(
         ([column, selected]) => selected.length === 0 || selected.includes(String(row[column])),
       ),

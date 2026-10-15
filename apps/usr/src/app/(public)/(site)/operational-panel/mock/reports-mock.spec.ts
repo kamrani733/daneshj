@@ -88,4 +88,23 @@ describe('operational panel report mocks', () => {
     expect(byProduct.count).toBeGreaterThan(0);
     expect(byProduct.items.every((row) => String(row.usedProduct).includes('سه'))).toBe(true);
   });
+
+  it('wallet report filters by amount range and operation type', () => {
+    const definition = getReportDefinition('wallet');
+    const page = queryMockReport(definition, {
+      ...emptyReportRequest(definition),
+      filters: {
+        from: '',
+        to: '',
+        values: { operationType: ['increaseBalance'] },
+        ranges: { amount: { min: 80000, max: 250000 } },
+      },
+    });
+    expect(page.count).toBeGreaterThan(0);
+    expect(
+      page.items.every(
+        (row) => row.operationType === 'increaseBalance' && Number(row.amount) >= 80000 && Number(row.amount) <= 250000,
+      ),
+    ).toBe(true);
+  });
 });

@@ -159,12 +159,16 @@ export const REPORT_DEFINITIONS: Record<OperationalReportId, ReportDefinition> =
     dateColumn: 'createdAt',
     sortOptions: byDate('createdAt'),
   },
+  // Filter: «بازه زمانی اقدام» (+ «نوع عملگر», options still placeholders) · sort menu: admin, actor type, newest.
   actorDeleteRestore: {
     id: 'actorDeleteRestore',
     columns: [ltr('adminUsername'), text('actorType'), datetime('actedAt'), text('reason')],
     dateColumn: 'actedAt',
-    sortOptions: byDate('actedAt'),
+    dateFilterLabel: true,
+    sortOptions: ['adminUsername', 'actorType', '-actedAt'],
   },
+  // Filter: «بازه زمانی تراکنش», «بازه میزان تراکنش», «نوع عملیات» (+ «منبع تراکنش», «نوع تراکنش», options still
+  // placeholders) · sort menu: newest only.
   wallet: {
     id: 'wallet',
     columns: [
@@ -174,37 +178,43 @@ export const REPORT_DEFINITIONS: Record<OperationalReportId, ReportDefinition> =
       ltr('adminUsername'),
       longText('description'),
       text('transactionType'),
-      text('operationType'),
+      enumColumn('operationType', 'walletOperation'),
     ],
     dateColumn: 'transactionAt',
-    sortOptions: byDate('transactionAt'),
+    dateFilterLabel: true,
+    rangeColumns: ['amount'],
+    sortOptions: ['-transactionAt'],
   },
+  // Filter: «بازه زمانی اقدام», «نوع عملیات» · sort menu: newest, comment id.
   comments: {
     id: 'comments',
     columns: [
       ltr('actorUsername'),
       datetime('sentAt'),
       ltr('commentId'),
-      text('operation'),
+      enumColumn('operation', 'commentOperation'),
       longText('previousText'),
       longText('text'),
       text('transferReason'),
     ],
     dateColumn: 'sentAt',
-    sortOptions: byDate('sentAt'),
+    dateFilterLabel: true,
+    sortOptions: ['-sentAt', 'commentId'],
   },
+  // Filter: «بازه زمانی تعامل», «نوع هدف تعامل» (two real options), «نوع تعامل», «محیط اشتراک گذاری».
   interactions: {
     id: 'interactions',
     columns: [
-      text('targetType'),
+      enumColumn('targetType', 'interactionTarget'),
       text('target'),
-      text('interactionType'),
+      enumColumn('interactionType', 'interactionType'),
       text('amount'),
       datetime('sentAt'),
       text('shareReason'),
-      text('shareChannel'),
+      enumColumn('shareChannel', 'shareChannel'),
     ],
     dateColumn: 'sentAt',
+    dateFilterLabel: true,
     sortOptions: byDate('sentAt'),
   },
   // SRS: Usr-Rfl-2N1 — search: link title, invited username · filter: creation time ·
