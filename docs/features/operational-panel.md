@@ -51,7 +51,10 @@ Desktop intro sentence, then tabs «تعاملات از عملگر» / «تعا�
 table with rounded row cards (wide tables scroll horizontally under the green scroll indicator), pagination
 (24 rows/page). Phones/tablets: labelled field cards, 4 at a time with «مشاهده بیشتر». Search, sort, filters and
 page live in the URL, namespaced per report (`loginLogout.q`, `loginLogout.page`, `loginLogout.f.operation`, …).
-States: loading, empty, no result, error + retry. Section 12 is the notifications report
+Filters follow the Figma filter frames for wallet («بازه زمانی تراکنش», «بازه میزان تراکنش» — amount range,
+`wallet.r.amount.min/max` — «نوع عملیات»), actor delete/restore, comments («نوع عملیات», 10 options) and interactions
+(«نوع هدف تعامل», «نوع تعامل», «محیط اشتراک گذاری»); date sorts read «<ستون> (جدیدترین)». States: loading, empty,
+no result, error + retry. Section 12 is the notifications report
 (`NotificationsReportsPanel`, real API).
 
 ### «آمار» — `/operational-panel/stats`

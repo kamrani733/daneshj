@@ -2,7 +2,7 @@
 title: "Design System"
 description: "Tokens, status colors, typography, components and the consolidation plan — read before any UI work"
 category: "architecture"
-last_updated: "2026-10-10"
+last_updated: "2026-10-15"
 ---
 
 # Design System
@@ -169,7 +169,7 @@ audit; the "SRS usage" column shows why each is needed.
 | `FloatingInput` | Another floating label input | forms | `components/ui/floating-input.tsx` | ⚠️ near-dup of OutlinedField |
 | `UnderlineField` | Third field variant | forms | `components/ui/underline-field.tsx` | ⚠️ near-dup of OutlinedField |
 | `SearchField` | Pill search input; optional clear (×) via `onClear` + `clearLabel`; variant `surface` (M3 pill on `surface-container-low`, report toolbars) | search (≤ 50 chars) | `components/ui/search-field.tsx` | ✅ |
-| `FilterField`, `DateRangeInputs`, `FilterCheckbox` | Filter panel blocks: accordion row, Jalali date range, checkbox | report / notification filters | `components/ui/filter-fields.tsx` | ✅ |
+| `FilterField`, `DateRangeInputs`, `NumberRangeInputs`, `FilterCheckbox` | Filter panel blocks: accordion row, Jalali date range, number range («بازه میزان تراکنش»), checkbox | report / notification filters | `components/ui/filter-fields.tsx` | ✅ |
 | `Pagination` | `1 2 3 … N` pager, LTR numbers, 48 px targets (labels from `common.pagination`) | panel lists | `components/ui/pagination.tsx` | ✅ |
 | `HorizontalScroller` | RTL horizontal scroll with the Figma indicator (triangle buttons + primary thumb, draggable); native scrollbar hidden | wide report tables | `components/ui/horizontal-scroller.tsx` | ✅ |
 | `SearchSelect` | Outlined single-select with type-to-filter (ARIA combobox); floating label once picked, clear (×) | filters (service picker) | `components/ui/search-select.tsx` | ✅ |
